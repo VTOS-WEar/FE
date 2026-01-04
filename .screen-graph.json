@@ -1,0 +1,78 @@
+{
+  "nodes": [
+    {
+      "id": "src/screens/SignUp/SignUp.tsx",
+      "label": "SignUp",
+      "routes": [
+        "/*",
+        "/signup"
+      ],
+      "isRoot": true
+    },
+    {
+      "id": "src/screens/FillInformation/FillInformation.tsx",
+      "label": "FillInformation",
+      "routes": [
+        "/fillinformation"
+      ]
+    },
+    {
+      "id": "src/screens/SignIn/SignIn.tsx",
+      "label": "SignIn",
+      "routes": [
+        "/signin"
+      ]
+    },
+    {
+      "id": "src/screens/AccountSecurity/AccountSecurity.tsx",
+      "label": "AccountSecurity",
+      "routes": [
+        "/accountsecurity"
+      ]
+    },
+    {
+      "id": "src/screens/TryOnHistory/TryOnHistory.tsx",
+      "label": "TryOnHistory",
+      "routes": [
+        "/tryonhistory"
+      ]
+    },
+    {
+      "id": "src/screens/MyProfile/MyProfile.tsx",
+      "label": "MyProfile",
+      "routes": [
+        "/myprofile"
+      ]
+    },
+    {
+      "id": "src/screens/FindSchool/FindSchool.tsx",
+      "label": "FindSchool",
+      "routes": [
+        "/findschool"
+      ]
+    },
+    {
+      "id": "src/screens/AccountSetting/AccountSetting.tsx",
+      "label": "AccountSetting",
+      "routes": [
+        "/accountsetting"
+      ]
+    },
+    {
+      "id": "src/screens/Homepage/Homepage.tsx",
+      "label": "Homepage",
+      "routes": [
+        "/homepage"
+      ],
+      "dataModelId": "85:19765"
+    },
+    {
+      "id": "src/screens/OrderManagement/OrderManagement.tsx",
+      "label": "OrderManagement",
+      "routes": [
+        "/ordermanagement"
+      ]
+    }
+  ],
+  "edges": []
+}
