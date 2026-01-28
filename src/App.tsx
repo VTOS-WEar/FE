@@ -52,8 +52,58 @@ const router = createBrowserRouter([
     element: <Homepage />,
   },
   {
-    path: "/ordermanagement",
-    element: <OrderManagement />,
+    element: <SiteLayout isLoggedIn={false} />,
+    children: [
+      {
+        path: "/signup",
+        element: <SignUp />,
+      },
+      {
+        path: "/signin",
+        element: <SignIn />,
+      },
+      {
+        path: "/schools",
+        element: <SchoolList />,
+      },
+      {
+        path: "/products",
+        element: <ProductList />,
+      },
+      {
+        path: "/products/:id",
+        element: <ProductDetail />,
+      },
+      // Commented out until components are created
+      // {
+      //   path: "/fillinformation",
+      //   element: <FillInformation />,
+      // },
+      // {
+      //   path: "/accountsecurity",
+      //   element: <AccountSecurity />,
+      // },
+      // {
+      //   path: "/tryonhistory",
+      //   element: <TryOnHistory />,
+      // },
+      // {
+      //   path: "/myprofile",
+      //   element: <MyProfile />,
+      // },
+      // {
+      //   path: "/findschool",
+      //   element: <FindSchool />,
+      // },
+      // {
+      //   path: "/accountsetting",
+      //   element: <AccountSetting />,
+      // },
+      // {
+      //   path: "/ordermanagement",
+      //   element: <OrderManagement />,
+      // },
+    ],
   },
 ]);
 
