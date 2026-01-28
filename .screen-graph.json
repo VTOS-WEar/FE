@@ -1,0 +1,14 @@
+{
+  "nodes": [
+    {
+      "id": "src/screens/Homepage/Homepage.tsx",
+      "label": "Homepage",
+      "routes": [
+        "/",
+        "/homepage"
+      ],
+      "isRoot": true
+    }
+  ],
+  "edges": []
+}
