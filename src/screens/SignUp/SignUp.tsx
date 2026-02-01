@@ -7,10 +7,10 @@ import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { useState } from "react";
 import { register } from "../../lib/api/auth";
 import { Notify } from "../../components/ui/notify";
-
+import { useNavigate } from "react-router-dom";
 export const SignUp = (): JSX.Element => {
   const [showPassword, setShowPassword] = useState(false);
-
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [fullName, setFullName] = useState("");
   const [password, setPassword] = useState("");
@@ -42,7 +42,10 @@ export const SignUp = (): JSX.Element => {
         message: data?.message || "Bạn có thể đăng nhập ngay bây giờ.",
         variant: "success",
       });
-
+      navigate("/verify-otp", {
+        replace: true,
+        state: { email }, // <-- truyền email qua state
+      });
       // Optional: reset form
       // setEmail(""); setFullName(""); setPassword("");
     } catch (e: any) {

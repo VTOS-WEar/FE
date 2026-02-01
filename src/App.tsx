@@ -13,6 +13,7 @@ import { SiteLayout } from "./layouts/SiteLayout";
 import { SchoolList } from "./screens/SchoolList";
 import { ProductList } from "./screens/ProductList";
 import { ProductDetail } from "./screens/ProductDetail";
+import { VerifyOTP } from "./screens/OtpField";
 
 const router = createBrowserRouter([
   {
@@ -56,6 +57,10 @@ const router = createBrowserRouter([
     element: <Homepage />,
   },
   {
+    path: "/verify-otp",
+    element: <VerifyOTP />,
+  },
+  {
     element: <SiteLayout isLoggedIn={false} />,
     children: [
       {
@@ -78,6 +83,10 @@ const router = createBrowserRouter([
         path: "/products/:id",
         element: <ProductDetail />,
       },
+      {
+        path: "/verify-otp",
+        element: <VerifyOTP />,
+      }
       // Commented out until components are created
       // {
       //   path: "/fillinformation",
