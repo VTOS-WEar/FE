@@ -5,8 +5,57 @@ import { Label } from "../../components/ui/label";
 import { Separator } from "../../components/ui/separator";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { useState } from "react";
+import { register } from "../../lib/api/auth";
+import { Notify } from "../../components/ui/notify";
+
 export const SignUp = (): JSX.Element => {
   const [showPassword, setShowPassword] = useState(false);
+
+  const [email, setEmail] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [password, setPassword] = useState("");
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [notify, setNotify] = useState<{
+    title: string;
+    message: string;
+    variant: "error" | "success" | "info";
+  } | null>(null);
+
+  const handleRegister = async () => {
+    if (!email.trim() || !fullName.trim() || !password) {
+      setNotify({
+        title: "Thiếu thông tin",
+        message: "Vui lòng nhập Email, Họ tên và Mật khẩu.",
+        variant: "info",
+      });
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+
+      const data = await register({ email, password, fullName });
+
+      setNotify({
+        title: "Tạo tài khoản thành công",
+        message: data?.message || "Bạn có thể đăng nhập ngay bây giờ.",
+        variant: "success",
+      });
+
+      // Optional: reset form
+      // setEmail(""); setFullName(""); setPassword("");
+    } catch (e: any) {
+      setNotify({
+        title: "Tạo tài khoản thất bại",
+        message: e?.message || "Có lỗi xảy ra.",
+        variant: "error",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="bg-white w-full min-h-screen flex flex-col">
       <NavbarGuest />
@@ -16,9 +65,8 @@ export const SignUp = (): JSX.Element => {
           {/* Card */}
           <div className="overflow-hidden rounded-[2rem] bg-white shadow-[0_20px_60px_rgba(16,15,20,0.12)] ring-1 ring-black/5">
             <div className="flex flex-col lg:flex-row">
-              {/* Left panel (trong card) */}
+              {/* Left panel */}
               <div className="relative lg:w-[42%] bg-gradient-to-br from-[#94bfff] to-[#c68cf4] p-8 lg:p-10 flex items-center justify-center overflow-hidden">
-                {/* decor vectors (nhẹ lại để giống mock) */}
                 <div className="absolute inset-0 opacity-20 pointer-events-none">
                   <img
                     className="absolute -top-20 -left-24 w-[36rem] h-[36rem]"
@@ -66,6 +114,7 @@ export const SignUp = (): JSX.Element => {
                   </div>
 
                   <Button
+                    type="button"
                     variant="outline"
                     className="w-full h-auto flex items-center justify-center gap-2.5 px-5 py-3 lg:py-4 rounded-lg border border-[#cac9d6] hover:bg-gray-50"
                   >
@@ -95,6 +144,8 @@ export const SignUp = (): JSX.Element => {
                       <Input
                         type="email"
                         placeholder="Nhập email của bạn"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                         className="h-11 lg:h-12 px-4 lg:px-5 rounded-md border border-[#cac9d6] [font-family:'Montserrat',Helvetica] font-medium text-sm lg:text-base"
                       />
                     </div>
@@ -106,6 +157,8 @@ export const SignUp = (): JSX.Element => {
                       <Input
                         type="text"
                         placeholder="Nhập họ tên của bạn"
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
                         className="h-11 lg:h-12 px-4 lg:px-5 rounded-md border border-[#cac9d6] [font-family:'Montserrat',Helvetica] font-medium text-sm lg:text-base"
                       />
                     </div>
@@ -118,32 +171,44 @@ export const SignUp = (): JSX.Element => {
                         <Input
                           type={showPassword ? "text" : "password"}
                           placeholder="Tạo mật khẩu của bạn"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
                           className="h-11 lg:h-12 px-4 lg:px-5 pr-12 rounded-md border border-[#cac9d6] [font-family:'Montserrat',Helvetica] font-medium text-sm lg:text-base"
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") handleRegister();
+                          }}
                         />
                         <Button
+                          type="button"
                           onClick={() => setShowPassword((prev) => !prev)}
                           variant="ghost"
                           size="icon"
                           className="absolute right-3 top-1/2 -translate-y-1/2 h-auto w-auto p-0 hover:bg-transparent"
                         >
-                          <img
-                            className="w-5 lg:w-6 h-5 lg:h-6"
-                            alt="Toggle password"
-                            src="https://c.animaapp.com/mjxt3t8wNP0otU/img/eye-disable.svg"
-                          />
+                          {showPassword ? (
+                            <EyeIcon className="w-5 h-5 text-[#676576]" />
+                          ) : (
+                            <EyeOffIcon className="w-5 h-5 text-[#676576]" />
+                          )}
                         </Button>
                       </div>
                     </div>
 
-                    <Button className="w-full h-14 lg:h-16 bg-[#6838ee] rounded-[2.5rem] hover:bg-[#5730c9] mt-3">
+                    <Button
+                      type="button"
+                      disabled={isLoading}
+                      onClick={handleRegister}
+                      className="w-full h-14 lg:h-16 bg-[#6838ee] rounded-[2.5rem] hover:bg-[#5730c9] mt-3"
+                    >
                       <span className="[font-family:'Baloo_2',Helvetica] font-extrabold text-white text-lg lg:text-xl">
-                        Tạo tài khoản
+                        {isLoading ? "Đang tạo..." : "Tạo tài khoản"}
                       </span>
                     </Button>
 
                     <p className="text-center [font-family:'Poppins',Helvetica] font-normal text-sm lg:text-base">
                       <span className="text-[#494759]">Bạn đã có tài khoản? </span>
                       <Button
+                        type="button"
                         variant="link"
                         className="[font-family:'Montserrat',Helvetica] font-semibold italic text-[#6938ef] p-0 h-auto hover:underline"
                       >
@@ -158,6 +223,15 @@ export const SignUp = (): JSX.Element => {
         </div>
       </main>
 
+      {/* Notify top-right + progress */}
+      <Notify
+        open={!!notify}
+        title={notify?.title || ""}
+        message={notify?.message}
+        variant={notify?.variant}
+        durationMs={3500}
+        onClose={() => setNotify(null)}
+      />
 
       <Footer />
     </div>

@@ -1,0 +1,89 @@
+const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "";
+console.log("API_BASE:", API_BASE);
+export class ApiError extends Error {
+    status: number;
+    details?: unknown;
+
+    constructor(message: string, status: number, details?: unknown) {
+        super(message);
+        this.name = "ApiError";
+        this.status = status;
+        this.details = details;
+    }
+}
+
+function flattenAspNetErrors(errors: any): string | null {
+    if (!errors || typeof errors !== "object") return null;
+
+    // errors: { Field: ["msg1", "msg2"], ... }
+    const parts: string[] = [];
+    for (const key of Object.keys(errors)) {
+        const v = errors[key];
+        if (Array.isArray(v)) {
+            parts.push(...v.filter(Boolean));
+        } else if (typeof v === "string") {
+            parts.push(v);
+        }
+    }
+    return parts.length ? parts.join("\n") : null;
+}
+
+async function parseError(res: Response): Promise<{ message: string; status: number; details?: unknown }> {
+    const fallback = `Request failed (${res.status})`;
+
+    try {
+        const data = await res.json();
+
+        // ưu tiên message/error trước
+        const msg =
+            data?.message ||
+            data?.error ||
+            // ASP.NET validation hay có title + errors
+            flattenAspNetErrors(data?.errors) ||
+            data?.title ||
+            fallback;
+
+        return { message: msg, status: res.status, details: data };
+    } catch {
+        // nếu backend trả text/html
+        try {
+            const text = await res.text();
+            return { message: text || fallback, status: res.status };
+        } catch {
+            return { message: fallback, status: res.status };
+        }
+    }
+}
+
+export async function api<T>(
+    path: string,
+    options: RequestInit & { auth?: boolean } = {}
+): Promise<T> {
+    // lấy token từ localStorage hoặc sessionStorage (hợp với rememberMe)
+    const token =
+        localStorage.getItem("access_token") || sessionStorage.getItem("access_token");
+
+    const headers = new Headers(options.headers);
+
+    // chỉ set Content-Type khi body là JSON string
+    if (!headers.has("Content-Type") && options.body && typeof options.body === "string") {
+        headers.set("Content-Type", "application/json");
+    }
+
+    if (options.auth && token) headers.set("Authorization", `Bearer ${token}`);
+
+    const res = await fetch(`${API_BASE}${path}`, {
+        ...options,
+        headers,
+        // Nếu backend dùng cookie auth:
+        // credentials: "include",
+    });
+
+    if (!res.ok) {
+        const err = await parseError(res);
+        throw new ApiError(err.message, err.status, err.details);
+    }
+
+    if (res.status === 204) return null as unknown as T;
+    return (await res.json()) as T;
+}
