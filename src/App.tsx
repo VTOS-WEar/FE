@@ -9,6 +9,10 @@ import { OrderManagement } from "./screens/OrderManagement";
 import { SignIn } from "./screens/SignIn";
 import { SignUp } from "./screens/SignUp";
 import { TryOnHistory } from "./screens/TryOnHistory";
+import { SiteLayout } from "./layouts/SiteLayout";
+import { SchoolList } from "./screens/SchoolList";
+import { ProductList } from "./screens/ProductList";
+import { ProductDetail } from "./screens/ProductDetail";
 
 const router = createBrowserRouter([
   {
