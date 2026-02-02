@@ -69,3 +69,11 @@ export async function login(payload: LoginRequest) {
     });
 }
 //#endregion 
+//#region Resend OTP Email
+export async function resendOtpEmail(email: string) {
+    return api<{ message: string }>(endpoints.auth.resendOtp, {
+        method: "POST",
+        body: JSON.stringify({ email }),
+    });
+}
+//#endregion

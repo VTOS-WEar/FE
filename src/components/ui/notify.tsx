@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Alert, AlertTitle, AlertDescription } from "./alert";
 import { AlertCircle, CheckCircle2, Info } from "lucide-react";
 
@@ -44,7 +44,7 @@ export function Notify({
             : variant === "info"
                 ? "border-blue-200 text-blue-950 [&>svg]:text-blue-600"
                 : "border-red-200 text-red-950 [&>svg]:text-red-600";
-
+    const onCloseRef = useRef(onClose);
     useEffect(() => {
         if (!open || !message) return;
 
@@ -58,7 +58,7 @@ export function Notify({
             setProgress(next);
 
             if (elapsed >= durationMs) {
-                onClose();
+                onCloseRef.current();
                 return;
             }
             raf = requestAnimationFrame(tick);

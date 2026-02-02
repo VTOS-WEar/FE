@@ -6,7 +6,7 @@ import { Label } from "../../components/ui/label";
 import { Notify } from "../../components/ui/notify";
 import { Separator } from "../../components/ui/separator";
 import { Input } from "../../components/ui/input";
-import { verifyEmail } from "../../lib/api/auth";
+import { verifyEmail, resendOtpEmail } from "../../lib/api/auth";
 import { ApiError } from "../../lib/api/clients";
 
 type VerifyEmailErrorDetails = {
@@ -15,11 +15,7 @@ type VerifyEmailErrorDetails = {
     message?: string;
 };
 
-// TODO: thay bằng API gửi lại OTP thật của bạn
-async function resendOtpApi(payload: { email: string }) {
-    await new Promise((r) => setTimeout(r, 600));
-    return { ok: true };
-}
+
 
 function maskEmail(email: string) {
     const [name, domain] = email.split("@");
@@ -54,9 +50,10 @@ export const VerifyOtp = (): JSX.Element => {
         title: string;
         message: string;
         variant: "error" | "success" | "info";
+        durationMs?: 3500;
     } | null>(null);
- 
-    // countdown gửi lại
+
+    // countdown gửi lại    
     const [cooldown, setCooldown] = useState(60);
 
     useEffect(() => {
@@ -144,6 +141,7 @@ export const VerifyOtp = (): JSX.Element => {
                 title: "Thiếu thông tin",
                 message: "Không tìm thấy email. Vui lòng quay lại bước trước.",
                 variant: "error",
+
             });
             return;
         }
@@ -180,6 +178,7 @@ export const VerifyOtp = (): JSX.Element => {
                         message: "Mã OTP không đúng. Vui lòng thử lại.",
                         variant: "error",
                     });
+
                     return;
                 }
 
@@ -198,6 +197,7 @@ export const VerifyOtp = (): JSX.Element => {
                     variant: "error",
                 });
                 return;
+
             }
 
             setNotify({
@@ -224,7 +224,7 @@ export const VerifyOtp = (): JSX.Element => {
 
         try {
             setIsLoading(true);
-            await resendOtpApi({ email });
+            await resendOtpEmail(email);
             setCooldown(60);
 
             setNotify({
@@ -244,6 +244,7 @@ export const VerifyOtp = (): JSX.Element => {
             });
         } finally {
             setIsLoading(false);
+
         }
     };
 
@@ -398,6 +399,7 @@ export const VerifyOtp = (): JSX.Element => {
                 message={notify?.message}
                 variant={notify?.variant}
                 onClose={() => setNotify(null)}
+                durationMs={3500}
             />
         </div>
     );
