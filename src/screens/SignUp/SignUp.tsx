@@ -7,7 +7,7 @@ import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { useState } from "react";
 import { register } from "../../lib/api/auth";
 import { Notify } from "../../components/ui/notify";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 export const SignUp = (): JSX.Element => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
@@ -215,7 +215,7 @@ export const SignUp = (): JSX.Element => {
                         variant="link"
                         className="[font-family:'Montserrat',Helvetica] font-semibold italic text-[#6938ef] p-0 h-auto hover:underline"
                       >
-                        Đăng Nhập
+                        <Link to="/signin">Đăng Nhập</Link>
                       </Button>
                     </p>
                   </div>

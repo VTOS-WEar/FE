@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 import { login } from "../../lib/api/auth";
 import { Alert, AlertTitle, AlertDescription } from "../../components/ui/alert";
 import { Notify } from "../../components/ui/notify";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 export const SignIn = (): JSX.Element => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
@@ -180,7 +180,9 @@ export const SignIn = (): JSX.Element => {
                         type="button"
                         className="[font-family:'Montserrat',Helvetica] font-medium italic text-[#676576] text-sm lg:text-base hover:opacity-70"
                       >
-                        Quên mật khẩu?
+                        <Link to="/forgot-password">
+                          Quên mật khẩu?
+                        </Link>
                       </button>
                     </div>
 
@@ -197,9 +199,12 @@ export const SignIn = (): JSX.Element => {
 
                     <p className="text-center [font-family:'Poppins',Helvetica] font-normal text-sm lg:text-base">
                       <span className="text-[#494759]">Bạn chưa có tài khoản? </span>
-                      <span className="[font-family:'Montserrat',Helvetica] font-semibold italic text-[#6938ef] cursor-pointer hover:underline">
+                      <Link
+                        to="/sign-up"
+                        className="[font-family:'Montserrat',Helvetica] font-semibold italic text-[#6938ef] cursor-pointer hover:underline"
+                      >
                         Tạo tài khoản
-                      </span>
+                      </Link>
                     </p>
                   </div>
                 </div>

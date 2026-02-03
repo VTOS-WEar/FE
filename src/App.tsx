@@ -14,7 +14,9 @@ import { SchoolList } from "./screens/SchoolList";
 import { ProductList } from "./screens/ProductList";
 import { ProductDetail } from "./screens/ProductDetail";
 import { VerifyOTP } from "./screens/OtpField";
-
+import { ForgotPassword } from "./screens/ForgotPassword/ForgotPassword";
+import { ForgotPasswordSent } from "./screens/ForgotPasswordSent/ForgotPasswordSent";
+import { ResetPassword } from "./screens/ResetPassword/ResetPassword";
 const router = createBrowserRouter([
   {
     path: "/*",
@@ -60,6 +62,9 @@ const router = createBrowserRouter([
     path: "/verify-otp",
     element: <VerifyOTP />,
   },
+  { path: "/forgot-password", element: <ForgotPassword /> },
+  { path: "/forgot-password/sent", element: <ForgotPasswordSent /> },
+  { path: "/reset-password", element: <ResetPassword /> },
   {
     element: <SiteLayout isLoggedIn={false} />,
     children: [

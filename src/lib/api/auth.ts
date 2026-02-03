@@ -18,7 +18,7 @@ export async function verifyEmail(body: VerifyEmailRequest) {
         method: "POST",
         body: JSON.stringify({
             email: body.email,
-            OTPCode: body.otp, 
+            OTPCode: body.otp,
         }),
     });
 }
@@ -74,6 +74,37 @@ export async function resendOtpEmail(email: string) {
     return api<{ message: string }>(endpoints.auth.resendOtp, {
         method: "POST",
         body: JSON.stringify({ email }),
+    });
+}
+//#endregion
+//#region Forgot Password
+export type ForgotPasswordRequest = {
+    email: string;
+};
+
+export type ForgotPasswordResponse = {
+    message: string;
+};
+export async function forgotPassword(payload: ForgotPasswordRequest) {
+    return api<ForgotPasswordResponse>(endpoints.auth.forgotPassword, {
+        method: "POST",
+        body: JSON.stringify(payload),
+    });
+
+}
+//#endregion
+//#region Reset Password
+export type ResetPasswordRequest = {
+    token: string;
+    newPassword: string;
+};
+export type ResetPasswordResponse = {
+    message: string;
+};
+export async function resetPassword(payload: ResetPasswordRequest) {
+    return api<ResetPasswordResponse>(endpoints.auth.resetPassword, {
+        method: "POST",
+        body: JSON.stringify(payload),
     });
 }
 //#endregion
