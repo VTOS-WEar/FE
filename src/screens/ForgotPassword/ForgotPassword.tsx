@@ -7,6 +7,7 @@ import { Notify } from "../../components/ui/notify";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { forgotPassword } from "../../lib/api/auth";
+import { GuestLayout } from "../../components/layout/GuestLayout";
 // ✅ TODO: đổi sang API thật của bạn
 // ví dụ: import { forgotPassword } from "../../lib/api/auth";
 
@@ -56,8 +57,7 @@ export const ForgotPassword = (): JSX.Element => {
     };
 
     return (
-        <div className="bg-white w-full min-h-screen flex flex-col">
-            <NavbarGuest />
+        <GuestLayout bgColor="#f4f2ff">
 
             <main className="flex-1 bg-[#F4F6FF] px-4 py-10 lg:py-14">
                 <div className="mx-auto w-full max-w-6xl">
@@ -164,9 +164,6 @@ export const ForgotPassword = (): JSX.Element => {
                     </div>
                 </div>
             </main>
-
-            <Footer />
-
             <Notify
                 open={!!notify}
                 title={notify?.title || ""}
@@ -174,7 +171,7 @@ export const ForgotPassword = (): JSX.Element => {
                 variant={notify?.variant}
                 onClose={() => setNotify(null)}
             />
-        </div>
+        </GuestLayout>
     );
 };
 export default ForgotPassword;

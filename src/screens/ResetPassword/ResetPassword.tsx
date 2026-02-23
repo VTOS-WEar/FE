@@ -1,5 +1,5 @@
 import { EyeIcon, EyeOffIcon } from "lucide-react";
-import { NavbarGuest, Footer } from "../../components/layout";
+import { NavbarGuest, Footer, } from "../../components/layout";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
@@ -8,6 +8,7 @@ import { Notify } from "../../components/ui/notify";
 import { useMemo, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { resetPassword } from "../../lib/api/auth";
+import { GuestLayout } from "../../components/layout/GuestLayout";
 
 export const ResetPassword = (): JSX.Element => {
     const navigate = useNavigate();
@@ -99,8 +100,7 @@ export const ResetPassword = (): JSX.Element => {
     };
 
     return (
-        <div className="bg-white w-full min-h-screen flex flex-col">
-            <NavbarGuest />
+        <GuestLayout bgColor="#f4f2ff">
 
             <main className="flex-1 bg-[#F4F6FF] px-4 py-10 lg:py-14">
                 <div className="mx-auto w-full max-w-6xl">
@@ -261,7 +261,7 @@ export const ResetPassword = (): JSX.Element => {
                 </div>
             </main>
 
-            <Footer />
+
 
             <Notify
                 open={!!notify}
@@ -270,7 +270,7 @@ export const ResetPassword = (): JSX.Element => {
                 variant={notify?.variant}
                 onClose={() => setNotify(null)}
             />
-        </div>
+        </GuestLayout>
     );
 };
 export default ResetPassword;

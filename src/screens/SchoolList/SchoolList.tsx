@@ -1,5 +1,5 @@
 import { Search, ChevronDown, SlidersHorizontal, ChevronRight } from "lucide-react";
-import { SchoolCard } from "@/components/SchoolCard";
+import { SchoolCard } from "../../components/SchoolCard";
 
 export default function Index() {
     // Mock data for schools - in a real app this would come from an API

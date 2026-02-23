@@ -4,11 +4,11 @@ import { OrderFilterSection } from "./sections/OrderFilterSection";
 import { OrderListSection } from "./sections/OrderListSection";
 import { OrderStatusSummarySection } from "./sections/OrderStatusSummarySection";
 import { PaginationSection } from "./sections/PaginationSection";
+import { GuestLayout } from "../../components/layout/GuestLayout";
 
 export const OrderManagement = (): JSX.Element => {
   return (
-    <div className="bg-white w-full min-h-screen flex flex-col">
-      <Navbar />
+    <GuestLayout bgColor="#f4f2ff">
 
       <main className="flex-1 bg-[#f4f2ff] py-12 px-4 lg:px-8 relative overflow-hidden">
         <img
@@ -35,7 +35,6 @@ export const OrderManagement = (): JSX.Element => {
         </div>
       </main>
 
-      <Footer />
-    </div>
+    </GuestLayout>
   );
 };

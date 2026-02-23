@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { ChevronRight, ShoppingCart, Box, Star, Check, User } from "lucide-react";
 import { useState } from "react";
-import TryOnModal from "@/components/TryOnModal";
+import TryOnModal from "../../components/TryOnModal";
 
 export default function ProductDetail() {
   const [selectedSize, setSelectedSize] = useState("M");
@@ -117,7 +117,7 @@ export default function ProductDetail() {
               <h1 className="font-montserrat font-extrabold text-4xl lg:text-5xl text-black mb-4">
                 Áo sơ mi trắng nam
               </h1>
-              
+
               {/* Rating */}
               <div className="flex items-center gap-3 mb-4">
                 <div className="flex items-center gap-1">
@@ -142,10 +142,10 @@ export default function ProductDetail() {
             {/* Description */}
             <div>
               <p className="font-montserrat font-medium text-base text-black/60 leading-relaxed">
-                Lorem Ipsum is simply dummy text of the printing and typesetting industry. 
-                Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, 
-                when an unknown printer took a galley of type and scrambled it to make a type 
-                specimen book. It has survived not only five centuries, but also the leap into 
+                Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+                Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
+                when an unknown printer took a galley of type and scrambled it to make a type
+                specimen book. It has survived not only five centuries, but also the leap into
                 electronic typesetting, remaining essentially unchanged.
               </p>
             </div>
@@ -161,13 +161,12 @@ export default function ProductDetail() {
                     key={size}
                     onClick={() => isSizeAvailable(size) && setSelectedSize(size)}
                     disabled={!isSizeAvailable(size)}
-                    className={`px-6 py-3 rounded-lg font-montserrat text-xl transition-all duration-300 ease-in-out transform ${
-                      selectedSize === size
-                        ? "bg-blue-accent text-white border-2 border-blue-accent shadow-md scale-105"
-                        : isSizeAvailable(size)
+                    className={`px-6 py-3 rounded-lg font-montserrat text-xl transition-all duration-300 ease-in-out transform ${selectedSize === size
+                      ? "bg-blue-accent text-white border-2 border-blue-accent shadow-md scale-105"
+                      : isSizeAvailable(size)
                         ? "bg-white text-black border-2 border-vtos-gray-border hover:border-vtos-blue hover:scale-105 active:scale-95"
                         : "bg-gray-200 text-gray-400 border-2 border-gray-300 cursor-not-allowed opacity-50"
-                    }`}
+                      }`}
                   >
                     {size}
                   </button>
@@ -181,7 +180,7 @@ export default function ProductDetail() {
                 <ShoppingCart className="w-6 h-6 transition-transform duration-300 group-hover:scale-110" />
                 Thêm vào giỏ hàng
               </button>
-              <button 
+              <button
                 onClick={() => setIsTryOnOpen(true)}
                 className="flex-1 flex items-center justify-center gap-3 bg-white hover:bg-gray-50 text-blue-accent border-2 border-blue-accent font-montserrat font-bold text-xl px-12 py-5 rounded-lg transition-all duration-300 ease-in-out hover:border-blue-accent/80 transform hover:scale-[1.02] active:scale-[0.98]"
               >
@@ -198,31 +197,28 @@ export default function ProductDetail() {
           <div className="flex items-center gap-12 border-b-2 border-vtos-gray-border mb-8">
             <button
               onClick={() => setActiveTab("description")}
-              className={`pb-4 font-montserrat font-semibold text-2xl transition-all duration-300 ease-in-out ${
-                activeTab === "description"
-                  ? "text-blue-accent border-b-2 border-blue-accent -mb-[2px]"
-                  : "text-black/50 hover:text-black/70"
-              }`}
+              className={`pb-4 font-montserrat font-semibold text-2xl transition-all duration-300 ease-in-out ${activeTab === "description"
+                ? "text-blue-accent border-b-2 border-blue-accent -mb-[2px]"
+                : "text-black/50 hover:text-black/70"
+                }`}
             >
               Mô tả chi tiết
             </button>
             <button
               onClick={() => setActiveTab("material")}
-              className={`pb-4 font-montserrat font-semibold text-2xl transition-all duration-300 ease-in-out ${
-                activeTab === "material"
-                  ? "text-blue-accent border-b-2 border-blue-accent -mb-[2px]"
-                  : "text-black/50 hover:text-black/70"
-              }`}
+              className={`pb-4 font-montserrat font-semibold text-2xl transition-all duration-300 ease-in-out ${activeTab === "material"
+                ? "text-blue-accent border-b-2 border-blue-accent -mb-[2px]"
+                : "text-black/50 hover:text-black/70"
+                }`}
             >
               Chất liệu & Bảo quản
             </button>
             <button
               onClick={() => setActiveTab("reviews")}
-              className={`pb-4 font-montserrat font-semibold text-2xl transition-all duration-300 ease-in-out ${
-                activeTab === "reviews"
-                  ? "text-blue-accent border-b-2 border-blue-accent -mb-[2px]"
-                  : "text-black/50 hover:text-black/70"
-              }`}
+              className={`pb-4 font-montserrat font-semibold text-2xl transition-all duration-300 ease-in-out ${activeTab === "reviews"
+                ? "text-blue-accent border-b-2 border-blue-accent -mb-[2px]"
+                : "text-black/50 hover:text-black/70"
+                }`}
             >
               Đánh giá (128)
             </button>
@@ -341,7 +337,7 @@ export default function ProductDetail() {
                         <span className="font-montserrat text-sm text-black/60 w-8">{rating}</span>
                         <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                         <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
-                          <div 
+                          <div
                             className="h-full bg-yellow-400 rounded-full"
                             style={{ width: `${rating === 5 ? 65 : rating === 4 ? 20 : rating === 3 ? 10 : rating === 2 ? 3 : 2}%` }}
                           />
@@ -547,8 +543,8 @@ export default function ProductDetail() {
       </div>
 
       {/* Try On Modal */}
-      <TryOnModal 
-        isOpen={isTryOnOpen} 
+      <TryOnModal
+        isOpen={isTryOnOpen}
         onClose={() => setIsTryOnOpen(false)}
         suggestedSize={selectedSize}
         fitPercentage={93}

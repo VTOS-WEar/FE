@@ -10,6 +10,7 @@ import { login } from "../../lib/api/auth";
 import { Alert, AlertTitle, AlertDescription } from "../../components/ui/alert";
 import { Notify } from "../../components/ui/notify";
 import { useNavigate, Link } from "react-router-dom";
+import { GuestLayout } from "../../components/layout/GuestLayout";
 export const SignIn = (): JSX.Element => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
@@ -62,8 +63,7 @@ export const SignIn = (): JSX.Element => {
   };
 
   return (
-    <div className="bg-white w-full min-h-screen flex flex-col">
-      <NavbarGuest />
+    <GuestLayout bgColor="#f4f2ff" >
 
       <main className="flex-1 bg-[#F4F6FF] px-4 py-10 lg:py-14">
         <div className="mx-auto w-full max-w-6xl">
@@ -253,7 +253,7 @@ export const SignIn = (): JSX.Element => {
         </div>
       </main>
 
-      <Footer />
+
       <Notify
         open={!!notify}
         title={notify?.title || ""}
@@ -261,7 +261,7 @@ export const SignIn = (): JSX.Element => {
         variant={notify?.variant}
         onClose={() => setNotify(null)}
       />
-    </div>
+    </GuestLayout>
   );
 
 };

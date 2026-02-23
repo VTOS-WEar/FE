@@ -8,6 +8,7 @@ import { Separator } from "../../components/ui/separator";
 import { Input } from "../../components/ui/input";
 import { verifyEmail, resendOtpEmail } from "../../lib/api/auth";
 import { ApiError } from "../../lib/api/clients";
+import { GuestLayout } from "../../components/layout/GuestLayout";
 
 type VerifyEmailErrorDetails = {
     code?: "INVALID_OTP" | "OTP_EXPIRED" | "EMAIL_NOT_FOUND";
@@ -249,8 +250,7 @@ export const VerifyOtp = (): JSX.Element => {
     };
 
     return (
-        <div className="bg-white w-full min-h-screen flex flex-col">
-            <NavbarGuest />
+        <GuestLayout bgColor="#f4f2ff">
 
             <main className="flex-1 bg-[#F4F6FF] px-4 py-10 lg:py-14">
                 <div className="mx-auto w-full max-w-6xl">
@@ -391,7 +391,7 @@ export const VerifyOtp = (): JSX.Element => {
                 </div>
             </main>
 
-            <Footer />
+
 
             <Notify
                 open={!!notify}
@@ -401,7 +401,7 @@ export const VerifyOtp = (): JSX.Element => {
                 onClose={() => setNotify(null)}
                 durationMs={3500}
             />
-        </div>
+        </GuestLayout>
     );
 };
 

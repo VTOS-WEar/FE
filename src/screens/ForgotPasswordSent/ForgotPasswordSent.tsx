@@ -6,6 +6,7 @@ import { Separator } from "../../components/ui/separator";
 import { Notify } from "../../components/ui/notify";
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { GuestLayout } from "../../components/layout/GuestLayout";
 
 // ✅ TODO: đổi sang API thật của bạn
 async function forgotPasswordApi(payload: { email: string }) {
@@ -76,8 +77,7 @@ export const ForgotPasswordSent = (): JSX.Element => {
     };
 
     return (
-        <div className="bg-white w-full min-h-screen flex flex-col">
-            <NavbarGuest />
+        <GuestLayout bgColor="#f4f2ff">
 
             <main className="flex-1 bg-[#F4F6FF] px-4 py-10 lg:py-14">
                 <div className="mx-auto w-full max-w-6xl">
@@ -200,9 +200,6 @@ export const ForgotPasswordSent = (): JSX.Element => {
                     </div>
                 </div>
             </main>
-
-            <Footer />
-
             <Notify
                 open={!!notify}
                 title={notify?.title || ""}
@@ -210,7 +207,7 @@ export const ForgotPasswordSent = (): JSX.Element => {
                 variant={notify?.variant}
                 onClose={() => setNotify(null)}
             />
-        </div>
+        </GuestLayout>
     );
 };
 export default ForgotPasswordSent;

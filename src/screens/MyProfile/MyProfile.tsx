@@ -1,11 +1,11 @@
 import { ChevronRightIcon } from "lucide-react";
 import { Navbar, Footer } from "../../components/layout";
 import { AccountManagementSection } from "./sections/AccountManagementSection";
+import { GuestLayout } from "../../components/layout/GuestLayout";
 
 export const MyProfile = (): JSX.Element => {
   return (
-    <div className="bg-white w-full min-h-screen flex flex-col">
-      <Navbar />
+    <GuestLayout bgColor="#f4f2ff">
 
       <main className="flex-1 bg-[#f4f2ff] py-12 px-4 lg:px-8 relative overflow-hidden">
         <img
@@ -29,7 +29,6 @@ export const MyProfile = (): JSX.Element => {
         </div>
       </main>
 
-      <Footer />
-    </div>
+    </GuestLayout>
   );
 };

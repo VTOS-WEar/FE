@@ -1,11 +1,11 @@
 import { NavbarGuest, Footer } from "../../components/layout";
+import { GuestLayout } from "../../components/layout/GuestLayout";
 import { SchoolSearchSection } from "./sections/SchoolSearchSection";
 import { StudentInformationSection } from "./sections/StudentInformationSection";
 
 export const FindSchool = (): JSX.Element => {
   return (
-    <div className="bg-white w-full min-h-screen flex flex-col">
-      <NavbarGuest />
+    <GuestLayout bgColor="#f4f2ff">
 
       <main className="flex-1 bg-[#f4f2ff] py-8 lg:py-12 px-4 lg:px-8 relative overflow-hidden">
         <img
@@ -59,7 +59,7 @@ export const FindSchool = (): JSX.Element => {
         </div>
       </main>
 
-      <Footer />
-    </div>
+
+    </GuestLayout>
   );
 };

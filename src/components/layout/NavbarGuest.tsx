@@ -1,7 +1,13 @@
 import { ChevronDownIcon, SearchIcon } from "lucide-react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
+import { useNavigate } from "react-router-dom";
+
 export const NavbarGuest = (): JSX.Element => {
+  const navigate = useNavigate();
+  const handleLoginClick = () => {
+    navigate("/signin");
+  }
   return (
     <header className="flex w-full items-center justify-between gap-4 px-4 lg:px-8 py-4 bg-white border-b border-gray-100">
       {/* Logo */}
@@ -36,7 +42,7 @@ export const NavbarGuest = (): JSX.Element => {
             placeholder="Tìm kiếm..."
             className="w-full h-10 pl-4 pr-12 rounded-full border border-gray-300 [font-family:'Roboto',Helvetica] font-light text-black text-sm placeholder:text-gray-400 focus-visible:ring-2 focus-visible:ring-[#6838ee]"
           />
-          <Button
+          <Button onClick={handleLoginClick}
             size="icon"
             className="absolute right-0 top-0 h-10 w-10 rounded-full bg-[#6838ee] hover:bg-[#5527d9] text-white"
           >
@@ -46,7 +52,7 @@ export const NavbarGuest = (): JSX.Element => {
       </div>
 
       {/* Login Button */}
-      <Button className="h-auto px-4 lg:px-6 py-2 lg:py-3 bg-white border border-gray-300 rounded-full hover:bg-gray-50 transition-colors flex items-center gap-2 flex-shrink-0">
+      <Button onClick={handleLoginClick} className="h-auto px-4 lg:px-6 py-2 lg:py-3 bg-white border border-gray-300 rounded-full hover:bg-gray-50 transition-colors flex items-center gap-2 flex-shrink-0">
         <img
           className="w-6 h-6"
           alt="Login icon"

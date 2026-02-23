@@ -8,6 +8,7 @@ import { useState } from "react";
 import { register } from "../../lib/api/auth";
 import { Notify } from "../../components/ui/notify";
 import { useNavigate, Link } from "react-router-dom";
+import { GuestLayout } from "../../components/layout/GuestLayout";
 export const SignUp = (): JSX.Element => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
@@ -60,8 +61,7 @@ export const SignUp = (): JSX.Element => {
   };
 
   return (
-    <div className="bg-white w-full min-h-screen flex flex-col">
-      <NavbarGuest />
+    <GuestLayout bgColor="#f4f2ff">
 
       <main className="flex-1 bg-[#F4F6FF] px-4 py-10 lg:py-14">
         <div className="mx-auto w-full max-w-6xl">
@@ -236,7 +236,6 @@ export const SignUp = (): JSX.Element => {
         onClose={() => setNotify(null)}
       />
 
-      <Footer />
-    </div>
+    </GuestLayout>
   );
 };
