@@ -17,6 +17,12 @@ import { VerifyOTP } from "./screens/OtpField";
 import { ForgotPassword } from "./screens/ForgotPassword/ForgotPassword";
 import { ForgotPasswordSent } from "./screens/ForgotPasswordSent/ForgotPasswordSent";
 import { ResetPassword } from "./screens/ResetPassword/ResetPassword";
+import { StudentList } from "./screens/StudentList";
+import { ImportData } from "./screens/ImportData";
+import { ConfirmSave } from "./screens/ConfirmSave";
+import { ConfirmReimport } from "./screens/ConfirmReimport";
+import { CheckAndPreview } from "./screens/CheckAndPreview";
+
 const router = createBrowserRouter([
   {
     path: "/*",
@@ -62,6 +68,32 @@ const router = createBrowserRouter([
     path: "/verify-otp",
     element: <VerifyOTP />,
   },
+  {
+    path: "/confirmsave",
+    element: <ConfirmSave />,
+  },
+  {
+    path: "/confirmreimport",
+    element: <ConfirmReimport />,
+  },
+  {
+    path: "/checkandpreview",
+    element: <CheckAndPreview />,
+  },
+  {
+    path: "/studentlist",
+    element: <StudentList />,
+  },
+  {
+    path: "/importdata",
+    element: <ImportData />,
+  }
+  ,
+  {
+    path: "/ordermanagement",
+    element: <OrderManagement />,
+  }
+  ,
   { path: "/forgot-password", element: <ForgotPassword /> },
   { path: "/forgot-password/sent", element: <ForgotPasswordSent /> },
   { path: "/reset-password", element: <ResetPassword /> },

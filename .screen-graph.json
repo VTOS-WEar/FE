@@ -121,34 +121,34 @@
       }
     },
     {
-      "id": "src\\components\\Header.tsx:68:14-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\FillInformation\\FillInformation.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:9:4-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\screens\\SignIn\\SignIn.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
-          "element": "<Link\r\n                to=\"/signin\"\r\n                className=\"hidden lg:flex items-center gap-2.5 bg-white rounded-[50px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] px-5 py-2.5 hover:bg-gray-50 transition-colors\"\r\n              >\r\n                <LogIn className=\"w-10 h-10\" />\r\n                <span className=\"font-baloo text-base text-black\">Đăng nhập</span>\r\n              </Link>",
-          "line": 68,
-          "endLine": 74,
-          "column": 14,
-          "endColumn": 21,
-          "sourceFile": "src\\components\\Header.tsx"
+          "element": "navigate(\"/signin\")",
+          "line": 9,
+          "endLine": 9,
+          "column": 4,
+          "endColumn": 23,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
         }
       }
     },
     {
-      "id": "src\\components\\Header.tsx:76:14-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\FillInformation\\FillInformation.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:9:4-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\screens\\SignIn\\SignIn.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
-          "element": "<Link\r\n                to=\"/signin\"\r\n                className=\"lg:hidden flex items-center gap-2 bg-white rounded-full shadow-md px-4 py-2\"\r\n              >\r\n                <LogIn className=\"w-6 h-6\" />\r\n                <span className=\"font-baloo text-sm\">Menu</span>\r\n              </Link>",
-          "line": 76,
-          "endLine": 82,
-          "column": 14,
-          "endColumn": 21,
-          "sourceFile": "src\\components\\Header.tsx"
+          "element": "navigate(\"/signin\")",
+          "line": 9,
+          "endLine": 9,
+          "column": 4,
+          "endColumn": 23,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
         }
       }
     },
@@ -201,66 +201,50 @@
       }
     },
     {
-      "id": "src\\components\\Header.tsx:68:14-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\FillInformation\\FillInformation.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:9:4-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\screens\\SignIn\\SignIn.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
-          "element": "<Link\r\n                to=\"/signin\"\r\n                className=\"hidden lg:flex items-center gap-2.5 bg-white rounded-[50px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] px-5 py-2.5 hover:bg-gray-50 transition-colors\"\r\n              >\r\n                <LogIn className=\"w-10 h-10\" />\r\n                <span className=\"font-baloo text-base text-black\">Đăng nhập</span>\r\n              </Link>",
-          "line": 68,
-          "endLine": 74,
-          "column": 14,
-          "endColumn": 21,
-          "sourceFile": "src\\components\\Header.tsx"
+          "element": "navigate(\"/signin\")",
+          "line": 9,
+          "endLine": 9,
+          "column": 4,
+          "endColumn": 23,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
         }
       }
     },
     {
-      "id": "src\\components\\Header.tsx:76:14-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\FillInformation\\FillInformation.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:9:4-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\screens\\SignIn\\SignIn.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
-          "element": "<Link\r\n                to=\"/signin\"\r\n                className=\"lg:hidden flex items-center gap-2 bg-white rounded-full shadow-md px-4 py-2\"\r\n              >\r\n                <LogIn className=\"w-6 h-6\" />\r\n                <span className=\"font-baloo text-sm\">Menu</span>\r\n              </Link>",
-          "line": 76,
-          "endLine": 82,
-          "column": 14,
-          "endColumn": 21,
-          "sourceFile": "src\\components\\Header.tsx"
+          "element": "navigate(\"/signin\")",
+          "line": 9,
+          "endLine": 9,
+          "column": 4,
+          "endColumn": 23,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
         }
       }
     },
     {
-      "id": "src\\components\\Header.tsx:68:14-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\FillInformation\\FillInformation.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:9:4-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\screens\\SignIn\\SignIn.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
-          "element": "<Link\r\n                to=\"/signin\"\r\n                className=\"hidden lg:flex items-center gap-2.5 bg-white rounded-[50px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] px-5 py-2.5 hover:bg-gray-50 transition-colors\"\r\n              >\r\n                <LogIn className=\"w-10 h-10\" />\r\n                <span className=\"font-baloo text-base text-black\">Đăng nhập</span>\r\n              </Link>",
-          "line": 68,
-          "endLine": 74,
-          "column": 14,
-          "endColumn": 21,
-          "sourceFile": "src\\components\\Header.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\Header.tsx:76:14-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\FillInformation\\FillInformation.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
-      "data": {
-        "viaRoute": "/signin",
-        "trigger": {
-          "element": "<Link\r\n                to=\"/signin\"\r\n                className=\"lg:hidden flex items-center gap-2 bg-white rounded-full shadow-md px-4 py-2\"\r\n              >\r\n                <LogIn className=\"w-6 h-6\" />\r\n                <span className=\"font-baloo text-sm\">Menu</span>\r\n              </Link>",
-          "line": 76,
-          "endLine": 82,
-          "column": 14,
-          "endColumn": 21,
-          "sourceFile": "src\\components\\Header.tsx"
+          "element": "navigate(\"/signin\")",
+          "line": 9,
+          "endLine": 9,
+          "column": 4,
+          "endColumn": 23,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
         }
       }
     },
@@ -313,66 +297,82 @@
       }
     },
     {
-      "id": "src\\components\\Header.tsx:68:14-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\FillInformation\\FillInformation.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:9:4-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\screens\\SignIn\\SignIn.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
-          "element": "<Link\r\n                to=\"/signin\"\r\n                className=\"hidden lg:flex items-center gap-2.5 bg-white rounded-[50px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] px-5 py-2.5 hover:bg-gray-50 transition-colors\"\r\n              >\r\n                <LogIn className=\"w-10 h-10\" />\r\n                <span className=\"font-baloo text-base text-black\">Đăng nhập</span>\r\n              </Link>",
-          "line": 68,
-          "endLine": 74,
-          "column": 14,
-          "endColumn": 21,
-          "sourceFile": "src\\components\\Header.tsx"
+          "element": "navigate(\"/signin\")",
+          "line": 9,
+          "endLine": 9,
+          "column": 4,
+          "endColumn": 23,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
         }
       }
     },
     {
-      "id": "src\\components\\Header.tsx:76:14-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\FillInformation\\FillInformation.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:9:4-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\screens\\SignIn\\SignIn.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
-          "element": "<Link\r\n                to=\"/signin\"\r\n                className=\"lg:hidden flex items-center gap-2 bg-white rounded-full shadow-md px-4 py-2\"\r\n              >\r\n                <LogIn className=\"w-6 h-6\" />\r\n                <span className=\"font-baloo text-sm\">Menu</span>\r\n              </Link>",
-          "line": 76,
-          "endLine": 82,
-          "column": 14,
-          "endColumn": 21,
-          "sourceFile": "src\\components\\Header.tsx"
+          "element": "navigate(\"/signin\")",
+          "line": 9,
+          "endLine": 9,
+          "column": 4,
+          "endColumn": 23,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
         }
       }
     },
     {
-      "id": "src\\components\\Header.tsx:68:14-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\FillInformation\\FillInformation.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:9:4-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\screens\\SignIn\\SignIn.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
-          "element": "<Link\r\n                to=\"/signin\"\r\n                className=\"hidden lg:flex items-center gap-2.5 bg-white rounded-[50px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] px-5 py-2.5 hover:bg-gray-50 transition-colors\"\r\n              >\r\n                <LogIn className=\"w-10 h-10\" />\r\n                <span className=\"font-baloo text-base text-black\">Đăng nhập</span>\r\n              </Link>",
-          "line": 68,
-          "endLine": 74,
-          "column": 14,
-          "endColumn": 21,
-          "sourceFile": "src\\components\\Header.tsx"
+          "element": "navigate(\"/signin\")",
+          "line": 9,
+          "endLine": 9,
+          "column": 4,
+          "endColumn": 23,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
         }
       }
     },
     {
-      "id": "src\\components\\Header.tsx:76:14-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\FillInformation\\FillInformation.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:9:4-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\screens\\SignIn\\SignIn.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
-          "element": "<Link\r\n                to=\"/signin\"\r\n                className=\"lg:hidden flex items-center gap-2 bg-white rounded-full shadow-md px-4 py-2\"\r\n              >\r\n                <LogIn className=\"w-6 h-6\" />\r\n                <span className=\"font-baloo text-sm\">Menu</span>\r\n              </Link>",
-          "line": 76,
-          "endLine": 82,
-          "column": 14,
-          "endColumn": 21,
-          "sourceFile": "src\\components\\Header.tsx"
+          "element": "navigate(\"/signin\")",
+          "line": 9,
+          "endLine": 9,
+          "column": 4,
+          "endColumn": 23,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:9:4-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\SignIn\\SignIn.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\")",
+          "line": 9,
+          "endLine": 9,
+          "column": 4,
+          "endColumn": 23,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
         }
       }
     },

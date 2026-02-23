@@ -1,0 +1,1 @@
+export { StudentListV2 as StudentList } from "./StudentList";
