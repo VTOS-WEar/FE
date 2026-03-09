@@ -1,4 +1,4 @@
-import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import { RouterProvider, createBrowserRouter, Navigate } from "react-router-dom";
 import { AccountSecurity } from "./screens/AccountSecurity";
 import { AccountSetting } from "./screens/AccountSetting";
 import { FillInformation } from "./screens/FillInformation";
@@ -22,11 +22,12 @@ import { ImportData } from "./screens/ImportData";
 import { ConfirmSave } from "./screens/ConfirmSave";
 import { ConfirmReimport } from "./screens/ConfirmReimport";
 import { CheckAndPreview } from "./screens/CheckAndPreview";
+import { SchoolProfile } from "./screens/SchoolProfile";
 
 const router = createBrowserRouter([
   {
-    path: "/*",
-    element: <SignUp />,
+    path: "/",
+    element: <Navigate to="/homepage" replace />,
   },
   {
     path: "/signup",
@@ -94,6 +95,10 @@ const router = createBrowserRouter([
     element: <OrderManagement />,
   }
   ,
+  {
+    path: "/schoolprofile",
+    element: <SchoolProfile />,
+  },
   { path: "/forgot-password", element: <ForgotPassword /> },
   { path: "/forgot-password/sent", element: <ForgotPasswordSent /> },
   { path: "/reset-password", element: <ResetPassword /> },
