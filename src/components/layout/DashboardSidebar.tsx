@@ -24,6 +24,7 @@ export interface DashboardSidebarProps {
     name: string;
     navSections: NavSection[];
     topNavItems?: NavItem[];
+    onLogout?: () => void;
 }
 
 const Tooltip = ({ label }: { label: string }) => (
@@ -41,6 +42,7 @@ export const DashboardSidebar = ({
     name,
     navSections,
     topNavItems = [],
+    onLogout,
 }: DashboardSidebarProps): JSX.Element => {
     return (
         <aside className="w-full h-full flex flex-col bg-white border-r border-[#cac9d6] overflow-hidden">
@@ -153,6 +155,7 @@ export const DashboardSidebar = ({
                 <div className="relative group">
                     <Button
                         variant="ghost"
+                        onClick={onLogout}
                         className={`w-full ${isCollapsed ? "justify-center px-0" : "justify-center gap-2.5 px-2"} h-auto py-2.5 bg-[#ff000029] hover:bg-[#ff000029] rounded-[8px]`}
                     >
                         {!isCollapsed && (
