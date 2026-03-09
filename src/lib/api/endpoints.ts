@@ -25,5 +25,8 @@ export const endpoints = {
     schools: {
         me: "/api/schools/me",
         logo: "/api/schools/me/logo",
+        students: "/api/schools/me/students",
+        importTemplate: "/api/schools/me/students/import/template",
+        importStudents: "/api/schools/me/students/import",
     },
 } as const;

@@ -22,10 +22,12 @@ export const DASHBOARD_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, 'isCollapsed'
                 {
                     icon: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/material-symbols-school.svg",
                     label: "Hồ sơ trường",
+                    href: "/schoolprofile",
                 },
                 {
                     icon: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/mdi-people-group.svg",
                     label: "Danh sách học sinh",
+                    href: "/studentlist",
                     active: true,
                 },
                 {

@@ -1,4 +1,5 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Avatar, AvatarImage } from "../ui/avatar";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
@@ -8,6 +9,7 @@ export interface NavItem {
     label: string;
     active?: boolean;
     badge?: string;
+    href?: string;
 }
 
 export interface NavSection {
@@ -44,6 +46,7 @@ export const DashboardSidebar = ({
     topNavItems = [],
     onLogout,
 }: DashboardSidebarProps): JSX.Element => {
+    const navigate = useNavigate();
     return (
         <aside className="w-full h-full flex flex-col bg-white border-r border-[#cac9d6] overflow-hidden">
             {/* Toggle button */}
@@ -81,16 +84,17 @@ export const DashboardSidebar = ({
                 {topNavItems.map((item, index) => (
                     <div key={index} className="relative group mb-2">
                         <Button
-                            variant="ghost"
-                            className={`w-full ${isCollapsed ? "justify-center px-0" : "justify-start gap-2.5 px-3"} h-auto py-2.5 hover:bg-[#ebf3fd] ${item.active ? "bg-[#ebf3fd]" : ""}`}
-                        >
-                            <img className="w-6 h-6 flex-shrink-0" alt={item.label} src={item.icon} />
-                            {!isCollapsed && (
-                                <span className={`[font-family:'Montserrat',Helvetica] font-semibold text-base ${item.active ? "text-[#478aea]" : "text-[#4c5769]"}`}>
-                                    {item.label}
-                                </span>
-                            )}
-                        </Button>
+                        variant="ghost"
+                        onClick={() => item.href && navigate(item.href)}
+                        className={`w-full ${isCollapsed ? "justify-center px-0" : "justify-start gap-2.5 px-3"} h-auto py-2.5 hover:bg-[#ebf3fd] ${item.active ? "bg-[#ebf3fd]" : ""} ${item.href ? "cursor-pointer" : ""}`}
+                    >
+                        <img className="w-6 h-6 flex-shrink-0" alt={item.label} src={item.icon} />
+                        {!isCollapsed && (
+                            <span className={`[font-family:'Montserrat',Helvetica] font-semibold text-base ${item.active ? "text-[#478aea]" : "text-[#4c5769]"}`}>
+                                {item.label}
+                            </span>
+                        )}
+                    </Button>
                         {isCollapsed && <Tooltip label={item.label} />}
                     </div>
                 ))}
@@ -110,7 +114,8 @@ export const DashboardSidebar = ({
                                 <div key={iIdx} className="relative group">
                                     <Button
                                         variant="ghost"
-                                        className={`w-full ${isCollapsed ? "justify-center px-0" : "justify-start gap-2.5 px-3"} h-auto py-2.5 rounded-[8px] hover:bg-[#ebf3fd] ${item.active ? "bg-[#ebf3fd]" : ""}`}
+                                        onClick={() => item.href && navigate(item.href)}
+                                        className={`w-full ${isCollapsed ? "justify-center px-0" : "justify-start gap-2.5 px-3"} h-auto py-2.5 rounded-[8px] hover:bg-[#ebf3fd] ${item.active ? "bg-[#ebf3fd]" : ""} ${item.href ? "cursor-pointer" : ""}`}
                                     >
                                         <div className="relative flex-shrink-0">
                                             <img className="w-6 h-6" alt={item.label} src={item.icon} />
