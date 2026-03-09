@@ -424,6 +424,22 @@
       }
     },
     {
+      "id": "src\\screens\\Homepage\\Homepage.tsx:46:6-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\Homepage\\Homepage.tsx",
+      "target": "src\\screens\\SignIn\\SignIn.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\")",
+          "line": 46,
+          "endLine": 46,
+          "column": 6,
+          "endColumn": 25,
+          "sourceFile": "src\\screens\\Homepage\\Homepage.tsx"
+        }
+      }
+    },
+    {
       "id": "src\\screens\\Homepage\\Homepage.tsx:50:4-to-src\\screens\\SchoolProfile\\SchoolProfile.tsx",
       "source": "src\\screens\\Homepage\\Homepage.tsx",
       "target": "src\\screens\\SchoolProfile\\SchoolProfile.tsx",
@@ -664,18 +680,18 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:9:4-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "id": "src\\screens\\ImportData\\ImportData.tsx:79:8-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\ImportData\\ImportData.tsx",
       "target": "src\\screens\\SignIn\\SignIn.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
-          "element": "navigate(\"/signin\")",
-          "line": 9,
-          "endLine": 9,
-          "column": 4,
-          "endColumn": 23,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+          "element": "navigate(\"/signin\", { replace: true })",
+          "line": 79,
+          "endLine": 79,
+          "column": 8,
+          "endColumn": 46,
+          "sourceFile": "src\\screens\\ImportData\\ImportData.tsx"
         }
       }
     },
@@ -728,18 +744,18 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:9:4-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "id": "src\\screens\\SchoolProfile\\SchoolProfile.tsx:133:8-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\SchoolProfile\\SchoolProfile.tsx",
       "target": "src\\screens\\SignIn\\SignIn.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
-          "element": "navigate(\"/signin\")",
-          "line": 9,
-          "endLine": 9,
-          "column": 4,
-          "endColumn": 23,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+          "element": "navigate(\"/signin\", { replace: true })",
+          "line": 133,
+          "endLine": 133,
+          "column": 8,
+          "endColumn": 46,
+          "sourceFile": "src\\screens\\SchoolProfile\\SchoolProfile.tsx"
         }
       }
     },
