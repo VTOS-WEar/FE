@@ -21,5 +21,9 @@ export const endpoints = {
     },
     tryOn: {
         guest: "/api/tryOn/guest",
-    }
+    },
+    schools: {
+        me: "/api/schools/me",
+        logo: "/api/schools/me/logo",
+    },
 } as const;
