@@ -1,8 +1,62 @@
 import { Search, ShoppingCart, Bell, User, ChevronDown, ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { getSchoolProfile, type SchoolProfileDto } from "../../lib/api/schools";
+
+/** Check if user is logged in by looking for access_token */
+function isLoggedIn(): boolean {
+  return !!(localStorage.getItem("access_token") || sessionStorage.getItem("access_token"));
+}
+
 
 export const Homepage = (): JSX.Element => {
   const [currentImageSet, setCurrentImageSet] = useState(0);
+  const navigate = useNavigate();
+  const [schoolProfile, setSchoolProfile] = useState<SchoolProfileDto | null>(null);
+  const [profileLoading, setProfileLoading] = useState(true);
+  const [loggedIn, setLoggedIn] = useState(false);
+
+  // Check session & fetch school profile on mount
+  useEffect(() => {
+    const hasSession = isLoggedIn();
+    setLoggedIn(hasSession);
+
+    if (!hasSession) {
+      setProfileLoading(false);
+      return;
+    }
+
+    // Only fetch school profile if logged in
+    const fetchProfile = async () => {
+      try {
+        const data = await getSchoolProfile();
+        setSchoolProfile(data);
+      } catch {
+        setSchoolProfile(null);
+      } finally {
+        setProfileLoading(false);
+      }
+    };
+    fetchProfile();
+  }, []);
+
+  /** Handle profile button click */
+  const handleProfileClick = () => {
+    if (!loggedIn) {
+      navigate("/signin");
+      return;
+    }
+    // Logged in → go to school profile (will fill in info if missing)
+    navigate("/schoolprofile");
+  };
+
+  /** Display name for the profile button */
+  const profileButtonLabel = !loggedIn
+    ? "Đăng nhập"
+    : profileLoading
+      ? "..."
+      : schoolProfile?.schoolName || "Hồ sơ";
+
 
   return (
     <div className="min-h-screen bg-white">
@@ -54,9 +108,12 @@ export const Homepage = (): JSX.Element => {
               <button className="flex items-center justify-center p-2.5 bg-white rounded-full shadow-md hover:shadow-lg transition-shadow">
                 <Bell className="w-10 h-10" />
               </button>
-              <button className="flex items-center gap-2.5 px-3 py-2.5 bg-white rounded-full shadow-md hover:shadow-lg transition-shadow">
+              <button
+                onClick={handleProfileClick}
+                className="flex items-center gap-2.5 px-3 py-2.5 bg-white rounded-full shadow-md hover:shadow-lg transition-shadow cursor-pointer"
+              >
                 <User className="w-10 h-10" />
-                <span className="hidden md:inline font-baloo text-base text-black">Hồ sơ</span>
+                <span className="hidden md:inline font-baloo text-base text-black truncate max-w-[160px]">{profileButtonLabel}</span>
                 <ChevronDown className="hidden md:inline w-3 h-3 stroke-2" />
               </button>
             </div>
