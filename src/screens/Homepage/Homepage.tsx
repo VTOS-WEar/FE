@@ -47,7 +47,7 @@ export const Homepage = (): JSX.Element => {
       return;
     }
     // Logged in → go to school profile (will fill in info if missing)
-    navigate("/schoolprofile");
+    navigate("/school/profile");
   };
 
   /** Display name for the profile button */

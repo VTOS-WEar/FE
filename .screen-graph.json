@@ -616,34 +616,50 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:9:4-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "id": "src\\screens\\StudentList\\StudentList.tsx:409:8-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\StudentList\\StudentList.tsx",
       "target": "src\\screens\\SignIn\\SignIn.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
-          "element": "navigate(\"/signin\")",
-          "line": 9,
-          "endLine": 9,
-          "column": 4,
-          "endColumn": 23,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+          "element": "navigate(\"/signin\", { replace: true })",
+          "line": 409,
+          "endLine": 409,
+          "column": 8,
+          "endColumn": 46,
+          "sourceFile": "src\\screens\\StudentList\\StudentList.tsx"
         }
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:9:4-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\SignUp\\SignUp.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
+      "id": "src\\screens\\StudentList\\StudentList.tsx:541:51-to-src\\screens\\ImportData\\ImportData.tsx",
+      "source": "src\\screens\\StudentList\\StudentList.tsx",
+      "target": "src\\screens\\ImportData\\ImportData.tsx",
       "data": {
-        "viaRoute": "/signin",
+        "viaRoute": "/importdata",
         "trigger": {
-          "element": "navigate(\"/signin\")",
-          "line": 9,
-          "endLine": 9,
-          "column": 4,
-          "endColumn": 23,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+          "element": "navigate(\"/importdata\")",
+          "line": 541,
+          "endLine": 541,
+          "column": 51,
+          "endColumn": 74,
+          "sourceFile": "src\\screens\\StudentList\\StudentList.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\screens\\StudentList\\StudentList.tsx:686:63-to-src\\screens\\ImportData\\ImportData.tsx",
+      "source": "src\\screens\\StudentList\\StudentList.tsx",
+      "target": "src\\screens\\ImportData\\ImportData.tsx",
+      "data": {
+        "viaRoute": "/importdata",
+        "trigger": {
+          "element": "navigate(\"/importdata\")",
+          "line": 686,
+          "endLine": 686,
+          "column": 63,
+          "endColumn": 86,
+          "sourceFile": "src\\screens\\StudentList\\StudentList.tsx"
         }
       }
     },

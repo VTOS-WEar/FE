@@ -8,7 +8,7 @@ export const DASHBOARD_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, 'isCollapsed'
     avatarSrc: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/frame-239353.png",
     avatarAlt: "School logo",
     greeting: "Xin chào!",
-    name: "Trường Tiểu học FPT",
+    name: "",
     topNavItems: [
         {
             icon: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/material-symbols-dashboard-rounded.svg",
@@ -22,21 +22,23 @@ export const DASHBOARD_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, 'isCollapsed'
                 {
                     icon: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/material-symbols-school.svg",
                     label: "Hồ sơ trường",
-                    href: "/schoolprofile",
+                    href: "/school/profile",
                 },
                 {
                     icon: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/mdi-people-group.svg",
                     label: "Danh sách học sinh",
-                    href: "/studentlist",
+                    href: "/school/students",
                     active: true,
                 },
                 {
                     icon: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/fluent-clothes-hanger-12-filled.svg",
                     label: "Đồng phục",
+                    href: "/school/uniforms",
                 },
                 {
                     icon: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/ri-bill-fill.svg",
                     label: "Mở đơn",
+                    href: "/school/campaigns",
                 },
                 {
                     icon: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/ri-bill-fill.svg",

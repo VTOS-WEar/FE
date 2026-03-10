@@ -19,7 +19,7 @@ import {
 } from "../../components/ui/breadcrumb";
 import { Badge } from "../../components/ui/badge";
 import { Button } from "../../components/ui/button";
-import { DashboardSidebar, Footer } from "../../components/layout";
+import { DashboardSidebar } from "../../components/layout";
 import type { DashboardSidebarProps } from "../../components/layout";
 
 /* ─── Sidebar config ─────────────────────────────── */
@@ -337,8 +337,6 @@ export const CheckAndPreview = (): JSX.Element => {
                     </main>
                 </div>
             </div>
-
-            <Footer />
         </div>
     );
 };

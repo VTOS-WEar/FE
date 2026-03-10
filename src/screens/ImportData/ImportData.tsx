@@ -9,14 +9,15 @@ import {
     BreadcrumbSeparator,
 } from "../../components/ui/breadcrumb";
 import { DashboardSidebar } from "../../components/layout";
-import { Footer } from "../../components/Footer";
 import { DASHBOARD_SIDEBAR_CONFIG } from "../../constants/dashboardConfig";
 import { Button } from "../../components/ui/button";
 import {
     downloadImportTemplate,
     importStudents,
     getSchoolProfile,
+    getImportHistory,
     type ImportStudentResult,
+    type ImportBatchDto,
 } from "../../lib/api/schools";
 import { ApiError } from "../../lib/api/clients";
 import { useEffect } from "react";
@@ -33,19 +34,15 @@ const sidebarConfig = {
     })),
 };
 
-/* ── Mock history data (BE has no history endpoint yet) ── */
-const MOCK_HISTORY = [
-    {
-        filename: "HocSinh_Khoi10_2025.xlsx",
-        time: "10:30, 24/08/2025",
-        status: "success" as const,
-    },
-    {
-        filename: "HocSinh_Lop11A2_2025.xlsx",
-        time: "10:30, 13/08/2025",
-        status: "error" as const,
-    },
-];
+/* ── Helper: format ISO date to readable Vietnamese format ── */
+function formatDate(isoDate: string): string {
+    const d = new Date(isoDate);
+    const hh = d.getHours().toString().padStart(2, "0");
+    const mm = d.getMinutes().toString().padStart(2, "0");
+    const dd = d.getDate().toString().padStart(2, "0");
+    const mo = (d.getMonth() + 1).toString().padStart(2, "0");
+    return `${hh}:${mm}, ${dd}/${mo}/${d.getFullYear()}`;
+}
 
 export const ImportData = (): JSX.Element => {
     const navigate = useNavigate();
@@ -61,12 +58,24 @@ export const ImportData = (): JSX.Element => {
     const [result, setResult] = useState<ImportStudentResult | null>(null);
     const [error, setError] = useState<string | null>(null);
 
-    /* ── Load school name for sidebar ── */
+    /* ── Import history state ── */
+    const [importHistory, setImportHistory] = useState<ImportBatchDto[]>([]);
+    const historySectionRef = useRef<HTMLDivElement>(null);
+
+    /* ── Load school name + import history ── */
+    const fetchHistory = useCallback(async () => {
+        try {
+            const data = await getImportHistory(10);
+            setImportHistory(data);
+        } catch { /* ignore */ }
+    }, []);
+
     useEffect(() => {
         getSchoolProfile()
             .then((p) => setSchoolName(p.schoolName || DASHBOARD_SIDEBAR_CONFIG.name))
             .catch(() => {});
-    }, []);
+        fetchHistory();
+    }, [fetchHistory]);
 
     /* ── Handlers ── */
     const handleLogout = () => {
@@ -125,6 +134,8 @@ export const ImportData = (): JSX.Element => {
             setResult(res);
             setSelectedFile(null);
             if (fileInputRef.current) fileInputRef.current.value = "";
+            // Refresh import history after successful import
+            fetchHistory();
         } catch (err) {
             if (err instanceof ApiError) {
                 setError(err.message);
@@ -198,6 +209,7 @@ export const ImportData = (): JSX.Element => {
                             <Button
                                 variant="outline"
                                 className="bg-white shadow-[0_1px_3px_rgba(0,0,0,0.08)] border-[#cbcad7] rounded-[10px] [font-family:'Montserrat',Helvetica] font-semibold text-black text-sm gap-2 px-4 py-2.5 h-auto whitespace-nowrap"
+                                onClick={() => historySectionRef.current?.scrollIntoView({ behavior: "smooth" })}
                             >
                                 <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
                                     <path d="M13 3a9 9 0 0 0-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42A8.954 8.954 0 0 0 13 21a9 9 0 0 0 0-18zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z" />
@@ -519,85 +531,88 @@ export const ImportData = (): JSX.Element => {
                         )}
 
                         {/* ── Import history ── */}
-                        <div className="space-y-4">
+                        <div className="space-y-4" ref={historySectionRef}>
                             <h2 className="[font-family:'Montserrat',Helvetica] font-bold text-black text-xl">
                                 Lịch sử nhập liệu gần đây
                             </h2>
 
-                            {/* Table header */}
-                            <div className="bg-slate-50 rounded-t-[10px] border border-[#cbcad7] overflow-hidden">
-                                <div className="hidden sm:grid grid-cols-[3fr_2fr_2fr_1.5fr] px-6 lg:px-8 py-4">
-                                    {["Tên file", "Thời gian", "Trạng thái", "Hành động"].map((h) => (
-                                        <span
-                                            key={h}
-                                            className="[font-family:'Montserrat',Helvetica] font-bold text-[#4c5769] text-sm"
-                                        >
-                                            {h}
-                                        </span>
-                                    ))}
+                            {importHistory.length === 0 ? (
+                                <div className="bg-white border border-[#cbcad7] rounded-[10px] p-8 text-center">
+                                    <p className="[font-family:'Montserrat',Helvetica] font-medium text-[#97a3b6] text-sm">
+                                        Chưa có lịch sử nhập liệu nào.
+                                    </p>
                                 </div>
-                            </div>
-
-                            {/* Table rows */}
-                            <div className="bg-white border-x border-[#cbcad7] divide-y divide-[#f0f0f5]">
-                                {MOCK_HISTORY.map((row, i) => (
-                                    <div
-                                        key={i}
-                                        className="grid grid-cols-1 sm:grid-cols-[3fr_2fr_2fr_1.5fr] px-6 lg:px-8 py-4 gap-2 sm:gap-0 items-center"
-                                    >
-                                        <div className="flex items-center gap-2.5">
-                                            <svg className="w-6 h-6 text-[#478aea] flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
-                                                <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zM6 20V4h7v5h5v11H6z" />
-                                            </svg>
-                                            <span className="[font-family:'Montserrat',Helvetica] font-semibold text-black text-sm">
-                                                {row.filename}
-                                            </span>
-                                        </div>
-                                        <span className="[font-family:'Montserrat',Helvetica] font-medium text-[#4c5769] text-sm">
-                                            {row.time}
-                                        </span>
-                                        <div>
-                                            <span
-                                                className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[5px] [font-family:'Montserrat',Helvetica] font-semibold text-xs ${
-                                                    row.status === "success"
-                                                        ? "bg-green-50 text-green-700"
-                                                        : "bg-red-50 text-red-600"
-                                                }`}
-                                            >
+                            ) : (
+                                <>
+                                    {/* Table header */}
+                                    <div className="bg-slate-50 rounded-t-[10px] border border-[#cbcad7] overflow-hidden">
+                                        <div className="hidden sm:grid grid-cols-[3fr_2fr_2fr_1.5fr] px-6 lg:px-8 py-4">
+                                            {["Tên file", "Thời gian", "Trạng thái", "Chi tiết"].map((h) => (
                                                 <span
-                                                    className={`w-2 h-2 rounded-full ${
-                                                        row.status === "success" ? "bg-green-500" : "bg-red-500"
-                                                    }`}
-                                                />
-                                                {row.status === "success" ? "Thành công" : "Lỗi định dạng"}
-                                            </span>
-                                        </div>
-                                        <div>
-                                            <button className="text-[#97a3b6] hover:text-[#478aea] transition-colors">
-                                                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                                                    <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
-                                                </svg>
-                                            </button>
+                                                    key={h}
+                                                    className="[font-family:'Montserrat',Helvetica] font-bold text-[#4c5769] text-sm"
+                                                >
+                                                    {h}
+                                                </span>
+                                            ))}
                                         </div>
                                     </div>
-                                ))}
-                            </div>
 
-                            {/* Table footer */}
-                            <div className="bg-slate-50 rounded-b-[10px] border border-[#cbcad7] flex justify-center py-4">
-                                <Button
-                                    variant="link"
-                                    className="[font-family:'Montserrat',Helvetica] font-bold text-[#4ca2e6] text-base h-auto p-0"
-                                >
-                                    Xem tất cả lịch sử
-                                </Button>
-                            </div>
+                                    {/* Table rows */}
+                                    <div className="bg-white border-x border-[#cbcad7] divide-y divide-[#f0f0f5]">
+                                        {importHistory.map((row) => (
+                                            <div
+                                                key={row.id}
+                                                className="grid grid-cols-1 sm:grid-cols-[3fr_2fr_2fr_1.5fr] px-6 lg:px-8 py-4 gap-2 sm:gap-0 items-center"
+                                            >
+                                                <div className="flex items-center gap-2.5">
+                                                    <svg className="w-6 h-6 text-[#478aea] flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                                                        <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zM6 20V4h7v5h5v11H6z" />
+                                                    </svg>
+                                                    <span className="[font-family:'Montserrat',Helvetica] font-semibold text-black text-sm">
+                                                        {row.fileName}
+                                                    </span>
+                                                </div>
+                                                <span className="[font-family:'Montserrat',Helvetica] font-medium text-[#4c5769] text-sm">
+                                                    {formatDate(row.createdAt)}
+                                                </span>
+                                                <div>
+                                                    <span
+                                                        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[5px] [font-family:'Montserrat',Helvetica] font-semibold text-xs ${
+                                                            row.status === "success"
+                                                                ? "bg-green-50 text-green-700"
+                                                                : "bg-red-50 text-red-600"
+                                                        }`}
+                                                    >
+                                                        <span
+                                                            className={`w-2 h-2 rounded-full ${
+                                                                row.status === "success" ? "bg-green-500" : "bg-red-500"
+                                                            }`}
+                                                        />
+                                                        {row.status === "success" ? "Thành công" : "Có lỗi"}
+                                                    </span>
+                                                </div>
+                                                <div className="[font-family:'Montserrat',Helvetica] font-medium text-[#4c5769] text-xs">
+                                                    {row.successCount}/{row.totalRows} dòng
+                                                    {row.skippedCount > 0 && ` (đã bỏ qua ${row.skippedCount})`}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    {/* Table footer */}
+                                    <div className="bg-slate-50 rounded-b-[10px] border border-[#cbcad7] flex justify-center py-4">
+                                        <span className="[font-family:'Montserrat',Helvetica] font-medium text-[#97a3b6] text-sm">
+                                            Hiển thị {importHistory.length} bản ghi gần nhất
+                                        </span>
+                                    </div>
+                                </>
+                            )}
                         </div>
                     </main>
                 </div>
             </div>
 
-            <Footer />
         </div>
     );
 };

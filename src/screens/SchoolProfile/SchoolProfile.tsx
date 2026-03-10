@@ -9,7 +9,6 @@ import {
     BreadcrumbSeparator,
 } from "../../components/ui/breadcrumb";
 import { DashboardSidebar } from "../../components/layout";
-import { Footer } from "../../components/Footer";
 import { DASHBOARD_SIDEBAR_CONFIG } from "../../constants/dashboardConfig";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 import { Input } from "../../components/ui/input";
@@ -381,8 +380,6 @@ export const SchoolProfile = (): JSX.Element => {
                 </div>
             </div>
 
-            {/* Homepage-style Footer */}
-            <Footer />
         </div>
     );
 };

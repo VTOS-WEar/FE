@@ -9,7 +9,6 @@ import {
     BreadcrumbSeparator,
 } from "../../components/ui/breadcrumb";
 import { DashboardSidebar } from "../../components/layout";
-import { Footer } from "../../components/Footer";
 import { DASHBOARD_SIDEBAR_CONFIG } from "../../constants/dashboardConfig";
 import { Button } from "../../components/ui/button";
 import {
@@ -19,6 +18,7 @@ import {
     updateStudent,
     deleteStudent,
     getStudentById,
+    getSchoolGrades,
 } from "../../lib/api/schools";
 import type { StudentListItem, CreateOrUpdateStudentRequest, StudentDetailDto } from "../../lib/api/schools";
 
@@ -64,6 +64,7 @@ function StudentFormModal({
     initialData,
     isEditing,
     isLoading,
+    availableGrades,
 }: {
     isOpen: boolean;
     onClose: () => void;
@@ -71,6 +72,7 @@ function StudentFormModal({
     initialData: StudentFormData;
     isEditing: boolean;
     isLoading: boolean;
+    availableGrades: string[];
 }) {
     const [form, setForm] = useState<StudentFormData>(EMPTY_FORM);
 
@@ -167,11 +169,18 @@ function StudentFormModal({
                             <label className={labelClass}>Lớp</label>
                             <input
                                 type="text"
+                                list="grade-options"
                                 value={form.grade}
                                 onChange={(e) => setForm({ ...form, grade: e.target.value })}
-                                placeholder="VD: 3A, 12A12"
+                                placeholder="Chọn hoặc nhập lớp mới"
                                 className={inputClass}
+                                autoComplete="off"
                             />
+                            <datalist id="grade-options">
+                                {availableGrades.map((g) => (
+                                    <option key={g} value={g} />
+                                ))}
+                            </datalist>
                         </div>
                         <div>
                             <label className={labelClass}>SĐT Phụ huynh</label>
@@ -344,15 +353,21 @@ export const StudentListV2 = (): JSX.Element => {
     /* ── Toast ── */
     const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
 
+    /* ── Available grades for combobox ── */
+    const [availableGrades, setAvailableGrades] = useState<string[]>([]);
+
     const showToast = (message: string, type: "success" | "error") => {
         setToast({ message, type });
         setTimeout(() => setToast(null), 3500);
     };
 
-    /* ── Load school name ── */
     useEffect(() => {
         getSchoolProfile()
             .then((p) => setSchoolName(p.schoolName || DASHBOARD_SIDEBAR_CONFIG.name))
+            .catch(() => {});
+        // Fetch available grades for combobox & filter
+        getSchoolGrades()
+            .then(setAvailableGrades)
             .catch(() => {});
     }, []);
 
@@ -538,7 +553,7 @@ export const StudentListV2 = (): JSX.Element => {
                             </div>
                             <div className="flex items-center gap-3">
                                 <Button
-                                    onClick={() => navigate("/importdata")}
+                                    onClick={() => navigate("/school/students/import")}
                                     variant="outline"
                                     className="bg-white shadow-[0_1px_3px_rgba(0,0,0,0.08)] border-[#cbcad7] rounded-[10px] [font-family:'Montserrat',Helvetica] font-semibold text-black text-sm gap-2 px-4 py-2.5 h-auto whitespace-nowrap"
                                 >
@@ -683,7 +698,7 @@ export const StudentListV2 = (): JSX.Element => {
                                     <p className="[font-family:'Montserrat',Helvetica] font-semibold text-[#97a3b6] text-base">Chưa có học sinh nào</p>
                                     <p className="[font-family:'Montserrat',Helvetica] font-medium text-[#cbcad7] text-sm mt-1">Nhập dữ liệu từ Excel hoặc thêm thủ công</p>
                                     <div className="flex items-center justify-center gap-3 mt-4">
-                                        <Button onClick={() => navigate("/importdata")} variant="outline" className="border-[#cbcad7] rounded-[10px] [font-family:'Montserrat',Helvetica] font-semibold text-sm">Nhập từ Excel</Button>
+                                        <Button onClick={() => navigate("/school/students/import")} variant="outline" className="border-[#cbcad7] rounded-[10px] [font-family:'Montserrat',Helvetica] font-semibold text-sm">Nhập từ Excel</Button>
                                         <Button onClick={handleOpenCreate} className="bg-[#6938ef] hover:bg-[#5a2dd6] text-white rounded-[10px] [font-family:'Montserrat',Helvetica] font-semibold text-sm">Thêm học sinh</Button>
                                     </div>
                                 </div>
@@ -800,7 +815,6 @@ export const StudentListV2 = (): JSX.Element => {
                 </div>
             </div>
 
-            <Footer />
 
             {/* ── Modals ── */}
             <StudentFormModal
@@ -810,6 +824,7 @@ export const StudentListV2 = (): JSX.Element => {
                 initialData={formInitialData}
                 isEditing={!!editingStudent}
                 isLoading={formLoading}
+                availableGrades={availableGrades}
             />
 
             <DeleteConfirmDialog

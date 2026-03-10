@@ -1,6 +1,5 @@
 import { ReactNode, useState } from "react";
 import { DashboardSidebar } from "./DashboardSidebar";
-import { Footer } from "./Footer";
 import type { DashboardSidebarProps } from "./DashboardSidebar";
 
 interface DashboardLayoutProps {
@@ -32,8 +31,6 @@ export const DashboardLayout = ({ children, sidebarProps }: DashboardLayoutProps
                     {children}
                 </div>
             </div>
-
-            <Footer />
         </div>
     );
 };

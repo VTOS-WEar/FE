@@ -28,5 +28,10 @@ export const endpoints = {
         students: "/api/schools/me/students",
         importTemplate: "/api/schools/me/students/import/template",
         importStudents: "/api/schools/me/students/import",
+        importHistory: "/api/schools/me/students/import/history",
+        grades: "/api/schools/me/students/grades",
+        outfits: "/api/schools/me/outfits",
+        outfitImageUpload: "/api/schools/me/outfits/upload-image",
+        campaigns: "/api/schools/me/campaigns",
     },
 } as const;
