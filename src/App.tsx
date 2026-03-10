@@ -1,4 +1,5 @@
 import { RouterProvider, createBrowserRouter, Navigate } from "react-router-dom";
+import { ToastProvider } from "./contexts/ToastContext";
 import { AccountSecurity } from "./screens/AccountSecurity";
 import { AccountSetting } from "./screens/AccountSetting";
 import { FillInformation } from "./screens/FillInformation";
@@ -29,6 +30,7 @@ import { CampaignManagement } from "./screens/CampaignManagement/CampaignManagem
 import { CampaignDetail } from "./screens/CampaignManagement/CampaignDetail";
 import { SchoolDashboard } from "./screens/SchoolDashboard/SchoolDashboard";
 import { RoleGuard } from "./components/guards/RoleGuard";
+import { ParentProfile } from "./screens/ParentProfile/ParentProfile";
 
 /** Smart root redirect: School→dashboard, others→homepage */
 function RootRedirect() {
@@ -82,6 +84,10 @@ const router = createBrowserRouter([
   {
     path: "/homepage",
     element: <RoleGuard allowedRoles={["Parent"]} allowGuest={true} redirectTo="/school/dashboard"><Homepage /></RoleGuard>,
+  },
+  {
+    path: "/parentprofile",
+    element: <ParentProfile />,
   },
   {
     path: "/verify-otp",
@@ -201,5 +207,9 @@ const router = createBrowserRouter([
 ]);
 
 export const App = () => {
-  return <RouterProvider router={router} />;
+  return (
+    <ToastProvider>
+      <RouterProvider router={router} />
+    </ToastProvider>
+  );
 };

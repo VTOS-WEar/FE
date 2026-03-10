@@ -147,7 +147,7 @@ export const ForgotPasswordSent = (): JSX.Element => {
 
                                             <Button asChild variant="link" className="p-0 h-auto hover:underline">
                                                 <Link
-                                                    to="/sign-in"
+                                                    to="/signin"
                                                     className="[font-family:'Montserrat',Helvetica] font-semibold italic text-[#6938ef]"
                                                 >
                                                     Quay lại đăng nhập

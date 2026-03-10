@@ -46,16 +46,30 @@ export const Homepage = (): JSX.Element => {
       navigate("/signin");
       return;
     }
-    // Logged in → go to school profile (will fill in info if missing)
-    navigate("/school/profile");
+    // Get user role to decide destination
+    const userRaw = localStorage.getItem("user") || sessionStorage.getItem("user");
+    let role = "";
+    try { role = userRaw ? JSON.parse(userRaw).role : ""; } catch { /* ignore */ }
+
+    if (role === "School") {
+      navigate("/school/profile");
+    } else {
+      navigate("/parentprofile");
+    }
   };
 
   /** Display name for the profile button */
-  const profileButtonLabel = !loggedIn
-    ? "Đăng nhập"
-    : profileLoading
-      ? "..."
-      : schoolProfile?.schoolName || "Hồ sơ";
+  const profileButtonLabel = (() => {
+    if (!loggedIn) return "Đăng nhập";
+    if (profileLoading) return "...";
+    // Try school name first (School role), then user name (Parent role)
+    if (schoolProfile?.schoolName) return schoolProfile.schoolName;
+    const userRaw = localStorage.getItem("user") || sessionStorage.getItem("user");
+    try {
+      const u = userRaw ? JSON.parse(userRaw) : null;
+      return u?.fullName || "Hồ sơ";
+    } catch { return "Hồ sơ"; }
+  })();
 
 
   return (

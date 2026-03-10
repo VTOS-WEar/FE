@@ -99,15 +99,15 @@
   ],
   "edges": [
     {
-      "id": "src\\screens\\SignUp\\SignUp.tsx:218:24-to-src\\screens\\SignIn\\SignIn.tsx",
+      "id": "src\\screens\\SignUp\\SignUp.tsx:262:24-to-src\\screens\\SignIn\\SignIn.tsx",
       "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\screens\\SignIn\\SignIn.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
           "element": "<Link to=\"/signin\">Đăng Nhập</Link>",
-          "line": 218,
-          "endLine": 218,
+          "line": 262,
+          "endLine": 262,
           "column": 24,
           "endColumn": 59,
           "sourceFile": "src\\screens\\SignUp\\SignUp.tsx"
@@ -131,18 +131,34 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:9:4-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "id": "src\\screens\\FillInformation\\FillInformation.tsx:72:25-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\FillInformation\\FillInformation.tsx",
       "target": "src\\screens\\SignIn\\SignIn.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
-          "element": "navigate(\"/signin\")",
-          "line": 9,
-          "endLine": 9,
-          "column": 4,
-          "endColumn": 23,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+          "element": "navigate(\"/signin\", { replace: true })",
+          "line": 72,
+          "endLine": 72,
+          "column": 25,
+          "endColumn": 63,
+          "sourceFile": "src\\screens\\FillInformation\\FillInformation.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\screens\\FillInformation\\FillInformation.tsx:104:8-to-src\\screens\\FindSchool\\FindSchool.tsx",
+      "source": "src\\screens\\FillInformation\\FillInformation.tsx",
+      "target": "src\\screens\\FindSchool\\FindSchool.tsx",
+      "data": {
+        "viaRoute": "/findschool",
+        "trigger": {
+          "element": "navigate(\"/findschool\", {\r\n          replace: true,\r\n          state: {\r\n            phone: phoneClean,\r\n            children: data.children,\r\n            matchedCount: data.matchedCount,\r\n          },\r\n        })",
+          "line": 104,
+          "endLine": 111,
+          "column": 8,
+          "endColumn": 10,
+          "sourceFile": "src\\screens\\FillInformation\\FillInformation.tsx"
         }
       }
     },
@@ -163,50 +179,18 @@
       }
     },
     {
-      "id": "src\\screens\\SignIn\\SignIn.tsx:184:24-to-src\\screens\\ForgotPassword\\ForgotPassword.tsx",
+      "id": "src\\screens\\SignIn\\SignIn.tsx:190:24-to-src\\screens\\ForgotPassword\\ForgotPassword.tsx",
       "source": "src\\screens\\SignIn\\SignIn.tsx",
       "target": "src\\screens\\ForgotPassword\\ForgotPassword.tsx",
       "data": {
         "viaRoute": "/forgot-password",
         "trigger": {
           "element": "<Link to=\"/forgot-password\">\r\n                          Quên mật khẩu?\r\n                        </Link>",
-          "line": 184,
-          "endLine": 186,
+          "line": 190,
+          "endLine": 192,
           "column": 24,
           "endColumn": 31,
           "sourceFile": "src\\screens\\SignIn\\SignIn.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:9:4-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\SignUp\\SignUp.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
-      "data": {
-        "viaRoute": "/signin",
-        "trigger": {
-          "element": "navigate(\"/signin\")",
-          "line": 9,
-          "endLine": 9,
-          "column": 4,
-          "endColumn": 23,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:9:4-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\SignUp\\SignUp.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
-      "data": {
-        "viaRoute": "/signin",
-        "trigger": {
-          "element": "navigate(\"/signin\")",
-          "line": 9,
-          "endLine": 9,
-          "column": 4,
-          "endColumn": 23,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
         }
       }
     },

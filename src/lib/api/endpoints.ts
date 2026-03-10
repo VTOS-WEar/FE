@@ -37,4 +37,8 @@ export const endpoints = {
         campaignProgress: "/api/schools/me/campaigns/{id}/progress",
         providers: "/api/schools/me/providers",
     },
+    users: {
+        me: "/api/users/me",
+        profile: "/api/users/me/profile",
+    },
 } as const;

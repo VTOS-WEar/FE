@@ -9,9 +9,11 @@ import { register } from "../../lib/api/auth";
 import { Notify } from "../../components/ui/notify";
 import { useNavigate, Link } from "react-router-dom";
 import { GuestLayout } from "../../components/layout/GuestLayout";
+import { useToast } from "../../contexts/ToastContext";
 export const SignUp = (): JSX.Element => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const { showToast } = useToast();
   const [email, setEmail] = useState("");
   const [fullName, setFullName] = useState("");
   const [password, setPassword] = useState("");
@@ -40,9 +42,10 @@ export const SignUp = (): JSX.Element => {
 
       const data = await register({ email, password, fullName, roleName });
 
-      setNotify({
+      // Use global toast so it persists across navigation
+      showToast({
         title: "Tạo tài khoản thành công",
-        message: data?.message || "Bạn có thể đăng nhập ngay bây giờ.",
+        message: data?.message || "Vui lòng kiểm tra email để lấy mã OTP.",
         variant: "success",
       });
       navigate("/verify-otp", {
