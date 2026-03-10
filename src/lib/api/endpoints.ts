@@ -33,5 +33,6 @@ export const endpoints = {
         outfits: "/api/schools/me/outfits",
         outfitImageUpload: "/api/schools/me/outfits/upload-image",
         campaigns: "/api/schools/me/campaigns",
+        campaignProgress: "/api/schools/me/campaigns/{id}/progress",
     },
 } as const;

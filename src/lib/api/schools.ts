@@ -502,4 +502,27 @@ export async function lockCampaign(id: string): Promise<{ message: string }> {
     });
 }
 
+/** Campaign progress stats (UC-46) */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type CampaignProgressDto = {
+    totalOrders: number;
+    totalStudents: number;
+    totalRevenue: number;
+    pendingOrders: number;
+    outfitBreakdowns: {
+        outfitName: string;
+        totalQuantity: number;
+        totalRevenue: number;
+    }[];
+};
+
+/** Get campaign progress / stats */
+export async function getCampaignProgress(id: string): Promise<CampaignProgressDto> {
+    return api<CampaignProgressDto>(
+        endpoints.schools.campaignProgress.replace("{id}", id),
+        { auth: true }
+    );
+}
+
 //#endregion
+

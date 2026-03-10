@@ -27,6 +27,7 @@ import { UniformManagement } from "./screens/UniformManagement/UniformManagement
 import { CampaignList } from "./screens/CampaignManagement/CampaignList";
 import { CampaignManagement } from "./screens/CampaignManagement/CampaignManagement";
 import { CampaignDetail } from "./screens/CampaignManagement/CampaignDetail";
+import { SchoolDashboard } from "./screens/SchoolDashboard/SchoolDashboard";
 
 const router = createBrowserRouter([
   {
@@ -99,6 +100,10 @@ const router = createBrowserRouter([
     element: <OrderManagement />,
   }
   ,
+  {
+    path: "/school/dashboard",
+    element: <SchoolDashboard />,
+  },
   {
     path: "/school/profile",
     element: <SchoolProfile />,

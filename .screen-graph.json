@@ -67,49 +67,84 @@
       "id": "src/screens/ConfirmSave/ConfirmSave.tsx",
       "label": "ConfirmSave",
       "routes": [
-        "/confirmsave"
+        "/school/students/import/confirm-save"
       ]
     },
     {
       "id": "src/screens/ConfirmReimport/ConfirmReimport.tsx",
       "label": "ConfirmReimport",
       "routes": [
-        "/confirmreimport"
+        "/school/students/import/confirm-reimport"
       ]
     },
     {
       "id": "src/screens/CheckAndPreview/CheckAndPreview.tsx",
       "label": "CheckAndPreview",
       "routes": [
-        "/checkandpreview"
+        "/school/students/import/check-preview"
       ]
     },
     {
       "id": "src/screens/StudentList/StudentList.tsx",
       "label": "StudentList",
       "routes": [
-        "/studentlist"
+        "/school/students"
       ]
     },
     {
       "id": "src/screens/ImportData/ImportData.tsx",
       "label": "ImportData",
       "routes": [
-        "/importdata"
+        "/school/students/import"
       ]
     },
     {
       "id": "src/screens/OrderManagement/OrderManagement.tsx",
       "label": "OrderManagement",
       "routes": [
-        "/ordermanagement"
+        "/school/orders"
+      ]
+    },
+    {
+      "id": "src/screens/SchoolDashboard/SchoolDashboard.tsx",
+      "label": "SchoolDashboard",
+      "routes": [
+        "/school/dashboard"
       ]
     },
     {
       "id": "src/screens/SchoolProfile/SchoolProfile.tsx",
       "label": "SchoolProfile",
       "routes": [
-        "/schoolprofile"
+        "/school/profile"
+      ]
+    },
+    {
+      "id": "src/screens/UniformManagement/UniformManagement.tsx",
+      "label": "UniformManagement",
+      "routes": [
+        "/school/uniforms"
+      ]
+    },
+    {
+      "id": "src/screens/CampaignManagement/CampaignList.tsx",
+      "label": "CampaignList",
+      "routes": [
+        "/school/campaigns"
+      ]
+    },
+    {
+      "id": "src/screens/CampaignManagement/CampaignManagement.tsx",
+      "label": "CampaignManagement",
+      "routes": [
+        "/school/campaigns/new"
+      ]
+    },
+    {
+      "id": "src/screens/CampaignManagement/CampaignDetail.tsx",
+      "label": "CampaignDetail",
+      "routes": [
+        "/school/campaigns/:id"
       ]
     },
     {
@@ -444,13 +479,13 @@
       "source": "src\\screens\\Homepage\\Homepage.tsx",
       "target": "src\\screens\\SchoolProfile\\SchoolProfile.tsx",
       "data": {
-        "viaRoute": "/schoolprofile",
+        "viaRoute": "/school/profile",
         "trigger": {
-          "element": "navigate(\"/schoolprofile\")",
+          "element": "navigate(\"/school/profile\")",
           "line": 50,
           "endLine": 50,
           "column": 4,
-          "endColumn": 30,
+          "endColumn": 31,
           "sourceFile": "src\\screens\\Homepage\\Homepage.tsx"
         }
       }
@@ -552,79 +587,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:9:4-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\SignUp\\SignUp.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
-      "data": {
-        "viaRoute": "/signin",
-        "trigger": {
-          "element": "navigate(\"/signin\")",
-          "line": 9,
-          "endLine": 9,
-          "column": 4,
-          "endColumn": 23,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:9:4-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\SignUp\\SignUp.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
-      "data": {
-        "viaRoute": "/signin",
-        "trigger": {
-          "element": "navigate(\"/signin\")",
-          "line": 9,
-          "endLine": 9,
-          "column": 4,
-          "endColumn": 23,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:9:4-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\SignUp\\SignUp.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
-      "data": {
-        "viaRoute": "/signin",
-        "trigger": {
-          "element": "navigate(\"/signin\")",
-          "line": 9,
-          "endLine": 9,
-          "column": 4,
-          "endColumn": 23,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:9:4-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\SignUp\\SignUp.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
-      "data": {
-        "viaRoute": "/signin",
-        "trigger": {
-          "element": "navigate(\"/signin\")",
-          "line": 9,
-          "endLine": 9,
-          "column": 4,
-          "endColumn": 23,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\screens\\StudentList\\StudentList.tsx:409:8-to-src\\screens\\SignIn\\SignIn.tsx",
+      "id": "src\\screens\\StudentList\\StudentList.tsx:424:8-to-src\\screens\\SignIn\\SignIn.tsx",
       "source": "src\\screens\\StudentList\\StudentList.tsx",
       "target": "src\\screens\\SignIn\\SignIn.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
           "element": "navigate(\"/signin\", { replace: true })",
-          "line": 409,
-          "endLine": 409,
+          "line": 424,
+          "endLine": 424,
           "column": 8,
           "endColumn": 46,
           "sourceFile": "src\\screens\\StudentList\\StudentList.tsx"
@@ -632,50 +603,34 @@
       }
     },
     {
-      "id": "src\\screens\\StudentList\\StudentList.tsx:541:51-to-src\\screens\\ImportData\\ImportData.tsx",
+      "id": "src\\screens\\StudentList\\StudentList.tsx:556:51-to-src\\screens\\ImportData\\ImportData.tsx",
       "source": "src\\screens\\StudentList\\StudentList.tsx",
       "target": "src\\screens\\ImportData\\ImportData.tsx",
       "data": {
-        "viaRoute": "/importdata",
+        "viaRoute": "/school/students/import",
         "trigger": {
-          "element": "navigate(\"/importdata\")",
-          "line": 541,
-          "endLine": 541,
+          "element": "navigate(\"/school/students/import\")",
+          "line": 556,
+          "endLine": 556,
           "column": 51,
-          "endColumn": 74,
-          "sourceFile": "src\\screens\\StudentList\\StudentList.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\screens\\StudentList\\StudentList.tsx:686:63-to-src\\screens\\ImportData\\ImportData.tsx",
-      "source": "src\\screens\\StudentList\\StudentList.tsx",
-      "target": "src\\screens\\ImportData\\ImportData.tsx",
-      "data": {
-        "viaRoute": "/importdata",
-        "trigger": {
-          "element": "navigate(\"/importdata\")",
-          "line": 686,
-          "endLine": 686,
-          "column": 63,
           "endColumn": 86,
           "sourceFile": "src\\screens\\StudentList\\StudentList.tsx"
         }
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:9:4-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\SignUp\\SignUp.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
+      "id": "src\\screens\\StudentList\\StudentList.tsx:701:63-to-src\\screens\\ImportData\\ImportData.tsx",
+      "source": "src\\screens\\StudentList\\StudentList.tsx",
+      "target": "src\\screens\\ImportData\\ImportData.tsx",
       "data": {
-        "viaRoute": "/signin",
+        "viaRoute": "/school/students/import",
         "trigger": {
-          "element": "navigate(\"/signin\")",
-          "line": 9,
-          "endLine": 9,
-          "column": 4,
-          "endColumn": 23,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+          "element": "navigate(\"/school/students/import\")",
+          "line": 701,
+          "endLine": 701,
+          "column": 63,
+          "endColumn": 98,
+          "sourceFile": "src\\screens\\StudentList\\StudentList.tsx"
         }
       }
     },
@@ -696,15 +651,31 @@
       }
     },
     {
-      "id": "src\\screens\\ImportData\\ImportData.tsx:79:8-to-src\\screens\\SignIn\\SignIn.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:9:4-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\SignIn\\SignIn.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\")",
+          "line": 9,
+          "endLine": 9,
+          "column": 4,
+          "endColumn": 23,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\screens\\ImportData\\ImportData.tsx:88:8-to-src\\screens\\SignIn\\SignIn.tsx",
       "source": "src\\screens\\ImportData\\ImportData.tsx",
       "target": "src\\screens\\SignIn\\SignIn.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
           "element": "navigate(\"/signin\", { replace: true })",
-          "line": 79,
-          "endLine": 79,
+          "line": 88,
+          "endLine": 88,
           "column": 8,
           "endColumn": 46,
           "sourceFile": "src\\screens\\ImportData\\ImportData.tsx"
@@ -760,18 +731,450 @@
       }
     },
     {
-      "id": "src\\screens\\SchoolProfile\\SchoolProfile.tsx:133:8-to-src\\screens\\SignIn\\SignIn.tsx",
+      "id": "src\\screens\\SchoolDashboard\\SchoolDashboard.tsx:233:8-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\SchoolDashboard\\SchoolDashboard.tsx",
+      "target": "src\\screens\\SignIn\\SignIn.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\", { replace: true })",
+          "line": 233,
+          "endLine": 233,
+          "column": 8,
+          "endColumn": 46,
+          "sourceFile": "src\\screens\\SchoolDashboard\\SchoolDashboard.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\screens\\SchoolDashboard\\SchoolDashboard.tsx:255:48-to-src\\screens\\Homepage\\Homepage.tsx",
+      "source": "src\\screens\\SchoolDashboard\\SchoolDashboard.tsx",
+      "target": "src\\screens\\Homepage\\Homepage.tsx",
+      "data": {
+        "viaRoute": "/homepage",
+        "trigger": {
+          "element": "<BreadcrumbLink href=\"/homepage\" className=\"[font-family:'Montserrat',Helvetica] font-semibold text-[#4c5769] text-base\">Trang chủ</BreadcrumbLink>",
+          "line": 255,
+          "endLine": 255,
+          "column": 48,
+          "endColumn": 195,
+          "sourceFile": "src\\screens\\SchoolDashboard\\SchoolDashboard.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\screens\\SchoolDashboard\\SchoolDashboard.tsx:408:59-to-src\\screens\\CampaignManagement\\CampaignManagement.tsx",
+      "source": "src\\screens\\SchoolDashboard\\SchoolDashboard.tsx",
+      "target": "src\\screens\\CampaignManagement\\CampaignManagement.tsx",
+      "data": {
+        "viaRoute": "/school/campaigns/new",
+        "trigger": {
+          "element": "navigate(\"/school/campaigns/new\")",
+          "line": 408,
+          "endLine": 408,
+          "column": 59,
+          "endColumn": 92,
+          "sourceFile": "src\\screens\\SchoolDashboard\\SchoolDashboard.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:9:4-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\SignIn\\SignIn.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\")",
+          "line": 9,
+          "endLine": 9,
+          "column": 4,
+          "endColumn": 23,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:9:4-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\SignIn\\SignIn.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\")",
+          "line": 9,
+          "endLine": 9,
+          "column": 4,
+          "endColumn": 23,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\screens\\SchoolProfile\\SchoolProfile.tsx:132:8-to-src\\screens\\SignIn\\SignIn.tsx",
       "source": "src\\screens\\SchoolProfile\\SchoolProfile.tsx",
       "target": "src\\screens\\SignIn\\SignIn.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
           "element": "navigate(\"/signin\", { replace: true })",
-          "line": 133,
-          "endLine": 133,
+          "line": 132,
+          "endLine": 132,
           "column": 8,
           "endColumn": 46,
           "sourceFile": "src\\screens\\SchoolProfile\\SchoolProfile.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:9:4-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\SignIn\\SignIn.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\")",
+          "line": 9,
+          "endLine": 9,
+          "column": 4,
+          "endColumn": 23,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:9:4-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\SignIn\\SignIn.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\")",
+          "line": 9,
+          "endLine": 9,
+          "column": 4,
+          "endColumn": 23,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\screens\\UniformManagement\\UniformManagement.tsx:546:8-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\UniformManagement\\UniformManagement.tsx",
+      "target": "src\\screens\\SignIn\\SignIn.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\", { replace: true })",
+          "line": 546,
+          "endLine": 546,
+          "column": 8,
+          "endColumn": 46,
+          "sourceFile": "src\\screens\\UniformManagement\\UniformManagement.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\screens\\UniformManagement\\UniformManagement.tsx:561:48-to-src\\screens\\Homepage\\Homepage.tsx",
+      "source": "src\\screens\\UniformManagement\\UniformManagement.tsx",
+      "target": "src\\screens\\Homepage\\Homepage.tsx",
+      "data": {
+        "viaRoute": "/homepage",
+        "trigger": {
+          "element": "<BreadcrumbLink href=\"/homepage\" className=\"[font-family:'Montserrat',Helvetica] font-semibold text-[#4c5769] text-base\">Trang chủ</BreadcrumbLink>",
+          "line": 561,
+          "endLine": 561,
+          "column": 48,
+          "endColumn": 195,
+          "sourceFile": "src\\screens\\UniformManagement\\UniformManagement.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:9:4-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\SignIn\\SignIn.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\")",
+          "line": 9,
+          "endLine": 9,
+          "column": 4,
+          "endColumn": 23,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:9:4-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\SignIn\\SignIn.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\")",
+          "line": 9,
+          "endLine": 9,
+          "column": 4,
+          "endColumn": 23,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\screens\\CampaignManagement\\CampaignList.tsx:164:8-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\CampaignManagement\\CampaignList.tsx",
+      "target": "src\\screens\\SignIn\\SignIn.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\", { replace: true })",
+          "line": 164,
+          "endLine": 164,
+          "column": 8,
+          "endColumn": 46,
+          "sourceFile": "src\\screens\\CampaignManagement\\CampaignList.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\screens\\CampaignManagement\\CampaignList.tsx:179:48-to-src\\screens\\Homepage\\Homepage.tsx",
+      "source": "src\\screens\\CampaignManagement\\CampaignList.tsx",
+      "target": "src\\screens\\Homepage\\Homepage.tsx",
+      "data": {
+        "viaRoute": "/homepage",
+        "trigger": {
+          "element": "<BreadcrumbLink href=\"/homepage\" className=\"[font-family:'Montserrat',Helvetica] font-semibold text-[#4c5769] text-base\">Trang chủ</BreadcrumbLink>",
+          "line": 179,
+          "endLine": 179,
+          "column": 48,
+          "endColumn": 195,
+          "sourceFile": "src\\screens\\CampaignManagement\\CampaignList.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\screens\\CampaignManagement\\CampaignList.tsx:199:47-to-src\\screens\\CampaignManagement\\CampaignManagement.tsx",
+      "source": "src\\screens\\CampaignManagement\\CampaignList.tsx",
+      "target": "src\\screens\\CampaignManagement\\CampaignManagement.tsx",
+      "data": {
+        "viaRoute": "/school/campaigns/new",
+        "trigger": {
+          "element": "navigate(\"/school/campaigns/new\")",
+          "line": 199,
+          "endLine": 199,
+          "column": 47,
+          "endColumn": 80,
+          "sourceFile": "src\\screens\\CampaignManagement\\CampaignList.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\screens\\CampaignManagement\\CampaignList.tsx:259:51-to-src\\screens\\CampaignManagement\\CampaignManagement.tsx",
+      "source": "src\\screens\\CampaignManagement\\CampaignList.tsx",
+      "target": "src\\screens\\CampaignManagement\\CampaignManagement.tsx",
+      "data": {
+        "viaRoute": "/school/campaigns/new",
+        "trigger": {
+          "element": "navigate(\"/school/campaigns/new\")",
+          "line": 259,
+          "endLine": 259,
+          "column": 51,
+          "endColumn": 84,
+          "sourceFile": "src\\screens\\CampaignManagement\\CampaignList.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:9:4-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\SignIn\\SignIn.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\")",
+          "line": 9,
+          "endLine": 9,
+          "column": 4,
+          "endColumn": 23,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:9:4-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\SignIn\\SignIn.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\")",
+          "line": 9,
+          "endLine": 9,
+          "column": 4,
+          "endColumn": 23,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\screens\\CampaignManagement\\CampaignManagement.tsx:205:29-to-src\\screens\\CampaignManagement\\CampaignList.tsx",
+      "source": "src\\screens\\CampaignManagement\\CampaignManagement.tsx",
+      "target": "src\\screens\\CampaignManagement\\CampaignList.tsx",
+      "data": {
+        "viaRoute": "/school/campaigns",
+        "trigger": {
+          "element": "navigate(\"/school/campaigns\")",
+          "line": 205,
+          "endLine": 205,
+          "column": 29,
+          "endColumn": 58,
+          "sourceFile": "src\\screens\\CampaignManagement\\CampaignManagement.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\screens\\CampaignManagement\\CampaignManagement.tsx:216:8-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\CampaignManagement\\CampaignManagement.tsx",
+      "target": "src\\screens\\SignIn\\SignIn.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\", { replace: true })",
+          "line": 216,
+          "endLine": 216,
+          "column": 8,
+          "endColumn": 46,
+          "sourceFile": "src\\screens\\CampaignManagement\\CampaignManagement.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\screens\\CampaignManagement\\CampaignManagement.tsx:235:48-to-src\\screens\\Homepage\\Homepage.tsx",
+      "source": "src\\screens\\CampaignManagement\\CampaignManagement.tsx",
+      "target": "src\\screens\\Homepage\\Homepage.tsx",
+      "data": {
+        "viaRoute": "/homepage",
+        "trigger": {
+          "element": "<BreadcrumbLink href=\"/homepage\" className=\"[font-family:'Montserrat',Helvetica] font-semibold text-[#4c5769] text-base\">Trang chủ</BreadcrumbLink>",
+          "line": 235,
+          "endLine": 235,
+          "column": 48,
+          "endColumn": 195,
+          "sourceFile": "src\\screens\\CampaignManagement\\CampaignManagement.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:9:4-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\SignIn\\SignIn.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\")",
+          "line": 9,
+          "endLine": 9,
+          "column": 4,
+          "endColumn": 23,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:9:4-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\SignIn\\SignIn.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\")",
+          "line": 9,
+          "endLine": 9,
+          "column": 4,
+          "endColumn": 23,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\screens\\CampaignManagement\\CampaignDetail.tsx:98:8-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\CampaignManagement\\CampaignDetail.tsx",
+      "target": "src\\screens\\SignIn\\SignIn.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\", { replace: true })",
+          "line": 98,
+          "endLine": 98,
+          "column": 8,
+          "endColumn": 46,
+          "sourceFile": "src\\screens\\CampaignManagement\\CampaignDetail.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\screens\\CampaignManagement\\CampaignDetail.tsx:116:48-to-src\\screens\\Homepage\\Homepage.tsx",
+      "source": "src\\screens\\CampaignManagement\\CampaignDetail.tsx",
+      "target": "src\\screens\\Homepage\\Homepage.tsx",
+      "data": {
+        "viaRoute": "/homepage",
+        "trigger": {
+          "element": "<BreadcrumbLink href=\"/homepage\" className=\"[font-family:'Montserrat',Helvetica] font-semibold text-[#4c5769] text-base\">Trang chủ</BreadcrumbLink>",
+          "line": 116,
+          "endLine": 116,
+          "column": 48,
+          "endColumn": 195,
+          "sourceFile": "src\\screens\\CampaignManagement\\CampaignDetail.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\screens\\CampaignManagement\\CampaignDetail.tsx:118:48-to-src\\screens\\CampaignManagement\\CampaignList.tsx",
+      "source": "src\\screens\\CampaignManagement\\CampaignDetail.tsx",
+      "target": "src\\screens\\CampaignManagement\\CampaignList.tsx",
+      "data": {
+        "viaRoute": "/school/campaigns",
+        "trigger": {
+          "element": "<BreadcrumbLink href=\"/school/campaigns\" className=\"[font-family:'Montserrat',Helvetica] font-semibold text-[#4c5769] text-base\">Quản lý chiến dịch</BreadcrumbLink>",
+          "line": 118,
+          "endLine": 118,
+          "column": 48,
+          "endColumn": 212,
+          "sourceFile": "src\\screens\\CampaignManagement\\CampaignDetail.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\screens\\CampaignManagement\\CampaignDetail.tsx:135:55-to-src\\screens\\CampaignManagement\\CampaignList.tsx",
+      "source": "src\\screens\\CampaignManagement\\CampaignDetail.tsx",
+      "target": "src\\screens\\CampaignManagement\\CampaignList.tsx",
+      "data": {
+        "viaRoute": "/school/campaigns",
+        "trigger": {
+          "element": "navigate(\"/school/campaigns\")",
+          "line": 135,
+          "endLine": 135,
+          "column": 55,
+          "endColumn": 84,
+          "sourceFile": "src\\screens\\CampaignManagement\\CampaignDetail.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\screens\\CampaignManagement\\CampaignDetail.tsx:142:63-to-src\\screens\\CampaignManagement\\CampaignList.tsx",
+      "source": "src\\screens\\CampaignManagement\\CampaignDetail.tsx",
+      "target": "src\\screens\\CampaignManagement\\CampaignList.tsx",
+      "data": {
+        "viaRoute": "/school/campaigns",
+        "trigger": {
+          "element": "navigate(\"/school/campaigns\")",
+          "line": 142,
+          "endLine": 142,
+          "column": 63,
+          "endColumn": 92,
+          "sourceFile": "src\\screens\\CampaignManagement\\CampaignDetail.tsx"
         }
       }
     },

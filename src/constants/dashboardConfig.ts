@@ -13,6 +13,7 @@ export const DASHBOARD_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, 'isCollapsed'
         {
             icon: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/material-symbols-dashboard-rounded.svg",
             label: "Tổng quan",
+            href: "/school/dashboard",
         },
     ],
     navSections: [
