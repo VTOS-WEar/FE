@@ -1,0 +1,1 @@
+export { SchoolProfile } from "./SchoolProfile";

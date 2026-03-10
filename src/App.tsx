@@ -1,4 +1,4 @@
-import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import { RouterProvider, createBrowserRouter, Navigate } from "react-router-dom";
 import { AccountSecurity } from "./screens/AccountSecurity";
 import { AccountSetting } from "./screens/AccountSetting";
 import { FillInformation } from "./screens/FillInformation";
@@ -22,11 +22,16 @@ import { ImportData } from "./screens/ImportData";
 import { ConfirmSave } from "./screens/ConfirmSave";
 import { ConfirmReimport } from "./screens/ConfirmReimport";
 import { CheckAndPreview } from "./screens/CheckAndPreview";
+import { SchoolProfile } from "./screens/SchoolProfile";
+import { UniformManagement } from "./screens/UniformManagement/UniformManagement";
+import { CampaignList } from "./screens/CampaignManagement/CampaignList";
+import { CampaignManagement } from "./screens/CampaignManagement/CampaignManagement";
+import { CampaignDetail } from "./screens/CampaignManagement/CampaignDetail";
 
 const router = createBrowserRouter([
   {
-    path: "/*",
-    element: <SignUp />,
+    path: "/",
+    element: <Navigate to="/homepage" replace />,
   },
   {
     path: "/signup",
@@ -69,31 +74,51 @@ const router = createBrowserRouter([
     element: <VerifyOTP />,
   },
   {
-    path: "/confirmsave",
+    path: "/school/students/import/confirm-save",
     element: <ConfirmSave />,
   },
   {
-    path: "/confirmreimport",
+    path: "/school/students/import/confirm-reimport",
     element: <ConfirmReimport />,
   },
   {
-    path: "/checkandpreview",
+    path: "/school/students/import/check-preview",
     element: <CheckAndPreview />,
   },
   {
-    path: "/studentlist",
+    path: "/school/students",
     element: <StudentList />,
   },
   {
-    path: "/importdata",
+    path: "/school/students/import",
     element: <ImportData />,
   }
   ,
   {
-    path: "/ordermanagement",
+    path: "/school/orders",
     element: <OrderManagement />,
   }
   ,
+  {
+    path: "/school/profile",
+    element: <SchoolProfile />,
+  },
+  {
+    path: "/school/uniforms",
+    element: <UniformManagement />,
+  },
+  {
+    path: "/school/campaigns",
+    element: <CampaignList />,
+  },
+  {
+    path: "/school/campaigns/new",
+    element: <CampaignManagement />,
+  },
+  {
+    path: "/school/campaigns/:id",
+    element: <CampaignDetail />,
+  },
   { path: "/forgot-password", element: <ForgotPassword /> },
   { path: "/forgot-password/sent", element: <ForgotPasswordSent /> },
   { path: "/reset-password", element: <ResetPassword /> },

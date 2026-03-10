@@ -4,10 +4,8 @@
       "id": "src/screens/SignUp/SignUp.tsx",
       "label": "SignUp",
       "routes": [
-        "/*",
         "/signup"
-      ],
-      "isRoot": true
+      ]
     },
     {
       "id": "src/screens/FillInformation/FillInformation.tsx",
@@ -63,6 +61,55 @@
       "label": "Homepage",
       "routes": [
         "/homepage"
+      ]
+    },
+    {
+      "id": "src/screens/ConfirmSave/ConfirmSave.tsx",
+      "label": "ConfirmSave",
+      "routes": [
+        "/confirmsave"
+      ]
+    },
+    {
+      "id": "src/screens/ConfirmReimport/ConfirmReimport.tsx",
+      "label": "ConfirmReimport",
+      "routes": [
+        "/confirmreimport"
+      ]
+    },
+    {
+      "id": "src/screens/CheckAndPreview/CheckAndPreview.tsx",
+      "label": "CheckAndPreview",
+      "routes": [
+        "/checkandpreview"
+      ]
+    },
+    {
+      "id": "src/screens/StudentList/StudentList.tsx",
+      "label": "StudentList",
+      "routes": [
+        "/studentlist"
+      ]
+    },
+    {
+      "id": "src/screens/ImportData/ImportData.tsx",
+      "label": "ImportData",
+      "routes": [
+        "/importdata"
+      ]
+    },
+    {
+      "id": "src/screens/OrderManagement/OrderManagement.tsx",
+      "label": "OrderManagement",
+      "routes": [
+        "/ordermanagement"
+      ]
+    },
+    {
+      "id": "src/screens/SchoolProfile/SchoolProfile.tsx",
+      "label": "SchoolProfile",
+      "routes": [
+        "/schoolprofile"
       ]
     },
     {
@@ -341,6 +388,390 @@
           "column": 4,
           "endColumn": 23,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:9:4-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\SignIn\\SignIn.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\")",
+          "line": 9,
+          "endLine": 9,
+          "column": 4,
+          "endColumn": 23,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:9:4-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\SignIn\\SignIn.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\")",
+          "line": 9,
+          "endLine": 9,
+          "column": 4,
+          "endColumn": 23,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\screens\\Homepage\\Homepage.tsx:46:6-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\Homepage\\Homepage.tsx",
+      "target": "src\\screens\\SignIn\\SignIn.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\")",
+          "line": 46,
+          "endLine": 46,
+          "column": 6,
+          "endColumn": 25,
+          "sourceFile": "src\\screens\\Homepage\\Homepage.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\screens\\Homepage\\Homepage.tsx:50:4-to-src\\screens\\SchoolProfile\\SchoolProfile.tsx",
+      "source": "src\\screens\\Homepage\\Homepage.tsx",
+      "target": "src\\screens\\SchoolProfile\\SchoolProfile.tsx",
+      "data": {
+        "viaRoute": "/schoolprofile",
+        "trigger": {
+          "element": "navigate(\"/schoolprofile\")",
+          "line": 50,
+          "endLine": 50,
+          "column": 4,
+          "endColumn": 30,
+          "sourceFile": "src\\screens\\Homepage\\Homepage.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:9:4-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\SignIn\\SignIn.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\")",
+          "line": 9,
+          "endLine": 9,
+          "column": 4,
+          "endColumn": 23,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:9:4-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\SignIn\\SignIn.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\")",
+          "line": 9,
+          "endLine": 9,
+          "column": 4,
+          "endColumn": 23,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:9:4-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\SignIn\\SignIn.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\")",
+          "line": 9,
+          "endLine": 9,
+          "column": 4,
+          "endColumn": 23,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:9:4-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\SignIn\\SignIn.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\")",
+          "line": 9,
+          "endLine": 9,
+          "column": 4,
+          "endColumn": 23,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:9:4-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\SignIn\\SignIn.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\")",
+          "line": 9,
+          "endLine": 9,
+          "column": 4,
+          "endColumn": 23,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:9:4-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\SignIn\\SignIn.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\")",
+          "line": 9,
+          "endLine": 9,
+          "column": 4,
+          "endColumn": 23,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:9:4-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\SignIn\\SignIn.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\")",
+          "line": 9,
+          "endLine": 9,
+          "column": 4,
+          "endColumn": 23,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:9:4-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\SignIn\\SignIn.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\")",
+          "line": 9,
+          "endLine": 9,
+          "column": 4,
+          "endColumn": 23,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:9:4-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\SignIn\\SignIn.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\")",
+          "line": 9,
+          "endLine": 9,
+          "column": 4,
+          "endColumn": 23,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:9:4-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\SignIn\\SignIn.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\")",
+          "line": 9,
+          "endLine": 9,
+          "column": 4,
+          "endColumn": 23,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\screens\\StudentList\\StudentList.tsx:409:8-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\StudentList\\StudentList.tsx",
+      "target": "src\\screens\\SignIn\\SignIn.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\", { replace: true })",
+          "line": 409,
+          "endLine": 409,
+          "column": 8,
+          "endColumn": 46,
+          "sourceFile": "src\\screens\\StudentList\\StudentList.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\screens\\StudentList\\StudentList.tsx:541:51-to-src\\screens\\ImportData\\ImportData.tsx",
+      "source": "src\\screens\\StudentList\\StudentList.tsx",
+      "target": "src\\screens\\ImportData\\ImportData.tsx",
+      "data": {
+        "viaRoute": "/importdata",
+        "trigger": {
+          "element": "navigate(\"/importdata\")",
+          "line": 541,
+          "endLine": 541,
+          "column": 51,
+          "endColumn": 74,
+          "sourceFile": "src\\screens\\StudentList\\StudentList.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\screens\\StudentList\\StudentList.tsx:686:63-to-src\\screens\\ImportData\\ImportData.tsx",
+      "source": "src\\screens\\StudentList\\StudentList.tsx",
+      "target": "src\\screens\\ImportData\\ImportData.tsx",
+      "data": {
+        "viaRoute": "/importdata",
+        "trigger": {
+          "element": "navigate(\"/importdata\")",
+          "line": 686,
+          "endLine": 686,
+          "column": 63,
+          "endColumn": 86,
+          "sourceFile": "src\\screens\\StudentList\\StudentList.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:9:4-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\SignIn\\SignIn.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\")",
+          "line": 9,
+          "endLine": 9,
+          "column": 4,
+          "endColumn": 23,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:9:4-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\SignIn\\SignIn.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\")",
+          "line": 9,
+          "endLine": 9,
+          "column": 4,
+          "endColumn": 23,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\screens\\ImportData\\ImportData.tsx:79:8-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\ImportData\\ImportData.tsx",
+      "target": "src\\screens\\SignIn\\SignIn.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\", { replace: true })",
+          "line": 79,
+          "endLine": 79,
+          "column": 8,
+          "endColumn": 46,
+          "sourceFile": "src\\screens\\ImportData\\ImportData.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:9:4-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\SignIn\\SignIn.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\")",
+          "line": 9,
+          "endLine": 9,
+          "column": 4,
+          "endColumn": 23,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:9:4-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\SignIn\\SignIn.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\")",
+          "line": 9,
+          "endLine": 9,
+          "column": 4,
+          "endColumn": 23,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:9:4-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\SignIn\\SignIn.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\")",
+          "line": 9,
+          "endLine": 9,
+          "column": 4,
+          "endColumn": 23,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\screens\\SchoolProfile\\SchoolProfile.tsx:133:8-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\SchoolProfile\\SchoolProfile.tsx",
+      "target": "src\\screens\\SignIn\\SignIn.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\", { replace: true })",
+          "line": 133,
+          "endLine": 133,
+          "column": 8,
+          "endColumn": 46,
+          "sourceFile": "src\\screens\\SchoolProfile\\SchoolProfile.tsx"
         }
       }
     },
