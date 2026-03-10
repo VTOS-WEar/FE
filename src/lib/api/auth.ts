@@ -28,6 +28,7 @@ export type RegisterRequest = {
     email: string;
     password: string;
     fullName: string;
+    roleName?: string;
 };
 export type RegisterResponse = {
     userId: string;
@@ -54,6 +55,7 @@ export type UserInfo = {
     email: string;
     fullName: string;
     role: string;
+    phone?: string | null;
 };
 
 export type LoginResponse = {
@@ -105,6 +107,38 @@ export async function resetPassword(payload: ResetPasswordRequest) {
     return api<ResetPasswordResponse>(endpoints.auth.resetPassword, {
         method: "POST",
         body: JSON.stringify(payload),
+    });
+}
+//#endregion
+//#region Verify Phone
+export type VerifyPhoneRequest = {
+    phone: string;
+};
+export type VerifyPhoneChild = {
+    childId: string;
+    fullName: string;
+    age: number;
+    grade: string;
+    gender: string;
+    school: {
+        schoolId: string;
+        schoolName: string;
+        logoURL?: string | null;
+    };
+};
+export type VerifyPhoneResponse = {
+    phone: string;
+    matchedCount: number;
+    children: VerifyPhoneChild[];
+    message: string;
+};
+export async function verifyPhone(payload: VerifyPhoneRequest, accessToken: string) {
+    return api<VerifyPhoneResponse>(endpoints.auth.verifyPhone, {
+        method: "POST",
+        body: JSON.stringify(payload),
+        headers: {
+            "Authorization": `Bearer ${accessToken}`,
+        },
     });
 }
 //#endregion

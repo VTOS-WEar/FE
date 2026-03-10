@@ -3,18 +3,128 @@ import {
   ArrowRightIcon,
   PhoneIcon,
   UserIcon,
+  Loader2,
 } from "lucide-react";
-import { NavbarGuest, Footer } from "../../components/layout";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
+import { Notify } from "../../components/ui/notify";
+import { GuestLayout } from "../../components/layout/GuestLayout";
+import { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { verifyPhone } from "../../lib/api/auth";
 
 export const FillInformation = (): JSX.Element => {
-  return (
-    <div className="bg-white w-full min-h-screen flex flex-col">
-      <NavbarGuest />
+  const navigate = useNavigate();
+  const location = useLocation();
 
+  // Get fullName and email from navigation state (passed from SignIn)
+  const state = location.state as any;
+  const fullName = state?.fullName || "";
+  const userEmail = state?.email || "";
+
+  const [phone, setPhone] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [notify, setNotify] = useState<{
+    title: string;
+    message: string;
+    variant: "error" | "success" | "info";
+  } | null>(null);
+
+  const handleSubmit = async () => {
+    setNotify(null);
+
+    if (!phone.trim()) {
+      setNotify({
+        title: "Thiếu thông tin",
+        message: "Vui lòng nhập số điện thoại liên hệ.",
+        variant: "info",
+      });
+      return;
+    }
+
+    // Basic phone validation (Vietnamese phone: 10-11 digits)
+    const phoneClean = phone.replace(/\D/g, "");
+    if (phoneClean.length < 10 || phoneClean.length > 11) {
+      setNotify({
+        title: "Số điện thoại không hợp lệ",
+        message: "Vui lòng nhập số điện thoại 10-11 chữ số.",
+        variant: "error",
+      });
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+
+      // Get access token from storage
+      const accessToken =
+        localStorage.getItem("access_token") ||
+        sessionStorage.getItem("access_token") ||
+        "";
+
+      if (!accessToken) {
+        setNotify({
+          title: "Phiên đăng nhập hết hạn",
+          message: "Vui lòng đăng nhập lại.",
+          variant: "error",
+        });
+        setTimeout(() => navigate("/signin", { replace: true }), 1500);
+        return;
+      }
+
+      const data = await verifyPhone({ phone: phoneClean }, accessToken);
+
+      // Update stored user info with phone
+      const storageKey = localStorage.getItem("access_token")
+        ? localStorage
+        : sessionStorage;
+      const userRaw = storageKey.getItem("user");
+      if (userRaw) {
+        try {
+          const user = JSON.parse(userRaw);
+          user.phone = phoneClean;
+          storageKey.setItem("user", JSON.stringify(user));
+        } catch {
+          /* ignore */
+        }
+      }
+
+      setNotify({
+        title: "Cập nhật thành công! ✅",
+        message:
+          data.matchedCount > 0
+            ? `Tìm thấy ${data.matchedCount} học sinh liên kết với số này.`
+            : "Đã lưu số điện thoại. Tiếp tục chọn trường học.",
+        variant: "success",
+      });
+
+      // Navigate to FindSchool with matched data
+      setTimeout(() => {
+        navigate("/findschool", {
+          replace: true,
+          state: {
+            phone: phoneClean,
+            children: data.children,
+            matchedCount: data.matchedCount,
+          },
+        });
+      }, 800);
+    } catch (e: any) {
+      setNotify({
+        title: "Có lỗi xảy ra",
+        message: e?.message || "Không thể cập nhật thông tin.",
+        variant: "error",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <GuestLayout bgColor="#f4f2ff">
       <main className="flex-1 bg-[#f4f2ff] py-8 lg:py-12 px-4 relative overflow-hidden">
+        {/* Decorative background vectors */}
         <img
           className="absolute top-[15rem] right-[45rem] w-[42rem] h-[42rem] opacity-50"
           alt="Vector"
@@ -37,11 +147,13 @@ export const FillInformation = (): JSX.Element => {
               Thông tin phụ huynh
             </h1>
             <p className="[font-family:'Montserrat',Helvetica] font-medium text-black text-xl opacity-60 max-w-2xl mx-auto">
-              Để bắt đầu trải nghiệm mua sắm, vui lòng cập nhật thông tin liên hệ của bạn
+              Để bắt đầu trải nghiệm mua sắm, vui lòng cập nhật thông tin liên
+              hệ của bạn
             </p>
           </div>
 
           <div className="bg-white rounded-[1.875rem] shadow-lg p-6 lg:p-10 max-w-[32rem] mx-auto">
+            {/* Avatar section */}
             <div className="flex flex-col items-center mb-8">
               <img
                 className="w-[8.75rem] h-[8.75rem] rounded-full mb-4"
@@ -57,61 +169,74 @@ export const FillInformation = (): JSX.Element => {
             </div>
 
             <div className="space-y-6">
+              {/* Full Name (read-only, from registration) */}
               <div className="space-y-3">
                 <Label className="[font-family:'Montserrat',Helvetica] font-medium text-black text-xl">
                   Họ và tên phụ huynh
                   <span className="text-[#ff0000] ml-1">*</span>
                 </Label>
                 <div className="relative">
-                  <UserIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 w-6 h-6 text-black" />
+                  <UserIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 w-6 h-6 text-black opacity-40" />
                   <Input
                     type="text"
-                    defaultValue="Võ Gia Truyền"
-                    className="h-[3.125rem] pl-11 pr-2.5 bg-white rounded-lg border border-[#00000036] opacity-40 [font-family:'Montserrat',Helvetica] font-normal text-base"
+                    value={fullName}
+                    disabled
+                    className="h-[3.125rem] pl-11 pr-2.5 bg-gray-50 rounded-lg border border-[#00000036] [font-family:'Montserrat',Helvetica] font-normal text-base text-black/60 cursor-not-allowed"
                   />
                 </div>
               </div>
 
+              {/* Phone input (editable) */}
               <div className="space-y-3">
                 <Label className="[font-family:'Montserrat',Helvetica] font-medium text-black text-xl">
                   Số điện thoại liên hệ
                   <span className="text-[#ff0000] ml-1">*</span>
                 </Label>
                 <div className="relative">
-                  <PhoneIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 w-6 h-6 text-black" />
+                  <PhoneIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 w-6 h-6 text-black opacity-40" />
                   <Input
                     type="tel"
-                    defaultValue="01234857430"
-                    className="h-[3.125rem] pl-11 pr-2.5 bg-white rounded-lg border border-[#00000036] opacity-40 [font-family:'Montserrat',Helvetica] font-normal text-base"
+                    placeholder="Nhập số điện thoại"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") void handleSubmit();
+                    }}
+                    className="h-[3.125rem] pl-11 pr-2.5 bg-white rounded-lg border border-[#00000036] [font-family:'Montserrat',Helvetica] font-normal text-base focus:border-[#6938ef] focus:ring-1 focus:ring-[#6938ef] transition-colors"
                   />
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <AlertCircleIcon className="w-4 h-4" />
+                  <AlertCircleIcon className="w-4 h-4 opacity-60 flex-shrink-0" />
                   <p className="[font-family:'Montserrat',Helvetica] font-medium text-black text-xs opacity-60">
-                    Số điện thoại sẽ được sử dụng để liên hệ giao hàng và hỗ trợ
+                    Số điện thoại sẽ được sử dụng để liên hệ giao hàng và hỗ
+                    trợ
                   </p>
                 </div>
               </div>
 
-              <Button className="w-full h-16 bg-[#4e46dd] rounded-lg shadow-[0px_0px_0.525rem_#4e46dd] hover:bg-[#4e46dd]/90 mt-8">
+              {/* Submit button */}
+              <Button
+                type="button"
+                onClick={() => void handleSubmit()}
+                disabled={isLoading}
+                className="w-full h-16 bg-[#4e46dd] rounded-lg shadow-[0px_0px_0.525rem_#4e46dd] hover:bg-[#4e46dd]/90 mt-8 transition-all"
+              >
+                {isLoading ? (
+                  <Loader2 className="w-6 h-6 animate-spin mr-2" />
+                ) : null}
                 <span className="[font-family:'Montserrat',Helvetica] font-semibold text-white text-2xl">
-                  Tiếp tục: Chọn trường học
+                  {isLoading ? "Đang xử lý..." : "Tiếp tục: Chọn trường học"}
                 </span>
-                <ArrowRightIcon className="w-6 h-6 ml-2.5" />
+                {!isLoading && (
+                  <ArrowRightIcon className="w-6 h-6 ml-2.5" />
+                )}
               </Button>
 
+              {/* Step indicator */}
               <div className="flex flex-col items-center gap-5 mt-8">
                 <div className="flex items-center gap-2">
-                  <img
-                    className="w-[3.625rem] h-[1.125rem]"
-                    alt="Progress"
-                    src="https://c.animaapp.com/mjxt3t8wNP0otU/img/line-17.svg"
-                  />
-                  <img
-                    className="w-4 h-2.5"
-                    alt="Progress"
-                    src="https://c.animaapp.com/mjxt3t8wNP0otU/img/line-18.svg"
-                  />
+                  <div className="w-[3.625rem] h-[0.25rem] bg-[#4e46dd] rounded-full" />
+                  <div className="w-4 h-[0.15rem] bg-gray-300 rounded-full" />
                 </div>
                 <p className="[font-family:'Montserrat',Helvetica] font-medium text-black text-sm opacity-60">
                   BƯỚC 1 TRÊN 2
@@ -122,7 +247,14 @@ export const FillInformation = (): JSX.Element => {
         </div>
       </main>
 
-      <Footer />
-    </div>
+      <Notify
+        open={!!notify}
+        title={notify?.title || ""}
+        message={notify?.message}
+        variant={notify?.variant}
+        durationMs={3500}
+        onClose={() => setNotify(null)}
+      />
+    </GuestLayout>
   );
 };

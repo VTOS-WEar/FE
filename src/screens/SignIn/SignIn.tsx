@@ -45,10 +45,16 @@ export const SignIn = (): JSX.Element => {
       storage.setItem("user", JSON.stringify(data.user));
       storage.setItem("expires_in", String(data.expiresIn));
 
-      const redirectTo = data.user.role === "School" ? "/school/dashboard" : "/homepage";
+      // Role-based redirect: Parent without phone → fill information first
+      let redirectTo = "/homepage";
+      if (data.user.role === "School") {
+        redirectTo = "/school/dashboard";
+      } else if (data.user.role === "Parent" && !data.user.phone) {
+        redirectTo = "/fillinformation";
+      }
       navigate(redirectTo, {
         replace: true,
-        state: { from: "/login" },
+        state: { from: "/login", fullName: data.user.fullName, email: data.user.email },
       });
 
     } catch (e: any) {
