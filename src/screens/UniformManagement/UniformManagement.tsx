@@ -9,7 +9,7 @@ import {
     BreadcrumbSeparator,
 } from "../../components/ui/breadcrumb";
 import { DashboardSidebar } from "../../components/layout";
-import { DASHBOARD_SIDEBAR_CONFIG } from "../../constants/dashboardConfig";
+import { useSidebarConfig } from "../../hooks/useSidebarConfig";
 import { Button } from "../../components/ui/button";
 import {
     getSchoolProfile,
@@ -22,17 +22,7 @@ import {
     type CreateOutfitRequest,
 } from "../../lib/api/schools";
 
-/* ── Sidebar: mark "Đồng phục" as active ── */
-const sidebarConfig = {
-    ...DASHBOARD_SIDEBAR_CONFIG,
-    navSections: DASHBOARD_SIDEBAR_CONFIG.navSections.map((section) => ({
-        ...section,
-        items: section.items.map((item) => ({
-            ...item,
-            active: item.label === "Đồng phục",
-        })),
-    })),
-};
+
 
 /* ── OutfitType labels ── */
 const OUTFIT_TYPE_LABELS: Record<number, string> = {
@@ -430,8 +420,9 @@ const FILTER_TABS: { key: "all" | "available" | "unavailable"; label: string }[]
 /* ────────────────────────────────────────────────────────────────────── */
 export const UniformManagement = (): JSX.Element => {
     const navigate = useNavigate();
+    const sidebarConfig = useSidebarConfig();
     const [isCollapsed, setIsCollapsed] = useState(false);
-    const [schoolName, setSchoolName] = useState(DASHBOARD_SIDEBAR_CONFIG.name);
+    const [schoolName, setSchoolName] = useState("");
 
     const [outfits, setOutfits] = useState<OutfitDto[]>([]);
     const [loading, setLoading] = useState(true);
@@ -454,7 +445,7 @@ export const UniformManagement = (): JSX.Element => {
 
     useEffect(() => {
         getSchoolProfile()
-            .then((p) => setSchoolName(p.schoolName || DASHBOARD_SIDEBAR_CONFIG.name))
+            .then((p) => setSchoolName(p.schoolName || ""))
             .catch(() => {});
     }, []);
 
@@ -558,7 +549,7 @@ export const UniformManagement = (): JSX.Element => {
                     <div className="bg-white border-b border-[#cbcad7] px-6 lg:px-10 py-5 flex items-center justify-between">
                         <Breadcrumb>
                             <BreadcrumbList>
-                                <BreadcrumbItem><BreadcrumbLink href="/homepage" className="[font-family:'Montserrat',Helvetica] font-semibold text-[#4c5769] text-base">Trang chủ</BreadcrumbLink></BreadcrumbItem>
+                                <BreadcrumbItem><BreadcrumbLink href="/school/dashboard" className="[font-family:'Montserrat',Helvetica] font-semibold text-[#4c5769] text-base">Trang chủ</BreadcrumbLink></BreadcrumbItem>
                                 <BreadcrumbSeparator className="text-[#cbcad7]">/</BreadcrumbSeparator>
                                 <BreadcrumbItem><BreadcrumbPage className="[font-family:'Montserrat',Helvetica] font-semibold text-[#4c5769] text-base">Quản lý đồng phục</BreadcrumbPage></BreadcrumbItem>
                             </BreadcrumbList>

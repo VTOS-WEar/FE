@@ -29,7 +29,6 @@ export const DASHBOARD_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, 'isCollapsed'
                     icon: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/mdi-people-group.svg",
                     label: "Danh sách học sinh",
                     href: "/school/students",
-                    active: true,
                 },
                 {
                     icon: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/fluent-clothes-hanger-12-filled.svg",

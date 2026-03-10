@@ -9,30 +9,98 @@ import {
     BreadcrumbSeparator,
 } from "../../components/ui/breadcrumb";
 import { DashboardSidebar } from "../../components/layout";
-import { DASHBOARD_SIDEBAR_CONFIG } from "../../constants/dashboardConfig";
+import { useSidebarConfig } from "../../hooks/useSidebarConfig";
 import { Button } from "../../components/ui/button";
 import {
     getSchoolProfile,
     getCampaigns,
     getCampaignProgress,
     type CampaignListItemDto,
+    type CampaignProgressDto,
 } from "../../lib/api/schools";
 
-/* ── Sidebar: mark "Tổng quan" as active ── */
-const sidebarConfig = {
-    ...DASHBOARD_SIDEBAR_CONFIG,
-    topNavItems: (DASHBOARD_SIDEBAR_CONFIG.topNavItems || []).map((item) => ({
-        ...item,
-        active: item.label === "Tổng quan",
-    })),
-    navSections: DASHBOARD_SIDEBAR_CONFIG.navSections.map((section) => ({
-        ...section,
-        items: section.items.map((item) => ({
-            ...item,
-            active: false,
-        })),
-    })),
-};
+/* ── Inline countdown for a single campaign ── */
+function CampaignCountdownCard({
+    campaign,
+    onNavigate,
+}: {
+    campaign: CampaignListItemDto;
+    onNavigate: (id: string) => void;
+}) {
+    const endDate = new Date(campaign.endDate);
+    const timeLeft = useCountdown(endDate);
+    const daysLeft = Math.ceil((endDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+    const isNearEnd = daysLeft <= 7 && daysLeft > 0;
+
+    return (
+        <div className="bg-white border border-[#CBCAD7] rounded-[16px] p-6">
+            <div className="flex items-start justify-between mb-4">
+                <div>
+                    <h2 className="[font-family:'Montserrat',Helvetica] font-bold text-[#1A1A2E] text-lg">
+                        {campaign.campaignName}
+                    </h2>
+                    <p className="[font-family:'Montserrat',Helvetica] font-medium text-[#6B7280] text-sm mt-0.5">
+                        Kết thúc vào ngày {formatDate(campaign.endDate)}
+                    </p>
+                </div>
+                <Button
+                    onClick={() => onNavigate(campaign.campaignId)}
+                    className="bg-[#3B82F6] hover:bg-[#2563EB] text-white rounded-[10px] [font-family:'Montserrat',Helvetica] font-semibold text-sm px-4 py-2 h-auto"
+                >
+                    Quản lý
+                </Button>
+            </div>
+
+            {/* Countdown + Warning side-by-side */}
+            <div className="flex items-start gap-6">
+                {/* Countdown timer */}
+                <div className="flex-shrink-0">
+                    <p className="[font-family:'Montserrat',Helvetica] font-bold text-[#6B7280] text-xs tracking-wider uppercase mb-3">
+                        Thời gian còn lại
+                    </p>
+                    <div className="flex items-center gap-2">
+                        {[
+                            { val: String(timeLeft.days).padStart(2, "0"), label: "Ngày" },
+                            { val: String(timeLeft.hours).padStart(2, "0"), label: "Giờ" },
+                            { val: String(timeLeft.minutes).padStart(2, "0"), label: "Phút" },
+                            { val: String(timeLeft.seconds).padStart(2, "0"), label: "Giây" },
+                        ].map((unit, i) => (
+                            <div key={unit.label} className="flex items-center gap-2">
+                                {i > 0 && <span className="[font-family:'Montserrat',Helvetica] font-bold text-[#1A1A2E] text-2xl animate-pulse">:</span>}
+                                <div className="text-center">
+                                    <div className="bg-[#F6F7F8] border border-[#E5E7EB] rounded-[12px] px-3 py-3 min-w-[56px]">
+                                        <span className="[font-family:'Montserrat',Helvetica] font-bold text-[#1A1A2E] text-2xl tabular-nums">
+                                            {unit.val}
+                                        </span>
+                                    </div>
+                                    <p className="[font-family:'Montserrat',Helvetica] font-medium text-[#6B7280] text-xs mt-1.5">{unit.label}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Warning Alert — compact, right side */}
+                {isNearEnd && (
+                    <div className="flex-1 bg-[#FEF3C7] border border-[#FDE68A] rounded-[10px] px-3 py-2.5 flex items-start gap-2 self-center">
+                        <div className="w-5 h-5 rounded-full bg-[#F59E0B] flex items-center justify-center flex-shrink-0 mt-px">
+                            <svg className="w-2.5 h-2.5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z" /></svg>
+                        </div>
+                        <div>
+                            <p className="[font-family:'Montserrat',Helvetica] font-bold text-[#92400E] text-xs leading-tight">Sắp kết thúc</p>
+                            <p className="[font-family:'Montserrat',Helvetica] font-medium text-[#92400E] text-[10px] mt-0.5 leading-snug">
+                                Vui lòng nhắc nhở học sinh chưa hoàn tất đăng ký size trước thời hạn đóng cổng.
+                            </p>
+                            <button className="[font-family:'Montserrat',Helvetica] font-bold text-[#EA580C] text-[10px] mt-1 hover:text-[#C2410C] transition-colors">
+                                Gửi thông báo ngay
+                            </button>
+                        </div>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+}
 
 /* ── Countdown hook ── */
 function useCountdown(targetDate: Date | null) {
@@ -158,21 +226,22 @@ function CategoryBar({ name, percentage, color }: { name: string; percentage: nu
 /* ────────────────────────────────────────────────────────────────────── */
 export const SchoolDashboard = (): JSX.Element => {
     const navigate = useNavigate();
+    const sidebarConfig = useSidebarConfig();
     const [isCollapsed, setIsCollapsed] = useState(false);
-    const [schoolName, setSchoolName] = useState(DASHBOARD_SIDEBAR_CONFIG.name);
+    const [schoolName, setSchoolName] = useState("");
 
     // Data
-    const [activeCampaign, setActiveCampaign] = useState<CampaignListItemDto | null>(null);
+    const [activeCampaigns, setActiveCampaigns] = useState<CampaignListItemDto[]>([]);
     const [loading, setLoading] = useState(true);
     const [totalOrders, setTotalOrders] = useState(0);
     const [totalStudents, setTotalStudents] = useState(0);
     const [expectedRevenue, setExpectedRevenue] = useState(0);
     const [pendingOrders, setPendingOrders] = useState(0);
+    const [totalChildProfiles, setTotalChildProfiles] = useState(0);
     const [productCategories, setProductCategories] = useState<{ name: string; percentage: number }[]>([]);
 
-    // Countdown
-    const countdownTarget = activeCampaign ? new Date(activeCampaign.endDate) : null;
-    const timeLeft = useCountdown(countdownTarget);
+    // Countdown for the first active campaign (for stats purpose)
+    const primaryCampaign = activeCampaigns.length > 0 ? activeCampaigns[0] : null;
 
     // Load data
     const fetchData = useCallback(async () => {
@@ -183,34 +252,59 @@ export const SchoolDashboard = (): JSX.Element => {
                 getCampaigns(1, 50),
             ]);
 
-            setSchoolName(profile.schoolName || DASHBOARD_SIDEBAR_CONFIG.name);
+            setSchoolName(profile.schoolName || "");
 
             const campaigns = campaignsRes.items || [];
-            const active = campaigns.find((c) => c.status === "Active") || null;
-            setActiveCampaign(active);
+            const actives = campaigns.filter((c) => c.status === "Active");
+            setActiveCampaigns(actives);
 
-            // Aggregate stats from all campaigns
+            // Aggregate order count from all campaigns
             let orders = 0;
             campaigns.forEach((c) => {
                 orders += c.orderCount || 0;
             });
             setTotalOrders(orders);
 
-            // Try to get progress for active campaign
-            if (active) {
+            // Try to get progress for first active campaign (aggregate stats)
+            if (actives.length > 0) {
                 try {
-                    const progress = await getCampaignProgress(active.campaignId);
-                    setTotalStudents(progress.totalStudents || 0);
-                    setExpectedRevenue(progress.totalRevenue || 0);
-                    setPendingOrders(progress.pendingOrders || 0);
+                    // Aggregate stats from all active campaigns
+                    let aggOrders = 0, aggStudents = 0, aggRevenue = 0, aggPending = 0, aggChildProfiles = 0;
+                    const allBreakdowns: { outfitName: string; quantityOrdered: number }[] = [];
 
-                    // Product categories from progress breakdown
-                    if (progress.outfitBreakdowns && progress.outfitBreakdowns.length > 0) {
-                        const totalQty = progress.outfitBreakdowns.reduce((s: number, o: { totalQuantity?: number }) => s + (o.totalQuantity || 0), 0);
+                    const progressResults = await Promise.allSettled(
+                        actives.map((c) => getCampaignProgress(c.campaignId))
+                    );
+
+                    progressResults.forEach((result) => {
+                        if (result.status === "fulfilled") {
+                            const progress = result.value as CampaignProgressDto;
+                            aggOrders += progress.totalOrders || 0;
+                            aggStudents += progress.totalStudents || 0;
+                            aggRevenue += progress.totalRevenue || 0;
+                            aggPending += progress.pendingOrders || 0;
+                            aggChildProfiles = Math.max(aggChildProfiles, progress.totalChildProfiles || 0);
+                            if (progress.outfitBreakdown) {
+                                progress.outfitBreakdown.forEach((o) => {
+                                    allBreakdowns.push({ outfitName: o.outfitName, quantityOrdered: o.quantityOrdered || 0 });
+                                });
+                            }
+                        }
+                    });
+
+                    setTotalOrders(aggOrders);
+                    setTotalStudents(aggStudents);
+                    setExpectedRevenue(aggRevenue);
+                    setPendingOrders(aggPending);
+                    setTotalChildProfiles(aggChildProfiles);
+
+                    // Product categories from all breakdowns
+                    if (allBreakdowns.length > 0) {
+                        const totalQty = allBreakdowns.reduce((s, o) => s + o.quantityOrdered, 0);
                         setProductCategories(
-                            progress.outfitBreakdowns.map((o: { outfitName?: string; totalQuantity?: number }) => ({
+                            allBreakdowns.map((o) => ({
                                 name: o.outfitName || "Khác",
-                                percentage: totalQty > 0 ? Math.round(((o.totalQuantity || 0) / totalQty) * 100) : 0,
+                                percentage: totalQty > 0 ? Math.round((o.quantityOrdered / totalQty) * 100) : 0,
                             }))
                         );
                     }
@@ -233,11 +327,13 @@ export const SchoolDashboard = (): JSX.Element => {
         navigate("/signin", { replace: true });
     };
 
-    // Days until campaign ends
-    const daysUntilEnd = activeCampaign
-        ? Math.ceil((new Date(activeCampaign.endDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+    // Near-end warning
+    const daysUntilEnd = primaryCampaign
+        ? Math.ceil((new Date(primaryCampaign.endDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
         : 0;
     const isNearEnd = daysUntilEnd <= 7 && daysUntilEnd > 0;
+    // suppress unused var warning
+    void isNearEnd;
 
     return (
         <div className="bg-[#f6f7f8] w-full min-h-screen flex flex-col">
@@ -252,7 +348,7 @@ export const SchoolDashboard = (): JSX.Element => {
                     <div className="bg-white border-b border-[#cbcad7] px-6 lg:px-10 py-5 flex items-center justify-between">
                         <Breadcrumb>
                             <BreadcrumbList>
-                                <BreadcrumbItem><BreadcrumbLink href="/homepage" className="[font-family:'Montserrat',Helvetica] font-semibold text-[#4c5769] text-base">Trang chủ</BreadcrumbLink></BreadcrumbItem>
+                                <BreadcrumbItem><BreadcrumbLink href="/school/dashboard" className="[font-family:'Montserrat',Helvetica] font-semibold text-[#4c5769] text-base">Trang chủ</BreadcrumbLink></BreadcrumbItem>
                                 <BreadcrumbSeparator className="text-[#cbcad7]">/</BreadcrumbSeparator>
                                 <BreadcrumbItem><BreadcrumbPage className="[font-family:'Montserrat',Helvetica] font-semibold text-[#4c5769] text-base">Tổng quan</BreadcrumbPage></BreadcrumbItem>
                             </BreadcrumbList>
@@ -300,116 +396,59 @@ export const SchoolDashboard = (): JSX.Element => {
                                     value={formatNumber(totalOrders)}
                                     icon={<svg className="w-5 h-5 text-[#6938EF]" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm4 18H6V4h7v5h5v11z" /></svg>}
                                     iconBg="bg-[#EDE9FE]"
-                                    indicator="15% so với tháng trước"
-                                    indicatorType="positive"
                                 />
                                 <StatsCard
                                     label="Học sinh tham gia"
-                                    value={totalStudents > 0 ? `${totalStudents}/1000` : "850/1000"}
+                                    value={totalChildProfiles > 0 ? `${totalStudents}/${totalChildProfiles}` : String(totalStudents)}
                                     icon={<svg className="w-5 h-5 text-[#3B82F6]" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" /></svg>}
                                     iconBg="bg-[#DBEAFE]"
-                                    progressValue={totalStudents > 0 ? totalStudents : 850}
-                                    progressMax={1000}
+                                    progressValue={totalStudents}
+                                    progressMax={totalChildProfiles > 0 ? totalChildProfiles : undefined}
                                 />
                                 <StatsCard
                                     label="Doanh thu dự kiến"
-                                    value={expectedRevenue > 0 ? formatNumber(expectedRevenue) : "150 triệu"}
+                                    value={expectedRevenue > 0 ? formatNumber(expectedRevenue) : "0 ₫"}
                                     icon={<svg className="w-5 h-5 text-[#10B981]" viewBox="0 0 24 24" fill="currentColor"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z" /></svg>}
                                     iconBg="bg-[#D1FAE5]"
-                                    indicator="12% so với cùng kỳ"
-                                    indicatorType="positive"
                                 />
                                 <StatsCard
                                     label="Đơn chờ duyệt"
-                                    value={pendingOrders > 0 ? String(pendingOrders) : "42"}
+                                    value={String(pendingOrders)}
                                     icon={<svg className="w-5 h-5 text-[#EF4444]" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l4.59-4.58L18 11l-6 6z" /></svg>}
                                     iconBg="bg-[#FEE2E2]"
-                                    indicator="Cần xử lý ngay"
-                                    indicatorType="negative"
+                                    indicator={pendingOrders > 0 ? "Cần xử lý" : undefined}
+                                    indicatorType={pendingOrders > 0 ? "negative" : "neutral"}
                                 />
                             </div>
                         )}
 
-                        {/* Campaign Countdown + Product Categories */}
+                        {/* Active Campaigns Countdowns + Product Categories */}
                         <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
-                            {/* Campaign Countdown Card */}
-                            <div className="lg:col-span-3 bg-white border border-[#CBCAD7] rounded-[16px] p-6">
-                                {activeCampaign ? (
-                                    <>
-                                        <div className="flex items-start justify-between mb-4">
-                                            <div>
-                                                <h2 className="[font-family:'Montserrat',Helvetica] font-bold text-[#1A1A2E] text-lg">
-                                                    {activeCampaign.campaignName}
-                                                </h2>
-                                                <p className="[font-family:'Montserrat',Helvetica] font-medium text-[#6B7280] text-sm mt-0.5">
-                                                    Kết thúc vào ngày {formatDate(activeCampaign.endDate)}
-                                                </p>
+                            {/* Campaign Countdown Cards */}
+                            <div className="lg:col-span-3 space-y-5">
+                                {activeCampaigns.length > 0 ? (
+                                    activeCampaigns.map((campaign) => (
+                                        <CampaignCountdownCard
+                                            key={campaign.campaignId}
+                                            campaign={campaign}
+                                            onNavigate={(id) => navigate(`/school/campaigns/${id}`)}
+                                        />
+                                    ))
+                                ) : (
+                                    <div className="bg-white border border-[#CBCAD7] rounded-[16px] p-6">
+                                        <div className="text-center py-8">
+                                            <div className="w-14 h-14 rounded-full bg-[#F3F4F6] flex items-center justify-center mx-auto mb-3">
+                                                <svg className="w-7 h-7 text-[#9CA3AF]" viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z" /></svg>
                                             </div>
+                                            <p className="[font-family:'Montserrat',Helvetica] font-semibold text-[#6B7280] text-base">Chưa có chiến dịch đang hoạt động</p>
+                                            <p className="[font-family:'Montserrat',Helvetica] font-medium text-[#9CA3AF] text-sm mt-1">Tạo một chiến dịch mới để bắt đầu.</p>
                                             <Button
-                                                onClick={() => navigate(`/school/campaigns/${activeCampaign.campaignId}`)}
-                                                className="bg-[#3B82F6] hover:bg-[#2563EB] text-white rounded-[10px] [font-family:'Montserrat',Helvetica] font-semibold text-sm px-4 py-2 h-auto"
+                                                onClick={() => navigate("/school/campaigns/new")}
+                                                className="mt-4 bg-gradient-to-r from-[#6938EF] to-[#5B2FD6] hover:from-[#5B2FD6] hover:to-[#4F22C7] text-white rounded-[10px] [font-family:'Montserrat',Helvetica] font-semibold text-sm px-5 py-2.5 h-auto"
                                             >
-                                                Quản lý
+                                                Tạo chiến dịch
                                             </Button>
                                         </div>
-
-                                        {/* Countdown */}
-                                        <div className="mb-4">
-                                            <p className="[font-family:'Montserrat',Helvetica] font-bold text-[#6B7280] text-xs tracking-wider uppercase mb-3">
-                                                Thời gian còn lại
-                                            </p>
-                                            <div className="flex items-center gap-2">
-                                                {[
-                                                    { val: String(timeLeft.days).padStart(2, "0"), label: "Ngày" },
-                                                    { val: String(timeLeft.hours).padStart(2, "0"), label: "Giờ" },
-                                                    { val: String(timeLeft.minutes).padStart(2, "0"), label: "Phút" },
-                                                ].map((unit, i) => (
-                                                    <div key={unit.label} className="flex items-center gap-2">
-                                                        {i > 0 && <span className="[font-family:'Montserrat',Helvetica] font-bold text-[#1A1A2E] text-2xl">:</span>}
-                                                        <div className="text-center">
-                                                            <div className="bg-[#F6F7F8] border border-[#E5E7EB] rounded-[12px] px-4 py-3 min-w-[64px]">
-                                                                <span className="[font-family:'Montserrat',Helvetica] font-bold text-[#1A1A2E] text-3xl tabular-nums">
-                                                                    {unit.val}
-                                                                </span>
-                                                            </div>
-                                                            <p className="[font-family:'Montserrat',Helvetica] font-medium text-[#6B7280] text-xs mt-1.5">{unit.label}</p>
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-
-                                        {/* Warning Alert */}
-                                        {isNearEnd && (
-                                            <div className="bg-[#FEF3C7] border border-[#FDE68A] rounded-[12px] p-4 flex items-start gap-3">
-                                                <div className="w-8 h-8 rounded-full bg-[#F59E0B] flex items-center justify-center flex-shrink-0 mt-0.5">
-                                                    <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z" /></svg>
-                                                </div>
-                                                <div>
-                                                    <p className="[font-family:'Montserrat',Helvetica] font-bold text-[#92400E] text-sm">Sắp kết thúc</p>
-                                                    <p className="[font-family:'Montserrat',Helvetica] font-medium text-[#92400E] text-xs mt-0.5 leading-relaxed">
-                                                        Vui lòng nhắc nhở học sinh chưa đặt hàng tham gia đặt mua trước hạn đóng công.
-                                                    </p>
-                                                    <button className="[font-family:'Montserrat',Helvetica] font-bold text-[#B45309] text-xs mt-2 underline underline-offset-2 hover:text-[#92400E] transition-colors">
-                                                        Gửi thông báo ngay
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        )}
-                                    </>
-                                ) : (
-                                    <div className="text-center py-8">
-                                        <div className="w-14 h-14 rounded-full bg-[#F3F4F6] flex items-center justify-center mx-auto mb-3">
-                                            <svg className="w-7 h-7 text-[#9CA3AF]" viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z" /></svg>
-                                        </div>
-                                        <p className="[font-family:'Montserrat',Helvetica] font-semibold text-[#6B7280] text-base">Chưa có chiến dịch đang hoạt động</p>
-                                        <p className="[font-family:'Montserrat',Helvetica] font-medium text-[#9CA3AF] text-sm mt-1">Tạo một chiến dịch mới để bắt đầu.</p>
-                                        <Button
-                                            onClick={() => navigate("/school/campaigns/new")}
-                                            className="mt-4 bg-gradient-to-r from-[#6938EF] to-[#5B2FD6] hover:from-[#5B2FD6] hover:to-[#4F22C7] text-white rounded-[10px] [font-family:'Montserrat',Helvetica] font-semibold text-sm px-5 py-2.5 h-auto"
-                                        >
-                                            Tạo chiến dịch
-                                        </Button>
                                     </div>
                                 )}
                             </div>
@@ -437,12 +476,9 @@ export const SchoolDashboard = (): JSX.Element => {
                                         ))}
                                     </div>
                                 ) : (
-                                    /* Fallback sample data matching Figma */
-                                    <div className="space-y-4">
-                                        <CategoryBar name="Áo sơ mi trắng" percentage={45} color="bg-[#3B82F6]" />
-                                        <CategoryBar name="Đồng phục TD" percentage={30} color="bg-[#6938EF]" />
-                                        <CategoryBar name="Quần tây" percentage={15} color="bg-[#10B981]" />
-                                        <CategoryBar name="Áo khoác" percentage={10} color="bg-[#F59E0B]" />
+                                    /* Empty state — no product data */
+                                    <div className="text-center py-8">
+                                        <p className="[font-family:'Montserrat',Helvetica] font-medium text-[#9CA3AF] text-sm">Chưa có dữ liệu sản phẩm</p>
                                     </div>
                                 )}
                             </div>

@@ -28,11 +28,24 @@ import { CampaignList } from "./screens/CampaignManagement/CampaignList";
 import { CampaignManagement } from "./screens/CampaignManagement/CampaignManagement";
 import { CampaignDetail } from "./screens/CampaignManagement/CampaignDetail";
 import { SchoolDashboard } from "./screens/SchoolDashboard/SchoolDashboard";
+import { RoleGuard } from "./components/guards/RoleGuard";
+
+/** Smart root redirect: School→dashboard, others→homepage */
+function RootRedirect() {
+    const raw = localStorage.getItem("user") || sessionStorage.getItem("user");
+    if (raw) {
+        try {
+            const user = JSON.parse(raw);
+            if (user.role === "School") return <Navigate to="/school/dashboard" replace />;
+        } catch { /* ignore */ }
+    }
+    return <Navigate to="/homepage" replace />;
+}
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Navigate to="/homepage" replace />,
+    element: <RootRedirect />,
   },
   {
     path: "/signup",
@@ -68,7 +81,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/homepage",
-    element: <Homepage />,
+    element: <RoleGuard allowedRoles={["Parent"]} allowGuest={true} redirectTo="/school/dashboard"><Homepage /></RoleGuard>,
   },
   {
     path: "/verify-otp",
@@ -76,53 +89,53 @@ const router = createBrowserRouter([
   },
   {
     path: "/school/students/import/confirm-save",
-    element: <ConfirmSave />,
+    element: <RoleGuard allowedRoles={["School"]}><ConfirmSave /></RoleGuard>,
   },
   {
     path: "/school/students/import/confirm-reimport",
-    element: <ConfirmReimport />,
+    element: <RoleGuard allowedRoles={["School"]}><ConfirmReimport /></RoleGuard>,
   },
   {
     path: "/school/students/import/check-preview",
-    element: <CheckAndPreview />,
+    element: <RoleGuard allowedRoles={["School"]}><CheckAndPreview /></RoleGuard>,
   },
   {
     path: "/school/students",
-    element: <StudentList />,
+    element: <RoleGuard allowedRoles={["School"]}><StudentList /></RoleGuard>,
   },
   {
     path: "/school/students/import",
-    element: <ImportData />,
+    element: <RoleGuard allowedRoles={["School"]}><ImportData /></RoleGuard>,
   }
   ,
   {
     path: "/school/orders",
-    element: <OrderManagement />,
+    element: <RoleGuard allowedRoles={["School"]}><OrderManagement /></RoleGuard>,
   }
   ,
   {
     path: "/school/dashboard",
-    element: <SchoolDashboard />,
+    element: <RoleGuard allowedRoles={["School"]}><SchoolDashboard /></RoleGuard>,
   },
   {
     path: "/school/profile",
-    element: <SchoolProfile />,
+    element: <RoleGuard allowedRoles={["School"]}><SchoolProfile /></RoleGuard>,
   },
   {
     path: "/school/uniforms",
-    element: <UniformManagement />,
+    element: <RoleGuard allowedRoles={["School"]}><UniformManagement /></RoleGuard>,
   },
   {
     path: "/school/campaigns",
-    element: <CampaignList />,
+    element: <RoleGuard allowedRoles={["School"]}><CampaignList /></RoleGuard>,
   },
   {
     path: "/school/campaigns/new",
-    element: <CampaignManagement />,
+    element: <RoleGuard allowedRoles={["School"]}><CampaignManagement /></RoleGuard>,
   },
   {
     path: "/school/campaigns/:id",
-    element: <CampaignDetail />,
+    element: <RoleGuard allowedRoles={["School"]}><CampaignDetail /></RoleGuard>,
   },
   { path: "/forgot-password", element: <ForgotPassword /> },
   { path: "/forgot-password/sent", element: <ForgotPasswordSent /> },

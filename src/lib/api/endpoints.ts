@@ -34,5 +34,6 @@ export const endpoints = {
         outfitImageUpload: "/api/schools/me/outfits/upload-image",
         campaigns: "/api/schools/me/campaigns",
         campaignProgress: "/api/schools/me/campaigns/{id}/progress",
+        providers: "/api/schools/me/providers",
     },
 } as const;

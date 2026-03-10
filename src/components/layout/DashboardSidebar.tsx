@@ -35,6 +35,14 @@ const Tooltip = ({ label }: { label: string }) => (
     </span>
 );
 
+/* CSS filter to convert ANY icon color → target blue #478aea */
+const ICON_FILTER_ACTIVE: React.CSSProperties = {
+    filter: "brightness(0) saturate(100%) invert(48%) sepia(89%) saturate(1595%) hue-rotate(200deg) brightness(96%) contrast(89%)",
+};
+const ICON_FILTER_INACTIVE: React.CSSProperties = {
+    filter: "brightness(0) saturate(100%) opacity(0.45)",
+};
+
 export const DashboardSidebar = ({
     isCollapsed,
     onToggle,
@@ -88,7 +96,7 @@ export const DashboardSidebar = ({
                         onClick={() => item.href && navigate(item.href)}
                         className={`w-full ${isCollapsed ? "justify-center px-0" : "justify-start gap-2.5 px-3"} h-auto py-2.5 hover:bg-[#ebf3fd] ${item.active ? "bg-[#ebf3fd]" : ""} ${item.href ? "cursor-pointer" : ""}`}
                     >
-                        <img className="w-6 h-6 flex-shrink-0" alt={item.label} src={item.icon} />
+                        <img className="w-6 h-6 flex-shrink-0 transition-all duration-200" style={item.active ? ICON_FILTER_ACTIVE : ICON_FILTER_INACTIVE} alt={item.label} src={item.icon} />
                         {!isCollapsed && (
                             <span className={`[font-family:'Montserrat',Helvetica] font-semibold text-base ${item.active ? "text-[#478aea]" : "text-[#4c5769]"}`}>
                                 {item.label}
@@ -118,7 +126,7 @@ export const DashboardSidebar = ({
                                         className={`w-full ${isCollapsed ? "justify-center px-0" : "justify-start gap-2.5 px-3"} h-auto py-2.5 rounded-[8px] hover:bg-[#ebf3fd] ${item.active ? "bg-[#ebf3fd]" : ""} ${item.href ? "cursor-pointer" : ""}`}
                                     >
                                         <div className="relative flex-shrink-0">
-                                            <img className="w-6 h-6" alt={item.label} src={item.icon} />
+                                            <img className="w-6 h-6 transition-all duration-200" style={item.active ? ICON_FILTER_ACTIVE : ICON_FILTER_INACTIVE} alt={item.label} src={item.icon} />
                                             {item.badge && isCollapsed && (
                                                 <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-[#ff0000] rounded-full" />
                                             )}

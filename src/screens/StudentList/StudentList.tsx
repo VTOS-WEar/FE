@@ -9,7 +9,7 @@ import {
     BreadcrumbSeparator,
 } from "../../components/ui/breadcrumb";
 import { DashboardSidebar } from "../../components/layout";
-import { DASHBOARD_SIDEBAR_CONFIG } from "../../constants/dashboardConfig";
+import { useSidebarConfig } from "../../hooks/useSidebarConfig";
 import { Button } from "../../components/ui/button";
 import {
     getSchoolProfile,
@@ -22,17 +22,7 @@ import {
 } from "../../lib/api/schools";
 import type { StudentListItem, CreateOrUpdateStudentRequest, StudentDetailDto } from "../../lib/api/schools";
 
-/* ── Sidebar: mark "Danh sách học sinh" as active ── */
-const sidebarConfig = {
-    ...DASHBOARD_SIDEBAR_CONFIG,
-    navSections: DASHBOARD_SIDEBAR_CONFIG.navSections.map((section) => ({
-        ...section,
-        items: section.items.map((item) => ({
-            ...item,
-            active: item.label === "Danh sách học sinh",
-        })),
-    })),
-};
+
 
 /* ────────────────────────────────────────────────────────────────────── */
 /* Student Form Modal                                                    */
@@ -317,8 +307,9 @@ function DeleteConfirmDialog({
 /* ────────────────────────────────────────────────────────────────────── */
 export const StudentListV2 = (): JSX.Element => {
     const navigate = useNavigate();
+    const sidebarConfig = useSidebarConfig();
     const [isCollapsed, setIsCollapsed] = useState(false);
-    const [schoolName, setSchoolName] = useState(DASHBOARD_SIDEBAR_CONFIG.name);
+    const [schoolName, setSchoolName] = useState("");
 
     /* ── Data state ── */
     const [students, setStudents] = useState<StudentListItem[]>([]);
@@ -363,7 +354,7 @@ export const StudentListV2 = (): JSX.Element => {
 
     useEffect(() => {
         getSchoolProfile()
-            .then((p) => setSchoolName(p.schoolName || DASHBOARD_SIDEBAR_CONFIG.name))
+            .then((p) => setSchoolName(p.schoolName || ""))
             .catch(() => {});
         // Fetch available grades for combobox & filter
         getSchoolGrades()

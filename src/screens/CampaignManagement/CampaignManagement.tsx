@@ -9,31 +9,24 @@ import {
     BreadcrumbSeparator,
 } from "../../components/ui/breadcrumb";
 import { DashboardSidebar } from "../../components/layout";
-import { DASHBOARD_SIDEBAR_CONFIG } from "../../constants/dashboardConfig";
+import { useSidebarConfig } from "../../hooks/useSidebarConfig";
 import {
     getSchoolProfile,
     getSchoolOutfits,
     publishCampaign,
+    getProviders,
     type OutfitDto,
     type CampaignOutfitInput,
+    type ProviderDto,
 } from "../../lib/api/schools";
 
-/* ── Sidebar: mark "Mở đơn" as active ── */
-const sidebarConfig = {
-    ...DASHBOARD_SIDEBAR_CONFIG,
-    navSections: DASHBOARD_SIDEBAR_CONFIG.navSections.map((section) => ({
-        ...section,
-        items: section.items.map((item) => ({
-            ...item,
-            active: item.label === "Mở đơn",
-        })),
-    })),
-};
+
 
 /* ── Selected outfit item with campaign price ── */
 type SelectedOutfit = {
     outfit: OutfitDto;
     campaignPrice: number;
+    providerId?: string | null;
 };
 
 /* ────────────────────────────────────────────────────────────────────── */
@@ -101,7 +94,8 @@ function OutfitSelectCard({
 export const CampaignManagement = (): JSX.Element => {
     const navigate = useNavigate();
     const [isCollapsed, setIsCollapsed] = useState(false);
-    const [schoolName, setSchoolName] = useState(DASHBOARD_SIDEBAR_CONFIG.name);
+    const sidebarConfig = useSidebarConfig();
+    const [schoolName, setSchoolName] = useState("");
 
     /* ── Form state ── */
     const [campaignName, setCampaignName] = useState("");
@@ -119,6 +113,10 @@ export const CampaignManagement = (): JSX.Element => {
     const [outfitSearch, setOutfitSearch] = useState("");
     const [showAllOutfits, setShowAllOutfits] = useState(false);
 
+    /* ── Providers state ── */
+    const [providers, setProviders] = useState<ProviderDto[]>([]);
+    const [providersLoading, setProvidersLoading] = useState(true);
+
     /* ── Submission ── */
     const [submitting, setSubmitting] = useState(false);
     const [showPreview, setShowPreview] = useState(false);
@@ -131,7 +129,7 @@ export const CampaignManagement = (): JSX.Element => {
     /* ── Load school profile ── */
     useEffect(() => {
         getSchoolProfile()
-            .then((p) => setSchoolName(p.schoolName || DASHBOARD_SIDEBAR_CONFIG.name))
+            .then((p) => setSchoolName(p.schoolName || ""))
             .catch(() => {});
     }, []);
 
@@ -142,6 +140,12 @@ export const CampaignManagement = (): JSX.Element => {
             .then((res) => setOutfits(res.items))
             .catch(() => setOutfits([]))
             .finally(() => setOutfitsLoading(false));
+
+        setProvidersLoading(true);
+        getProviders()
+            .then(setProviders)
+            .catch(() => setProviders([]))
+            .finally(() => setProvidersLoading(false));
     }, []);
 
     /* ── Toggle outfit selection ── */
@@ -190,6 +194,7 @@ export const CampaignManagement = (): JSX.Element => {
             const outfitInputs: CampaignOutfitInput[] = Array.from(selectedOutfits.values()).map((s) => ({
                 outfitId: s.outfit.outfitId,
                 campaignPrice: s.campaignPrice,
+                providerId: s.providerId || null,
             }));
 
             await publishCampaign({
@@ -232,7 +237,7 @@ export const CampaignManagement = (): JSX.Element => {
                     <div className="bg-white border-b border-[#cbcad7] px-6 lg:px-10 py-5 flex items-center justify-between">
                         <Breadcrumb>
                             <BreadcrumbList>
-                                <BreadcrumbItem><BreadcrumbLink href="/homepage" className="[font-family:'Montserrat',Helvetica] font-semibold text-[#4c5769] text-base">Trang chủ</BreadcrumbLink></BreadcrumbItem>
+                                <BreadcrumbItem><BreadcrumbLink href="/school/dashboard" className="[font-family:'Montserrat',Helvetica] font-semibold text-[#4c5769] text-base">Trang chủ</BreadcrumbLink></BreadcrumbItem>
                                 <BreadcrumbSeparator className="text-[#cbcad7]">/</BreadcrumbSeparator>
                                 <BreadcrumbItem><BreadcrumbPage className="[font-family:'Montserrat',Helvetica] font-semibold text-[#4c5769] text-base">Tạo đơn đặt trước</BreadcrumbPage></BreadcrumbItem>
                             </BreadcrumbList>
@@ -489,6 +494,50 @@ export const CampaignManagement = (): JSX.Element => {
                                     <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z" /></svg>
                                     Lưu bản nháp
                                 </button>
+
+                                {/* Nhà cung cấp */}
+                                {selectedOutfits.size > 0 && (
+                                    <div className="bg-white border border-[#cbcad7] rounded-[16px] p-6">
+                                        <div className="flex items-center gap-2 mb-5">
+                                            <div className="w-6 h-6 rounded-full bg-[#DBEAFE] flex items-center justify-center">
+                                                <svg className="w-3.5 h-3.5 text-[#3B82F6]" viewBox="0 0 24 24" fill="currentColor"><path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17V9.5h2.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z" /></svg>
+                                            </div>
+                                            <h2 className="[font-family:'Montserrat',Helvetica] font-bold text-[#1a1a2e] text-lg">Nhà cung cấp</h2>
+                                        </div>
+                                        <p className="[font-family:'Montserrat',Helvetica] font-medium text-[#97A3B6] text-xs mb-4">Chọn nhà cung cấp cho từng sản phẩm (không bắt buộc, có thể chọn sau).</p>
+                                        <div className="space-y-3">
+                                            {Array.from(selectedOutfits.values()).map((s) => (
+                                                <div key={s.outfit.outfitId} className="space-y-1.5">
+                                                    <p className="[font-family:'Montserrat',Helvetica] font-semibold text-[#1A1A2E] text-xs truncate">{s.outfit.outfitName}</p>
+                                                    <select
+                                                        value={s.providerId || ""}
+                                                        onChange={(e) => {
+                                                            const val = e.target.value || null;
+                                                            setSelectedOutfits((prev) => {
+                                                                const next = new Map(prev);
+                                                                const existing = next.get(s.outfit.outfitId);
+                                                                if (existing) {
+                                                                    next.set(s.outfit.outfitId, { ...existing, providerId: val });
+                                                                }
+                                                                return next;
+                                                            });
+                                                        }}
+                                                        className={inputClass + " text-xs"}
+                                                    >
+                                                        <option value="">-- Chưa chọn --</option>
+                                                        {providersLoading ? (
+                                                            <option disabled>Đang tải...</option>
+                                                        ) : (
+                                                            providers.map((p) => (
+                                                                <option key={p.id} value={p.id}>{p.providerName}</option>
+                                                            ))
+                                                        )}
+                                                    </select>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </main>

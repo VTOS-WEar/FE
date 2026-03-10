@@ -9,7 +9,7 @@ import {
     BreadcrumbSeparator,
 } from "../../components/ui/breadcrumb";
 import { DashboardSidebar } from "../../components/layout";
-import { DASHBOARD_SIDEBAR_CONFIG } from "../../constants/dashboardConfig";
+import { useSidebarConfig } from "../../hooks/useSidebarConfig";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
@@ -28,20 +28,11 @@ import {
 import { ApiError } from "../../lib/api/clients";
 import { ApprovedProfileView } from "./ApprovedProfileView";
 
-/** Override sidebar config: set "Hồ sơ trường" as active */
-const sidebarConfig = {
-    ...DASHBOARD_SIDEBAR_CONFIG,
-    navSections: DASHBOARD_SIDEBAR_CONFIG.navSections.map((section) => ({
-        ...section,
-        items: section.items.map((item) => ({
-            ...item,
-            active: item.label === "Hồ sơ trường",
-        })),
-    })),
-};
+
 
 export const SchoolProfile = (): JSX.Element => {
     const navigate = useNavigate();
+    const sidebarConfig = useSidebarConfig();
     const [isCollapsed, setIsCollapsed] = useState(false);
 
     // ── Profile data ──
@@ -143,7 +134,7 @@ export const SchoolProfile = (): JSX.Element => {
                 <div className={`${isCollapsed ? "lg:w-16" : "lg:w-[20rem] xl:w-[23.75rem]"} flex-shrink-0 lg:sticky lg:top-0 lg:h-screen transition-all duration-300`}>
                     <DashboardSidebar
                         {...sidebarConfig}
-                        name={profileData?.schoolName || sidebarConfig.name}
+                        name={profileData?.schoolName || ""}
                         isCollapsed={isCollapsed}
                         onToggle={() => setIsCollapsed(prev => !prev)}
                         onLogout={handleLogout}

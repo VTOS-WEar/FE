@@ -45,7 +45,8 @@ export const SignIn = (): JSX.Element => {
       storage.setItem("user", JSON.stringify(data.user));
       storage.setItem("expires_in", String(data.expiresIn));
 
-      navigate("/homepage", {
+      const redirectTo = data.user.role === "School" ? "/school/dashboard" : "/homepage";
+      navigate(redirectTo, {
         replace: true,
         state: { from: "/login" },
       });
