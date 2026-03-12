@@ -1,6 +1,7 @@
 import { Search, ShoppingCart, Bell, ChevronDown, LogIn, User } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useCart } from "../../contexts/CartContext";
 
 function getSessionUser(): { fullName: string; role: string } | null {
   const raw = localStorage.getItem("user") || sessionStorage.getItem("user");
@@ -14,6 +15,8 @@ function isLoggedIn(): boolean {
 
 export const NavbarGuest = (): JSX.Element => {
   const navigate = useNavigate();
+  const cartCtx = useCart();
+  const cartCount = cartCtx.getItemCount();
   const [loggedIn, setLoggedIn] = useState(false);
   const [userName, setUserName] = useState("");
   const [userRole, setUserRole] = useState("");
@@ -76,8 +79,16 @@ export const NavbarGuest = (): JSX.Element => {
 
           {/* Right Icons */}
           <div className="flex items-center gap-3">
-            <button className="flex items-center justify-center p-2.5 bg-white rounded-full shadow-md hover:shadow-lg transition-shadow">
+            <button
+              onClick={() => navigate("/cart")}
+              className="relative flex items-center justify-center p-2.5 bg-white rounded-full shadow-md hover:shadow-lg transition-shadow"
+            >
               <ShoppingCart className="w-6 h-6" />
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-purple-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                  {cartCount > 99 ? "99+" : cartCount}
+                </span>
+              )}
             </button>
             <button className="flex items-center justify-center p-2.5 bg-white rounded-full shadow-md hover:shadow-lg transition-shadow">
               <Bell className="w-6 h-6" />

@@ -404,6 +404,74 @@ export async function deleteOutfit(id: string): Promise<void> {
 
 //#endregion
 
+//#region Variant (Size) CRUD
+
+export type ProductVariantDto = {
+    productVariantId: string;
+    outfitId: string;
+    size: string;
+    price: number;
+    stockQuantity: number;
+    colorVariant: string | null;
+    materialType: string | null;
+    skuCode: string | null;
+    variantImageURL: string | null;
+};
+
+export type CreateVariantRequest = {
+    size: string;
+    price: number;
+    stockQuantity: number;
+    colorVariant?: string | null;
+    materialType?: string | null;
+    skuCode?: string | null;
+};
+
+export type UpdateVariantRequest = {
+    size?: string;
+    price?: number;
+    stockQuantity?: number;
+    colorVariant?: string | null;
+    materialType?: string | null;
+    skuCode?: string | null;
+};
+
+/** Get all variants for an outfit */
+export async function getOutfitVariants(outfitId: string): Promise<ProductVariantDto[]> {
+    return api<ProductVariantDto[]>(`${endpoints.schools.outfitVariants}/${outfitId}/variants`, {
+        method: "GET",
+        auth: true,
+    });
+}
+
+/** Create a new variant for an outfit */
+export async function createVariant(outfitId: string, data: CreateVariantRequest): Promise<ProductVariantDto> {
+    return api<ProductVariantDto>(`${endpoints.schools.outfitVariants}/${outfitId}/variants`, {
+        method: "POST",
+        body: JSON.stringify(data),
+        auth: true,
+    });
+}
+
+/** Update a variant */
+export async function updateVariant(outfitId: string, variantId: string, data: UpdateVariantRequest): Promise<ProductVariantDto> {
+    return api<ProductVariantDto>(`${endpoints.schools.outfitVariants}/${outfitId}/variants/${variantId}`, {
+        method: "PUT",
+        body: JSON.stringify(data),
+        auth: true,
+    });
+}
+
+/** Delete a variant */
+export async function deleteVariant(outfitId: string, variantId: string): Promise<void> {
+    await api<void>(`${endpoints.schools.outfitVariants}/${outfitId}/variants/${variantId}`, {
+        method: "DELETE",
+        auth: true,
+    });
+}
+
+//#endregion
+
 //#region ── Campaigns ──
 
 export type CampaignListItemDto = {

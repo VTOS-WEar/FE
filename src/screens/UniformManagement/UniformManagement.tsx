@@ -21,6 +21,7 @@ import {
     type OutfitDto,
     type CreateOutfitRequest,
 } from "../../lib/api/schools";
+import VariantManager from "./VariantManager";
 
 
 
@@ -334,7 +335,7 @@ function DeleteConfirmDialog({
 /* ────────────────────────────────────────────────────────────────────── */
 /* Uniform Card                                                          */
 /* ────────────────────────────────────────────────────────────────────── */
-function UniformCard({ item, onEdit, onDelete }: { item: OutfitDto; onEdit: (item: OutfitDto) => void; onDelete: (item: OutfitDto) => void }) {
+function UniformCard({ item, onEdit, onDelete, onManageVariants }: { item: OutfitDto; onEdit: (item: OutfitDto) => void; onDelete: (item: OutfitDto) => void; onManageVariants: (item: OutfitDto) => void }) {
     const formattedPrice = new Intl.NumberFormat("vi-VN").format(item.price) + "đ";
 
     return (
@@ -386,6 +387,17 @@ function UniformCard({ item, onEdit, onDelete }: { item: OutfitDto; onEdit: (ite
                     </span>
                     <span className="[font-family:'Montserrat',Helvetica] font-bold text-[#6938EF] text-sm">{formattedPrice}</span>
                 </div>
+                <div className="px-4 pb-3">
+                    <button
+                        onClick={() => onManageVariants(item)}
+                        className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-[8px] border border-[#DDD6FE] bg-[#F5F3FF] hover:bg-[#EDE9FE] [font-family:'Montserrat',Helvetica] font-semibold text-[#6938EF] text-xs transition-colors"
+                    >
+                        <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z" />
+                        </svg>
+                        Quản lý kích cỡ
+                    </button>
+                </div>
             </div>
         </div>
     );
@@ -435,6 +447,9 @@ export const UniformManagement = (): JSX.Element => {
     const [formLoading, setFormLoading] = useState(false);
     const [deletingOutfit, setDeletingOutfit] = useState<OutfitDto | null>(null);
     const [deleteLoading, setDeleteLoading] = useState(false);
+
+    /* ── Variant modal state ── */
+    const [variantOutfit, setVariantOutfit] = useState<OutfitDto | null>(null);
 
     /* ── Toast ── */
     const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
@@ -614,7 +629,7 @@ export const UniformManagement = (): JSX.Element => {
                         {!loading && (
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                                 {filteredOutfits.map((item) => (
-                                    <UniformCard key={item.outfitId} item={item} onEdit={openEdit} onDelete={setDeletingOutfit} />
+                                    <UniformCard key={item.outfitId} item={item} onEdit={openEdit} onDelete={setDeletingOutfit} onManageVariants={setVariantOutfit} />
                                 ))}
                                 <UploadPlaceholderCard onClick={openCreate} />
                             </div>
@@ -660,6 +675,15 @@ export const UniformManagement = (): JSX.Element => {
                     <span className="[font-family:'Montserrat',Helvetica] font-semibold text-sm">{toast.message}</span>
                 </div>
             )}
+
+            {/* Variant Manager Modal */}
+            <VariantManager
+                outfitId={variantOutfit?.outfitId || ""}
+                outfitName={variantOutfit?.outfitName || ""}
+                outfitPrice={variantOutfit?.price || 0}
+                isOpen={!!variantOutfit}
+                onClose={() => setVariantOutfit(null)}
+            />
         </div>
     );
 };

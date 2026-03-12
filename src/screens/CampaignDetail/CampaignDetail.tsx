@@ -1,8 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { ChevronRight, ArrowLeft, Calendar, Package, ShoppingCart } from "lucide-react";
+import { ChevronRight, ArrowLeft, Calendar, Package, ShoppingCart, X, Minus, Plus, User, ChevronDown } from "lucide-react";
 import { GuestLayout } from "../../components/layout/GuestLayout";
-import { getPublicCampaignDetail, type PublicCampaignDetailDto } from "../../lib/api/schools";
+import { getPublicCampaignDetail, getPublicOutfitDetail, type PublicCampaignDetailDto, type CampaignOutfitDetailDto, type OutfitVariantDto } from "../../lib/api/schools";
+import { getMyChildren, type ChildProfileDto } from "../../lib/api/users";
+import { useCart } from "../../contexts/CartContext";
+import { useToast } from "../../contexts/ToastContext";
+import { recommendSize, type SizeRecommendation } from "../../lib/utils/sizeRecommendation";
 
 const STATUS_LABEL: Record<string, { label: string; color: string }> = {
   Active:   { label: "Đang diễn ra", color: "bg-green-100 text-green-700" },
@@ -11,12 +15,30 @@ const STATUS_LABEL: Record<string, { label: string; color: string }> = {
   Ended:    { label: "Đã kết thúc",  color: "bg-amber-100 text-amber-700" },
 };
 
+/* ── Order Modal types ── */
+type OrderModalState = {
+  open: boolean;
+  outfit: CampaignOutfitDetailDto | null;
+  variants: OutfitVariantDto[];
+  loadingVariants: boolean;
+};
+
 export const CampaignDetail = (): JSX.Element => {
   const { campaignId } = useParams<{ campaignId: string }>();
   const navigate = useNavigate();
+  const cart = useCart();
+  const { showToast } = useToast();
   const [campaign, setCampaign] = useState<PublicCampaignDetailDto | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  /* ── Order modal state ── */
+  const [modal, setModal] = useState<OrderModalState>({ open: false, outfit: null, variants: [], loadingVariants: false });
+  const [children, setChildren] = useState<ChildProfileDto[]>([]);
+  const [selectedChild, setSelectedChild] = useState<string>("");
+  const [selectedVariant, setSelectedVariant] = useState<string>("");
+  const [orderQty, setOrderQty] = useState(1);
+  const [childDropOpen, setChildDropOpen] = useState(false);
 
   /* Auth guard — must be Parent */
   useEffect(() => {
@@ -35,6 +57,73 @@ export const CampaignDetail = (): JSX.Element => {
       .catch(() => setError("Không tìm thấy chương trình này."))
       .finally(() => setLoading(false));
   }, [campaignId]);
+
+  /* Fetch children once for the modal */
+  useEffect(() => {
+    getMyChildren().then(setChildren).catch(() => {});
+  }, []);
+
+  /* ── Open order modal ── */
+  const openOrderModal = async (outfit: CampaignOutfitDetailDto) => {
+    setModal({ open: true, outfit, variants: [], loadingVariants: true });
+    setSelectedChild(children.length > 0 ? children[0].childId : "");
+    setSelectedVariant("");
+    setOrderQty(1);
+    try {
+      const detail = await getPublicOutfitDetail(outfit.outfitId);
+      setModal(prev => ({ ...prev, variants: detail.variants, loadingVariants: false }));
+      // Don't auto-select first variant — let recommendation handle it
+    } catch {
+      setModal(prev => ({ ...prev, loadingVariants: false }));
+    }
+  };
+
+  /* ── Size recommendation ── */
+  const sizeRec: SizeRecommendation = useMemo(() => {
+    const child = children.find(c => c.childId === selectedChild);
+    if (!child || modal.variants.length === 0) {
+      return { recommendedVariantId: null, recommendedSize: "", confidence: "low" as const, reason: "" };
+    }
+    return recommendSize(child.heightCm, child.weightKg, modal.variants);
+  }, [selectedChild, children, modal.variants]);
+
+  /* Auto-select recommended variant when it changes */
+  useEffect(() => {
+    if (sizeRec.recommendedVariantId) {
+      setSelectedVariant(sizeRec.recommendedVariantId);
+    } else if (modal.variants.length > 0 && !selectedVariant) {
+      setSelectedVariant(modal.variants[0].productVariantId);
+    }
+  }, [sizeRec.recommendedVariantId, modal.variants]);
+
+  /* ── Confirm add to cart ── */
+  const handleAddToCart = () => {
+    if (!modal.outfit || !campaign || !selectedChild || !selectedVariant) return;
+    const variant = modal.variants.find(v => v.productVariantId === selectedVariant);
+    const child = children.find(c => c.childId === selectedChild);
+    if (!variant || !child) return;
+
+    cart.addItem({
+      campaignOutfitId: modal.outfit.campaignOutfitId,
+      outfitId: modal.outfit.outfitId,
+      outfitName: modal.outfit.outfitName,
+      productVariantId: variant.productVariantId,
+      size: variant.size,
+      quantity: orderQty,
+      price: modal.outfit.campaignPrice,
+      imageURL: modal.outfit.mainImageUrl,
+      studentName: child.fullName,
+      studentClass: child.grade,
+      childProfileId: child.childId,
+      campaignId: campaign.campaignId,
+      schoolId: campaign.school.id,
+      schoolName: campaign.school.schoolName,
+      campaignLabel: campaign.campaignName,
+    });
+
+    showToast({ title: "Thành công", message: `Đã thêm "${modal.outfit.outfitName}" vào giỏ hàng`, variant: "success" });
+    setModal({ open: false, outfit: null, variants: [], loadingVariants: false });
+  };
 
   if (loading) return (
     <GuestLayout bgColor="#F4F6FF">
@@ -156,7 +245,7 @@ export const CampaignDetail = (): JSX.Element => {
                   </p>
                   {campaign.status === "Active" && (
                     <button
-                      onClick={(e) => { e.stopPropagation(); }}
+                      onClick={(e) => { e.stopPropagation(); openOrderModal(outfit); }}
                       className="mt-2 w-full flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl py-3 font-montserrat font-semibold text-sm transition-colors"
                     >
                       <ShoppingCart className="w-4 h-4" />
@@ -169,6 +258,179 @@ export const CampaignDetail = (): JSX.Element => {
           </div>
         )}
       </div>
+
+      {/* ───── Order Modal ───── */}
+      {modal.open && modal.outfit && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={() => setModal({ open: false, outfit: null, variants: [], loadingVariants: false })}>
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden" onClick={e => e.stopPropagation()}>
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+              <h3 className="font-montserrat font-bold text-lg text-black">Đặt hàng</h3>
+              <button onClick={() => setModal({ open: false, outfit: null, variants: [], loadingVariants: false })} className="p-1 hover:bg-gray-100 rounded-lg transition-colors">
+                <X className="w-5 h-5 text-gray-400" />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-5">
+              {/* Outfit preview */}
+              <div className="flex gap-4">
+                <div className="w-20 h-20 rounded-xl overflow-hidden bg-gray-50 flex-shrink-0">
+                  {modal.outfit.mainImageUrl
+                    ? <img src={modal.outfit.mainImageUrl} alt={modal.outfit.outfitName} className="w-full h-full object-cover" />
+                    : <div className="w-full h-full flex items-center justify-center"><Package className="w-8 h-8 text-gray-200" /></div>
+                  }
+                </div>
+                <div>
+                  <h4 className="font-montserrat font-bold text-base text-black mb-1">{modal.outfit.outfitName}</h4>
+                  <p className="font-montserrat font-extrabold text-lg text-purple-600">
+                    {modal.outfit.campaignPrice.toLocaleString("vi-VN")}₫
+                  </p>
+                </div>
+              </div>
+
+              {/* Child selector */}
+              <div>
+                <label className="font-montserrat font-semibold text-sm text-gray-700 mb-2 block">Chọn học sinh</label>
+                {children.length === 0 ? (
+                  <p className="font-montserrat text-sm text-red-500">Chưa có hồ sơ học sinh. Vui lòng thêm học sinh trước.</p>
+                ) : (
+                  <div className="relative">
+                    <button
+                      onClick={() => setChildDropOpen(!childDropOpen)}
+                      className="w-full flex items-center justify-between px-4 py-3 border border-gray-200 rounded-xl font-montserrat text-sm hover:border-purple-300 transition-colors"
+                    >
+                      <span className="flex items-center gap-2">
+                        <User className="w-4 h-4 text-purple-400" />
+                        <span>{children.find(c => c.childId === selectedChild)?.fullName || "Chọn học sinh..."}</span>
+                        {(() => {
+                          const child = children.find(c => c.childId === selectedChild);
+                          if (child && child.heightCm > 0) {
+                            return <span className="text-xs text-gray-400 ml-1">({child.heightCm}cm{child.weightKg > 0 ? `, ${child.weightKg}kg` : ""})</span>;
+                          }
+                          return null;
+                        })()}
+                      </span>
+                      <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${childDropOpen ? "rotate-180" : ""}`} />
+                    </button>
+                    {childDropOpen && (
+                      <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-lg z-10 max-h-48 overflow-y-auto">
+                        {children.map(child => (
+                          <button
+                            key={child.childId}
+                            onClick={() => { setSelectedChild(child.childId); setChildDropOpen(false); }}
+                            className={`w-full text-left px-4 py-3 font-montserrat text-sm hover:bg-purple-50 transition-colors ${
+                              selectedChild === child.childId ? "bg-purple-50 text-purple-700 font-semibold" : "text-gray-700"
+                            }`}
+                          >
+                            <span className="font-medium">{child.fullName}</span>
+                            <span className="text-xs text-gray-400 ml-2">{child.grade} • {child.school.schoolName}</span>
+                            {child.heightCm > 0 && (
+                              <span className="text-xs text-purple-400 ml-1">({child.heightCm}cm)</span>
+                            )}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Size selector */}
+              <div>
+                <label className="font-montserrat font-semibold text-sm text-gray-700 mb-2 block">Chọn size</label>
+                {modal.loadingVariants ? (
+                  <div className="flex items-center gap-2 text-gray-400"><div className="w-4 h-4 border-2 border-gray-200 border-t-purple-500 rounded-full animate-spin" /> Đang tải...</div>
+                ) : modal.variants.length === 0 ? (
+                  <p className="font-montserrat text-sm text-red-500">Chưa có size cho sản phẩm này.</p>
+                ) : (
+                  <>
+                    <div className="flex flex-wrap gap-2">
+                      {modal.variants.map(v => {
+                        const isRecommended = v.productVariantId === sizeRec.recommendedVariantId;
+                        return (
+                          <button
+                            key={v.productVariantId}
+                            onClick={() => setSelectedVariant(v.productVariantId)}
+                            className={`relative px-4 py-2.5 rounded-xl border-2 font-montserrat font-semibold text-sm transition-all ${
+                              selectedVariant === v.productVariantId
+                                ? "border-purple-500 bg-purple-50 text-purple-700"
+                                : isRecommended
+                                ? "border-purple-300 bg-purple-50/50 text-purple-600"
+                                : "border-gray-200 text-gray-600 hover:border-purple-200"
+                            }`}
+                          >
+                            {isRecommended && (
+                              <span className="absolute -top-2 -right-1 text-xs">⭐</span>
+                            )}
+                            {v.size}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    {/* Recommendation info */}
+                    {sizeRec.confidence !== "low" && sizeRec.reason && (
+                      <p className="mt-2 font-montserrat text-xs text-purple-500 flex items-center gap-1">
+                        <span>⭐</span> {sizeRec.reason}
+                      </p>
+                    )}
+                    {sizeRec.confidence === "low" && sizeRec.reason && (
+                      <p className="mt-2 font-montserrat text-xs text-amber-500 flex items-center gap-1">
+                        <span>⚠️</span> {sizeRec.reason}
+                      </p>
+                    )}
+                  </>
+                )}
+              </div>
+
+              {/* Quantity */}
+              <div>
+                <label className="font-montserrat font-semibold text-sm text-gray-700 mb-2 block">Số lượng</label>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => setOrderQty(q => Math.max(1, q - 1))}
+                    className="w-9 h-9 flex items-center justify-center rounded-lg border border-gray-200 hover:border-purple-300 transition-colors"
+                  >
+                    <Minus className="w-4 h-4 text-gray-500" />
+                  </button>
+                  <span className="font-montserrat font-bold text-lg w-8 text-center">{orderQty}</span>
+                  <button
+                    onClick={() => setOrderQty(q => q + 1)}
+                    className="w-9 h-9 flex items-center justify-center rounded-lg border border-gray-200 hover:border-purple-300 transition-colors"
+                  >
+                    <Plus className="w-4 h-4 text-gray-500" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Total */}
+              <div className="flex justify-between items-center pt-3 border-t border-gray-100">
+                <span className="font-montserrat font-medium text-sm text-gray-500">Tạm tính</span>
+                <span className="font-montserrat font-extrabold text-xl text-purple-600">
+                  {(modal.outfit.campaignPrice * orderQty).toLocaleString("vi-VN")}₫
+                </span>
+              </div>
+
+              {/* Action buttons */}
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setModal({ open: false, outfit: null, variants: [], loadingVariants: false })}
+                  className="flex-1 py-3 border-2 border-gray-200 rounded-xl font-montserrat font-semibold text-sm text-gray-600 hover:border-gray-300 transition-colors"
+                >
+                  Huỷ
+                </button>
+                <button
+                  onClick={handleAddToCart}
+                  disabled={!selectedChild || !selectedVariant || children.length === 0}
+                  className="flex-1 py-3 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-xl font-montserrat font-semibold text-sm transition-colors flex items-center justify-center gap-2"
+                >
+                  <ShoppingCart className="w-4 h-4" />
+                  Thêm vào giỏ
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </GuestLayout>
   );
 };

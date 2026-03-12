@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   ChevronRight,
@@ -11,110 +11,104 @@ import {
   Truck,
   School,
   ShoppingCart,
+  Loader2,
 } from "lucide-react";
 import { GuestLayout } from "../../components/layout/GuestLayout";
-
-/* ── Types ── */
-type CartItem = {
-  id: string;
-  outfitId: string;
-  outfitName: string;
-  size: string;
-  quantity: number;
-  price: number;
-  imageURL: string | null;
-  studentName: string;
-  studentClass: string;
-};
-
-type CartSchoolGroup = {
-  schoolId: string;
-  schoolName: string;
-  campaignLabel: string | null;
-  items: CartItem[];
-};
+import { useCart } from "../../contexts/CartContext";
+import { useToast } from "../../contexts/ToastContext";
+import { checkout, type CheckoutRequest } from "../../lib/api/orders";
+import { getMyChildren, type ChildProfileDto } from "../../lib/api/users";
 
 /* ── Helpers ── */
 const fmt = (n: number) =>
   n.toLocaleString("vi-VN", { maximumFractionDigits: 0 }) + " VNĐ";
 
-/* ── Mock data (replace with real cart state later) ── */
-const MOCK_CART: CartSchoolGroup[] = [
-  {
-    schoolId: "1",
-    schoolName: "THPT Lê Văn Hiến",
-    campaignLabel: "Đợt may HKI 2026",
-    items: [
-      {
-        id: "c1",
-        outfitId: "o1",
-        outfitName: "Đồng phục thể dục",
-        size: "S",
-        quantity: 1,
-        price: 200000,
-        imageURL: null,
-        studentName: "Nguyễn Minh An",
-        studentClass: "Lớp 10A1",
-      },
-      {
-        id: "c2",
-        outfitId: "o2",
-        outfitName: "Đồng phục thường ngày",
-        size: "S",
-        quantity: 1,
-        price: 520000,
-        imageURL: null,
-        studentName: "Nguyễn Minh Bo",
-        studentClass: "Lớp 10A1",
-      },
-    ],
-  },
-];
-
 /* ================================================================== */
 export const Cart = (): JSX.Element => {
   const navigate = useNavigate();
-  const [cart, setCart] = useState<CartSchoolGroup[]>(MOCK_CART);
+  const cart = useCart();
+  const { showToast } = useToast();
   const [coupon, setCoupon] = useState("");
   const [deliveryMethod, setDeliveryMethod] = useState<"home" | "school">("home");
+  const [checkingOut, setCheckingOut] = useState(false);
+  const [shippingAddress, setShippingAddress] = useState("");
+  const [childMap, setChildMap] = useState<Map<string, ChildProfileDto>>(new Map());
+
+  /* ── Fetch fresh child data ── */
+  useEffect(() => {
+    getMyChildren()
+      .then((kids) => {
+        const map = new Map<string, ChildProfileDto>();
+        for (const k of kids) map.set(k.childId, k);
+        setChildMap(map);
+      })
+      .catch(() => {});
+  }, []);
 
   /* ── Derived ── */
-  const allItems = cart.flatMap((g) => g.items);
+  const { groups, items: allItems } = cart;
   const subtotal = allItems.reduce((s, i) => s + i.price * i.quantity, 0);
   const shippingFee = deliveryMethod === "home" ? 30000 : 0;
   const discount = 0;
   const total = subtotal + shippingFee - discount;
 
-  /* ── Handlers ── */
-  const updateQty = (groupIdx: number, itemIdx: number, delta: number) => {
-    setCart((prev) => {
-      const next = prev.map((g, gi) =>
-        gi === groupIdx
-          ? {
-              ...g,
-              items: g.items.map((item, ii) =>
-                ii === itemIdx
-                  ? { ...item, quantity: Math.max(1, item.quantity + delta) }
-                  : item
-              ),
-            }
-          : g
-      );
-      return next;
-    });
-  };
+  /* ── Checkout handler ── */
+  const handleCheckout = async () => {
+    if (allItems.length === 0) return;
 
-  const removeItem = (groupIdx: number, itemIdx: number) => {
-    setCart((prev) => {
-      const next = prev
-        .map((g, gi) =>
-          gi === groupIdx
-            ? { ...g, items: g.items.filter((_, ii) => ii !== itemIdx) }
-            : g
-        )
-        .filter((g) => g.items.length > 0);
-      return next;
-    });
+    // Validate shipping address for home delivery
+    if (deliveryMethod === "home" && !shippingAddress.trim()) {
+      showToast({ title: "Thiếu thông tin", message: "Vui lòng nhập địa chỉ giao hàng", variant: "error" });
+      return;
+    }
+
+    setCheckingOut(true);
+    try {
+      // Group items by childProfileId + campaignId for separate orders
+      const orderGroups = new Map<string, { childProfileId: string; campaignId: string; items: typeof allItems }>();
+      for (const item of allItems) {
+        const key = `${item.childProfileId}__${item.campaignId}`;
+        if (!orderGroups.has(key)) {
+          orderGroups.set(key, { childProfileId: item.childProfileId, campaignId: item.campaignId, items: [] });
+        }
+        orderGroups.get(key)!.items.push(item);
+      }
+
+      // Create one order per child+campaign group
+      let lastPaymentLink = "";
+      for (const [, group] of orderGroups) {
+        const request: CheckoutRequest = {
+          childProfileId: group.childProfileId,
+          items: group.items.map(item => ({
+            productVariantId: item.productVariantId,
+            quantity: item.quantity,
+          })),
+          shippingAddress: deliveryMethod === "school" ? "Nhận tại trường" : shippingAddress,
+          deliveryMethod: deliveryMethod === "home" ? "Giao tận nhà" : "Nhận tại trường",
+          campaignId: group.campaignId,
+        };
+
+        const result = await checkout(request);
+        lastPaymentLink = result.paymentLink;
+      }
+
+      // Clear cart after successful checkout
+      cart.clearCart();
+      showToast({ title: "Đặt hàng thành công!", message: "Đang chuyển đến trang thanh toán...", variant: "success" });
+
+      // Redirect to PayOS payment page
+      if (lastPaymentLink) {
+        setTimeout(() => { window.location.href = lastPaymentLink; }, 1000);
+      }
+    } catch (err: any) {
+      showToast({
+        title: "Đặt hàng thất bại",
+        message: err?.message || "Có lỗi xảy ra khi đặt hàng. Vui lòng thử lại.",
+        variant: "error",
+      });
+    } finally {
+      setCheckingOut(false);
+    }
   };
 
   /* ── Empty state ── */
@@ -169,9 +163,9 @@ export const Cart = (): JSX.Element => {
         <div className="flex flex-col lg:flex-row gap-8">
           {/* ── Left: Cart items ── */}
           <div className="flex-1 min-w-0 space-y-6">
-            {cart.map((group, gi) => (
+            {groups.map((group) => (
               <div
-                key={group.schoolId}
+                key={`${group.schoolId}-${group.campaignId}`}
                 className="bg-white rounded-2xl shadow-sm overflow-hidden"
               >
                 {/* School header */}
@@ -191,14 +185,28 @@ export const Cart = (): JSX.Element => {
 
                 {/* Items */}
                 <div className="divide-y divide-gray-50">
-                  {group.items.map((item, ii) => (
+                  {group.items.map((item) => (
                     <div key={item.id} className="px-6 py-5">
                       {/* Student row */}
                       <div className="flex items-center gap-2 mb-3">
                         <span className="text-gray-400 text-sm">👤</span>
-                        <span className="font-montserrat font-medium text-sm text-gray-600">
-                          {item.studentName} - {item.studentClass}
-                        </span>
+                        {(() => {
+                          const child = childMap.get(item.childProfileId);
+                          const name = child?.fullName || item.studentName;
+                          const grade = child?.grade || item.studentClass;
+                          const h = child?.heightCm;
+                          const w = child?.weightKg;
+                          return (
+                            <span className="font-montserrat font-medium text-sm text-gray-600">
+                              {name} - {grade}
+                              {h && h > 0 && (
+                                <span className="text-xs text-purple-400 ml-1.5">
+                                  ({h}cm{w && w > 0 ? `, ${w}kg` : ""})
+                                </span>
+                              )}
+                            </span>
+                          );
+                        })()}
                       </div>
 
                       {/* Item row */}
@@ -230,8 +238,9 @@ export const Cart = (): JSX.Element => {
                             </span>
                             <div className="flex items-center border border-gray-200 rounded-md">
                               <button
-                                onClick={() => updateQty(gi, ii, -1)}
-                                className="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-gray-600"
+                                onClick={() => cart.updateQuantity(item.id, item.quantity - 1)}
+                                disabled={item.quantity <= 1}
+                                className="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-gray-600 disabled:opacity-30"
                               >
                                 <Minus className="w-3 h-3" />
                               </button>
@@ -239,7 +248,7 @@ export const Cart = (): JSX.Element => {
                                 {item.quantity}
                               </span>
                               <button
-                                onClick={() => updateQty(gi, ii, 1)}
+                                onClick={() => cart.updateQuantity(item.id, item.quantity + 1)}
                                 className="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-gray-600"
                               >
                                 <Plus className="w-3 h-3" />
@@ -251,7 +260,7 @@ export const Cart = (): JSX.Element => {
                               <Pencil className="w-3 h-3" /> Chỉnh sửa
                             </button>
                             <button
-                              onClick={() => removeItem(gi, ii)}
+                              onClick={() => cart.removeItem(item.id)}
                               className="flex items-center gap-1 font-montserrat text-xs text-red-400 hover:text-red-600"
                             >
                               <Trash2 className="w-3 h-3" /> Xoá
@@ -324,6 +333,22 @@ export const Cart = (): JSX.Element => {
                 </div>
               </div>
 
+              {/* Shipping address (for home delivery) */}
+              {deliveryMethod === "home" && (
+                <div className="mb-5">
+                  <p className="font-montserrat font-semibold text-sm text-black mb-2">
+                    Địa chỉ giao hàng
+                  </p>
+                  <input
+                    type="text"
+                    placeholder="Nhập địa chỉ nhận hàng"
+                    value={shippingAddress}
+                    onChange={(e) => setShippingAddress(e.target.value)}
+                    className="w-full px-3 py-2.5 border border-gray-200 rounded-lg font-montserrat text-sm placeholder:text-gray-300 focus:outline-none focus:border-purple-400"
+                  />
+                </div>
+              )}
+
               {/* Coupon */}
               <p className="font-montserrat font-semibold text-sm text-black mb-2">
                 Mã giảm giá
@@ -342,9 +367,22 @@ export const Cart = (): JSX.Element => {
               </div>
 
               {/* Checkout button */}
-              <button className="w-full py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-montserrat font-bold text-sm rounded-xl hover:from-purple-700 hover:to-blue-700 transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2">
-                Tiến hành thanh toán
-                <ChevronRight className="w-4 h-4" />
+              <button
+                onClick={handleCheckout}
+                disabled={checkingOut || allItems.length === 0}
+                className="w-full py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-montserrat font-bold text-sm rounded-xl hover:from-purple-700 hover:to-blue-700 disabled:opacity-60 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+              >
+                {checkingOut ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Đang xử lý...
+                  </>
+                ) : (
+                  <>
+                    Tiến hành thanh toán
+                    <ChevronRight className="w-4 h-4" />
+                  </>
+                )}
               </button>
 
               {/* Trust badges */}

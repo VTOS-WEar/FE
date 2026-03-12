@@ -1,5 +1,6 @@
 import { RouterProvider, createBrowserRouter, Navigate } from "react-router-dom";
 import { ToastProvider } from "./contexts/ToastContext";
+import { CartProvider } from "./contexts/CartContext";
 import { AccountSecurity } from "./screens/AccountSecurity";
 import { AccountSetting } from "./screens/AccountSetting";
 import { FillInformation } from "./screens/FillInformation";
@@ -161,8 +162,10 @@ const router = createBrowserRouter([
 
 export const App = () => {
   return (
-    <ToastProvider>
-      <RouterProvider router={router} />
-    </ToastProvider>
+    <CartProvider>
+      <ToastProvider>
+        <RouterProvider router={router} />
+      </ToastProvider>
+    </CartProvider>
   );
 };

@@ -91,6 +91,20 @@
       ]
     },
     {
+      "id": "src/screens/OutfitDetail/OutfitDetail.tsx",
+      "label": "OutfitDetail",
+      "routes": [
+        "/outfits/:id"
+      ]
+    },
+    {
+      "id": "src/screens/Cart/Cart.tsx",
+      "label": "Cart",
+      "routes": [
+        "/cart"
+      ]
+    },
+    {
       "id": "src/screens/ProductList/ProductList.tsx",
       "label": "ProductList",
       "routes": [
@@ -123,15 +137,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:47:12-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:50:12-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/homepage",
         "trigger": {
           "element": "<a href=\"/homepage\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Trang chủ\r\n            </a>",
-          "line": 47,
-          "endLine": 49,
+          "line": 50,
+          "endLine": 52,
           "column": 12,
           "endColumn": 16,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -139,15 +153,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:53:12-to-src\\screens\\SchoolList\\SchoolList.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:56:12-to-src\\screens\\SchoolList\\SchoolList.tsx",
       "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\screens\\SchoolList\\SchoolList.tsx",
       "data": {
         "viaRoute": "/schools",
         "trigger": {
           "element": "<Link to=\"/schools\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Tìm trường\r\n            </Link>",
-          "line": 53,
-          "endLine": 55,
+          "line": 56,
+          "endLine": 58,
           "column": 12,
           "endColumn": 19,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -155,15 +169,31 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:99:31-to-src\\screens\\SignIn\\SignIn.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:83:29-to-src\\screens\\Cart\\Cart.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\Cart\\Cart.tsx",
+      "data": {
+        "viaRoute": "/cart",
+        "trigger": {
+          "element": "navigate(\"/cart\")",
+          "line": 83,
+          "endLine": 83,
+          "column": 29,
+          "endColumn": 46,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:110:31-to-src\\screens\\SignIn\\SignIn.tsx",
       "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\screens\\SignIn\\SignIn.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
           "element": "navigate(\"/signin\")",
-          "line": 99,
-          "endLine": 99,
+          "line": 110,
+          "endLine": 110,
           "column": 31,
           "endColumn": 50,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -171,15 +201,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:118:31-to-src\\screens\\SignIn\\SignIn.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:129:31-to-src\\screens\\SignIn\\SignIn.tsx",
       "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\screens\\SignIn\\SignIn.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
           "element": "navigate(\"/signin\")",
-          "line": 118,
-          "endLine": 118,
+          "line": 129,
+          "endLine": 129,
           "column": 31,
           "endColumn": 50,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -219,15 +249,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:47:12-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:50:12-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/homepage",
         "trigger": {
           "element": "<a href=\"/homepage\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Trang chủ\r\n            </a>",
-          "line": 47,
-          "endLine": 49,
+          "line": 50,
+          "endLine": 52,
           "column": 12,
           "endColumn": 16,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -235,15 +265,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:53:12-to-src\\screens\\SchoolList\\SchoolList.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:56:12-to-src\\screens\\SchoolList\\SchoolList.tsx",
       "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\screens\\SchoolList\\SchoolList.tsx",
       "data": {
         "viaRoute": "/schools",
         "trigger": {
           "element": "<Link to=\"/schools\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Tìm trường\r\n            </Link>",
-          "line": 53,
-          "endLine": 55,
+          "line": 56,
+          "endLine": 58,
           "column": 12,
           "endColumn": 19,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -251,15 +281,31 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:99:31-to-src\\screens\\SignIn\\SignIn.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:83:29-to-src\\screens\\Cart\\Cart.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\Cart\\Cart.tsx",
+      "data": {
+        "viaRoute": "/cart",
+        "trigger": {
+          "element": "navigate(\"/cart\")",
+          "line": 83,
+          "endLine": 83,
+          "column": 29,
+          "endColumn": 46,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:110:31-to-src\\screens\\SignIn\\SignIn.tsx",
       "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\screens\\SignIn\\SignIn.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
           "element": "navigate(\"/signin\")",
-          "line": 99,
-          "endLine": 99,
+          "line": 110,
+          "endLine": 110,
           "column": 31,
           "endColumn": 50,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -267,15 +313,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:118:31-to-src\\screens\\SignIn\\SignIn.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:129:31-to-src\\screens\\SignIn\\SignIn.tsx",
       "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\screens\\SignIn\\SignIn.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
           "element": "navigate(\"/signin\")",
-          "line": 118,
-          "endLine": 118,
+          "line": 129,
+          "endLine": 129,
           "column": 31,
           "endColumn": 50,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -283,15 +329,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:47:12-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:50:12-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/homepage",
         "trigger": {
           "element": "<a href=\"/homepage\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Trang chủ\r\n            </a>",
-          "line": 47,
-          "endLine": 49,
+          "line": 50,
+          "endLine": 52,
           "column": 12,
           "endColumn": 16,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -299,15 +345,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:53:12-to-src\\screens\\SchoolList\\SchoolList.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:56:12-to-src\\screens\\SchoolList\\SchoolList.tsx",
       "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\screens\\SchoolList\\SchoolList.tsx",
       "data": {
         "viaRoute": "/schools",
         "trigger": {
           "element": "<Link to=\"/schools\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Tìm trường\r\n            </Link>",
-          "line": 53,
-          "endLine": 55,
+          "line": 56,
+          "endLine": 58,
           "column": 12,
           "endColumn": 19,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -315,15 +361,31 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:99:31-to-src\\screens\\SignIn\\SignIn.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:83:29-to-src\\screens\\Cart\\Cart.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\Cart\\Cart.tsx",
+      "data": {
+        "viaRoute": "/cart",
+        "trigger": {
+          "element": "navigate(\"/cart\")",
+          "line": 83,
+          "endLine": 83,
+          "column": 29,
+          "endColumn": 46,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:110:31-to-src\\screens\\SignIn\\SignIn.tsx",
       "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\screens\\SignIn\\SignIn.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
           "element": "navigate(\"/signin\")",
-          "line": 99,
-          "endLine": 99,
+          "line": 110,
+          "endLine": 110,
           "column": 31,
           "endColumn": 50,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -331,15 +393,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:118:31-to-src\\screens\\SignIn\\SignIn.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:129:31-to-src\\screens\\SignIn\\SignIn.tsx",
       "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\screens\\SignIn\\SignIn.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
           "element": "navigate(\"/signin\")",
-          "line": 118,
-          "endLine": 118,
+          "line": 129,
+          "endLine": 129,
           "column": 31,
           "endColumn": 50,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -347,15 +409,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:47:12-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:50:12-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/homepage",
         "trigger": {
           "element": "<a href=\"/homepage\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Trang chủ\r\n            </a>",
-          "line": 47,
-          "endLine": 49,
+          "line": 50,
+          "endLine": 52,
           "column": 12,
           "endColumn": 16,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -363,15 +425,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:53:12-to-src\\screens\\SchoolList\\SchoolList.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:56:12-to-src\\screens\\SchoolList\\SchoolList.tsx",
       "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\screens\\SchoolList\\SchoolList.tsx",
       "data": {
         "viaRoute": "/schools",
         "trigger": {
           "element": "<Link to=\"/schools\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Tìm trường\r\n            </Link>",
-          "line": 53,
-          "endLine": 55,
+          "line": 56,
+          "endLine": 58,
           "column": 12,
           "endColumn": 19,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -379,15 +441,31 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:99:31-to-src\\screens\\SignIn\\SignIn.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:83:29-to-src\\screens\\Cart\\Cart.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\Cart\\Cart.tsx",
+      "data": {
+        "viaRoute": "/cart",
+        "trigger": {
+          "element": "navigate(\"/cart\")",
+          "line": 83,
+          "endLine": 83,
+          "column": 29,
+          "endColumn": 46,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:110:31-to-src\\screens\\SignIn\\SignIn.tsx",
       "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\screens\\SignIn\\SignIn.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
           "element": "navigate(\"/signin\")",
-          "line": 99,
-          "endLine": 99,
+          "line": 110,
+          "endLine": 110,
           "column": 31,
           "endColumn": 50,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -395,15 +473,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:118:31-to-src\\screens\\SignIn\\SignIn.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:129:31-to-src\\screens\\SignIn\\SignIn.tsx",
       "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\screens\\SignIn\\SignIn.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
           "element": "navigate(\"/signin\")",
-          "line": 118,
-          "endLine": 118,
+          "line": 129,
+          "endLine": 129,
           "column": 31,
           "endColumn": 50,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -491,15 +569,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:47:12-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:50:12-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/homepage",
         "trigger": {
           "element": "<a href=\"/homepage\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Trang chủ\r\n            </a>",
-          "line": 47,
-          "endLine": 49,
+          "line": 50,
+          "endLine": 52,
           "column": 12,
           "endColumn": 16,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -507,15 +585,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:53:12-to-src\\screens\\SchoolList\\SchoolList.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:56:12-to-src\\screens\\SchoolList\\SchoolList.tsx",
       "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\screens\\SchoolList\\SchoolList.tsx",
       "data": {
         "viaRoute": "/schools",
         "trigger": {
           "element": "<Link to=\"/schools\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Tìm trường\r\n            </Link>",
-          "line": 53,
-          "endLine": 55,
+          "line": 56,
+          "endLine": 58,
           "column": 12,
           "endColumn": 19,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -523,15 +601,31 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:99:31-to-src\\screens\\SignIn\\SignIn.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:83:29-to-src\\screens\\Cart\\Cart.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\Cart\\Cart.tsx",
+      "data": {
+        "viaRoute": "/cart",
+        "trigger": {
+          "element": "navigate(\"/cart\")",
+          "line": 83,
+          "endLine": 83,
+          "column": 29,
+          "endColumn": 46,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:110:31-to-src\\screens\\SignIn\\SignIn.tsx",
       "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\screens\\SignIn\\SignIn.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
           "element": "navigate(\"/signin\")",
-          "line": 99,
-          "endLine": 99,
+          "line": 110,
+          "endLine": 110,
           "column": 31,
           "endColumn": 50,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -539,15 +633,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:118:31-to-src\\screens\\SignIn\\SignIn.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:129:31-to-src\\screens\\SignIn\\SignIn.tsx",
       "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\screens\\SignIn\\SignIn.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
           "element": "navigate(\"/signin\")",
-          "line": 118,
-          "endLine": 118,
+          "line": 129,
+          "endLine": 129,
           "column": 31,
           "endColumn": 50,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -587,15 +681,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:47:12-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:50:12-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/homepage",
         "trigger": {
           "element": "<a href=\"/homepage\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Trang chủ\r\n            </a>",
-          "line": 47,
-          "endLine": 49,
+          "line": 50,
+          "endLine": 52,
           "column": 12,
           "endColumn": 16,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -603,15 +697,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:53:12-to-src\\screens\\SchoolList\\SchoolList.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:56:12-to-src\\screens\\SchoolList\\SchoolList.tsx",
       "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\screens\\SchoolList\\SchoolList.tsx",
       "data": {
         "viaRoute": "/schools",
         "trigger": {
           "element": "<Link to=\"/schools\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Tìm trường\r\n            </Link>",
-          "line": 53,
-          "endLine": 55,
+          "line": 56,
+          "endLine": 58,
           "column": 12,
           "endColumn": 19,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -619,15 +713,31 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:99:31-to-src\\screens\\SignIn\\SignIn.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:83:29-to-src\\screens\\Cart\\Cart.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\Cart\\Cart.tsx",
+      "data": {
+        "viaRoute": "/cart",
+        "trigger": {
+          "element": "navigate(\"/cart\")",
+          "line": 83,
+          "endLine": 83,
+          "column": 29,
+          "endColumn": 46,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:110:31-to-src\\screens\\SignIn\\SignIn.tsx",
       "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\screens\\SignIn\\SignIn.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
           "element": "navigate(\"/signin\")",
-          "line": 99,
-          "endLine": 99,
+          "line": 110,
+          "endLine": 110,
           "column": 31,
           "endColumn": 50,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -635,15 +745,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:118:31-to-src\\screens\\SignIn\\SignIn.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:129:31-to-src\\screens\\SignIn\\SignIn.tsx",
       "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\screens\\SignIn\\SignIn.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
           "element": "navigate(\"/signin\")",
-          "line": 118,
-          "endLine": 118,
+          "line": 129,
+          "endLine": 129,
           "column": 31,
           "endColumn": 50,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -683,15 +793,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:47:12-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:50:12-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/homepage",
         "trigger": {
           "element": "<a href=\"/homepage\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Trang chủ\r\n            </a>",
-          "line": 47,
-          "endLine": 49,
+          "line": 50,
+          "endLine": 52,
           "column": 12,
           "endColumn": 16,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -699,15 +809,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:53:12-to-src\\screens\\SchoolList\\SchoolList.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:56:12-to-src\\screens\\SchoolList\\SchoolList.tsx",
       "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\screens\\SchoolList\\SchoolList.tsx",
       "data": {
         "viaRoute": "/schools",
         "trigger": {
           "element": "<Link to=\"/schools\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Tìm trường\r\n            </Link>",
-          "line": 53,
-          "endLine": 55,
+          "line": 56,
+          "endLine": 58,
           "column": 12,
           "endColumn": 19,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -715,15 +825,31 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:99:31-to-src\\screens\\SignIn\\SignIn.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:83:29-to-src\\screens\\Cart\\Cart.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\Cart\\Cart.tsx",
+      "data": {
+        "viaRoute": "/cart",
+        "trigger": {
+          "element": "navigate(\"/cart\")",
+          "line": 83,
+          "endLine": 83,
+          "column": 29,
+          "endColumn": 46,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:110:31-to-src\\screens\\SignIn\\SignIn.tsx",
       "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\screens\\SignIn\\SignIn.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
           "element": "navigate(\"/signin\")",
-          "line": 99,
-          "endLine": 99,
+          "line": 110,
+          "endLine": 110,
           "column": 31,
           "endColumn": 50,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -731,15 +857,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:118:31-to-src\\screens\\SignIn\\SignIn.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:129:31-to-src\\screens\\SignIn\\SignIn.tsx",
       "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\screens\\SignIn\\SignIn.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
           "element": "navigate(\"/signin\")",
-          "line": 118,
-          "endLine": 118,
+          "line": 129,
+          "endLine": 129,
           "column": 31,
           "endColumn": 50,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -763,15 +889,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:47:12-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:50:12-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/homepage",
         "trigger": {
           "element": "<a href=\"/homepage\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Trang chủ\r\n            </a>",
-          "line": 47,
-          "endLine": 49,
+          "line": 50,
+          "endLine": 52,
           "column": 12,
           "endColumn": 16,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -779,15 +905,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:53:12-to-src\\screens\\SchoolList\\SchoolList.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:56:12-to-src\\screens\\SchoolList\\SchoolList.tsx",
       "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\screens\\SchoolList\\SchoolList.tsx",
       "data": {
         "viaRoute": "/schools",
         "trigger": {
           "element": "<Link to=\"/schools\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Tìm trường\r\n            </Link>",
-          "line": 53,
-          "endLine": 55,
+          "line": 56,
+          "endLine": 58,
           "column": 12,
           "endColumn": 19,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -795,15 +921,31 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:99:31-to-src\\screens\\SignIn\\SignIn.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:83:29-to-src\\screens\\Cart\\Cart.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\Cart\\Cart.tsx",
+      "data": {
+        "viaRoute": "/cart",
+        "trigger": {
+          "element": "navigate(\"/cart\")",
+          "line": 83,
+          "endLine": 83,
+          "column": 29,
+          "endColumn": 46,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:110:31-to-src\\screens\\SignIn\\SignIn.tsx",
       "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\screens\\SignIn\\SignIn.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
           "element": "navigate(\"/signin\")",
-          "line": 99,
-          "endLine": 99,
+          "line": 110,
+          "endLine": 110,
           "column": 31,
           "endColumn": 50,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -811,15 +953,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:118:31-to-src\\screens\\SignIn\\SignIn.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:129:31-to-src\\screens\\SignIn\\SignIn.tsx",
       "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\screens\\SignIn\\SignIn.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
           "element": "navigate(\"/signin\")",
-          "line": 118,
-          "endLine": 118,
+          "line": 129,
+          "endLine": 129,
           "column": 31,
           "endColumn": 50,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -859,15 +1001,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:47:12-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:50:12-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/homepage",
         "trigger": {
           "element": "<a href=\"/homepage\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Trang chủ\r\n            </a>",
-          "line": 47,
-          "endLine": 49,
+          "line": 50,
+          "endLine": 52,
           "column": 12,
           "endColumn": 16,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -875,15 +1017,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:53:12-to-src\\screens\\SchoolList\\SchoolList.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:56:12-to-src\\screens\\SchoolList\\SchoolList.tsx",
       "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\screens\\SchoolList\\SchoolList.tsx",
       "data": {
         "viaRoute": "/schools",
         "trigger": {
           "element": "<Link to=\"/schools\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Tìm trường\r\n            </Link>",
-          "line": 53,
-          "endLine": 55,
+          "line": 56,
+          "endLine": 58,
           "column": 12,
           "endColumn": 19,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -891,15 +1033,31 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:99:31-to-src\\screens\\SignIn\\SignIn.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:83:29-to-src\\screens\\Cart\\Cart.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\Cart\\Cart.tsx",
+      "data": {
+        "viaRoute": "/cart",
+        "trigger": {
+          "element": "navigate(\"/cart\")",
+          "line": 83,
+          "endLine": 83,
+          "column": 29,
+          "endColumn": 46,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:110:31-to-src\\screens\\SignIn\\SignIn.tsx",
       "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\screens\\SignIn\\SignIn.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
           "element": "navigate(\"/signin\")",
-          "line": 99,
-          "endLine": 99,
+          "line": 110,
+          "endLine": 110,
           "column": 31,
           "endColumn": 50,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -907,15 +1065,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:118:31-to-src\\screens\\SignIn\\SignIn.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:129:31-to-src\\screens\\SignIn\\SignIn.tsx",
       "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\screens\\SignIn\\SignIn.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
           "element": "navigate(\"/signin\")",
-          "line": 118,
-          "endLine": 118,
+          "line": 129,
+          "endLine": 129,
           "column": 31,
           "endColumn": 50,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -923,15 +1081,15 @@
       }
     },
     {
-      "id": "src\\screens\\SchoolList\\SchoolList.tsx:31:10-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\screens\\SchoolList\\SchoolList.tsx:45:10-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\SchoolList\\SchoolList.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/homepage",
         "trigger": {
           "element": "<a href=\"/homepage\" className=\"font-montserrat text-black/40 hover:text-black/70 transition-colors\">Trang chủ</a>",
-          "line": 31,
-          "endLine": 31,
+          "line": 45,
+          "endLine": 45,
           "column": 10,
           "endColumn": 123,
           "sourceFile": "src\\screens\\SchoolList\\SchoolList.tsx"
@@ -939,15 +1097,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:47:12-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:50:12-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/homepage",
         "trigger": {
           "element": "<a href=\"/homepage\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Trang chủ\r\n            </a>",
-          "line": 47,
-          "endLine": 49,
+          "line": 50,
+          "endLine": 52,
           "column": 12,
           "endColumn": 16,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -955,15 +1113,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:53:12-to-src\\screens\\SchoolList\\SchoolList.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:56:12-to-src\\screens\\SchoolList\\SchoolList.tsx",
       "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\screens\\SchoolList\\SchoolList.tsx",
       "data": {
         "viaRoute": "/schools",
         "trigger": {
           "element": "<Link to=\"/schools\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Tìm trường\r\n            </Link>",
-          "line": 53,
-          "endLine": 55,
+          "line": 56,
+          "endLine": 58,
           "column": 12,
           "endColumn": 19,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -971,15 +1129,31 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:99:31-to-src\\screens\\SignIn\\SignIn.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:83:29-to-src\\screens\\Cart\\Cart.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\Cart\\Cart.tsx",
+      "data": {
+        "viaRoute": "/cart",
+        "trigger": {
+          "element": "navigate(\"/cart\")",
+          "line": 83,
+          "endLine": 83,
+          "column": 29,
+          "endColumn": 46,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:110:31-to-src\\screens\\SignIn\\SignIn.tsx",
       "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\screens\\SignIn\\SignIn.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
           "element": "navigate(\"/signin\")",
-          "line": 99,
-          "endLine": 99,
+          "line": 110,
+          "endLine": 110,
           "column": 31,
           "endColumn": 50,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -987,15 +1161,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:118:31-to-src\\screens\\SignIn\\SignIn.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:129:31-to-src\\screens\\SignIn\\SignIn.tsx",
       "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\screens\\SignIn\\SignIn.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
           "element": "navigate(\"/signin\")",
-          "line": 118,
-          "endLine": 118,
+          "line": 129,
+          "endLine": 129,
           "column": 31,
           "endColumn": 50,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -1003,15 +1177,15 @@
       }
     },
     {
-      "id": "src\\screens\\SchoolDetail\\SchoolDetail.tsx:46:31-to-src\\screens\\SchoolList\\SchoolList.tsx",
+      "id": "src\\screens\\SchoolDetail\\SchoolDetail.tsx:68:31-to-src\\screens\\SchoolList\\SchoolList.tsx",
       "source": "src\\screens\\SchoolDetail\\SchoolDetail.tsx",
       "target": "src\\screens\\SchoolList\\SchoolList.tsx",
       "data": {
         "viaRoute": "/schools",
         "trigger": {
           "element": "navigate(\"/schools\")",
-          "line": 46,
-          "endLine": 46,
+          "line": 68,
+          "endLine": 68,
           "column": 31,
           "endColumn": 51,
           "sourceFile": "src\\screens\\SchoolDetail\\SchoolDetail.tsx"
@@ -1019,15 +1193,15 @@
       }
     },
     {
-      "id": "src\\screens\\SchoolDetail\\SchoolDetail.tsx:60:10-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\screens\\SchoolDetail\\SchoolDetail.tsx:83:10-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\SchoolDetail\\SchoolDetail.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/homepage",
         "trigger": {
           "element": "<Link to=\"/homepage\" className=\"font-montserrat text-black/40 hover:text-black/70\">Trang chủ</Link>",
-          "line": 60,
-          "endLine": 60,
+          "line": 83,
+          "endLine": 83,
           "column": 10,
           "endColumn": 109,
           "sourceFile": "src\\screens\\SchoolDetail\\SchoolDetail.tsx"
@@ -1035,15 +1209,15 @@
       }
     },
     {
-      "id": "src\\screens\\SchoolDetail\\SchoolDetail.tsx:62:10-to-src\\screens\\SchoolList\\SchoolList.tsx",
+      "id": "src\\screens\\SchoolDetail\\SchoolDetail.tsx:85:10-to-src\\screens\\SchoolList\\SchoolList.tsx",
       "source": "src\\screens\\SchoolDetail\\SchoolDetail.tsx",
       "target": "src\\screens\\SchoolList\\SchoolList.tsx",
       "data": {
         "viaRoute": "/schools",
         "trigger": {
           "element": "<Link to=\"/schools\" className=\"font-montserrat text-black/40 hover:text-black/70\">Danh sách trường</Link>",
-          "line": 62,
-          "endLine": 62,
+          "line": 85,
+          "endLine": 85,
           "column": 10,
           "endColumn": 115,
           "sourceFile": "src\\screens\\SchoolDetail\\SchoolDetail.tsx"
@@ -1051,15 +1225,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:47:12-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:50:12-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/homepage",
         "trigger": {
           "element": "<a href=\"/homepage\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Trang chủ\r\n            </a>",
-          "line": 47,
-          "endLine": 49,
+          "line": 50,
+          "endLine": 52,
           "column": 12,
           "endColumn": 16,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -1067,15 +1241,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:53:12-to-src\\screens\\SchoolList\\SchoolList.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:56:12-to-src\\screens\\SchoolList\\SchoolList.tsx",
       "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\screens\\SchoolList\\SchoolList.tsx",
       "data": {
         "viaRoute": "/schools",
         "trigger": {
           "element": "<Link to=\"/schools\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Tìm trường\r\n            </Link>",
-          "line": 53,
-          "endLine": 55,
+          "line": 56,
+          "endLine": 58,
           "column": 12,
           "endColumn": 19,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -1083,15 +1257,31 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:99:31-to-src\\screens\\SignIn\\SignIn.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:83:29-to-src\\screens\\Cart\\Cart.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\Cart\\Cart.tsx",
+      "data": {
+        "viaRoute": "/cart",
+        "trigger": {
+          "element": "navigate(\"/cart\")",
+          "line": 83,
+          "endLine": 83,
+          "column": 29,
+          "endColumn": 46,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:110:31-to-src\\screens\\SignIn\\SignIn.tsx",
       "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\screens\\SignIn\\SignIn.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
           "element": "navigate(\"/signin\")",
-          "line": 99,
-          "endLine": 99,
+          "line": 110,
+          "endLine": 110,
           "column": 31,
           "endColumn": 50,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -1099,15 +1289,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:118:31-to-src\\screens\\SignIn\\SignIn.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:129:31-to-src\\screens\\SignIn\\SignIn.tsx",
       "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\screens\\SignIn\\SignIn.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
           "element": "navigate(\"/signin\")",
-          "line": 118,
-          "endLine": 118,
+          "line": 129,
+          "endLine": 129,
           "column": 31,
           "endColumn": 50,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -1115,15 +1305,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:47:12-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:50:12-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/homepage",
         "trigger": {
           "element": "<a href=\"/homepage\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Trang chủ\r\n            </a>",
-          "line": 47,
-          "endLine": 49,
+          "line": 50,
+          "endLine": 52,
           "column": 12,
           "endColumn": 16,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -1131,15 +1321,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:53:12-to-src\\screens\\SchoolList\\SchoolList.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:56:12-to-src\\screens\\SchoolList\\SchoolList.tsx",
       "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\screens\\SchoolList\\SchoolList.tsx",
       "data": {
         "viaRoute": "/schools",
         "trigger": {
           "element": "<Link to=\"/schools\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Tìm trường\r\n            </Link>",
-          "line": 53,
-          "endLine": 55,
+          "line": 56,
+          "endLine": 58,
           "column": 12,
           "endColumn": 19,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -1147,15 +1337,31 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:99:31-to-src\\screens\\SignIn\\SignIn.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:83:29-to-src\\screens\\Cart\\Cart.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\Cart\\Cart.tsx",
+      "data": {
+        "viaRoute": "/cart",
+        "trigger": {
+          "element": "navigate(\"/cart\")",
+          "line": 83,
+          "endLine": 83,
+          "column": 29,
+          "endColumn": 46,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:110:31-to-src\\screens\\SignIn\\SignIn.tsx",
       "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\screens\\SignIn\\SignIn.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
           "element": "navigate(\"/signin\")",
-          "line": 99,
-          "endLine": 99,
+          "line": 110,
+          "endLine": 110,
           "column": 31,
           "endColumn": 50,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -1163,15 +1369,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:118:31-to-src\\screens\\SignIn\\SignIn.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:129:31-to-src\\screens\\SignIn\\SignIn.tsx",
       "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\screens\\SignIn\\SignIn.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
           "element": "navigate(\"/signin\")",
-          "line": 118,
-          "endLine": 118,
+          "line": 129,
+          "endLine": 129,
           "column": 31,
           "endColumn": 50,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -1179,15 +1385,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:47:12-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:50:12-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/homepage",
         "trigger": {
           "element": "<a href=\"/homepage\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Trang chủ\r\n            </a>",
-          "line": 47,
-          "endLine": 49,
+          "line": 50,
+          "endLine": 52,
           "column": 12,
           "endColumn": 16,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -1195,15 +1401,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:53:12-to-src\\screens\\SchoolList\\SchoolList.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:56:12-to-src\\screens\\SchoolList\\SchoolList.tsx",
       "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\screens\\SchoolList\\SchoolList.tsx",
       "data": {
         "viaRoute": "/schools",
         "trigger": {
           "element": "<Link to=\"/schools\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Tìm trường\r\n            </Link>",
-          "line": 53,
-          "endLine": 55,
+          "line": 56,
+          "endLine": 58,
           "column": 12,
           "endColumn": 19,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -1211,15 +1417,31 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:99:31-to-src\\screens\\SignIn\\SignIn.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:83:29-to-src\\screens\\Cart\\Cart.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\Cart\\Cart.tsx",
+      "data": {
+        "viaRoute": "/cart",
+        "trigger": {
+          "element": "navigate(\"/cart\")",
+          "line": 83,
+          "endLine": 83,
+          "column": 29,
+          "endColumn": 46,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:110:31-to-src\\screens\\SignIn\\SignIn.tsx",
       "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\screens\\SignIn\\SignIn.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
           "element": "navigate(\"/signin\")",
-          "line": 99,
-          "endLine": 99,
+          "line": 110,
+          "endLine": 110,
           "column": 31,
           "endColumn": 50,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -1227,15 +1449,479 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:118:31-to-src\\screens\\SignIn\\SignIn.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:129:31-to-src\\screens\\SignIn\\SignIn.tsx",
       "source": "src\\screens\\SignUp\\SignUp.tsx",
       "target": "src\\screens\\SignIn\\SignIn.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
           "element": "navigate(\"/signin\")",
-          "line": 118,
-          "endLine": 118,
+          "line": 129,
+          "endLine": 129,
+          "column": 31,
+          "endColumn": 50,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\screens\\OutfitDetail\\OutfitDetail.tsx:108:27-to-src\\screens\\SchoolList\\SchoolList.tsx",
+      "source": "src\\screens\\OutfitDetail\\OutfitDetail.tsx",
+      "target": "src\\screens\\SchoolList\\SchoolList.tsx",
+      "data": {
+        "viaRoute": "/schools",
+        "trigger": {
+          "element": "navigate(\"/schools\")",
+          "line": 108,
+          "endLine": 108,
+          "column": 27,
+          "endColumn": 47,
+          "sourceFile": "src\\screens\\OutfitDetail\\OutfitDetail.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\screens\\OutfitDetail\\OutfitDetail.tsx:128:10-to-src\\components\\guards\\RoleGuard.tsx",
+      "source": "src\\screens\\OutfitDetail\\OutfitDetail.tsx",
+      "target": "src\\components\\guards\\RoleGuard.tsx",
+      "data": {
+        "viaRoute": "/homepage",
+        "trigger": {
+          "element": "<Link\n            to=\"/homepage\"\n            className=\"font-montserrat text-black/40 hover:text-black/70\"\n          >\n            Trang chủ\n          </Link>",
+          "line": 128,
+          "endLine": 133,
+          "column": 10,
+          "endColumn": 17,
+          "sourceFile": "src\\screens\\OutfitDetail\\OutfitDetail.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:50:12-to-src\\components\\guards\\RoleGuard.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\components\\guards\\RoleGuard.tsx",
+      "data": {
+        "viaRoute": "/homepage",
+        "trigger": {
+          "element": "<a href=\"/homepage\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Trang chủ\r\n            </a>",
+          "line": 50,
+          "endLine": 52,
+          "column": 12,
+          "endColumn": 16,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:56:12-to-src\\screens\\SchoolList\\SchoolList.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\SchoolList\\SchoolList.tsx",
+      "data": {
+        "viaRoute": "/schools",
+        "trigger": {
+          "element": "<Link to=\"/schools\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Tìm trường\r\n            </Link>",
+          "line": 56,
+          "endLine": 58,
+          "column": 12,
+          "endColumn": 19,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:83:29-to-src\\screens\\Cart\\Cart.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\Cart\\Cart.tsx",
+      "data": {
+        "viaRoute": "/cart",
+        "trigger": {
+          "element": "navigate(\"/cart\")",
+          "line": 83,
+          "endLine": 83,
+          "column": 29,
+          "endColumn": 46,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:110:31-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\SignIn\\SignIn.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\")",
+          "line": 110,
+          "endLine": 110,
+          "column": 31,
+          "endColumn": 50,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:129:31-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\SignIn\\SignIn.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\")",
+          "line": 129,
+          "endLine": 129,
+          "column": 31,
+          "endColumn": 50,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:50:12-to-src\\components\\guards\\RoleGuard.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\components\\guards\\RoleGuard.tsx",
+      "data": {
+        "viaRoute": "/homepage",
+        "trigger": {
+          "element": "<a href=\"/homepage\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Trang chủ\r\n            </a>",
+          "line": 50,
+          "endLine": 52,
+          "column": 12,
+          "endColumn": 16,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:56:12-to-src\\screens\\SchoolList\\SchoolList.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\SchoolList\\SchoolList.tsx",
+      "data": {
+        "viaRoute": "/schools",
+        "trigger": {
+          "element": "<Link to=\"/schools\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Tìm trường\r\n            </Link>",
+          "line": 56,
+          "endLine": 58,
+          "column": 12,
+          "endColumn": 19,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:83:29-to-src\\screens\\Cart\\Cart.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\Cart\\Cart.tsx",
+      "data": {
+        "viaRoute": "/cart",
+        "trigger": {
+          "element": "navigate(\"/cart\")",
+          "line": 83,
+          "endLine": 83,
+          "column": 29,
+          "endColumn": 46,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:110:31-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\SignIn\\SignIn.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\")",
+          "line": 110,
+          "endLine": 110,
+          "column": 31,
+          "endColumn": 50,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:129:31-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\SignIn\\SignIn.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\")",
+          "line": 129,
+          "endLine": 129,
+          "column": 31,
+          "endColumn": 50,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:50:12-to-src\\components\\guards\\RoleGuard.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\components\\guards\\RoleGuard.tsx",
+      "data": {
+        "viaRoute": "/homepage",
+        "trigger": {
+          "element": "<a href=\"/homepage\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Trang chủ\r\n            </a>",
+          "line": 50,
+          "endLine": 52,
+          "column": 12,
+          "endColumn": 16,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:56:12-to-src\\screens\\SchoolList\\SchoolList.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\SchoolList\\SchoolList.tsx",
+      "data": {
+        "viaRoute": "/schools",
+        "trigger": {
+          "element": "<Link to=\"/schools\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Tìm trường\r\n            </Link>",
+          "line": 56,
+          "endLine": 58,
+          "column": 12,
+          "endColumn": 19,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:83:29-to-src\\screens\\Cart\\Cart.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\Cart\\Cart.tsx",
+      "data": {
+        "viaRoute": "/cart",
+        "trigger": {
+          "element": "navigate(\"/cart\")",
+          "line": 83,
+          "endLine": 83,
+          "column": 29,
+          "endColumn": 46,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:110:31-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\SignIn\\SignIn.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\")",
+          "line": 110,
+          "endLine": 110,
+          "column": 31,
+          "endColumn": 50,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:129:31-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\SignIn\\SignIn.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\")",
+          "line": 129,
+          "endLine": 129,
+          "column": 31,
+          "endColumn": 50,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\screens\\Cart\\Cart.tsx:114:27-to-src\\screens\\SchoolList\\SchoolList.tsx",
+      "source": "src\\screens\\Cart\\Cart.tsx",
+      "target": "src\\screens\\SchoolList\\SchoolList.tsx",
+      "data": {
+        "viaRoute": "/schools",
+        "trigger": {
+          "element": "navigate(\"/schools\")",
+          "line": 114,
+          "endLine": 114,
+          "column": 27,
+          "endColumn": 47,
+          "sourceFile": "src\\screens\\Cart\\Cart.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\screens\\Cart\\Cart.tsx:129:10-to-src\\components\\guards\\RoleGuard.tsx",
+      "source": "src\\screens\\Cart\\Cart.tsx",
+      "target": "src\\components\\guards\\RoleGuard.tsx",
+      "data": {
+        "viaRoute": "/homepage",
+        "trigger": {
+          "element": "<Link\n            to=\"/homepage\"\n            className=\"font-montserrat text-black/40 hover:text-black/70\"\n          >\n            Trang chủ\n          </Link>",
+          "line": 129,
+          "endLine": 134,
+          "column": 10,
+          "endColumn": 17,
+          "sourceFile": "src\\screens\\Cart\\Cart.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:50:12-to-src\\components\\guards\\RoleGuard.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\components\\guards\\RoleGuard.tsx",
+      "data": {
+        "viaRoute": "/homepage",
+        "trigger": {
+          "element": "<a href=\"/homepage\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Trang chủ\r\n            </a>",
+          "line": 50,
+          "endLine": 52,
+          "column": 12,
+          "endColumn": 16,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:56:12-to-src\\screens\\SchoolList\\SchoolList.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\SchoolList\\SchoolList.tsx",
+      "data": {
+        "viaRoute": "/schools",
+        "trigger": {
+          "element": "<Link to=\"/schools\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Tìm trường\r\n            </Link>",
+          "line": 56,
+          "endLine": 58,
+          "column": 12,
+          "endColumn": 19,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:83:29-to-src\\screens\\Cart\\Cart.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\Cart\\Cart.tsx",
+      "data": {
+        "viaRoute": "/cart",
+        "trigger": {
+          "element": "navigate(\"/cart\")",
+          "line": 83,
+          "endLine": 83,
+          "column": 29,
+          "endColumn": 46,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:110:31-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\SignIn\\SignIn.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\")",
+          "line": 110,
+          "endLine": 110,
+          "column": 31,
+          "endColumn": 50,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:129:31-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\SignIn\\SignIn.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\")",
+          "line": 129,
+          "endLine": 129,
+          "column": 31,
+          "endColumn": 50,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:50:12-to-src\\components\\guards\\RoleGuard.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\components\\guards\\RoleGuard.tsx",
+      "data": {
+        "viaRoute": "/homepage",
+        "trigger": {
+          "element": "<a href=\"/homepage\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Trang chủ\r\n            </a>",
+          "line": 50,
+          "endLine": 52,
+          "column": 12,
+          "endColumn": 16,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:56:12-to-src\\screens\\SchoolList\\SchoolList.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\SchoolList\\SchoolList.tsx",
+      "data": {
+        "viaRoute": "/schools",
+        "trigger": {
+          "element": "<Link to=\"/schools\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Tìm trường\r\n            </Link>",
+          "line": 56,
+          "endLine": 58,
+          "column": 12,
+          "endColumn": 19,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:83:29-to-src\\screens\\Cart\\Cart.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\Cart\\Cart.tsx",
+      "data": {
+        "viaRoute": "/cart",
+        "trigger": {
+          "element": "navigate(\"/cart\")",
+          "line": 83,
+          "endLine": 83,
+          "column": 29,
+          "endColumn": 46,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:110:31-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\SignIn\\SignIn.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\")",
+          "line": 110,
+          "endLine": 110,
+          "column": 31,
+          "endColumn": 50,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:129:31-to-src\\screens\\SignIn\\SignIn.tsx",
+      "source": "src\\screens\\SignUp\\SignUp.tsx",
+      "target": "src\\screens\\SignIn\\SignIn.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\")",
+          "line": 129,
+          "endLine": 129,
           "column": 31,
           "endColumn": 50,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"

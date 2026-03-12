@@ -56,6 +56,8 @@ export interface ChildProfileDto {
   grade: string;
   gender: string;
   school: ChildSchoolDto;
+  heightCm: number;
+  weightKg: number;
 }
 
 export interface ConflictedChildDto {
