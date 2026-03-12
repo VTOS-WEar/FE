@@ -3,18 +3,22 @@ import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
 import { Separator } from "../../components/ui/separator";
-import { EyeIcon, EyeOffIcon } from "lucide-react";
+import { EyeIcon, EyeOffIcon, ChevronDownIcon } from "lucide-react";
 import { useState } from "react";
 import { register } from "../../lib/api/auth";
 import { Notify } from "../../components/ui/notify";
 import { useNavigate, Link } from "react-router-dom";
 import { GuestLayout } from "../../components/layout/GuestLayout";
+import { useToast } from "../../contexts/ToastContext";
 export const SignUp = (): JSX.Element => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const { showToast } = useToast();
   const [email, setEmail] = useState("");
   const [fullName, setFullName] = useState("");
   const [password, setPassword] = useState("");
+  const [roleName, setRoleName] = useState<"Parent" | "School">("Parent");
+  const [roleOpen, setRoleOpen] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
   const [notify, setNotify] = useState<{
@@ -36,16 +40,17 @@ export const SignUp = (): JSX.Element => {
     try {
       setIsLoading(true);
 
-      const data = await register({ email, password, fullName });
+      const data = await register({ email, password, fullName, roleName });
 
-      setNotify({
+      // Use global toast so it persists across navigation
+      showToast({
         title: "Tạo tài khoản thành công",
-        message: data?.message || "Bạn có thể đăng nhập ngay bây giờ.",
+        message: data?.message || "Vui lòng kiểm tra email để lấy mã OTP.",
         variant: "success",
       });
       navigate("/verify-otp", {
         replace: true,
-        state: { email }, // <-- truyền email qua state
+        state: { email, roleName },
       });
       // Optional: reset form
       // setEmail(""); setFullName(""); setPassword("");
@@ -114,6 +119,48 @@ export const SignUp = (): JSX.Element => {
                     <h1 className="[font-family:'Baloo_2',Helvetica] font-extrabold text-[#100f14] text-3xl lg:text-4xl text-center">
                       Tạo tài khoản mới
                     </h1>
+                  </div>
+
+                  {/* Role Selector */}
+                  <div className="mb-5">
+                    <Label className="[font-family:'Montserrat',Helvetica] font-medium text-[#9794aa] text-sm lg:text-base mb-2 block">
+                      Loại tài khoản
+                    </Label>
+                    <div className="relative">
+                      <button
+                        type="button"
+                        onClick={() => setRoleOpen(!roleOpen)}
+                        className="w-full h-11 lg:h-12 px-4 lg:px-5 rounded-md border border-[#cac9d6] bg-white flex items-center justify-between [font-family:'Montserrat',Helvetica] font-medium text-sm lg:text-base text-[#19181f] hover:border-[#6938ef] transition-colors"
+                      >
+                        <span className="flex items-center gap-2">
+                          <span>{roleName === "Parent" ? "👨‍👩‍👧" : "🏫"}</span>
+                          {roleName === "Parent" ? "Phụ huynh" : "Quản lý trường"}
+                        </span>
+                        <ChevronDownIcon className={`w-4 h-4 text-[#676576] transition-transform ${roleOpen ? 'rotate-180' : ''}`} />
+                      </button>
+                      {roleOpen && (
+                        <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-md border border-[#cac9d6] shadow-lg z-20 overflow-hidden">
+                          <button
+                            type="button"
+                            onClick={() => { setRoleName("Parent"); setRoleOpen(false); }}
+                            className={`w-full px-4 py-3 text-left flex items-center gap-2 [font-family:'Montserrat',Helvetica] font-medium text-sm hover:bg-[#f4f2ff] transition-colors ${
+                              roleName === "Parent" ? "bg-[#f4f2ff] text-[#6938ef]" : "text-[#19181f]"
+                            }`}
+                          >
+                            <span>👨‍👩‍👧</span> Phụ huynh
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => { setRoleName("School"); setRoleOpen(false); }}
+                            className={`w-full px-4 py-3 text-left flex items-center gap-2 [font-family:'Montserrat',Helvetica] font-medium text-sm hover:bg-[#f4f2ff] transition-colors ${
+                              roleName === "School" ? "bg-[#f4f2ff] text-[#6938ef]" : "text-[#19181f]"
+                            }`}
+                          >
+                            <span>🏫</span> Quản lý trường
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   <Button

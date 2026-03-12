@@ -112,7 +112,7 @@ export const ForgotPassword = (): JSX.Element => {
                                         <p className="text-center [font-family:'Poppins',Helvetica] font-normal text-sm lg:text-base">
                                             <span className="text-[#494759]">Quay lại </span>
                                             <Link
-                                                to="/sign-in"
+                                                to="/signin"
                                                 className="[font-family:'Montserrat',Helvetica] font-semibold italic text-[#6938ef] cursor-pointer hover:underline"
                                             >
                                                 Đăng nhập

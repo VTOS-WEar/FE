@@ -8,6 +8,7 @@ export const endpoints = {
         resetPassword: "/api/Auth/reset-password",
         changePasswordTeRequest: "/api/Auth/change-password/request-otp",
         changePassword: "/api/Auth/change-password",
+        verifyPhone: "/api/Auth/verify-phone",
     },
     admin: {
         users: "/api/admin/users",
@@ -33,5 +34,11 @@ export const endpoints = {
         outfits: "/api/schools/me/outfits",
         outfitImageUpload: "/api/schools/me/outfits/upload-image",
         campaigns: "/api/schools/me/campaigns",
+        campaignProgress: "/api/schools/me/campaigns/{id}/progress",
+        providers: "/api/schools/me/providers",
+    },
+    users: {
+        me: "/api/users/me",
+        profile: "/api/users/me/profile",
     },
 } as const;

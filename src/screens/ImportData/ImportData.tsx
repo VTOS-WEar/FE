@@ -9,7 +9,7 @@ import {
     BreadcrumbSeparator,
 } from "../../components/ui/breadcrumb";
 import { DashboardSidebar } from "../../components/layout";
-import { DASHBOARD_SIDEBAR_CONFIG } from "../../constants/dashboardConfig";
+import { useSidebarConfig } from "../../hooks/useSidebarConfig";
 import { Button } from "../../components/ui/button";
 import {
     downloadImportTemplate,
@@ -22,17 +22,7 @@ import {
 import { ApiError } from "../../lib/api/clients";
 import { useEffect } from "react";
 
-/* ── Sidebar: mark "Danh sách học sinh" as active ── */
-const sidebarConfig = {
-    ...DASHBOARD_SIDEBAR_CONFIG,
-    navSections: DASHBOARD_SIDEBAR_CONFIG.navSections.map((section) => ({
-        ...section,
-        items: section.items.map((item) => ({
-            ...item,
-            active: item.label === "Danh sách học sinh",
-        })),
-    })),
-};
+
 
 /* ── Helper: format ISO date to readable Vietnamese format ── */
 function formatDate(isoDate: string): string {
@@ -46,8 +36,9 @@ function formatDate(isoDate: string): string {
 
 export const ImportData = (): JSX.Element => {
     const navigate = useNavigate();
+    const sidebarConfig = useSidebarConfig();
     const [isCollapsed, setIsCollapsed] = useState(false);
-    const [schoolName, setSchoolName] = useState(DASHBOARD_SIDEBAR_CONFIG.name);
+    const [schoolName, setSchoolName] = useState("");
 
     /* ── Upload state ── */
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -72,7 +63,7 @@ export const ImportData = (): JSX.Element => {
 
     useEffect(() => {
         getSchoolProfile()
-            .then((p) => setSchoolName(p.schoolName || DASHBOARD_SIDEBAR_CONFIG.name))
+            .then((p) => setSchoolName(p.schoolName || ""))
             .catch(() => {});
         fetchHistory();
     }, [fetchHistory]);

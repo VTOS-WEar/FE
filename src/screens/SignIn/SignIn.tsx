@@ -11,9 +11,11 @@ import { Alert, AlertTitle, AlertDescription } from "../../components/ui/alert";
 import { Notify } from "../../components/ui/notify";
 import { useNavigate, Link } from "react-router-dom";
 import { GuestLayout } from "../../components/layout/GuestLayout";
+import { useToast } from "../../contexts/ToastContext";
 export const SignIn = (): JSX.Element => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const { showToast } = useToast();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -45,9 +47,24 @@ export const SignIn = (): JSX.Element => {
       storage.setItem("user", JSON.stringify(data.user));
       storage.setItem("expires_in", String(data.expiresIn));
 
-      navigate("/homepage", {
+      // Role-based redirect: Parent without phone → fill information first
+      let redirectTo = "/homepage";
+      if (data.user.role === "School") {
+        redirectTo = "/school/dashboard";
+      } else if (data.user.role === "Parent" && !data.user.phone) {
+        redirectTo = "/fillinformation";
+      }
+
+      // Global toast persists across navigation
+      showToast({
+        title: "Đăng nhập thành công! 🎉",
+        message: `Xin chào, ${data.user.fullName}`,
+        variant: "success",
+      });
+
+      navigate(redirectTo, {
         replace: true,
-        state: { from: "/login" },
+        state: { from: "/login", fullName: data.user.fullName, email: data.user.email },
       });
 
     } catch (e: any) {
@@ -200,7 +217,7 @@ export const SignIn = (): JSX.Element => {
                     <p className="text-center [font-family:'Poppins',Helvetica] font-normal text-sm lg:text-base">
                       <span className="text-[#494759]">Bạn chưa có tài khoản? </span>
                       <Link
-                        to="/sign-up"
+                        to="/signup"
                         className="[font-family:'Montserrat',Helvetica] font-semibold italic text-[#6938ef] cursor-pointer hover:underline"
                       >
                         Tạo tài khoản

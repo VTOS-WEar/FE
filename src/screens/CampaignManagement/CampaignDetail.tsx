@@ -9,24 +9,17 @@ import {
     BreadcrumbSeparator,
 } from "../../components/ui/breadcrumb";
 import { DashboardSidebar } from "../../components/layout";
-import { DASHBOARD_SIDEBAR_CONFIG } from "../../constants/dashboardConfig";
+import { useSidebarConfig } from "../../hooks/useSidebarConfig";
 import {
     getSchoolProfile,
     getCampaignDetail,
     lockCampaign,
+    getProviders,
     type CampaignDetailDto,
+    type ProviderDto,
 } from "../../lib/api/schools";
 
-const sidebarConfig = {
-    ...DASHBOARD_SIDEBAR_CONFIG,
-    navSections: DASHBOARD_SIDEBAR_CONFIG.navSections.map((section) => ({
-        ...section,
-        items: section.items.map((item) => ({
-            ...item,
-            active: item.label === "Mở đơn",
-        })),
-    })),
-};
+
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; border: string }> = {
     Draft:     { label: "Bản nháp",    color: "text-[#6B7280]", bg: "bg-[#F3F4F6]", border: "border-[#E5E7EB]" },
@@ -54,10 +47,12 @@ export const CampaignDetail = (): JSX.Element => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const [isCollapsed, setIsCollapsed] = useState(false);
-    const [schoolName, setSchoolName] = useState(DASHBOARD_SIDEBAR_CONFIG.name);
+    const sidebarConfig = useSidebarConfig();
+    const [schoolName, setSchoolName] = useState("");
     const [campaign, setCampaign] = useState<CampaignDetailDto | null>(null);
     const [loading, setLoading] = useState(true);
     const [locking, setLocking] = useState(false);
+    const [providers, setProviders] = useState<ProviderDto[]>([]);
     const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
     const showToast = useCallback((message: string, type: "success" | "error") => {
         setToast({ message, type });
@@ -65,7 +60,8 @@ export const CampaignDetail = (): JSX.Element => {
     }, []);
 
     useEffect(() => {
-        getSchoolProfile().then((p) => setSchoolName(p.schoolName || DASHBOARD_SIDEBAR_CONFIG.name)).catch(() => {});
+        getSchoolProfile().then((p) => setSchoolName(p.schoolName || "")).catch(() => {});
+        getProviders().then(setProviders).catch(() => {});
     }, []);
 
     useEffect(() => {
@@ -113,7 +109,7 @@ export const CampaignDetail = (): JSX.Element => {
                     <div className="bg-white border-b border-[#cbcad7] px-6 lg:px-10 py-5 flex items-center justify-between">
                         <Breadcrumb>
                             <BreadcrumbList>
-                                <BreadcrumbItem><BreadcrumbLink href="/homepage" className="[font-family:'Montserrat',Helvetica] font-semibold text-[#4c5769] text-base">Trang chủ</BreadcrumbLink></BreadcrumbItem>
+                                <BreadcrumbItem><BreadcrumbLink href="/school/dashboard" className="[font-family:'Montserrat',Helvetica] font-semibold text-[#4c5769] text-base">Trang chủ</BreadcrumbLink></BreadcrumbItem>
                                 <BreadcrumbSeparator className="text-[#cbcad7]">/</BreadcrumbSeparator>
                                 <BreadcrumbItem><BreadcrumbLink href="/school/campaigns" className="[font-family:'Montserrat',Helvetica] font-semibold text-[#4c5769] text-base">Quản lý chiến dịch</BreadcrumbLink></BreadcrumbItem>
                                 <BreadcrumbSeparator className="text-[#cbcad7]">/</BreadcrumbSeparator>
@@ -211,6 +207,15 @@ export const CampaignDetail = (): JSX.Element => {
                                                         <p className="[font-family:'Montserrat',Helvetica] font-semibold text-[#1A1A2E] text-sm truncate">{outfit.outfitName}</p>
                                                         <p className="[font-family:'Montserrat',Helvetica] font-bold text-[#6938EF] text-sm mt-0.5">{new Intl.NumberFormat("vi-VN").format(outfit.campaignPrice)} VND</p>
                                                         {outfit.maxQuantity && <p className="[font-family:'Montserrat',Helvetica] font-medium text-[#97A3B6] text-xs mt-0.5">Tối đa: {outfit.maxQuantity}</p>}
+                                                        {outfit.providerId && (() => {
+                                                            const prov = providers.find(p => p.id === outfit.providerId);
+                                                            return prov ? (
+                                                                <p className="[font-family:'Montserrat',Helvetica] font-medium text-[#3B82F6] text-xs mt-1 flex items-center gap-1">
+                                                                    <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17V9.5h2.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z" /></svg>
+                                                                    {prov.providerName}
+                                                                </p>
+                                                            ) : null;
+                                                        })()}
                                                     </div>
                                                 </div>
                                             ))}

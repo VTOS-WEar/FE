@@ -42,6 +42,17 @@ export const VerifyOtp = (): JSX.Element => {
         return value;
     }, [location.state]);
 
+    // roleName from navigation state (fallback localStorage)
+    const roleName = useMemo(() => {
+        const st = location.state as any;
+        const fromState = (st?.roleName as string) || "";
+        const fromStorage = localStorage.getItem("verify_roleName") || "";
+        const value = fromState || fromStorage || "Parent";
+
+        if (fromState) localStorage.setItem("verify_roleName", fromState);
+        return value;
+    }, [location.state]);
+
     // ✅ otp là string
     const [otp, setOtp] = useState<string>("");
     const inputsRef = useRef<Array<HTMLInputElement | null>>([]);
@@ -167,7 +178,7 @@ export const VerifyOtp = (): JSX.Element => {
             });
 
             setTimeout(() => {
-                navigate("/login", { replace: true, state: { email } });
+                navigate("/signin", { replace: true, state: { email, roleName } });
             }, 450);
         } catch (e: any) {
             if (e instanceof ApiError) {

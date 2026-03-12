@@ -57,11 +57,17 @@ export default function Header({ isLoggedIn = false }: HeaderProps) {
               <button className="flex items-center justify-center p-2.5 bg-white rounded-full shadow-md hover:shadow-lg transition-shadow">
                 <Bell className="w-10 h-10" />
               </button>
-              <button className="flex items-center gap-2.5 px-3 py-2.5 bg-white rounded-full shadow-md hover:shadow-lg transition-shadow">
+              <Link
+                to={(() => {
+                  const userRaw = localStorage.getItem("user") || sessionStorage.getItem("user");
+                  try { const u = userRaw ? JSON.parse(userRaw) : null; return u?.role === "School" ? "/school/profile" : "/parentprofile"; } catch { return "/parentprofile"; }
+                })()}
+                className="flex items-center gap-2.5 px-3 py-2.5 bg-white rounded-full shadow-md hover:shadow-lg transition-shadow"
+              >
                 <User className="w-10 h-10" />
                 <span className="hidden md:inline font-baloo text-base text-black">Hồ sơ</span>
                 <ChevronDown className="hidden md:inline w-3 h-3 stroke-2" />
-              </button>
+              </Link>
             </div>
           ) : (
             <div className="flex items-center gap-3">

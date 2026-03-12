@@ -502,4 +502,54 @@ export async function lockCampaign(id: string): Promise<{ message: string }> {
     });
 }
 
+/** Campaign progress stats (UC-46) */
+export type CampaignProgressDto = {
+    campaignId: string;
+    campaignName: string;
+    status: string;
+    startDate: string;
+    endDate: string;
+    totalOrders: number;
+    totalStudents: number;
+    totalRevenue: number;
+    pendingOrders: number;
+    totalChildProfiles: number;
+    outfitBreakdown: {
+        outfitId: string;
+        outfitName: string;
+        quantityOrdered: number;
+        maxQuantity: number | null;
+        revenue: number;
+        category: string | null;
+    }[];
+};
+
+/** Get campaign progress / stats */
+export async function getCampaignProgress(id: string): Promise<CampaignProgressDto> {
+    return api<CampaignProgressDto>(
+        endpoints.schools.campaignProgress.replace("{id}", id),
+        { auth: true }
+    );
+}
+
 //#endregion
+
+//#region ── Providers ──
+
+export type ProviderDto = {
+    id: string;
+    providerName: string;
+    contactPersonName: string | null;
+    phone: string | null;
+    email: string | null;
+    address: string | null;
+    status: string | null;
+};
+
+/** Get list of available providers */
+export async function getProviders(): Promise<ProviderDto[]> {
+    return api<ProviderDto[]>(endpoints.schools.providers, { auth: true });
+}
+
+//#endregion
+
