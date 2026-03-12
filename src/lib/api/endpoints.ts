@@ -17,7 +17,7 @@ export const endpoints = {
     public: {
         schools: "/api/public/schools",
         categories: "/api/public/categories",
-        outfits: "/api/public/outfits/{$id}",
+        outfits: "/api/public/outfits",
 
     },
     tryOn: {
@@ -40,5 +40,7 @@ export const endpoints = {
     users: {
         me: "/api/users/me",
         profile: "/api/users/me/profile",
+        children: "/api/users/me/children",
+        findChildren: "/api/users/me/find-children",
     },
 } as const;

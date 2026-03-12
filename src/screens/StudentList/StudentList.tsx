@@ -55,6 +55,7 @@ function StudentFormModal({
     isEditing,
     isLoading,
     availableGrades,
+    isParentLinked,
 }: {
     isOpen: boolean;
     onClose: () => void;
@@ -63,6 +64,7 @@ function StudentFormModal({
     isEditing: boolean;
     isLoading: boolean;
     availableGrades: string[];
+    isParentLinked?: boolean;
 }) {
     const [form, setForm] = useState<StudentFormData>(EMPTY_FORM);
 
@@ -174,13 +176,31 @@ function StudentFormModal({
                         </div>
                         <div>
                             <label className={labelClass}>SĐT Phụ huynh</label>
-                            <input
-                                type="tel"
-                                value={form.parentPhone}
-                                onChange={(e) => setForm({ ...form, parentPhone: e.target.value })}
-                                placeholder="0901234567"
-                                className={inputClass}
-                            />
+                            <div className="relative">
+                                <input
+                                    type="tel"
+                                    value={form.parentPhone}
+                                    onChange={(e) => setForm({ ...form, parentPhone: e.target.value })}
+                                    placeholder="0901234567"
+                                    disabled={isEditing && isParentLinked}
+                                    className={`${inputClass} ${isEditing && isParentLinked
+                                        ? "bg-gray-100 cursor-not-allowed text-gray-400 border-gray-200 pr-8"
+                                        : ""
+                                    }`}
+                                />
+                                {isEditing && isParentLinked && (
+                                    <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1" title="Học sinh đã được liên kết với phụ huynh, không thể thay đổi số điện thoại">
+                                        <svg className="w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z" />
+                                        </svg>
+                                    </div>
+                                )}
+                            </div>
+                            {isEditing && isParentLinked && (
+                                <p className="mt-1 text-xs text-amber-600 [font-family:'Montserrat',Helvetica] font-medium">
+                                    🔒 Học sinh đã liên kết phụ huynh — không thể thay đổi SĐT
+                                </p>
+                            )}
                         </div>
                     </div>
 
@@ -335,6 +355,7 @@ export const StudentListV2 = (): JSX.Element => {
     const [editingStudent, setEditingStudent] = useState<StudentDetailDto | null>(null);
     const [formLoading, setFormLoading] = useState(false);
     const [formInitialData, setFormInitialData] = useState<StudentFormData>(EMPTY_FORM);
+    const [editingIsParentLinked, setEditingIsParentLinked] = useState(false);
 
     /* ── Delete state ── */
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -419,6 +440,7 @@ export const StudentListV2 = (): JSX.Element => {
     const handleOpenCreate = () => {
         setEditingStudent(null);
         setFormInitialData(EMPTY_FORM);
+        setEditingIsParentLinked(false);
         setShowFormModal(true);
     };
 
@@ -428,6 +450,7 @@ export const StudentListV2 = (): JSX.Element => {
             setShowFormModal(true);
             const detail = await getStudentById(studentId);
             setEditingStudent(detail);
+            setEditingIsParentLinked(detail.isParentLinked);
             setFormInitialData({
                 fullName: detail.fullName,
                 dateOfBirth: detail.dateOfBirth ? detail.dateOfBirth.split("T")[0] : "",
@@ -816,6 +839,7 @@ export const StudentListV2 = (): JSX.Element => {
                 isEditing={!!editingStudent}
                 isLoading={formLoading}
                 availableGrades={availableGrades}
+                isParentLinked={editingIsParentLinked}
             />
 
             <DeleteConfirmDialog

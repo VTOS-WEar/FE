@@ -45,6 +45,9 @@ export function Notify({
                 ? "border-blue-200 text-blue-950 [&>svg]:text-blue-600"
                 : "border-red-200 text-red-950 [&>svg]:text-red-600";
     const onCloseRef = useRef(onClose);
+    // Keep the ref up-to-date without triggering the timer effect
+    useEffect(() => { onCloseRef.current = onClose; });
+
     useEffect(() => {
         if (!open || !message) return;
 
@@ -66,7 +69,8 @@ export function Notify({
 
         raf = requestAnimationFrame(tick);
         return () => cancelAnimationFrame(raf);
-    }, [open, message, durationMs, onClose]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [open, message, durationMs]); // ← onClose intentionally excluded (use ref instead)
 
     if (!open || !message) return null;
 

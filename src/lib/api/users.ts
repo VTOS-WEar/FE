@@ -41,3 +41,48 @@ export async function updateParentProfile(
   }) as { value: ParentProfileResponse };
   return res.value;
 }
+
+/* ── Children Management Types ── */
+export interface ChildSchoolDto {
+  schoolId: string;
+  schoolName: string;
+  logoURL?: string | null;
+}
+
+export interface ChildProfileDto {
+  childId: string;
+  fullName: string;
+  age: number;
+  grade: string;
+  gender: string;
+  school: ChildSchoolDto;
+}
+
+export interface ConflictedChildDto {
+  fullName: string;
+  grade: string;
+  schoolName: string;
+  otherParentName: string;
+}
+
+export interface FindChildrenResponse {
+  linkedCount: number;
+  linked: ChildProfileDto[];
+  conflictedCount: number;
+  conflicted: ConflictedChildDto[];
+  message: string;
+}
+
+/* ── GET /api/users/me/children ── */
+export async function getMyChildren(): Promise<ChildProfileDto[]> {
+  return api<ChildProfileDto[]>(endpoints.users.children, { auth: true });
+}
+
+/* ── POST /api/users/me/find-children ── */
+export async function findMyChildren(): Promise<FindChildrenResponse> {
+  return api<FindChildrenResponse>(endpoints.users.findChildren, {
+    method: "POST",
+    auth: true,
+  });
+}
+

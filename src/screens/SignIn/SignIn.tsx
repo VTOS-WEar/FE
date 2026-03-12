@@ -52,7 +52,7 @@ export const SignIn = (): JSX.Element => {
       if (data.user.role === "School") {
         redirectTo = "/school/dashboard";
       } else if (data.user.role === "Parent" && !data.user.phone) {
-        redirectTo = "/fillinformation";
+        redirectTo = "/fillphonenumber";
       }
 
       // Global toast persists across navigation

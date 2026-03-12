@@ -3,17 +3,19 @@ import { ToastProvider } from "./contexts/ToastContext";
 import { AccountSecurity } from "./screens/AccountSecurity";
 import { AccountSetting } from "./screens/AccountSetting";
 import { FillInformation } from "./screens/FillInformation";
-import { FindSchool } from "./screens/FindSchool";
 import { Homepage } from "./screens/Homepage";
 import { MyProfile } from "./screens/MyProfile";
 import { OrderManagement } from "./screens/OrderManagement";
 import { SignIn } from "./screens/SignIn";
 import { SignUp } from "./screens/SignUp";
 import { TryOnHistory } from "./screens/TryOnHistory";
-import { SiteLayout } from "./layouts/SiteLayout";
 import { SchoolList } from "./screens/SchoolList";
 import { ProductList } from "./screens/ProductList";
 import { ProductDetail } from "./screens/ProductDetail";
+import { SchoolDetail } from "./screens/SchoolDetail/SchoolDetail";
+import { CampaignDetail as PublicCampaignDetail } from "./screens/CampaignDetail/CampaignDetail";
+import { OutfitDetail } from "./screens/OutfitDetail/OutfitDetail";
+import { Cart } from "./screens/Cart/Cart";
 import { VerifyOTP } from "./screens/OtpField";
 import { ForgotPassword } from "./screens/ForgotPassword/ForgotPassword";
 import { ForgotPasswordSent } from "./screens/ForgotPasswordSent/ForgotPasswordSent";
@@ -31,6 +33,12 @@ import { CampaignDetail } from "./screens/CampaignManagement/CampaignDetail";
 import { SchoolDashboard } from "./screens/SchoolDashboard/SchoolDashboard";
 import { RoleGuard } from "./components/guards/RoleGuard";
 import { ParentProfile } from "./screens/ParentProfile/ParentProfile";
+import { AccountTab } from "./screens/ParentProfile/tabs/AccountTab";
+import { StudentsTab } from "./screens/ParentProfile/tabs/StudentsTab";
+import { OrdersTab } from "./screens/ParentProfile/tabs/OrdersTab";
+import { HistoryTab } from "./screens/ParentProfile/tabs/HistoryTab";
+import { ReviewsTab } from "./screens/ParentProfile/tabs/ReviewsTab";
+import { SettingsTab } from "./screens/ParentProfile/tabs/SettingsTab";
 
 /** Smart root redirect: School→dashboard, others→homepage */
 function RootRedirect() {
@@ -54,28 +62,12 @@ const router = createBrowserRouter([
     element: <SignUp />,
   },
   {
-    path: "/fillinformation",
+    path: "/fillphonenumber",
     element: <FillInformation />,
   },
   {
-    path: "/signin",
-    element: <SignIn />,
-  },
-  {
-    path: "/accountsecurity",
-    element: <AccountSecurity />,
-  },
-  {
-    path: "/tryonhistory",
-    element: <TryOnHistory />,
-  },
-  {
-    path: "/myprofile",
-    element: <MyProfile />,
-  },
-  {
-    path: "/findschool",
-    element: <FindSchool />,
+    path: "/fillinformation",
+    element: <FillInformation />, // keep old path for backward compat
   },
   {
     path: "/accountsetting",
@@ -88,6 +80,15 @@ const router = createBrowserRouter([
   {
     path: "/parentprofile",
     element: <ParentProfile />,
+    children: [
+      { index: true, element: <Navigate to="account" replace /> },
+      { path: "account",  element: <AccountTab /> },
+      { path: "students", element: <StudentsTab /> },
+      { path: "orders",   element: <OrdersTab /> },
+      { path: "history",  element: <HistoryTab /> },
+      { path: "reviews",  element: <ReviewsTab /> },
+      { path: "settings", element: <SettingsTab /> },
+    ],
   },
   {
     path: "/verify-otp",
@@ -146,64 +147,16 @@ const router = createBrowserRouter([
   { path: "/forgot-password", element: <ForgotPassword /> },
   { path: "/forgot-password/sent", element: <ForgotPasswordSent /> },
   { path: "/reset-password", element: <ResetPassword /> },
-  {
-    element: <SiteLayout isLoggedIn={false} />,
-    children: [
-      {
-        path: "/signup",
-        element: <SignUp />,
-      },
-      {
-        path: "/signin",
-        element: <SignIn />,
-      },
-      {
-        path: "/schools",
-        element: <SchoolList />,
-      },
-      {
-        path: "/products",
-        element: <ProductList />,
-      },
-      {
-        path: "/products/:id",
-        element: <ProductDetail />,
-      },
-      {
-        path: "/verify-otp",
-        element: <VerifyOTP />,
-      }
-      // Commented out until components are created
-      // {
-      //   path: "/fillinformation",
-      //   element: <FillInformation />,
-      // },
-      // {
-      //   path: "/accountsecurity",
-      //   element: <AccountSecurity />,
-      // },
-      // {
-      //   path: "/tryonhistory",
-      //   element: <TryOnHistory />,
-      // },
-      // {
-      //   path: "/myprofile",
-      //   element: <MyProfile />,
-      // },
-      // {
-      //   path: "/findschool",
-      //   element: <FindSchool />,
-      // },
-      // {
-      //   path: "/accountsetting",
-      //   element: <AccountSetting />,
-      // },
-      // {
-      //   path: "/ordermanagement",
-      //   element: <OrderManagement />,
-      // },
-    ],
-  },
+  // All screens below manage their own layout (GuestLayout internally).
+  // DO NOT wrap in SiteLayout — that would add a second navbar on top.
+  { path: "/signin", element: <SignIn /> },
+  { path: "/schools", element: <SchoolList /> },
+  { path: "/schools/:id", element: <SchoolDetail /> },
+  { path: "/campaigns/:campaignId", element: <PublicCampaignDetail /> },
+  { path: "/outfits/:id", element: <OutfitDetail /> },
+  { path: "/cart", element: <Cart /> },
+  { path: "/products", element: <ProductList /> },
+  { path: "/products/:id", element: <ProductDetail /> },
 ]);
 
 export const App = () => {
