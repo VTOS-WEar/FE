@@ -1,6 +1,7 @@
 import { Search, ShoppingCart, Bell, ChevronDown, LogIn, User } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useCart } from "../../contexts/CartContext";
 
 function getSessionUser(): { fullName: string; role: string } | null {
   const raw = localStorage.getItem("user") || sessionStorage.getItem("user");
@@ -14,6 +15,8 @@ function isLoggedIn(): boolean {
 
 export const NavbarGuest = (): JSX.Element => {
   const navigate = useNavigate();
+  const cartCtx = useCart();
+  const cartCount = cartCtx.getItemCount();
   const [loggedIn, setLoggedIn] = useState(false);
   const [userName, setUserName] = useState("");
   const [userRole, setUserRole] = useState("");
@@ -31,7 +34,7 @@ export const NavbarGuest = (): JSX.Element => {
   const profilePath = userRole === "School" ? "/school/profile" : "/parentprofile";
 
   return (
-    <header className="sticky top-0 z-50 bg-purple-light/80 backdrop-blur-sm">
+    <header className="relative z-10 bg-purple-light/80 backdrop-blur-sm">
       <div className="container mx-auto px-4 py-3">
         <nav className="flex items-center justify-between gap-3">
           {/* Logo */}
@@ -44,19 +47,22 @@ export const NavbarGuest = (): JSX.Element => {
 
           {/* Navigation Menu - Pill shape */}
           <div className="hidden lg:flex items-center gap-8 px-8 py-3 bg-white rounded-full shadow-lg">
-            <a href="/homepage" className="font-baloo text-base text-black hover:text-purple-dark transition-colors">
+            <a href="/homepage" className="font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors">
               Trang chủ
             </a>
-            <a href="#how-it-works" className="font-baloo text-base text-black hover:text-purple-dark transition-colors">
+            <a href="#how-it-works" className="font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors">
               Cách hoạt động
             </a>
+            <Link to="/schools" className="font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors">
+              Tìm trường
+            </Link>
             <div className="flex items-center gap-2 cursor-pointer group">
-              <span className="font-baloo text-base text-black group-hover:text-purple-dark transition-colors">
+              <span className="font-baloo font-semibold text-base text-black group-hover:text-purple-dark transition-colors">
                 Sản phẩm
               </span>
               <ChevronDown className="w-3 h-3 stroke-2" />
             </div>
-            <a href="#contact" className="font-baloo text-base text-black hover:text-purple-dark transition-colors">
+            <a href="#contact" className="font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors">
               Liên hệ
             </a>
             <div className="relative">
@@ -73,11 +79,19 @@ export const NavbarGuest = (): JSX.Element => {
 
           {/* Right Icons */}
           <div className="flex items-center gap-3">
-            <button className="flex items-center justify-center p-2.5 bg-white rounded-full shadow-md hover:shadow-lg transition-shadow">
-              <ShoppingCart className="w-10 h-10" />
+            <button
+              onClick={() => navigate("/cart")}
+              className="relative flex items-center justify-center p-2.5 bg-white rounded-full shadow-md hover:shadow-lg transition-shadow"
+            >
+              <ShoppingCart className="w-6 h-6" />
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-purple-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                  {cartCount > 99 ? "99+" : cartCount}
+                </span>
+              )}
             </button>
             <button className="flex items-center justify-center p-2.5 bg-white rounded-full shadow-md hover:shadow-lg transition-shadow">
-              <Bell className="w-10 h-10" />
+              <Bell className="w-6 h-6" />
             </button>
 
             {loggedIn ? (
@@ -86,8 +100,8 @@ export const NavbarGuest = (): JSX.Element => {
                 to={profilePath}
                 className="hidden lg:flex items-center gap-2.5 bg-white rounded-[50px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] px-5 py-2.5 hover:bg-gray-50 transition-colors cursor-pointer"
               >
-                <User className="w-10 h-10" />
-                <span className="font-baloo text-base text-black truncate max-w-[160px]">{userName}</span>
+                <User className="w-6 h-6" />
+                <span className="font-baloo font-semibold text-base text-black truncate max-w-[160px]">{userName}</span>
                 <ChevronDown className="w-3 h-3 stroke-2" />
               </Link>
             ) : (
@@ -96,8 +110,8 @@ export const NavbarGuest = (): JSX.Element => {
                 onClick={() => navigate("/signin")}
                 className="hidden lg:flex items-center gap-2.5 bg-white rounded-[50px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] px-5 py-2.5 hover:bg-gray-50 transition-colors cursor-pointer"
               >
-                <LogIn className="w-10 h-10" />
-                <span className="font-baloo text-base text-black">Đăng nhập</span>
+                <LogIn className="w-6 h-6" />
+                <span className="font-baloo font-semibold text-base text-black">Đăng nhập</span>
               </button>
             )}
 

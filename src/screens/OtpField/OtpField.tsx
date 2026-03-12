@@ -172,14 +172,14 @@ export const VerifyOtp = (): JSX.Element => {
             await verifyEmail({ email, otp: otpValue });
 
             setNotify({
-                title: "Xác thực thành công",
-                message: "OTP hợp lệ. Đang chuyển trang...",
+                title: "Xác thực thành công! 🎉",
+                message: "Email của bạn đã được xác nhận. Chuyển đến trang đăng nhập sau 3 giây...",
                 variant: "success",
             });
 
             setTimeout(() => {
                 navigate("/signin", { replace: true, state: { email, roleName } });
-            }, 450);
+            }, 3000);
         } catch (e: any) {
             if (e instanceof ApiError) {
                 const details = e.details as VerifyEmailErrorDetails | undefined;

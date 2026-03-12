@@ -404,6 +404,74 @@ export async function deleteOutfit(id: string): Promise<void> {
 
 //#endregion
 
+//#region Variant (Size) CRUD
+
+export type ProductVariantDto = {
+    productVariantId: string;
+    outfitId: string;
+    size: string;
+    price: number;
+    stockQuantity: number;
+    colorVariant: string | null;
+    materialType: string | null;
+    skuCode: string | null;
+    variantImageURL: string | null;
+};
+
+export type CreateVariantRequest = {
+    size: string;
+    price: number;
+    stockQuantity: number;
+    colorVariant?: string | null;
+    materialType?: string | null;
+    skuCode?: string | null;
+};
+
+export type UpdateVariantRequest = {
+    size?: string;
+    price?: number;
+    stockQuantity?: number;
+    colorVariant?: string | null;
+    materialType?: string | null;
+    skuCode?: string | null;
+};
+
+/** Get all variants for an outfit */
+export async function getOutfitVariants(outfitId: string): Promise<ProductVariantDto[]> {
+    return api<ProductVariantDto[]>(`${endpoints.schools.outfitVariants}/${outfitId}/variants`, {
+        method: "GET",
+        auth: true,
+    });
+}
+
+/** Create a new variant for an outfit */
+export async function createVariant(outfitId: string, data: CreateVariantRequest): Promise<ProductVariantDto> {
+    return api<ProductVariantDto>(`${endpoints.schools.outfitVariants}/${outfitId}/variants`, {
+        method: "POST",
+        body: JSON.stringify(data),
+        auth: true,
+    });
+}
+
+/** Update a variant */
+export async function updateVariant(outfitId: string, variantId: string, data: UpdateVariantRequest): Promise<ProductVariantDto> {
+    return api<ProductVariantDto>(`${endpoints.schools.outfitVariants}/${outfitId}/variants/${variantId}`, {
+        method: "PUT",
+        body: JSON.stringify(data),
+        auth: true,
+    });
+}
+
+/** Delete a variant */
+export async function deleteVariant(outfitId: string, variantId: string): Promise<void> {
+    await api<void>(`${endpoints.schools.outfitVariants}/${outfitId}/variants/${variantId}`, {
+        method: "DELETE",
+        auth: true,
+    });
+}
+
+//#endregion
+
 //#region ── Campaigns ──
 
 export type CampaignListItemDto = {
@@ -552,4 +620,124 @@ export async function getProviders(): Promise<ProviderDto[]> {
 }
 
 //#endregion
+//#region ── Public APIs (no auth required) ──
 
+export type PublicSchoolDto = {
+    schoolId: string;
+    schoolName: string;
+    logoURL: string | null;
+    level: string | null;
+    contactInfo: string | null;
+};
+
+// Matches backend SchoolCampaignDto
+export type PublicCampaignSummaryDto = {
+    campaignId: string;
+    campaignName: string;
+    status: string;
+    startDate: string;
+    endDate: string;
+    description?: string | null;
+    outfitCount?: number;
+};
+
+// Matches actual backend SchoolDetailResponse (PascalCase -> camelCase via .NET serializer)
+export type PublicSchoolDetailDto = {
+    schoolId: string;
+    schoolName: string;
+    logoURL: string | null;
+    contactInfo: string | null;
+    outfitCount: number;
+    activeCampaigns: PublicCampaignSummaryDto[];
+};
+
+export type PublicCampaignDetailDto = {
+    campaignId: string;
+    campaignName: string;
+    status: string;
+    startDate: string;
+    endDate: string;
+    description: string | null;
+    school: { id: string; schoolName: string; logoURL: string | null };
+    outfits: CampaignOutfitDetailDto[];
+};
+
+/** Guest & Parent: list all public schools (paginated) */
+export async function getPublicSchools(): Promise<unknown> {
+    return api<unknown>(endpoints.public.schools, { method: "GET" });
+}
+
+/** Guest & Parent: public school detail with active campaigns */
+export async function getPublicSchoolDetail(id: string): Promise<PublicSchoolDetailDto> {
+    return api<PublicSchoolDetailDto>(`${endpoints.public.schools}/${id}`, { method: "GET" });
+}
+
+/** Parent only: public campaign detail with outfits */
+export async function getPublicCampaignDetail(campaignId: string): Promise<PublicCampaignDetailDto> {
+    return api<PublicCampaignDetailDto>(
+        `/api/public/campaigns/${campaignId}`,
+        { method: "GET", auth: true }
+    );
+}
+
+// ── Outfit Detail (public) ──
+
+export type OutfitVariantDto = {
+    productVariantId: string;
+    size: string;
+    colorVariant: string | null;
+    materialType: string | null;
+    stockQuantity: number;
+    price: number;
+    skuCode: string | null;
+    variantImageURL: string | null;
+};
+
+export type SizeChartDetailDto = {
+    sizeLabel: string;
+    chestMin: number | null;
+    chestMax: number | null;
+    waistMin: number | null;
+    waistMax: number | null;
+    heightMin: number | null;
+    heightMax: number | null;
+};
+
+export type SizeChartDto = {
+    sizeChartId: string;
+    chartName: string;
+    unit: string;
+    details: SizeChartDetailDto[];
+};
+
+export type OutfitDetailDto = {
+    outfitId: string;
+    outfitName: string;
+    description: string | null;
+    price: number;
+    outfitType: string;
+    mainImageURL: string | null;
+    isAvailable: boolean;
+    isCustomizable: boolean;
+    school: { schoolId: string; schoolName: string; logoURL: string | null };
+    variants: OutfitVariantDto[];
+    sizeChart: SizeChartDto | null;
+    categories: string[];
+    averageRating: number;
+    feedbackCount: number;
+};
+
+/** Guest & Parent: outfit detail */
+export async function getPublicOutfitDetail(id: string): Promise<OutfitDetailDto> {
+    return api<OutfitDetailDto>(`${endpoints.public.outfits}/${id}`, { method: "GET" });
+}
+
+/** Guest & Parent: list uniforms for a school (for "related" section) */
+export async function getSchoolUniforms(schoolId: string, page = 1, pageSize = 10): Promise<unknown> {
+    return api<unknown>(
+        `${endpoints.public.schools}/${schoolId}/uniforms?page=${page}&pageSize=${pageSize}`,
+        { method: "GET" }
+    );
+}
+
+//#endregion

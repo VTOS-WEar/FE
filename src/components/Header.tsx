@@ -7,7 +7,7 @@ interface HeaderProps {
 
 export default function Header({ isLoggedIn = false }: HeaderProps) {
   return (
-    <header className="sticky top-0 z-50 bg-purple-light/80 backdrop-blur-sm">
+    <header className="relative z-10 bg-purple-light/80 backdrop-blur-sm">
       <div className="container mx-auto px-4 py-3">
         <nav className="flex items-center justify-between gap-3">
           {/* Logo */}
