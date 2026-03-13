@@ -680,7 +680,7 @@ export const UniformManagement = (): JSX.Element => {
             <VariantManager
                 outfitId={variantOutfit?.outfitId || ""}
                 outfitName={variantOutfit?.outfitName || ""}
-                outfitPrice={variantOutfit?.price || 0}
+                
                 isOpen={!!variantOutfit}
                 onClose={() => setVariantOutfit(null)}
             />

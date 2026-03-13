@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import {
   ChevronRight,
   Trash2,
-  Pencil,
   Minus,
   Plus,
   ShieldCheck,
@@ -76,6 +75,7 @@ export const Cart = (): JSX.Element => {
 
       // Create one order per child+campaign group
       let lastPaymentLink = "";
+      const createdOrderIds: string[] = [];
       for (const [, group] of orderGroups) {
         const request: CheckoutRequest = {
           childProfileId: group.childProfileId,
@@ -90,15 +90,18 @@ export const Cart = (): JSX.Element => {
 
         const result = await checkout(request);
         lastPaymentLink = result.paymentLink;
+        // Track orderId so /payment/cancel can call cancel API
+        createdOrderIds.push(result.orderId);
       }
 
-      // Clear cart after successful checkout
-      cart.clearCart();
-      showToast({ title: "Đặt hàng thành công!", message: "Đang chuyển đến trang thanh toán...", variant: "success" });
-
-      // Redirect to PayOS payment page
+      // Redirect to PayOS payment page immediately
+      // Don't clear cart here — it causes React re-render + empty cart flash
+      // Cart will be cleared on /payment/success page instead
       if (lastPaymentLink) {
-        setTimeout(() => { window.location.href = lastPaymentLink; }, 1000);
+        // Save orderIds so payment return pages can reference them
+        sessionStorage.setItem("vtos_pending_order_ids", JSON.stringify(createdOrderIds));
+        window.location.href = lastPaymentLink;
+        return;
       }
     } catch (err: any) {
       showToast({
@@ -111,8 +114,8 @@ export const Cart = (): JSX.Element => {
     }
   };
 
-  /* ── Empty state ── */
-  if (allItems.length === 0) {
+  /* ── Empty state (skip if mid-checkout to avoid flash) ── */
+  if (allItems.length === 0 && !checkingOut) {
     return (
       <GuestLayout bgColor="#F4F6FF">
         <div className="max-w-[1200px] mx-auto px-4 lg:px-8 py-16 text-center">
@@ -256,9 +259,6 @@ export const Cart = (): JSX.Element => {
                             </div>
                           </div>
                           <div className="flex items-center gap-3">
-                            <button className="flex items-center gap-1 font-montserrat text-xs text-blue-500 hover:text-blue-700">
-                              <Pencil className="w-3 h-3" /> Chỉnh sửa
-                            </button>
                             <button
                               onClick={() => cart.removeItem(item.id)}
                               className="flex items-center gap-1 font-montserrat text-xs text-red-400 hover:text-red-600"
@@ -307,14 +307,16 @@ export const Cart = (): JSX.Element => {
                     {shippingFee > 0 ? fmt(shippingFee) : "Miễn phí"}
                   </span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="font-montserrat text-sm text-gray-500">
-                    Giảm giá
-                  </span>
-                  <span className="font-montserrat font-medium text-sm text-green-600">
-                    -{fmt(discount)}
-                  </span>
-                </div>
+                {discount > 0 && (
+                  <div className="flex justify-between">
+                    <span className="font-montserrat text-sm text-gray-500">
+                      Giảm giá
+                    </span>
+                    <span className="font-montserrat font-medium text-sm text-green-600">
+                      -{fmt(discount)}
+                    </span>
+                  </div>
+                )}
               </div>
 
               <div className="border-t border-gray-100 pt-4 mb-5">
@@ -339,12 +341,12 @@ export const Cart = (): JSX.Element => {
                   <p className="font-montserrat font-semibold text-sm text-black mb-2">
                     Địa chỉ giao hàng
                   </p>
-                  <input
-                    type="text"
-                    placeholder="Nhập địa chỉ nhận hàng"
+                  <textarea
+                    placeholder="Nhập địa chỉ nhận hàng (số nhà, đường, phường/xã, quận/huyện, tỉnh/thành phố)"
                     value={shippingAddress}
                     onChange={(e) => setShippingAddress(e.target.value)}
-                    className="w-full px-3 py-2.5 border border-gray-200 rounded-lg font-montserrat text-sm placeholder:text-gray-300 focus:outline-none focus:border-purple-400"
+                    rows={3}
+                    className="w-full px-3 py-2.5 border border-gray-200 rounded-lg font-montserrat text-sm placeholder:text-gray-300 focus:outline-none focus:border-purple-400 resize-none"
                   />
                 </div>
               )}

@@ -46,5 +46,6 @@ export const endpoints = {
     },
     orders: {
         checkout: "/api/orders/checkout",
+        cancel: "/api/orders", // append /{orderId}/cancel at call time
     },
 } as const;

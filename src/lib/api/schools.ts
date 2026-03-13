@@ -411,7 +411,6 @@ export type ProductVariantDto = {
     outfitId: string;
     size: string;
     price: number;
-    stockQuantity: number;
     colorVariant: string | null;
     materialType: string | null;
     skuCode: string | null;
@@ -420,8 +419,6 @@ export type ProductVariantDto = {
 
 export type CreateVariantRequest = {
     size: string;
-    price: number;
-    stockQuantity: number;
     colorVariant?: string | null;
     materialType?: string | null;
     skuCode?: string | null;
@@ -429,8 +426,6 @@ export type CreateVariantRequest = {
 
 export type UpdateVariantRequest = {
     size?: string;
-    price?: number;
-    stockQuantity?: number;
     colorVariant?: string | null;
     materialType?: string | null;
     skuCode?: string | null;
@@ -687,7 +682,6 @@ export type OutfitVariantDto = {
     size: string;
     colorVariant: string | null;
     materialType: string | null;
-    stockQuantity: number;
     price: number;
     skuCode: string | null;
     variantImageURL: string | null;
