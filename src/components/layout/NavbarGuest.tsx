@@ -16,20 +16,28 @@ function isLoggedIn(): boolean {
 export const NavbarGuest = (): JSX.Element => {
   const navigate = useNavigate();
   const cartCtx = useCart();
-  const cartCount = cartCtx.getItemCount();
-  const [loggedIn, setLoggedIn] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(isLoggedIn);
   const [userName, setUserName] = useState("");
   const [userRole, setUserRole] = useState("");
 
+  // Poll login status so navbar reacts immediately to logout/login
   useEffect(() => {
-    const hasSession = isLoggedIn();
-    setLoggedIn(hasSession);
-    if (hasSession) {
-      const u = getSessionUser();
-      setUserName(u?.fullName || "Hồ sơ");
-      setUserRole(u?.role || "");
-    }
+    const check = () => {
+      const hasSession = isLoggedIn();
+      setLoggedIn(hasSession);
+      if (hasSession) {
+        const u = getSessionUser();
+        setUserName(u?.fullName || "Hồ sơ");
+        setUserRole(u?.role || "");
+      }
+    };
+    check(); // run once immediately
+    const interval = setInterval(check, 500);
+    return () => clearInterval(interval);
   }, []);
+
+  // Only show cart badge for logged-in users
+  const cartCount = loggedIn ? cartCtx.getItemCount() : 0;
 
   const profilePath = userRole === "School" ? "/school/profile" : "/parentprofile";
 
