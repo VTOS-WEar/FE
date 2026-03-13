@@ -17,6 +17,8 @@ import { SchoolDetail } from "./screens/SchoolDetail/SchoolDetail";
 import { CampaignDetail as PublicCampaignDetail } from "./screens/CampaignDetail/CampaignDetail";
 import { OutfitDetail } from "./screens/OutfitDetail/OutfitDetail";
 import { Cart } from "./screens/Cart/Cart";
+import { PaymentSuccess } from "./screens/Payment/PaymentSuccess";
+import { PaymentCancel } from "./screens/Payment/PaymentCancel";
 import { VerifyOTP } from "./screens/OtpField";
 import { ForgotPassword } from "./screens/ForgotPassword/ForgotPassword";
 import { ForgotPasswordSent } from "./screens/ForgotPasswordSent/ForgotPasswordSent";
@@ -156,6 +158,8 @@ const router = createBrowserRouter([
   { path: "/campaigns/:campaignId", element: <PublicCampaignDetail /> },
   { path: "/outfits/:id", element: <OutfitDetail /> },
   { path: "/cart", element: <Cart /> },
+  { path: "/payment/success", element: <PaymentSuccess /> },
+  { path: "/payment/cancel", element: <PaymentCancel /> },
   { path: "/products", element: <ProductList /> },
   { path: "/products/:id", element: <ProductDetail /> },
 ]);
