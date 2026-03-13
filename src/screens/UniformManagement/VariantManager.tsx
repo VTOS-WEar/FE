@@ -11,11 +11,9 @@ import {
 /* ── Types ── */
 type VariantForm = {
     size: string;
-    price: string;
-    stockQuantity: string;
 };
 
-const EMPTY_FORM: VariantForm = { size: "", price: "", stockQuantity: "0" };
+const EMPTY_FORM: VariantForm = { size: "" };
 
 /* ── Common Sizes ── */
 const COMMON_SIZES = ["XS", "S", "M", "L", "XL", "2XL", "3XL", "100", "110", "120", "130", "140", "150", "160"];
@@ -26,13 +24,11 @@ const COMMON_SIZES = ["XS", "S", "M", "L", "XL", "2XL", "3XL", "100", "110", "12
 export default function VariantManager({
     outfitId,
     outfitName,
-    outfitPrice,
     isOpen,
     onClose,
 }: {
     outfitId: string;
     outfitName: string;
-    outfitPrice: number;
     isOpen: boolean;
     onClose: () => void;
 }) {
@@ -77,8 +73,6 @@ export default function VariantManager({
         setEditingId(v.productVariantId);
         setForm({
             size: v.size,
-            price: String(v.price),
-            stockQuantity: String(v.stockQuantity),
         });
         setShowForm(true);
     };
@@ -86,7 +80,7 @@ export default function VariantManager({
     /* ── Open create form ── */
     const openCreate = () => {
         setEditingId(null);
-        setForm({ ...EMPTY_FORM, price: String(outfitPrice) });
+        setForm({ ...EMPTY_FORM });
         setShowForm(true);
     };
 
@@ -99,8 +93,6 @@ export default function VariantManager({
         try {
             const payload: CreateVariantRequest = {
                 size: form.size.trim(),
-                price: parseFloat(form.price) || 0,
-                stockQuantity: parseInt(form.stockQuantity) || 0,
             };
 
             if (editingId) {
@@ -136,8 +128,6 @@ export default function VariantManager({
             setSaving(false);
         }
     };
-
-    const formatPrice = (p: number) => new Intl.NumberFormat("vi-VN").format(p) + "đ";
 
     /* ── Inline styles ── */
     const inputClass =
@@ -231,30 +221,6 @@ export default function VariantManager({
                                 />
                             </div>
 
-                            <div className="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label className={labelClass}>Giá (VND)</label>
-                                    <input
-                                        type="number"
-                                        value={form.price}
-                                        onChange={(e) => setForm((f) => ({ ...f, price: e.target.value }))}
-                                        className={inputClass}
-                                        min="0"
-                                        step="1000"
-                                    />
-                                </div>
-                                <div>
-                                    <label className={labelClass}>Tồn kho</label>
-                                    <input
-                                        type="number"
-                                        value={form.stockQuantity}
-                                        onChange={(e) => setForm((f) => ({ ...f, stockQuantity: e.target.value }))}
-                                        className={inputClass}
-                                        min="0"
-                                    />
-                                </div>
-                            </div>
-
                             <div className="flex justify-end gap-2 pt-2">
                                 <button
                                     type="button"
@@ -299,12 +265,6 @@ export default function VariantManager({
                                             Kích cỡ
                                         </th>
                                         <th className="px-4 py-3 text-right [font-family:'Montserrat',Helvetica] font-bold text-[#4c5769] text-xs uppercase tracking-wider">
-                                            Giá
-                                        </th>
-                                        <th className="px-4 py-3 text-center [font-family:'Montserrat',Helvetica] font-bold text-[#4c5769] text-xs uppercase tracking-wider">
-                                            Tồn kho
-                                        </th>
-                                        <th className="px-4 py-3 text-right [font-family:'Montserrat',Helvetica] font-bold text-[#4c5769] text-xs uppercase tracking-wider">
                                             Thao tác
                                         </th>
                                     </tr>
@@ -315,20 +275,6 @@ export default function VariantManager({
                                             <td className="px-4 py-3">
                                                 <span className="inline-flex items-center justify-center min-w-[40px] px-2.5 py-1 rounded-lg bg-[#F5F3FF] border border-[#DDD6FE] [font-family:'Montserrat',Helvetica] font-bold text-[#6938EF] text-sm">
                                                     {v.size}
-                                                </span>
-                                            </td>
-                                            <td className="px-4 py-3 text-right [font-family:'Montserrat',Helvetica] font-semibold text-[#1a1a2e] text-sm">
-                                                {formatPrice(v.price)}
-                                            </td>
-                                            <td className="px-4 py-3 text-center">
-                                                <span className={`inline-flex items-center justify-center min-w-[32px] px-2 py-0.5 rounded-full text-xs font-bold [font-family:'Montserrat',Helvetica] ${
-                                                    v.stockQuantity > 10
-                                                        ? "bg-emerald-50 text-emerald-600"
-                                                        : v.stockQuantity > 0
-                                                        ? "bg-amber-50 text-amber-600"
-                                                        : "bg-red-50 text-red-500"
-                                                }`}>
-                                                    {v.stockQuantity}
                                                 </span>
                                             </td>
                                             <td className="px-4 py-3 text-right">
