@@ -43,3 +43,15 @@ export async function checkout(request: CheckoutRequest): Promise<CheckoutRespon
   }
   return result as unknown as CheckoutResponse;
 }
+
+/** PUT /api/orders/{orderId}/cancel — Cancel a pending/paid order */
+export async function cancelOrder(orderId: string, reason?: string): Promise<void> {
+  await api(
+    `${endpoints.orders.cancel}/${orderId}/cancel`,
+    {
+      method: "PUT",
+      body: JSON.stringify({ reason: reason || "Người dùng huỷ trên trang thanh toán" }),
+      auth: true,
+    }
+  );
+}
