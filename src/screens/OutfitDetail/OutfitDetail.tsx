@@ -118,7 +118,6 @@ export const OutfitDetail = (): JSX.Element => {
   const mainImage =
     (selectedVariant?.variantImageURL || outfit.mainImageURL) ??
     "https://placehold.co/500x600?text=No+Image";
-  const stock = selectedVariant?.stockQuantity ?? 0;
 
   return (
     <GuestLayout bgColor="#F4F6FF">
@@ -292,18 +291,13 @@ export const OutfitDetail = (): JSX.Element => {
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {sizes.map((size) => {
-                    const v = outfit.variants.find((vr) => vr.size === size);
-                    const outOfStock = v ? v.stockQuantity === 0 : true;
                     return (
                       <button
                         key={size}
-                        disabled={outOfStock}
                         onClick={() => handleSizeSelect(size)}
                         className={`min-w-[48px] px-4 py-2.5 rounded-lg font-montserrat font-semibold text-sm border-2 transition-all ${
                           selectedSize === size
                             ? "bg-purple-600 text-white border-purple-600 shadow-md"
-                            : outOfStock
-                            ? "bg-gray-100 text-gray-300 border-gray-100 cursor-not-allowed"
                             : "bg-white text-gray-700 border-gray-200 hover:border-purple-400"
                         }`}
                       >
@@ -312,11 +306,6 @@ export const OutfitDetail = (): JSX.Element => {
                     );
                   })}
                 </div>
-                {selectedVariant && stock > 0 && (
-                  <p className="font-montserrat text-xs text-gray-400 mt-2">
-                    Còn {stock} sản phẩm
-                  </p>
-                )}
               </div>
             )}
 
