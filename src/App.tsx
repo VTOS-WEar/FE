@@ -8,7 +8,7 @@ import { Homepage } from "./screens/Homepage";
 import { MyProfile } from "./screens/MyProfile";
 import { OrderManagement } from "./screens/OrderManagement";
 import { SignIn } from "./screens/SignIn";
-import { SignUp } from "./screens/SignUp";
+import { SignUp, RoleSelect } from "./screens/SignUp";
 import { TryOnHistory } from "./screens/TryOnHistory";
 import { SchoolList } from "./screens/SchoolList";
 import { ProductList } from "./screens/ProductList";
@@ -35,6 +35,9 @@ import { CampaignManagement } from "./screens/CampaignManagement/CampaignManagem
 import { CampaignDetail } from "./screens/CampaignManagement/CampaignDetail";
 import { SchoolDashboard } from "./screens/SchoolDashboard/SchoolDashboard";
 import { RoleGuard } from "./components/guards/RoleGuard";
+import { ProviderDashboard } from "./screens/ProviderDashboard/ProviderDashboard";
+import { SchoolContracts } from "./screens/SchoolContracts/SchoolContracts";
+import { ProviderContracts } from "./screens/ProviderContracts/ProviderContracts";
 import { ParentProfile } from "./screens/ParentProfile/ParentProfile";
 import { AccountTab } from "./screens/ParentProfile/tabs/AccountTab";
 import { StudentsTab } from "./screens/ParentProfile/tabs/StudentsTab";
@@ -50,6 +53,7 @@ function RootRedirect() {
         try {
             const user = JSON.parse(raw);
             if (user.role === "School") return <Navigate to="/school/dashboard" replace />;
+            if (user.role === "Provider") return <Navigate to="/provider/dashboard" replace />;
         } catch { /* ignore */ }
     }
     return <Navigate to="/homepage" replace />;
@@ -62,7 +66,19 @@ const router = createBrowserRouter([
   },
   {
     path: "/signup",
-    element: <SignUp />,
+    element: <RoleSelect />,
+  },
+  {
+    path: "/signup/parent",
+    element: <SignUp roleName="Parent" />,
+  },
+  {
+    path: "/signup/school",
+    element: <SignUp roleName="School" />,
+  },
+  {
+    path: "/signup/provider",
+    element: <SignUp roleName="Provider" />,
   },
   {
     path: "/fillphonenumber",
@@ -126,6 +142,18 @@ const router = createBrowserRouter([
   {
     path: "/school/dashboard",
     element: <RoleGuard allowedRoles={["School"]}><SchoolDashboard /></RoleGuard>,
+  },
+  {
+    path: "/provider/dashboard",
+    element: <RoleGuard allowedRoles={["Provider"]}><ProviderDashboard /></RoleGuard>,
+  },
+  {
+    path: "/provider/contracts",
+    element: <RoleGuard allowedRoles={["Provider"]}><ProviderContracts /></RoleGuard>,
+  },
+  {
+    path: "/school/contracts",
+    element: <RoleGuard allowedRoles={["School"]}><SchoolContracts /></RoleGuard>,
   },
   {
     path: "/school/profile",

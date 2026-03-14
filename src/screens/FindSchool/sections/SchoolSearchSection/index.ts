@@ -1,1 +1,0 @@
-export { SchoolSearchSection } from "./SchoolSearchSection";

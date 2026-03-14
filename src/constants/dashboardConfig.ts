@@ -42,6 +42,11 @@ export const DASHBOARD_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, 'isCollapsed'
                 },
                 {
                     icon: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/ri-bill-fill.svg",
+                    label: "Hợp đồng",
+                    href: "/school/contracts",
+                },
+                {
+                    icon: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/ri-bill-fill.svg",
                     label: "Phân phối đồng phục",
                 },
                 {

@@ -56,6 +56,7 @@ export type UserInfo = {
     fullName: string;
     role: string;
     phone?: string | null;
+    providerId?: string | null;
 };
 
 export type LoginResponse = {
