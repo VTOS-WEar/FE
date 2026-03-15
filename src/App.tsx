@@ -38,6 +38,8 @@ import { RoleGuard } from "./components/guards/RoleGuard";
 import { ProviderDashboard } from "./screens/ProviderDashboard/ProviderDashboard";
 import { SchoolContracts } from "./screens/SchoolContracts/SchoolContracts";
 import { ProviderContracts } from "./screens/ProviderContracts/ProviderContracts";
+import { SchoolProductionOrders } from "./screens/SchoolProductionOrders/SchoolProductionOrders";
+import { ProviderProductionOrders } from "./screens/ProviderProductionOrders/ProviderProductionOrders";
 import { ParentProfile } from "./screens/ParentProfile/ParentProfile";
 import { AccountTab } from "./screens/ParentProfile/tabs/AccountTab";
 import { StudentsTab } from "./screens/ParentProfile/tabs/StudentsTab";
@@ -154,6 +156,14 @@ const router = createBrowserRouter([
   {
     path: "/school/contracts",
     element: <RoleGuard allowedRoles={["School"]}><SchoolContracts /></RoleGuard>,
+  },
+  {
+    path: "/school/production-orders",
+    element: <RoleGuard allowedRoles={["School"]}><SchoolProductionOrders /></RoleGuard>,
+  },
+  {
+    path: "/provider/production-orders",
+    element: <RoleGuard allowedRoles={["Provider"]}><ProviderProductionOrders /></RoleGuard>,
   },
   {
     path: "/school/profile",
