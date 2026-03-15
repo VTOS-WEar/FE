@@ -37,6 +37,7 @@ export const endpoints = {
         campaignProgress: "/api/schools/me/campaigns/{id}/progress",
         providers: "/api/schools/me/providers",
         outfitVariants: "/api/schools/me/outfits", // append /{outfitId}/variants at call time
+        productionOrders: "/api/schools/me/production-orders",
     },
     users: {
         me: "/api/users/me",
@@ -51,5 +52,6 @@ export const endpoints = {
     providers: {
         me: "/api/providers/me",
         contracts: "/api/providers/me/contracts",
+        productionOrders: "/api/providers/me/production-orders",
     },
 } as const;
