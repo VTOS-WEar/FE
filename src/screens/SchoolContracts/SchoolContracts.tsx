@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -10,8 +9,10 @@ import {
 } from "../../components/ui/breadcrumb";
 import { DashboardSidebar } from "../../components/layout";
 import { useSidebarConfig } from "../../hooks/useSidebarConfig";
+import { ChatWidget, type ChatContextInfo } from "../../components/ChatWidget/ChatWidget";
 import {
     getSchoolContracts,
+    getSchoolContractDetail,
     createContract,
     type ContractDto,
     type CreateContractRequest,
@@ -38,7 +39,6 @@ const STATUS_LABELS: Record<string, string> = {
 export function SchoolContracts() {
     const sidebarConfig = useSidebarConfig();
     const [isCollapsed, setIsCollapsed] = useState(false);
-    const navigate = useNavigate();
 
     const [contracts, setContracts] = useState<ContractDto[]>([]);
     const [loading, setLoading] = useState(true);
@@ -55,6 +55,45 @@ export function SchoolContracts() {
     ]);
     const [creating, setCreating] = useState(false);
     const [error, setError] = useState("");
+    // Chat
+    const [chatOpen, setChatOpen] = useState(false);
+    const [chatContractId, setChatContractId] = useState("");
+    const [chatContext, setChatContext] = useState<ChatContextInfo | undefined>();
+
+    const openContractChat = (c: ContractDto) => {
+        setChatContractId(c.contractId);
+        setChatContext({
+            icon: "📄",
+            title: c.contractName,
+            status: STATUS_LABELS[c.status] || c.status,
+            statusColor: STATUS_COLORS[c.status] || "#888",
+            subtitle: `NCC: ${c.providerName || "—"} · ${c.items.length} mục`,
+        });
+        setChatOpen(true);
+    };
+
+    // Detail modal
+    const [selected, setSelected] = useState<ContractDto | null>(null);
+    const [showDetail, setShowDetail] = useState(false);
+    const [detailLoading, setDetailLoading] = useState(false);
+
+    const openDetail = async (id: string) => {
+        setDetailLoading(true);
+        setShowDetail(true);
+        try {
+            const c = await getSchoolContractDetail(id);
+            setSelected(c);
+        } catch (e: any) {
+            console.error("Error fetching contract detail:", e);
+        } finally {
+            setDetailLoading(false);
+        }
+    };
+
+    const closeDetail = () => {
+        setShowDetail(false);
+        setSelected(null);
+    };
 
     const fetchContracts = useCallback(async () => {
         setLoading(true);
@@ -190,7 +229,7 @@ export function SchoolContracts() {
                         {contracts.map(c => (
                             <div
                                 key={c.contractId}
-                                onClick={() => navigate(`/school/contracts/${c.contractId}`)}
+                                onClick={() => openDetail(c.contractId)}
                                 style={{
                                     background: "#fff", borderRadius: 16, padding: "20px 28px",
                                     boxShadow: "0 2px 12px rgba(0,0,0,.06)", cursor: "pointer",
@@ -214,6 +253,15 @@ export function SchoolContracts() {
                                     }}>
                                         {STATUS_LABELS[c.status] || c.status}
                                     </span>
+                                    <button
+                                        onClick={(e) => { e.stopPropagation(); openContractChat(c); }}
+                                        style={{
+                                            padding: "6px 14px", borderRadius: 10, border: "none",
+                                            background: "linear-gradient(135deg, #3b82f6, #2563eb)", color: "#fff",
+                                            fontWeight: 600, fontSize: 13, cursor: "pointer",
+                                            boxShadow: "0 2px 8px rgba(59,130,246,.3)",
+                                        }}
+                                    >💬 Chat</button>
                                 </div>
                                 {c.rejectionReason && (
                                     <p style={{ margin: "10px 0 0", padding: "8px 12px", background: "#fef2f2", borderRadius: 8, color: "#dc2626", fontSize: 13 }}>
@@ -222,6 +270,78 @@ export function SchoolContracts() {
                                 )}
                             </div>
                         ))}
+                    </div>
+                )}
+
+                {/* ── Contract Detail Modal ── */}
+                {showDetail && (
+                    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.5)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
+                        <div style={{ background: "#fff", borderRadius: 20, padding: 36, width: "90%", maxWidth: 640, maxHeight: "85vh", overflow: "auto" }}>
+                            {detailLoading ? (
+                                <div style={{ textAlign: "center", padding: 40, color: "#999" }}>Đang tải...</div>
+                            ) : selected && (
+                                <>
+                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+                                        <h2 style={{ margin: 0, fontSize: 22, fontWeight: 700 }}>📄 {selected.contractName}</h2>
+                                        <span style={{
+                                            padding: "6px 16px", borderRadius: 20, fontSize: 13, fontWeight: 600,
+                                            background: `${STATUS_COLORS[selected.status]}18`,
+                                            color: STATUS_COLORS[selected.status],
+                                        }}>
+                                            {STATUS_LABELS[selected.status] || selected.status}
+                                        </span>
+                                    </div>
+
+                                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 20 }}>
+                                        <div style={infoBox}><span style={infoLabel}>Nhà cung cấp</span><span style={infoValue}>{selected.providerName || "—"}</span></div>
+                                        <div style={infoBox}><span style={infoLabel}>Ngày tạo</span><span style={infoValue}>{new Date(selected.createdAt).toLocaleDateString("vi")}</span></div>
+                                        {selected.approvedAt && (
+                                            <div style={infoBox}><span style={infoLabel}>Ngày duyệt</span><span style={infoValue}>{new Date(selected.approvedAt).toLocaleDateString("vi")}</span></div>
+                                        )}
+                                    </div>
+
+                                    <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 12 }}>Danh sách đồng phục</h3>
+                                    <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
+                                        <thead>
+                                            <tr style={{ background: "#f8fafc" }}>
+                                                <th style={thStyle}>Đồng phục</th>
+                                                <th style={thStyle}>Giá/đơn vị</th>
+                                                <th style={thStyle}>SL tối thiểu</th>
+                                                <th style={thStyle}>SL tối đa</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {selected.items.map(item => (
+                                                <tr key={item.itemId}>
+                                                    <td style={tdStyle}>{item.outfitName}</td>
+                                                    <td style={tdStyle}>{item.pricePerUnit.toLocaleString("vi")}₫</td>
+                                                    <td style={{ ...tdStyle, textAlign: "center" }}>{item.minQuantity}</td>
+                                                    <td style={{ ...tdStyle, textAlign: "center" }}>{item.maxQuantity}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+
+                                    {selected.rejectionReason && (
+                                        <div style={{ margin: "16px 0", padding: "12px 16px", background: "#fef2f2", borderRadius: 10, color: "#dc2626", fontSize: 14 }}>
+                                            <strong>Lý do từ chối:</strong> {selected.rejectionReason}
+                                        </div>
+                                    )}
+
+                                    <div style={{ display: "flex", gap: 12, marginTop: 24 }}>
+                                        <button onClick={closeDetail} style={{
+                                            flex: 1, padding: "12px 0", borderRadius: 12,
+                                            border: "1px solid #ddd", background: "#fff", fontWeight: 600, cursor: "pointer",
+                                        }}>Đóng</button>
+                                        <button onClick={() => openContractChat(selected)} style={{
+                                            flex: 1, padding: "12px 0", borderRadius: 12, border: "none",
+                                            background: "linear-gradient(135deg, #3b82f6, #2563eb)", color: "#fff",
+                                            fontWeight: 600, cursor: "pointer",
+                                        }}>💬 Chat</button>
+                                    </div>
+                                </>
+                            )}
+                        </div>
                     </div>
                 )}
 
@@ -288,6 +408,14 @@ export function SchoolContracts() {
                         </div>
                     </div>
                 )}
+
+                <ChatWidget
+                    channelType="contract"
+                    channelId={chatContractId}
+                    isOpen={chatOpen}
+                    onClose={() => setChatOpen(false)}
+                    contextInfo={chatContext}
+                />
             </main>
         </div>
     );
@@ -295,3 +423,8 @@ export function SchoolContracts() {
 
 const labelStyle: React.CSSProperties = { display: "block", fontSize: 14, fontWeight: 600, color: "#444", marginBottom: 6, marginTop: 12 };
 const inputStyle: React.CSSProperties = { width: "100%", padding: "10px 14px", borderRadius: 10, border: "1px solid #ddd", fontSize: 14, boxSizing: "border-box" };
+const infoBox: React.CSSProperties = { background: "#f8fafc", padding: "10px 14px", borderRadius: 10 };
+const infoLabel: React.CSSProperties = { display: "block", fontSize: 12, color: "#888", marginBottom: 2 };
+const infoValue: React.CSSProperties = { display: "block", fontSize: 15, fontWeight: 600, color: "#1a1a2e" };
+const thStyle: React.CSSProperties = { padding: "10px 12px", textAlign: "left", fontWeight: 600, color: "#555", borderBottom: "2px solid #e8e8e8" };
+const tdStyle: React.CSSProperties = { padding: "10px 12px", borderBottom: "1px solid #f0f0f0" };

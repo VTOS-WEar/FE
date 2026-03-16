@@ -9,6 +9,7 @@ import {
 } from "../../components/ui/breadcrumb";
 import { DashboardSidebar } from "../../components/layout";
 import { useProviderSidebarConfig } from "../../hooks/useProviderSidebarConfig";
+import { ChatWidget, type ChatContextInfo } from "../../components/ChatWidget/ChatWidget";
 import {
     getProviderContracts,
     getProviderContractDetail,
@@ -44,6 +45,22 @@ export function ProviderContracts() {
     const [showReject, setShowReject] = useState(false);
     const [rejectReason, setRejectReason] = useState("");
     const [error, setError] = useState("");
+    // Chat
+    const [chatOpen, setChatOpen] = useState(false);
+    const [chatContractId, setChatContractId] = useState("");
+    const [chatContext, setChatContext] = useState<ChatContextInfo | undefined>();
+
+    const openContractChat = (c: ContractDto) => {
+        setChatContractId(c.contractId);
+        setChatContext({
+            icon: "📄",
+            title: c.contractName,
+            status: STATUS_LABELS[c.status] || c.status,
+            statusColor: STATUS_COLORS[c.status] || "#888",
+            subtitle: `Trường: ${c.schoolName || "—"} · ${c.items.length} mục`,
+        });
+        setChatOpen(true);
+    };
 
     const fetchContracts = useCallback(async () => {
         setLoading(true);
@@ -180,6 +197,15 @@ export function ProviderContracts() {
                                     }}>
                                         {STATUS_LABELS[c.status] || c.status}
                                     </span>
+                                    <button
+                                        onClick={(e) => { e.stopPropagation(); openContractChat(c); }}
+                                        style={{
+                                            padding: "6px 14px", borderRadius: 10, border: "none",
+                                            background: "linear-gradient(135deg, #3b82f6, #2563eb)", color: "#fff",
+                                            fontWeight: 600, fontSize: 13, cursor: "pointer",
+                                            boxShadow: "0 2px 8px rgba(59,130,246,.3)",
+                                        }}
+                                    >💬 Chat</button>
                                 </div>
                                 {c.status === "Pending" && (
                                     <p style={{ margin: "8px 0 0", fontSize: 13, color: "#f59e0b", fontWeight: 500 }}>
@@ -280,15 +306,31 @@ export function ProviderContracts() {
                                 </div>
                             )}
 
-                            <button
-                                onClick={() => { setShowDetail(false); setSelected(null); setError(""); setShowReject(false); setRejectReason(""); }}
-                                style={{ width: "100%", marginTop: 16, padding: "10px 0", borderRadius: 12, border: "none", background: "transparent", color: "#888", cursor: "pointer", fontSize: 14 }}
-                            >
-                                Đóng
-                            </button>
+                            <div style={{ display: "flex", gap: 12, marginTop: 16 }}>
+                                <button
+                                    onClick={() => { setShowDetail(false); setSelected(null); setError(""); setShowReject(false); setRejectReason(""); }}
+                                    style={{ flex: 1, padding: "10px 0", borderRadius: 12, border: "1px solid #ddd", background: "#fff", color: "#888", cursor: "pointer", fontSize: 14, fontWeight: 600 }}
+                                >
+                                    Đóng
+                                </button>
+                                <button
+                                    onClick={() => { if (selected) openContractChat(selected); }}
+                                    style={{ flex: 1, padding: "10px 0", borderRadius: 12, border: "none", background: "linear-gradient(135deg, #3b82f6, #2563eb)", color: "#fff", cursor: "pointer", fontSize: 14, fontWeight: 600 }}
+                                >
+                                    💬 Chat
+                                </button>
+                            </div>
                         </div>
                     </div>
                 )}
+
+                <ChatWidget
+                    channelType="contract"
+                    channelId={chatContractId}
+                    isOpen={chatOpen}
+                    onClose={() => setChatOpen(false)}
+                    contextInfo={chatContext}
+                />
             </main>
         </div>
     );
