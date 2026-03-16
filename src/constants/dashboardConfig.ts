@@ -51,6 +51,16 @@ export const DASHBOARD_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, 'isCollapsed'
                     href: "/school/production-orders",
                 },
                 {
+                    icon: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/material-symbols-shopping-bag.svg",
+                    label: "Khiếu nại",
+                    href: "/school/complaints",
+                },
+                {
+                    icon: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/material-symbols-shopping-bag.svg",
+                    label: "💰 Ví trường học",
+                    href: "/school/wallet",
+                },
+                {
                     icon: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/ri-bill-fill.svg",
                     label: "Phân phối đồng phục",
                 },

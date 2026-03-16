@@ -40,6 +40,8 @@ import { SchoolContracts } from "./screens/SchoolContracts/SchoolContracts";
 import { ProviderContracts } from "./screens/ProviderContracts/ProviderContracts";
 import { SchoolProductionOrders } from "./screens/SchoolProductionOrders/SchoolProductionOrders";
 import { ProviderProductionOrders } from "./screens/ProviderProductionOrders/ProviderProductionOrders";
+import { SchoolComplaints } from "./screens/SchoolComplaints/SchoolComplaints";
+import { ProviderComplaints } from "./screens/ProviderComplaints/ProviderComplaints";
 import { ParentProfile } from "./screens/ParentProfile/ParentProfile";
 import { AccountTab } from "./screens/ParentProfile/tabs/AccountTab";
 import { StudentsTab } from "./screens/ParentProfile/tabs/StudentsTab";
@@ -47,6 +49,8 @@ import { OrdersTab } from "./screens/ParentProfile/tabs/OrdersTab";
 import { HistoryTab } from "./screens/ParentProfile/tabs/HistoryTab";
 import { ReviewsTab } from "./screens/ParentProfile/tabs/ReviewsTab";
 import { SettingsTab } from "./screens/ParentProfile/tabs/SettingsTab";
+import SchoolWallet from "./screens/SchoolWallet/SchoolWallet";
+import ProviderRevenue from "./screens/ProviderRevenue/ProviderRevenue";
 
 /** Smart root redirect: School→dashboard, others→homepage */
 function RootRedirect() {
@@ -164,6 +168,22 @@ const router = createBrowserRouter([
   {
     path: "/provider/production-orders",
     element: <RoleGuard allowedRoles={["Provider"]}><ProviderProductionOrders /></RoleGuard>,
+  },
+  {
+    path: "/school/complaints",
+    element: <RoleGuard allowedRoles={["School"]}><SchoolComplaints /></RoleGuard>,
+  },
+  {
+    path: "/provider/complaints",
+    element: <RoleGuard allowedRoles={["Provider"]}><ProviderComplaints /></RoleGuard>,
+  },
+  {
+    path: "/school/wallet",
+    element: <RoleGuard allowedRoles={["School"]}><SchoolWallet /></RoleGuard>,
+  },
+  {
+    path: "/provider/revenue",
+    element: <RoleGuard allowedRoles={["Provider"]}><ProviderRevenue /></RoleGuard>,
   },
   {
     path: "/school/profile",

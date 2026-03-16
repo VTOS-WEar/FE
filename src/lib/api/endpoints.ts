@@ -54,4 +54,16 @@ export const endpoints = {
         contracts: "/api/providers/me/contracts",
         productionOrders: "/api/providers/me/production-orders",
     },
+    payments: {
+        payOrder: "/api/payments/orders", // append /{orderId}/pay
+        parentHistory: "/api/payments/parent/history",
+        schoolWallet: "/api/payments/school/wallet",
+        walletTransactions: "/api/payments/school/wallet/transactions",
+        walletBankInfo: "/api/payments/school/wallet/bank-info",
+        payProvider: "/api/payments/school/orders", // append /{orderId}/pay-provider
+        refundOrder: "/api/payments/school/orders", // append /{orderId}/refund
+        providerRevenue: "/api/payments/provider/revenue",
+        providerPayments: "/api/payments/provider/payments",
+        providerInvoice: "/api/payments/provider/orders", // append /{orderId}/invoice
+    },
 } as const;
