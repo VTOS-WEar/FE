@@ -51,6 +51,10 @@ import { ReviewsTab } from "./screens/ParentProfile/tabs/ReviewsTab";
 import { SettingsTab } from "./screens/ParentProfile/tabs/SettingsTab";
 import SchoolWallet from "./screens/SchoolWallet/SchoolWallet";
 import ProviderRevenue from "./screens/ProviderRevenue/ProviderRevenue";
+import { AdminDashboard } from "./screens/AdminDashboard/AdminDashboard";
+import { AdminUsers } from "./screens/AdminUsers/AdminUsers";
+import { AdminVerification } from "./screens/AdminVerification/AdminVerification";
+import { AdminMoneyDistribution } from "./screens/AdminMoneyDistribution/AdminMoneyDistribution";
 
 /** Smart root redirect: School→dashboard, others→homepage */
 function RootRedirect() {
@@ -58,6 +62,7 @@ function RootRedirect() {
     if (raw) {
         try {
             const user = JSON.parse(raw);
+            if (user.role === "Admin") return <Navigate to="/admin/dashboard" replace />;
             if (user.role === "School") return <Navigate to="/school/dashboard" replace />;
             if (user.role === "Provider") return <Navigate to="/provider/dashboard" replace />;
         } catch { /* ignore */ }
@@ -184,6 +189,23 @@ const router = createBrowserRouter([
   {
     path: "/provider/revenue",
     element: <RoleGuard allowedRoles={["Provider"]}><ProviderRevenue /></RoleGuard>,
+  },
+  // ── Admin routes ──
+  {
+    path: "/admin/dashboard",
+    element: <RoleGuard allowedRoles={["Admin"]}><AdminDashboard /></RoleGuard>,
+  },
+  {
+    path: "/admin/users",
+    element: <RoleGuard allowedRoles={["Admin"]}><AdminUsers /></RoleGuard>,
+  },
+  {
+    path: "/admin/verification",
+    element: <RoleGuard allowedRoles={["Admin"]}><AdminVerification /></RoleGuard>,
+  },
+  {
+    path: "/admin/money",
+    element: <RoleGuard allowedRoles={["Admin"]}><AdminMoneyDistribution /></RoleGuard>,
   },
   {
     path: "/school/profile",

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { HubConnectionBuilder, HubConnectionState, LogLevel } from "@microsoft/signalr";
 import { getChatMessages, sendChatMessage, type ChatMessageDto } from "../../lib/api/chat";
 
 export type ChatContextInfo = {
@@ -17,13 +18,31 @@ type ChatWidgetProps = {
     contextInfo?: ChatContextInfo;
 };
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "";
+
+function getAccessToken(): string {
+    return localStorage.getItem("access_token") || sessionStorage.getItem("access_token") || "";
+}
+
 export function ChatWidget({ channelType, channelId, isOpen, onClose, contextInfo }: ChatWidgetProps) {
     const [messages, setMessages] = useState<ChatMessageDto[]>([]);
     const [newMsg, setNewMsg] = useState("");
     const [loading, setLoading] = useState(false);
     const [sending, setSending] = useState(false);
+    const [connected, setConnected] = useState(false);
     const bottomRef = useRef<HTMLDivElement>(null);
     const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+    const connectionRef = useRef<ReturnType<typeof buildConnection> | null>(null);
+
+    function buildConnection() {
+        return new HubConnectionBuilder()
+            .withUrl(`${API_BASE}/hubs/chat`, {
+                accessTokenFactory: () => getAccessToken(),
+            })
+            .withAutomaticReconnect([0, 2000, 5000, 10000])
+            .configureLogging(LogLevel.Warning)
+            .build();
+    }
 
     const fetchMessages = useCallback(async () => {
         try {
@@ -34,15 +53,63 @@ export function ChatWidget({ channelType, channelId, isOpen, onClose, contextInf
         }
     }, [channelType, channelId]);
 
+    // SignalR connection lifecycle
+    useEffect(() => {
+        if (!isOpen || !channelId) return;
+
+        const connection = buildConnection();
+        connectionRef.current = connection;
+
+        // Listen for real-time messages
+        connection.on("ReceiveMessage", (msg: ChatMessageDto) => {
+            setMessages(prev => {
+                // Avoid duplicates
+                if (prev.some(m => m.messageId === msg.messageId)) return prev;
+                return [...prev, msg];
+            });
+        });
+
+        connection.onreconnected(() => {
+            // Rejoin channel after reconnect
+            connection.invoke("JoinChannel", channelType, channelId).catch(() => {});
+            setConnected(true);
+        });
+
+        connection.onclose(() => setConnected(false));
+
+        // Start connection + join channel
+        connection.start()
+            .then(() => {
+                setConnected(true);
+                return connection.invoke("JoinChannel", channelType, channelId);
+            })
+            .catch(err => {
+                console.warn("SignalR connection failed, using polling fallback:", err);
+                setConnected(false);
+            });
+
+        return () => {
+            if (connection.state === HubConnectionState.Connected) {
+                connection.invoke("LeaveChannel", channelType, channelId).catch(() => {});
+            }
+            connection.stop();
+            connectionRef.current = null;
+            setConnected(false);
+        };
+    }, [isOpen, channelId, channelType]);
+
+    // Initial load + polling fallback (only if SignalR is not connected)
     useEffect(() => {
         if (!isOpen || !channelId) return;
         setLoading(true);
         fetchMessages().finally(() => setLoading(false));
 
-        // Poll every 3 seconds for new messages (fallback for SignalR)
-        pollRef.current = setInterval(fetchMessages, 3000);
+        // Poll only as fallback when SignalR is not connected
+        pollRef.current = setInterval(() => {
+            if (!connected) fetchMessages();
+        }, 5000);
         return () => { if (pollRef.current) clearInterval(pollRef.current); };
-    }, [isOpen, channelId, fetchMessages]);
+    }, [isOpen, channelId, fetchMessages, connected]);
 
     useEffect(() => {
         bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -55,7 +122,8 @@ export function ChatWidget({ channelType, channelId, isOpen, onClose, contextInf
         try {
             await sendChatMessage(channelType, channelId, content);
             setNewMsg("");
-            await fetchMessages();
+            // If not connected via SignalR, fetch manually to show sent msg
+            if (!connected) await fetchMessages();
         } catch (e: any) {
             console.error("Error sending message:", e);
         } finally {
@@ -86,8 +154,12 @@ export function ChatWidget({ channelType, channelId, isOpen, onClose, contextInf
             }}>
                 <div>
                     <h3 style={{ margin: 0, fontSize: 16, fontWeight: 700 }}>💬 Chat</h3>
-                    <p style={{ margin: 0, fontSize: 12, opacity: .8 }}>
+                    <p style={{ margin: 0, fontSize: 12, opacity: .8, display: "flex", alignItems: "center", gap: 6 }}>
                         {channelType === "complaint" ? "Khiếu nại" : "Hợp đồng"}
+                        <span style={{
+                            width: 7, height: 7, borderRadius: "50%", display: "inline-block",
+                            background: connected ? "#4ade80" : "#facc15",
+                        }} title={connected ? "Real-time" : "Polling"} />
                     </p>
                 </div>
                 <button onClick={onClose} style={{
