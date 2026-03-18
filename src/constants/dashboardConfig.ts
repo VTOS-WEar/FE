@@ -67,7 +67,7 @@ export const DASHBOARD_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, 'isCollapsed'
                 {
                     icon: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/material-symbols-shopping-bag.svg",
                     label: "Đơn hàng",
-                    badge: "1",
+                    href: "/school/orders",
                 },
             ],
         },

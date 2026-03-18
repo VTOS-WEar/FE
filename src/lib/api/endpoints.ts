@@ -38,6 +38,7 @@ export const endpoints = {
         providers: "/api/schools/me/providers",
         outfitVariants: "/api/schools/me/outfits", // append /{outfitId}/variants at call time
         productionOrders: "/api/schools/me/production-orders",
+        schoolOrders: "/api/schools/me/orders",
     },
     users: {
         me: "/api/users/me",
