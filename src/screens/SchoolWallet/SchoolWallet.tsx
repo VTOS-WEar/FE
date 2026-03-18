@@ -6,7 +6,7 @@ import { Button } from "../../components/ui/button";
 import {
     getSchoolWallet,
     getWalletTransactions,
-    type SchoolWalletDto,
+    type WalletDto,
     type WalletTransactionDto,
 } from "../../lib/api/payments";
 import { getSchoolProfile } from "../../lib/api/schools";
@@ -43,7 +43,7 @@ export default function SchoolWallet() {
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [schoolName, setSchoolName] = useState("");
 
-    const [wallet, setWallet] = useState<SchoolWalletDto | null>(null);
+    const [wallet, setWallet] = useState<WalletDto | null>(null);
     const [txns, setTxns] = useState<WalletTransactionDto[]>([]);
     const [txTotal, setTxTotal] = useState(0);
     const [page, setPage] = useState(1);

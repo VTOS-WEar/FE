@@ -2,7 +2,7 @@ import { api } from "./clients";
 import { endpoints } from "./endpoints";
 
 //#region Types
-export type SchoolWalletDto = {
+export type WalletDto = {
     walletId: string;
     balance: number;
     bankCode: string | null;
@@ -80,8 +80,8 @@ export type ParentPaymentHistoryResponse = {
 //#endregion
 
 //#region School Wallet
-export async function getSchoolWallet(): Promise<SchoolWalletDto> {
-    return api<SchoolWalletDto>(endpoints.payments.schoolWallet, { auth: true });
+export async function getSchoolWallet(): Promise<WalletDto> {
+    return api<WalletDto>(endpoints.payments.schoolWallet, { auth: true });
 }
 
 export async function getWalletTransactions(page = 1, pageSize = 20): Promise<WalletTransactionsResponse> {
