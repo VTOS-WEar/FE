@@ -66,5 +66,8 @@ export const endpoints = {
         providerRevenue: "/api/payments/provider/revenue",
         providerPayments: "/api/payments/provider/payments",
         providerInvoice: "/api/payments/provider/orders", // append /{orderId}/invoice
+        providerWallet: "/api/payments/provider/wallet",
+        providerWalletTransactions: "/api/payments/provider/wallet/transactions",
+        providerWalletBankInfo: "/api/payments/provider/wallet/bank-info",
     },
 } as const;

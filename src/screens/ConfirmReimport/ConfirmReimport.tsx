@@ -62,15 +62,6 @@ const NAV_SECTIONS: DashboardSidebarProps["navSections"] = [
             },
         ],
     },
-    {
-        title: "HỆ THỐNG",
-        items: [
-            {
-                icon: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/tdesign-setting-1-filled.svg",
-                label: "Cấu hình",
-            },
-        ],
-    },
 ];
 
 /* ─── Data ───────────────────────────────────────── */

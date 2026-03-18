@@ -40,14 +40,15 @@ export const PROVIDER_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, 'isCollapsed' 
                     label: "Khiếu nại",
                     href: "/provider/complaints",
                 },
-            ],
-        },
-        {
-            title: "HỆ THỐNG",
-            items: [
                 {
-                    icon: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/tdesign-setting-1-filled.svg",
-                    label: "Cấu hình",
+                    icon: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/material-symbols-shopping-bag.svg",
+                    label: "💰 Ví nhà cung cấp",
+                    href: "/provider/wallet",
+                },
+                {
+                    icon: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/material-symbols-shopping-bag.svg",
+                    label: "📊 Doanh thu",
+                    href: "/provider/revenue",
                 },
             ],
         },

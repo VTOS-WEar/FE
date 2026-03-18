@@ -52,6 +52,7 @@
         "/provider/complaints",
         "/school/wallet",
         "/provider/revenue",
+        "/provider/wallet",
         "/admin/dashboard",
         "/admin/users",
         "/admin/verification",

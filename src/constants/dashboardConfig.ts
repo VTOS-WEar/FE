@@ -71,14 +71,5 @@ export const DASHBOARD_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, 'isCollapsed'
                 },
             ],
         },
-        {
-            title: "HỆ THỐNG",
-            items: [
-                {
-                    icon: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/tdesign-setting-1-filled.svg",
-                    label: "Cấu hình",
-                },
-            ],
-        },
     ],
 };

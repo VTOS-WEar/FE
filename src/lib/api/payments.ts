@@ -151,4 +151,25 @@ export async function generateInvoice(orderId: string): Promise<{ invoiceId: str
         { method: "POST", auth: true }
     );
 }
+
+export async function getProviderWallet(): Promise<WalletDto> {
+    return api<WalletDto>(endpoints.payments.providerWallet, { auth: true });
+}
+
+export async function getProviderWalletTransactions(page = 1, pageSize = 20): Promise<WalletTransactionsResponse> {
+    return api<WalletTransactionsResponse>(
+        `${endpoints.payments.providerWalletTransactions}?page=${page}&pageSize=${pageSize}`,
+        { auth: true }
+    );
+}
+
+export async function updateProviderWalletBankInfo(data: {
+    bankCode: string; bankName: string; accountNumber: string; accountName: string;
+}): Promise<{ success: boolean }> {
+    return api<{ success: boolean }>(endpoints.payments.providerWalletBankInfo, {
+        method: "PUT",
+        body: JSON.stringify(data),
+        auth: true,
+    });
+}
 //#endregion

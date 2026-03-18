@@ -141,20 +141,6 @@ export const FrameSubsection = (): JSX.Element => {
                     ))}
                 </div>
 
-                <h2 className="[font-family:'Montserrat',Helvetica] font-bold text-[#97a3b6] text-xl mt-[105px] ml-[9px]">
-                    HỆ THỐNG
-                </h2>
-
-                <Button
-                    variant="ghost"
-                    className="h-auto w-full justify-start gap-2.5 p-5 mt-3.5 rounded-[10px] hover:bg-gray-50"
-                >
-                    <img className="w-[30px] h-[30px]" alt="Tdesign setting" />
-                    <span className="flex-1 text-left [font-family:'Montserrat',Helvetica] font-semibold text-[#4c5769] text-2xl">
-                        Cấu hình
-                    </span>
-                </Button>
-
                 <Button
                     variant="ghost"
                     className="h-auto w-[310px] justify-center gap-5 p-2.5 mt-[69px] ml-5 bg-[#ff000029] hover:bg-[#ff000029] rounded-[10px]"

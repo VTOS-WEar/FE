@@ -51,6 +51,7 @@ import { ReviewsTab } from "./screens/ParentProfile/tabs/ReviewsTab";
 import { SettingsTab } from "./screens/ParentProfile/tabs/SettingsTab";
 import SchoolWallet from "./screens/SchoolWallet/SchoolWallet";
 import ProviderRevenue from "./screens/ProviderRevenue/ProviderRevenue";
+import ProviderWallet from "./screens/ProviderWallet/ProviderWallet";
 import { AdminDashboard } from "./screens/AdminDashboard/AdminDashboard";
 import { AdminUsers } from "./screens/AdminUsers/AdminUsers";
 import { AdminVerification } from "./screens/AdminVerification/AdminVerification";
@@ -189,6 +190,10 @@ const router = createBrowserRouter([
   {
     path: "/provider/revenue",
     element: <RoleGuard allowedRoles={["Provider"]}><ProviderRevenue /></RoleGuard>,
+  },
+  {
+    path: "/provider/wallet",
+    element: <RoleGuard allowedRoles={["Provider"]}><ProviderWallet /></RoleGuard>,
   },
   // ── Admin routes ──
   {

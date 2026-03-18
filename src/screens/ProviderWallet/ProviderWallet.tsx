@@ -1,16 +1,16 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { DashboardSidebar } from "../../components/layout";
-import { useSidebarConfig } from "../../hooks/useSidebarConfig";
+import { useProviderSidebarConfig } from "../../hooks/useProviderSidebarConfig";
 import { Button } from "../../components/ui/button";
 import {
-    getSchoolWallet,
-    getWalletTransactions,
-    updateWalletBankInfo,
+    getProviderWallet,
+    getProviderWalletTransactions,
+    updateProviderWalletBankInfo,
     type WalletDto,
     type WalletTransactionDto,
 } from "../../lib/api/payments";
-import { getSchoolProfile } from "../../lib/api/schools";
+import { getProviderProfile } from "../../lib/api/providers";
 
 /* ── helpers ── */
 function fmt(n: number) { return n.toLocaleString("vi-VN") + " ₫"; }
@@ -22,27 +22,25 @@ function fmtDate(iso: string) {
 }
 function txLabel(type: string) {
     switch (type) {
-        case "OrderPayment": return "Nhận từ đơn hàng";
-        case "ProviderPayment": return "Thanh toán NCC";
+        case "OrderPayment": return "Nhận từ trường";
+        case "ProviderPayment": return "Thanh toán sản xuất";
         case "Refund": return "Hoàn tiền";
         default: return type;
     }
 }
 function txColor(type: string) {
     switch (type) {
-        case "OrderPayment": return "text-[#10B981]";
-        case "ProviderPayment": return "text-[#EF4444]";
+        case "ProviderPayment": return "text-[#10B981]";
         case "Refund": return "text-[#F59E0B]";
         default: return "text-[#6B7280]";
     }
 }
-function txSign(type: string) { return type === "OrderPayment" ? "+" : "−"; }
 
-export default function SchoolWallet() {
+export default function ProviderWallet() {
     const navigate = useNavigate();
-    const sidebarConfig = useSidebarConfig();
+    const sidebarConfig = useProviderSidebarConfig();
     const [isCollapsed, setIsCollapsed] = useState(false);
-    const [schoolName, setSchoolName] = useState("");
+    const [providerName, setProviderName] = useState("");
 
     const [wallet, setWallet] = useState<WalletDto | null>(null);
     const [txns, setTxns] = useState<WalletTransactionDto[]>([]);
@@ -59,14 +57,15 @@ export default function SchoolWallet() {
         setLoading(true);
         try {
             const [profile, w, tx] = await Promise.all([
-                getSchoolProfile(),
-                getSchoolWallet(),
-                getWalletTransactions(page, 10),
+                getProviderProfile(),
+                getProviderWallet(),
+                getProviderWalletTransactions(page, 10),
             ]);
-            setSchoolName(profile.schoolName || "");
+            setProviderName(profile.providerName || "NCC");
             setWallet(w);
             setTxns(tx.items);
             setTxTotal(tx.total);
+            // Init bank form with current values
             setBankForm({
                 bankCode: w.bankCode || "", bankName: w.bankName || "",
                 accountNumber: w.bankAccountNumber || "", accountName: w.bankAccountName || "",
@@ -88,24 +87,24 @@ export default function SchoolWallet() {
         <div className="bg-[#f6f7f8] w-full min-h-screen flex flex-col">
             <div className="flex flex-1 flex-col lg:flex-row">
                 <div className={`${isCollapsed ? "lg:w-16" : "lg:w-[20rem] xl:w-[23.75rem]"} flex-shrink-0 lg:sticky lg:top-0 lg:h-screen transition-all duration-300`}>
-                    <DashboardSidebar {...sidebarConfig} name={schoolName} isCollapsed={isCollapsed} onToggle={() => setIsCollapsed(c => !c)} onLogout={handleLogout} />
+                    <DashboardSidebar {...sidebarConfig} name={providerName} isCollapsed={isCollapsed} onToggle={() => setIsCollapsed(c => !c)} onLogout={handleLogout} />
                 </div>
 
                 <div className="flex-1 flex flex-col min-w-0">
                     <div className="bg-white border-b border-[#cbcad7] px-6 lg:px-10 py-5">
-                        <h1 className="[font-family:'Montserrat',Helvetica] font-bold text-[#1A1A2E] text-2xl">💰 Ví trường học</h1>
-                        <p className="[font-family:'Montserrat',Helvetica] font-medium text-[#6B7280] text-sm mt-1">Số dư được quản lý bởi hệ thống</p>
+                        <h1 className="[font-family:'Montserrat',Helvetica] font-bold text-[#1A1A2E] text-2xl">💰 Ví nhà cung cấp</h1>
+                        <p className="[font-family:'Montserrat',Helvetica] font-medium text-[#6B7280] text-sm mt-1">Theo dõi số dư và lịch sử giao dịch</p>
                     </div>
 
                     <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-6">
                         {loading ? (
                             <div className="text-center py-20">
-                                <div className="inline-block w-8 h-8 border-4 border-[#6938EF] border-t-transparent rounded-full animate-spin" />
+                                <div className="inline-block w-8 h-8 border-4 border-[#10B981] border-t-transparent rounded-full animate-spin" />
                             </div>
                         ) : (
                             <>
                                 {/* Balance Card */}
-                                <div className="bg-gradient-to-br from-[#6938EF] to-[#5B2FD6] rounded-[20px] p-8 text-white shadow-lg">
+                                <div className="bg-gradient-to-br from-[#10B981] to-[#059669] rounded-[20px] p-8 text-white shadow-lg">
                                     <p className="[font-family:'Montserrat',Helvetica] font-medium text-white/80 text-sm">Số dư hiện tại</p>
                                     <p className="[font-family:'Montserrat',Helvetica] font-bold text-4xl mt-2">{fmt(wallet?.balance ?? 0)}</p>
                                     <div className="flex items-center gap-4 mt-4">
@@ -119,10 +118,10 @@ export default function SchoolWallet() {
                                 </div>
 
                                 {/* Info note */}
-                                <div className="bg-[#EDE9FE] border border-[#C4B5FD] rounded-[12px] px-4 py-3 flex items-center gap-3">
+                                <div className="bg-[#D1FAE5] border border-[#6EE7B7] rounded-[12px] px-4 py-3 flex items-center gap-3">
                                     <span className="text-lg leading-none flex-shrink-0">ℹ️</span>
-                                    <p className="[font-family:'Montserrat',Helvetica] font-medium text-[#5B21B6] text-sm leading-snug">
-                                        Số dư được cập nhật tự động khi phụ huynh thanh toán đơn hàng. Quản trị viên sẽ phân bổ tiền cho trường thông qua mã ví.
+                                    <p className="[font-family:'Montserrat',Helvetica] font-medium text-[#065F46] text-sm leading-snug">
+                                        Số dư được cập nhật tự động khi trường thanh toán đơn sản xuất. Quản trị viên sẽ phân bổ tiền thực tế thông qua mã ví.
                                     </p>
                                 </div>
 
@@ -147,18 +146,18 @@ export default function SchoolWallet() {
                                                 </div>
                                                 <div>
                                                     <label className="block text-xs font-semibold text-[#6B7280] mb-1 [font-family:'Montserrat',Helvetica]">Số tài khoản</label>
-                                                    <input className="w-full border border-[#CBCAD7] rounded-[8px] px-3 py-2 text-sm [font-family:'Montserrat',Helvetica]" value={bankForm.accountNumber} onChange={e => setBankForm(f => ({ ...f, accountNumber: e.target.value }))} placeholder="0491000234567" />
+                                                    <input className="w-full border border-[#CBCAD7] rounded-[8px] px-3 py-2 text-sm [font-family:'Montserrat',Helvetica]" value={bankForm.accountNumber} onChange={e => setBankForm(f => ({ ...f, accountNumber: e.target.value }))} placeholder="0491000567890" />
                                                 </div>
                                                 <div>
                                                     <label className="block text-xs font-semibold text-[#6B7280] mb-1 [font-family:'Montserrat',Helvetica]">Tên chủ tài khoản</label>
-                                                    <input className="w-full border border-[#CBCAD7] rounded-[8px] px-3 py-2 text-sm [font-family:'Montserrat',Helvetica]" value={bankForm.accountName} onChange={e => setBankForm(f => ({ ...f, accountName: e.target.value }))} placeholder="TRUONG THPT ABC" />
+                                                    <input className="w-full border border-[#CBCAD7] rounded-[8px] px-3 py-2 text-sm [font-family:'Montserrat',Helvetica]" value={bankForm.accountName} onChange={e => setBankForm(f => ({ ...f, accountName: e.target.value }))} placeholder="CONG TY ABC" />
                                                 </div>
                                             </div>
                                             <div className="flex gap-2 justify-end">
                                                 <Button variant="outline" className="text-sm rounded-[8px]" onClick={() => { setEditingBank(false); setBankForm({ bankCode: wallet?.bankCode || "", bankName: wallet?.bankName || "", accountNumber: wallet?.bankAccountNumber || "", accountName: wallet?.bankAccountName || "" }); }}>Hủy</Button>
-                                                <Button className="text-sm rounded-[8px] bg-[#6938EF] hover:bg-[#5B2FD6] text-white" disabled={savingBank} onClick={async () => {
+                                                <Button className="text-sm rounded-[8px] bg-[#10B981] hover:bg-[#059669] text-white" disabled={savingBank} onClick={async () => {
                                                     setSavingBank(true);
-                                                    try { await updateWalletBankInfo(bankForm); await fetchData(); setEditingBank(false); } catch { /* ignore */ } finally { setSavingBank(false); }
+                                                    try { await updateProviderWalletBankInfo(bankForm); await fetchData(); setEditingBank(false); } catch { /* ignore */ } finally { setSavingBank(false); }
                                                 }}>{savingBank ? "Đang lưu..." : "💾 Lưu"}</Button>
                                             </div>
                                         </div>
@@ -182,8 +181,8 @@ export default function SchoolWallet() {
                                                 {txns.map(tx => (
                                                     <div key={tx.paymentId} className="flex items-center justify-between py-3 border-b border-[#F3F4F6] last:border-0">
                                                         <div className="flex items-center gap-3">
-                                                            <div className={`w-10 h-10 rounded-full flex items-center justify-center text-lg ${tx.transactionType === "OrderPayment" ? "bg-[#D1FAE5]" : tx.transactionType === "Refund" ? "bg-[#FEF3C7]" : "bg-[#FEE2E2]"}`}>
-                                                                {tx.transactionType === "OrderPayment" ? "↓" : "↑"}
+                                                            <div className={`w-10 h-10 rounded-full flex items-center justify-center text-lg ${tx.transactionType === "ProviderPayment" ? "bg-[#D1FAE5]" : tx.transactionType === "Refund" ? "bg-[#FEF3C7]" : "bg-[#F3F4F6]"}`}>
+                                                                {tx.transactionType === "ProviderPayment" ? "↓" : "↑"}
                                                             </div>
                                                             <div>
                                                                 <p className="[font-family:'Montserrat',Helvetica] font-semibold text-[#1A1A2E] text-sm">{txLabel(tx.transactionType)}</p>
@@ -191,7 +190,7 @@ export default function SchoolWallet() {
                                                             </div>
                                                         </div>
                                                         <p className={`[font-family:'Montserrat',Helvetica] font-bold text-base ${txColor(tx.transactionType)}`}>
-                                                            {txSign(tx.transactionType)}{fmt(tx.amount)}
+                                                            +{fmt(tx.amount)}
                                                         </p>
                                                     </div>
                                                 ))}

@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { DashboardSidebar } from "../../components/layout";
+import { useProviderSidebarConfig } from "../../hooks/useProviderSidebarConfig";
 import { Button } from "../../components/ui/button";
 import {
     getProviderRevenue,
@@ -19,30 +20,9 @@ function fmtDate(iso: string) {
     });
 }
 
-/* ── Sidebar config for Provider ── */
-const PROVIDER_SIDEBAR = {
-    avatarSrc: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/frame-239353.png",
-    avatarAlt: "Provider",
-    greeting: "Xin chào!",
-    name: "",
-    topNavItems: [
-        { icon: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/material-symbols-dashboard-rounded.svg", label: "Tổng quan", href: "/provider/dashboard" },
-    ],
-    navSections: [
-        {
-            title: "QUẢN LÝ",
-            items: [
-                { icon: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/ri-bill-fill.svg", label: "Hợp đồng", href: "/provider/contracts" },
-                { icon: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/ri-bill-fill.svg", label: "Đơn sản xuất", href: "/provider/production-orders" },
-                { icon: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/material-symbols-shopping-bag.svg", label: "Khiếu nại", href: "/provider/complaints" },
-                { icon: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/material-symbols-shopping-bag.svg", label: "Doanh thu", href: "/provider/revenue" },
-            ],
-        },
-    ],
-};
-
 export default function ProviderRevenue() {
     const navigate = useNavigate();
+    const sidebarConfig = useProviderSidebarConfig();
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [providerName, setProviderName] = useState("");
 
@@ -75,28 +55,14 @@ export default function ProviderRevenue() {
         navigate("/signin", { replace: true });
     };
 
-    // Dynamic sidebar with active state
-    const { pathname } = window.location;
-    const sidebarWithActive = {
-        ...PROVIDER_SIDEBAR,
-        name: providerName,
-        topNavItems: PROVIDER_SIDEBAR.topNavItems.map(item => ({ ...item, active: pathname === item.href })),
-        navSections: PROVIDER_SIDEBAR.navSections.map(section => ({
-            ...section,
-            items: section.items.map(item => ({
-                ...item,
-                active: item.href ? pathname === item.href : false,
-            })),
-        })),
-    };
-
+    // Dynamic sidebar with active state (from shared hook)
     const totalPages = Math.ceil(total / 10);
 
     return (
         <div className="bg-[#f6f7f8] w-full min-h-screen flex flex-col">
             <div className="flex flex-1 flex-col lg:flex-row">
                 <div className={`${isCollapsed ? "lg:w-16" : "lg:w-[20rem] xl:w-[23.75rem]"} flex-shrink-0 lg:sticky lg:top-0 lg:h-screen transition-all duration-300`}>
-                    <DashboardSidebar {...sidebarWithActive} isCollapsed={isCollapsed} onToggle={() => setIsCollapsed(c => !c)} onLogout={handleLogout} />
+                    <DashboardSidebar {...sidebarConfig} name={providerName} isCollapsed={isCollapsed} onToggle={() => setIsCollapsed(c => !c)} onLogout={handleLogout} />
                 </div>
 
                 <div className="flex-1 flex flex-col min-w-0">
