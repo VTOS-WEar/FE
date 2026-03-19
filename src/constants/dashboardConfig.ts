@@ -42,21 +42,32 @@ export const DASHBOARD_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, 'isCollapsed'
                 },
                 {
                     icon: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/ri-bill-fill.svg",
+                    label: "Hợp đồng",
+                    href: "/school/contracts",
+                },
+                {
+                    icon: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/ri-bill-fill.svg",
+                    label: "Đơn sản xuất",
+                    href: "/school/production-orders",
+                },
+                {
+                    icon: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/material-symbols-shopping-bag.svg",
+                    label: "Khiếu nại",
+                    href: "/school/complaints",
+                },
+                {
+                    icon: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/material-symbols-shopping-bag.svg",
+                    label: "💰 Ví trường học",
+                    href: "/school/wallet",
+                },
+                {
+                    icon: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/ri-bill-fill.svg",
                     label: "Phân phối đồng phục",
                 },
                 {
                     icon: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/material-symbols-shopping-bag.svg",
                     label: "Đơn hàng",
-                    badge: "1",
-                },
-            ],
-        },
-        {
-            title: "HỆ THỐNG",
-            items: [
-                {
-                    icon: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/tdesign-setting-1-filled.svg",
-                    label: "Cấu hình",
+                    href: "/school/orders",
                 },
             ],
         },

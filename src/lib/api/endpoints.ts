@@ -37,6 +37,8 @@ export const endpoints = {
         campaignProgress: "/api/schools/me/campaigns/{id}/progress",
         providers: "/api/schools/me/providers",
         outfitVariants: "/api/schools/me/outfits", // append /{outfitId}/variants at call time
+        productionOrders: "/api/schools/me/production-orders",
+        schoolOrders: "/api/schools/me/orders",
     },
     users: {
         me: "/api/users/me",
@@ -47,5 +49,25 @@ export const endpoints = {
     orders: {
         checkout: "/api/orders/checkout",
         cancel: "/api/orders", // append /{orderId}/cancel at call time
+    },
+    providers: {
+        me: "/api/providers/me",
+        contracts: "/api/providers/me/contracts",
+        productionOrders: "/api/providers/me/production-orders",
+    },
+    payments: {
+        payOrder: "/api/payments/orders", // append /{orderId}/pay
+        parentHistory: "/api/payments/parent/history",
+        schoolWallet: "/api/payments/school/wallet",
+        walletTransactions: "/api/payments/school/wallet/transactions",
+        walletBankInfo: "/api/payments/school/wallet/bank-info",
+        payProvider: "/api/payments/school/orders", // append /{orderId}/pay-provider
+        refundOrder: "/api/payments/school/orders", // append /{orderId}/refund
+        providerRevenue: "/api/payments/provider/revenue",
+        providerPayments: "/api/payments/provider/payments",
+        providerInvoice: "/api/payments/provider/orders", // append /{orderId}/invoice
+        providerWallet: "/api/payments/provider/wallet",
+        providerWalletTransactions: "/api/payments/provider/wallet/transactions",
+        providerWalletBankInfo: "/api/payments/provider/wallet/bank-info",
     },
 } as const;

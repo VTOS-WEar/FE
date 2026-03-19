@@ -1,24 +1,47 @@
-import { NavbarGuest, Footer } from "../../components/layout";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
 import { Separator } from "../../components/ui/separator";
-import { EyeIcon, EyeOffIcon, ChevronDownIcon } from "lucide-react";
+import { EyeIcon, EyeOffIcon, ArrowLeftIcon } from "lucide-react";
 import { useState } from "react";
 import { register } from "../../lib/api/auth";
 import { Notify } from "../../components/ui/notify";
 import { useNavigate, Link } from "react-router-dom";
 import { GuestLayout } from "../../components/layout/GuestLayout";
 import { useToast } from "../../contexts/ToastContext";
-export const SignUp = (): JSX.Element => {
+
+interface SignUpProps {
+  roleName: "Parent" | "School" | "Provider";
+}
+
+const ROLE_CONFIG = {
+  Parent: {
+    emoji: "👨‍👩‍👧",
+    title: "Phụ huynh",
+    gradient: "from-[#94bfff] to-[#c68cf4]",
+    tagline: "AI Try-On đồng phục: xem bạn mặc thế nào chỉ trong vài giây",
+  },
+  School: {
+    emoji: "🏫",
+    title: "Quản lý trường",
+    gradient: "from-[#38bdf8] to-[#0ea5e9]",
+    tagline: "Quản lý chiến dịch đồng phục, học sinh và đơn hàng một cách dễ dàng",
+  },
+  Provider: {
+    emoji: "🏭",
+    title: "Nhà cung cấp",
+    gradient: "from-[#fbbf24] to-[#f59e0b]",
+    tagline: "Tiếp nhận đơn sản xuất, quản lý giao hàng và hợp đồng hiệu quả",
+  },
+};
+
+export const SignUp = ({ roleName }: SignUpProps): JSX.Element => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const { showToast } = useToast();
   const [email, setEmail] = useState("");
   const [fullName, setFullName] = useState("");
   const [password, setPassword] = useState("");
-  const [roleName, setRoleName] = useState<"Parent" | "School">("Parent");
-  const [roleOpen, setRoleOpen] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
   const [notify, setNotify] = useState<{
@@ -26,6 +49,8 @@ export const SignUp = (): JSX.Element => {
     message: string;
     variant: "error" | "success" | "info";
   } | null>(null);
+
+  const config = ROLE_CONFIG[roleName];
 
   const handleRegister = async () => {
     if (!email.trim() || !fullName.trim() || !password) {
@@ -52,8 +77,6 @@ export const SignUp = (): JSX.Element => {
         replace: true,
         state: { email, roleName },
       });
-      // Optional: reset form
-      // setEmail(""); setFullName(""); setPassword("");
     } catch (e: any) {
       setNotify({
         title: "Tạo tài khoản thất bại",
@@ -74,7 +97,7 @@ export const SignUp = (): JSX.Element => {
           <div className="overflow-hidden rounded-[2rem] bg-white shadow-[0_20px_60px_rgba(16,15,20,0.12)] ring-1 ring-black/5">
             <div className="flex flex-col lg:flex-row">
               {/* Left panel */}
-              <div className="relative lg:w-[42%] bg-gradient-to-br from-[#94bfff] to-[#c68cf4] p-8 lg:p-10 flex items-center justify-center overflow-hidden">
+              <div className={`relative lg:w-[42%] bg-gradient-to-br ${config.gradient} p-8 lg:p-10 flex items-center justify-center overflow-hidden`}>
                 <div className="absolute inset-0 opacity-20 pointer-events-none">
                   <img
                     className="absolute -top-20 -left-24 w-[36rem] h-[36rem]"
@@ -101,7 +124,7 @@ export const SignUp = (): JSX.Element => {
                   />
 
                   <p className="[font-family:'Montserrat',Helvetica] font-semibold italic text-white text-lg lg:text-2xl leading-relaxed mb-6">
-                    AI Try-On đồng phục: xem bạn mặc thế nào chỉ trong vài giây
+                    {config.tagline}
                   </p>
 
                   <img
@@ -115,52 +138,22 @@ export const SignUp = (): JSX.Element => {
               {/* Right panel */}
               <div className="lg:w-[58%] flex items-center justify-center p-6 lg:p-10">
                 <div className="w-full max-w-[30rem]">
+                  {/* Back to role select */}
+                  <Link
+                    to="/signup"
+                    className="inline-flex items-center gap-1.5 text-[#6938ef] [font-family:'Montserrat',Helvetica] font-medium text-sm hover:underline mb-4"
+                  >
+                    <ArrowLeftIcon className="w-4 h-4" />
+                    Chọn loại tài khoản khác
+                  </Link>
+
                   <div className="mb-6">
                     <h1 className="[font-family:'Baloo_2',Helvetica] font-extrabold text-[#100f14] text-3xl lg:text-4xl text-center">
-                      Tạo tài khoản mới
+                      Tạo tài khoản {config.title}
                     </h1>
-                  </div>
-
-                  {/* Role Selector */}
-                  <div className="mb-5">
-                    <Label className="[font-family:'Montserrat',Helvetica] font-medium text-[#9794aa] text-sm lg:text-base mb-2 block">
-                      Loại tài khoản
-                    </Label>
-                    <div className="relative">
-                      <button
-                        type="button"
-                        onClick={() => setRoleOpen(!roleOpen)}
-                        className="w-full h-11 lg:h-12 px-4 lg:px-5 rounded-md border border-[#cac9d6] bg-white flex items-center justify-between [font-family:'Montserrat',Helvetica] font-medium text-sm lg:text-base text-[#19181f] hover:border-[#6938ef] transition-colors"
-                      >
-                        <span className="flex items-center gap-2">
-                          <span>{roleName === "Parent" ? "👨‍👩‍👧" : "🏫"}</span>
-                          {roleName === "Parent" ? "Phụ huynh" : "Quản lý trường"}
-                        </span>
-                        <ChevronDownIcon className={`w-4 h-4 text-[#676576] transition-transform ${roleOpen ? 'rotate-180' : ''}`} />
-                      </button>
-                      {roleOpen && (
-                        <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-md border border-[#cac9d6] shadow-lg z-20 overflow-hidden">
-                          <button
-                            type="button"
-                            onClick={() => { setRoleName("Parent"); setRoleOpen(false); }}
-                            className={`w-full px-4 py-3 text-left flex items-center gap-2 [font-family:'Montserrat',Helvetica] font-medium text-sm hover:bg-[#f4f2ff] transition-colors ${
-                              roleName === "Parent" ? "bg-[#f4f2ff] text-[#6938ef]" : "text-[#19181f]"
-                            }`}
-                          >
-                            <span>👨‍👩‍👧</span> Phụ huynh
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => { setRoleName("School"); setRoleOpen(false); }}
-                            className={`w-full px-4 py-3 text-left flex items-center gap-2 [font-family:'Montserrat',Helvetica] font-medium text-sm hover:bg-[#f4f2ff] transition-colors ${
-                              roleName === "School" ? "bg-[#f4f2ff] text-[#6938ef]" : "text-[#19181f]"
-                            }`}
-                          >
-                            <span>🏫</span> Quản lý trường
-                          </button>
-                        </div>
-                      )}
-                    </div>
+                    <p className="text-center mt-1 [font-family:'Montserrat',Helvetica] font-medium text-[#9794aa] text-sm">
+                      {config.emoji} Bạn đang đăng ký với tư cách <span className="text-[#6938ef] font-semibold">{config.title}</span>
+                    </p>
                   </div>
 
                   <Button

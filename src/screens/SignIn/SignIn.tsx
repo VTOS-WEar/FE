@@ -51,6 +51,8 @@ export const SignIn = (): JSX.Element => {
       let redirectTo = "/homepage";
       if (data.user.role === "School") {
         redirectTo = "/school/dashboard";
+      } else if (data.user.role === "Provider") {
+        redirectTo = "/provider/dashboard";
       } else if (data.user.role === "Parent" && !data.user.phone) {
         redirectTo = "/fillphonenumber";
       }

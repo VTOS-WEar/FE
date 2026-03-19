@@ -55,3 +55,43 @@ export async function cancelOrder(orderId: string, reason?: string): Promise<voi
     }
   );
 }
+
+/* ── School Order Management (UC-45) ── */
+
+export type SchoolOrderDto = {
+  orderId: string;
+  parentName: string;
+  childName: string;
+  totalAmount: number;
+  orderDate: string;
+  orderStatus: string;
+  campaignName: string | null;
+  itemCount: number;
+};
+
+export type SchoolOrderListResponse = {
+  items: SchoolOrderDto[];
+  totalCount: number;
+  page: number;
+  pageSize: number;
+};
+
+/** GET /api/schools/me/orders — School views parent orders */
+export async function getSchoolOrders(
+  page = 1,
+  pageSize = 10,
+  status?: string,
+): Promise<SchoolOrderListResponse> {
+  const params = new URLSearchParams({ page: String(page), pageSize: String(pageSize) });
+  if (status) params.set("status", status);
+
+  const result = await api<{ isSuccess: boolean; value: SchoolOrderListResponse }>(
+    `${endpoints.schools.schoolOrders}?${params}`,
+    { method: "GET", auth: true },
+  );
+
+  if (result && typeof result === "object" && "value" in result) {
+    return result.value;
+  }
+  return result as unknown as SchoolOrderListResponse;
+}
