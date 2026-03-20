@@ -49,7 +49,9 @@ export const SignIn = (): JSX.Element => {
 
       // Role-based redirect: Parent without phone → fill information first
       let redirectTo = "/homepage";
-      if (data.user.role === "School") {
+      if (data.user.role === "Admin") {
+        redirectTo = "/admin/dashboard";
+      } else if (data.user.role === "School") {
         redirectTo = "/school/dashboard";
       } else if (data.user.role === "Provider") {
         redirectTo = "/provider/dashboard";
