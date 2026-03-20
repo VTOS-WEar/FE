@@ -1,0 +1,1 @@
+export { ContactPartnership } from "./ContactPartnership";

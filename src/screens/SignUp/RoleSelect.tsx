@@ -9,22 +9,28 @@ const roles = [
     description: "Đặt đồng phục, theo dõi đơn hàng, thử ảo AI",
     color: "from-[#6938ef] to-[#9b6dff]",
     hoverBorder: "hover:border-[#6938ef]",
+    link: "/signup/parent",
+    btnText: "Đăng ký",
   },
   {
     key: "school",
     emoji: "🏫",
     title: "Quản lý trường",
-    description: "Quản lý chiến dịch, học sinh, đồng phục",
+    description: "Liên hệ để được cấp tài khoản quản lý",
     color: "from-[#0ea5e9] to-[#38bdf8]",
     hoverBorder: "hover:border-[#0ea5e9]",
+    link: "/contact-partnership",
+    btnText: "Liên hệ hợp tác",
   },
   {
     key: "provider",
     emoji: "🏭",
     title: "Nhà cung cấp",
-    description: "Quản lý hợp đồng, sản xuất, giao hàng",
+    description: "Liên hệ để trở thành đối tác cung cấp",
     color: "from-[#f59e0b] to-[#fbbf24]",
     hoverBorder: "hover:border-[#f59e0b]",
+    link: "/contact-partnership",
+    btnText: "Liên hệ hợp tác",
   },
 ];
 
@@ -46,7 +52,7 @@ export const RoleSelect = (): JSX.Element => {
             {roles.map((role) => (
               <Link
                 key={role.key}
-                to={`/signup/${role.key}`}
+                to={role.link}
                 className={`group relative overflow-hidden rounded-2xl border-2 border-[#e5e3f0] bg-white p-6 text-center transition-all duration-300 hover:shadow-xl hover:-translate-y-1 ${role.hoverBorder}`}
               >
                 {/* Gradient top bar */}
@@ -61,7 +67,7 @@ export const RoleSelect = (): JSX.Element => {
                 </p>
 
                 <div className={`mt-5 inline-flex items-center gap-1 bg-gradient-to-r ${role.color} text-white px-5 py-2.5 rounded-full [font-family:'Montserrat',Helvetica] font-semibold text-sm transition-transform group-hover:scale-105`}>
-                  Đăng ký
+                  {role.btnText}
                   <span className="ml-1">→</span>
                 </div>
               </Link>
