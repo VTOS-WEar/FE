@@ -20,12 +20,16 @@ import {
     reportDefect,
     distributeOrders,
     getDistributionStatus,
+    createDistributionSchedule,
+    getDistributionSchedules,
+    updateDistributionSchedule,
     type ProductionOrderListItemDto,
     type ProductionOrderDetailDto,
     type DeliveryRecordDto,
     type DeliveryStatusResponse,
     type VerifyQuantityResponse,
     type DistributionStatusResponse,
+    type DistributionScheduleDto,
 } from "../../lib/api/productionOrders";
 
 const STATUS_COLORS: Record<string, string> = {
@@ -66,9 +70,14 @@ export function SchoolProductionOrders() {
     const [confirmingDelivery, setConfirmingDelivery] = useState<DeliveryRecordDto | null>(null);
     const [confirmForm, setConfirmForm] = useState({ acceptedQuantity: 0, defectiveQuantity: 0, defectNote: "" });
     const [showDefectModal, setShowDefectModal] = useState(false);
-    const [defectForm, setDefectForm] = useState({ title: "", description: "" });
+    const [defectForm, setDefectForm] = useState({ title: "", description: "", proofImageUrls: [""] as string[] });
     const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
     const [shipForm, setShipForm] = useState({ shippingCompany: "", trackingCode: "", proofImageUrl: "", note: "" });
+    // Phase 5 — Distribution sub-tabs & scheduling
+    const [distSubTab, setDistSubTab] = useState<"all" | "atSchool" | "atHome">("all");
+    const [schedules, setSchedules] = useState<DistributionScheduleDto[]>([]);
+    const [showScheduleModal, setShowScheduleModal] = useState(false);
+    const [scheduleForm, setScheduleForm] = useState({ scheduledDate: "", method: "AtSchool", timeSlot: "", note: "" });
 
     const fetchOrders = useCallback(async () => {
         setLoading(true);
@@ -139,8 +148,12 @@ export function SchoolProductionOrders() {
 
     const loadDistributionData = async (batchId: string) => {
         try {
-            const ds = await getDistributionStatus(batchId);
+            const [ds, sched] = await Promise.all([
+                getDistributionStatus(batchId),
+                getDistributionSchedules(batchId),
+            ]);
             setDistStatus(ds);
+            setSchedules(sched);
         } catch (e: any) { console.error("Error loading distribution data:", e); }
     };
 
@@ -161,13 +174,38 @@ export function SchoolProductionOrders() {
 
     const handleReportDefect = async () => {
         if (!detail || !defectForm.title.trim() || !defectForm.description.trim()) return;
+        const validUrls = defectForm.proofImageUrls.filter(u => u.trim());
+        if (validUrls.length === 0) { alert("Vui lòng thêm ít nhất 1 URL ảnh chứng minh."); return; }
         setActionLoading(true);
         try {
-            await reportDefect(detail.batchId, defectForm);
+            await reportDefect(detail.batchId, { ...defectForm, proofImageUrls: validUrls });
             setShowDefectModal(false);
-            setDefectForm({ title: "", description: "" });
+            setDefectForm({ title: "", description: "", proofImageUrls: [""] });
             alert("Đã báo cáo lỗi thành công!");
         } catch (e: any) { alert(e.message || "Lỗi báo cáo"); }
+        finally { setActionLoading(false); }
+    };
+
+    // Phase 5 — Schedule handlers
+    const handleCreateSchedule = async () => {
+        if (!detail || !scheduleForm.scheduledDate || !scheduleForm.timeSlot) return;
+        setActionLoading(true);
+        try {
+            await createDistributionSchedule(detail.batchId, scheduleForm);
+            setShowScheduleModal(false);
+            setScheduleForm({ scheduledDate: "", method: "AtSchool", timeSlot: "", note: "" });
+            loadDistributionData(detail.batchId);
+        } catch (e: any) { alert(e.message || "Lỗi tạo lịch"); }
+        finally { setActionLoading(false); }
+    };
+
+    const handleCompleteSchedule = async (scheduleId: string) => {
+        if (!detail) return;
+        setActionLoading(true);
+        try {
+            await updateDistributionSchedule(scheduleId, { status: "Completed" });
+            loadDistributionData(detail.batchId);
+        } catch (e: any) { alert(e.message || "Lỗi cập nhật lịch"); }
         finally { setActionLoading(false); }
     };
 
@@ -464,97 +502,193 @@ export function SchoolProductionOrders() {
                                                 ))}
                                             </div>
 
-                                            {/* Pending orders — select & distribute */}
-                                            {distStatus.orders.filter(o => !o.isDistributed).length > 0 && (
-                                                <div style={{ marginBottom: 20 }}>
-                                                    <h4 style={{ margin: "0 0 10px", fontSize: 15, fontWeight: 600 }}>📋 Chờ phân phối</h4>
-                                                    {distStatus.orders.filter(o => !o.isDistributed).map(o => (
-                                                        <label key={o.orderId} style={{
-                                                            display: "flex", alignItems: "center", gap: 10, padding: "10px 14px",
-                                                            background: selectedOrders.includes(o.orderId) ? "#eef2ff" : "#f9fafb",
-                                                            borderRadius: 8, marginBottom: 6, cursor: "pointer",
-                                                            border: `1px solid ${selectedOrders.includes(o.orderId) ? "#a5b4fc" : "#e5e7eb"}`,
-                                                        }}>
-                                                            <input type="checkbox" checked={selectedOrders.includes(o.orderId)}
-                                                                onChange={e => {
-                                                                    if (e.target.checked) setSelectedOrders(p => [...p, o.orderId]);
-                                                                    else setSelectedOrders(p => p.filter(id => id !== o.orderId));
-                                                                }} />
-                                                            <div style={{ flex: 1 }}>
-                                                                <strong>{o.childName}</strong>
-                                                                <span style={{ color: "#888", fontSize: 13, marginLeft: 8 }}>({o.parentName})</span>
-                                                            </div>
-                                                            <span style={{
-                                                                padding: "3px 10px", borderRadius: 20, fontSize: 11, fontWeight: 600,
-                                                                background: o.deliveryMethod === "AtHome" ? "#dbeafe" : "#dcfce7",
-                                                                color: o.deliveryMethod === "AtHome" ? "#2563eb" : "#16a34a",
-                                                            }}>
-                                                                {o.deliveryMethod === "AtHome" ? "🏠 Giao tận nhà" : "🏫 Nhận tại trường"}
-                                                            </span>
-                                                        </label>
-                                                    ))}
+                                            {/* Sub-tabs: All / At School / At Home */}
+                                            <div style={{ display: "flex", gap: 6, marginBottom: 16 }}>
+                                                {([
+                                                    { key: "all" as const, label: "📋 Tất cả", count: distStatus.orders.length },
+                                                    { key: "atSchool" as const, label: "🏫 Tại trường", count: distStatus.orders.filter(o => o.deliveryMethod !== "AtHome").length },
+                                                    { key: "atHome" as const, label: "🏠 Giao tận nhà", count: distStatus.orders.filter(o => o.deliveryMethod === "AtHome").length },
+                                                ]).map(tab => (
+                                                    <button key={tab.key} onClick={() => setDistSubTab(tab.key)} style={{
+                                                        padding: "6px 16px", borderRadius: 16, border: "none", cursor: "pointer",
+                                                        background: distSubTab === tab.key ? "#6366f1" : "#f1f5f9",
+                                                        color: distSubTab === tab.key ? "#fff" : "#555",
+                                                        fontWeight: 600, fontSize: 13, transition: "all .2s",
+                                                    }}>
+                                                        {tab.label} ({tab.count})
+                                                    </button>
+                                                ))}
+                                            </div>
 
-                                                    {/* Shipping form for AtHome */}
-                                                    {selectedOrders.some(id => distStatus.orders.find(o => o.orderId === id)?.deliveryMethod === "AtHome") && (
-                                                        <div style={{ marginTop: 12, padding: 16, background: "#eff6ff", borderRadius: 12 }}>
-                                                            <h5 style={{ margin: "0 0 10px", fontSize: 14, fontWeight: 600 }}>🚛 Thông tin vận chuyển (AtHome)</h5>
-                                                            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-                                                                <input placeholder="Đơn vị vận chuyển" value={shipForm.shippingCompany}
-                                                                    onChange={e => setShipForm(f => ({ ...f, shippingCompany: e.target.value }))}
-                                                                    style={{ padding: "8px 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 14 }} />
-                                                                <input placeholder="Mã vận đơn" value={shipForm.trackingCode}
-                                                                    onChange={e => setShipForm(f => ({ ...f, trackingCode: e.target.value }))}
-                                                                    style={{ padding: "8px 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 14 }} />
+                                            {/* Pending orders — select & distribute (filtered by sub-tab) */}
+                                            {(() => {
+                                                const pending = distStatus.orders
+                                                    .filter(o => !o.isDistributed)
+                                                    .filter(o => distSubTab === "all" ? true : distSubTab === "atHome" ? o.deliveryMethod === "AtHome" : o.deliveryMethod !== "AtHome");
+                                                return pending.length > 0 ? (
+                                                    <div style={{ marginBottom: 20 }}>
+                                                        <h4 style={{ margin: "0 0 10px", fontSize: 15, fontWeight: 600 }}>📋 Chờ phân phối</h4>
+                                                        {pending.map(o => (
+                                                            <label key={o.orderId} style={{
+                                                                display: "flex", alignItems: "center", gap: 10, padding: "10px 14px",
+                                                                background: selectedOrders.includes(o.orderId) ? "#eef2ff" : "#f9fafb",
+                                                                borderRadius: 8, marginBottom: 6, cursor: "pointer",
+                                                                border: `1px solid ${selectedOrders.includes(o.orderId) ? "#a5b4fc" : "#e5e7eb"}`,
+                                                            }}>
+                                                                <input type="checkbox" checked={selectedOrders.includes(o.orderId)}
+                                                                    onChange={e => {
+                                                                        if (e.target.checked) setSelectedOrders(p => [...p, o.orderId]);
+                                                                        else setSelectedOrders(p => p.filter(id => id !== o.orderId));
+                                                                    }} />
+                                                                <div style={{ flex: 1 }}>
+                                                                    <strong>{o.childName}</strong>
+                                                                    <span style={{ color: "#888", fontSize: 13, marginLeft: 8 }}>({o.parentName})</span>
+                                                                </div>
+                                                                <span style={{
+                                                                    padding: "3px 10px", borderRadius: 20, fontSize: 11, fontWeight: 600,
+                                                                    background: o.deliveryMethod === "AtHome" ? "#dbeafe" : "#dcfce7",
+                                                                    color: o.deliveryMethod === "AtHome" ? "#2563eb" : "#16a34a",
+                                                                }}>
+                                                                    {o.deliveryMethod === "AtHome" ? "🏠 Giao tận nhà" : "🏫 Nhận tại trường"}
+                                                                </span>
+                                                            </label>
+                                                        ))}
+
+                                                        {/* Shipping form for AtHome */}
+                                                        {selectedOrders.some(id => distStatus.orders.find(o => o.orderId === id)?.deliveryMethod === "AtHome") && (
+                                                            <div style={{ marginTop: 12, padding: 16, background: "#eff6ff", borderRadius: 12 }}>
+                                                                <h5 style={{ margin: "0 0 10px", fontSize: 14, fontWeight: 600 }}>🚛 Thông tin vận chuyển (AtHome)</h5>
+                                                                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                                                                    <input placeholder="Đơn vị vận chuyển" value={shipForm.shippingCompany}
+                                                                        onChange={e => setShipForm(f => ({ ...f, shippingCompany: e.target.value }))}
+                                                                        style={{ padding: "8px 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 14 }} />
+                                                                    <input placeholder="Mã vận đơn" value={shipForm.trackingCode}
+                                                                        onChange={e => setShipForm(f => ({ ...f, trackingCode: e.target.value }))}
+                                                                        style={{ padding: "8px 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 14 }} />
+                                                                </div>
+                                                                <input placeholder="URL ảnh xác nhận (proof)" value={shipForm.proofImageUrl}
+                                                                    onChange={e => setShipForm(f => ({ ...f, proofImageUrl: e.target.value }))}
+                                                                    style={{ width: "100%", marginTop: 10, padding: "8px 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 14, boxSizing: "border-box" }} />
                                                             </div>
-                                                            <input placeholder="URL ảnh xác nhận (proof)" value={shipForm.proofImageUrl}
-                                                                onChange={e => setShipForm(f => ({ ...f, proofImageUrl: e.target.value }))}
-                                                                style={{ width: "100%", marginTop: 10, padding: "8px 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 14, boxSizing: "border-box" }} />
+                                                        )}
+
+                                                        <div style={{ display: "flex", gap: 10, marginTop: 14 }}>
+                                                            <button disabled={selectedOrders.length === 0 || actionLoading}
+                                                                onClick={() => handleDistribute("AtSchool")}
+                                                                style={{
+                                                                    flex: 1, padding: "10px 0", borderRadius: 10, border: "none",
+                                                                    background: selectedOrders.length === 0 ? "#ccc" : "#10b981",
+                                                                    color: "#fff", fontWeight: 600, cursor: selectedOrders.length === 0 ? "not-allowed" : "pointer",
+                                                                }}>
+                                                                🏫 Phát tại trường
+                                                            </button>
+                                                            <button disabled={selectedOrders.length === 0 || actionLoading}
+                                                                onClick={() => handleDistribute("AtHome")}
+                                                                style={{
+                                                                    flex: 1, padding: "10px 0", borderRadius: 10, border: "none",
+                                                                    background: selectedOrders.length === 0 ? "#ccc" : "#3b82f6",
+                                                                    color: "#fff", fontWeight: 600, cursor: selectedOrders.length === 0 ? "not-allowed" : "pointer",
+                                                                }}>
+                                                                🏠 Giao tận nhà
+                                                            </button>
                                                         </div>
-                                                    )}
-
-                                                    <div style={{ display: "flex", gap: 10, marginTop: 14 }}>
-                                                        <button disabled={selectedOrders.length === 0 || actionLoading}
-                                                            onClick={() => handleDistribute("AtSchool")}
-                                                            style={{
-                                                                flex: 1, padding: "10px 0", borderRadius: 10, border: "none",
-                                                                background: selectedOrders.length === 0 ? "#ccc" : "#10b981",
-                                                                color: "#fff", fontWeight: 600, cursor: selectedOrders.length === 0 ? "not-allowed" : "pointer",
-                                                            }}>
-                                                            🏫 Phát tại trường ({selectedOrders.filter(id => distStatus.orders.find(o => o.orderId === id)?.deliveryMethod !== "AtHome").length})
-                                                        </button>
-                                                        <button disabled={selectedOrders.length === 0 || actionLoading}
-                                                            onClick={() => handleDistribute("AtHome")}
-                                                            style={{
-                                                                flex: 1, padding: "10px 0", borderRadius: 10, border: "none",
-                                                                background: selectedOrders.length === 0 ? "#ccc" : "#3b82f6",
-                                                                color: "#fff", fontWeight: 600, cursor: selectedOrders.length === 0 ? "not-allowed" : "pointer",
-                                                            }}>
-                                                            🏠 Giao tận nhà ({selectedOrders.filter(id => distStatus.orders.find(o => o.orderId === id)?.deliveryMethod === "AtHome").length})
-                                                        </button>
                                                     </div>
-                                                </div>
-                                            )}
+                                                ) : null;
+                                            })()}
 
-                                            {/* Already distributed */}
-                                            {distStatus.orders.filter(o => o.isDistributed).length > 0 && (
-                                                <div>
-                                                    <h4 style={{ margin: "0 0 10px", fontSize: 15, fontWeight: 600, color: "#10b981" }}>✅ Đã phân phối</h4>
-                                                    {distStatus.orders.filter(o => o.isDistributed).map(o => (
-                                                        <div key={o.orderId} style={{
-                                                            padding: "10px 14px", background: "#f0fdf4", borderRadius: 8, marginBottom: 6,
-                                                            display: "flex", justifyContent: "space-between", alignItems: "center",
-                                                            border: "1px solid #86efac",
-                                                        }}>
-                                                            <div>
-                                                                <strong>{o.childName}</strong>
-                                                                <span style={{ color: "#888", fontSize: 13, marginLeft: 8 }}>({o.parentName})</span>
-                                                                {o.trackingCode && <span style={{ color: "#6366f1", fontSize: 12, marginLeft: 8 }}>📦 {o.trackingCode}</span>}
+                                            {/* Already distributed (filtered by sub-tab) */}
+                                            {(() => {
+                                                const distributed = distStatus.orders
+                                                    .filter(o => o.isDistributed)
+                                                    .filter(o => distSubTab === "all" ? true : distSubTab === "atHome" ? o.deliveryMethod === "AtHome" : o.deliveryMethod !== "AtHome");
+                                                return distributed.length > 0 ? (
+                                                    <div>
+                                                        <h4 style={{ margin: "0 0 10px", fontSize: 15, fontWeight: 600, color: "#10b981" }}>✅ Đã phân phối</h4>
+                                                        {distributed.map(o => (
+                                                            <div key={o.orderId} style={{
+                                                                padding: "10px 14px", background: "#f0fdf4", borderRadius: 8, marginBottom: 6,
+                                                                display: "flex", justifyContent: "space-between", alignItems: "center",
+                                                                border: "1px solid #86efac",
+                                                            }}>
+                                                                <div>
+                                                                    <strong>{o.childName}</strong>
+                                                                    <span style={{ color: "#888", fontSize: 13, marginLeft: 8 }}>({o.parentName})</span>
+                                                                    {o.trackingCode && <span style={{ color: "#6366f1", fontSize: 12, marginLeft: 8 }}>📦 {o.trackingCode}</span>}
+                                                                    <span style={{
+                                                                        padding: "2px 8px", borderRadius: 12, fontSize: 10, fontWeight: 600, marginLeft: 8,
+                                                                        background: o.deliveryMethod === "AtHome" ? "#dbeafe" : "#dcfce7",
+                                                                        color: o.deliveryMethod === "AtHome" ? "#2563eb" : "#16a34a",
+                                                                    }}>
+                                                                        {o.deliveryMethod === "AtHome" ? "🏠" : "🏫"}
+                                                                    </span>
+                                                                </div>
+                                                                <span style={{ fontSize: 12, color: "#888" }}>{o.distributedAt ? new Date(o.distributedAt).toLocaleDateString("vi") : ""}</span>
                                                             </div>
-                                                            <span style={{ fontSize: 12, color: "#888" }}>{o.distributedAt ? new Date(o.distributedAt).toLocaleDateString("vi") : ""}</span>
-                                                        </div>
-                                                    ))}
+                                                        ))}
+                                                    </div>
+                                                ) : null;
+                                            })()}
+
+                                            {/* Schedule Timeline */}
+                                            <div style={{ marginTop: 24 }}>
+                                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+                                                    <h4 style={{ margin: 0, fontSize: 15, fontWeight: 600 }}>📅 Lịch phân phối</h4>
+                                                    <button onClick={() => setShowScheduleModal(true)} style={{
+                                                        padding: "6px 14px", borderRadius: 8, border: "none",
+                                                        background: "linear-gradient(135deg, #6366f1, #4f46e5)", color: "#fff",
+                                                        fontWeight: 600, cursor: "pointer", fontSize: 13,
+                                                    }}>+ Tạo lịch</button>
                                                 </div>
-                                            )}
+                                                {schedules.length === 0 ? (
+                                                    <p style={{ color: "#999", textAlign: "center", padding: 16, background: "#f9fafb", borderRadius: 10 }}>
+                                                        Chưa có lịch phân phối nào. Nhấn "Tạo lịch" để bắt đầu.
+                                                    </p>
+                                                ) : (
+                                                    <div style={{ display: "grid", gap: 10 }}>
+                                                        {schedules.map(s => (
+                                                            <div key={s.id} style={{
+                                                                padding: "14px 18px",
+                                                                background: s.status === "Completed" ? "#f0fdf4" : "#fefce8",
+                                                                borderRadius: 12,
+                                                                border: `1px solid ${s.status === "Completed" ? "#86efac" : "#fde68a"}`,
+                                                            }}>
+                                                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                                                    <div>
+                                                                        <strong style={{ fontSize: 14 }}>
+                                                                            {new Date(s.scheduledDate).toLocaleDateString("vi")} — {s.timeSlot}
+                                                                        </strong>
+                                                                        <span style={{
+                                                                            padding: "2px 8px", borderRadius: 12, fontSize: 11, fontWeight: 600, marginLeft: 8,
+                                                                            background: s.method === "AtHome" ? "#dbeafe" : "#dcfce7",
+                                                                            color: s.method === "AtHome" ? "#2563eb" : "#16a34a",
+                                                                        }}>
+                                                                            {s.method === "AtHome" ? "🏠 Giao nhà" : "🏫 Tại trường"}
+                                                                        </span>
+                                                                        {s.note && <p style={{ margin: "4px 0 0", fontSize: 13, color: "#666" }}>📝 {s.note}</p>}
+                                                                    </div>
+                                                                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                                                                        <span style={{
+                                                                            padding: "3px 10px", borderRadius: 20, fontSize: 11, fontWeight: 600,
+                                                                            background: s.status === "Completed" ? "#dcfce7" : "#fef3c7",
+                                                                            color: s.status === "Completed" ? "#16a34a" : "#d97706",
+                                                                        }}>
+                                                                            {s.status === "Completed" ? "✅ Hoàn thành" : "📋 Đã lên kế hoạch"}
+                                                                        </span>
+                                                                        {s.status !== "Completed" && (
+                                                                            <button onClick={() => handleCompleteSchedule(s.id)} disabled={actionLoading} style={{
+                                                                                padding: "4px 10px", borderRadius: 6, border: "none",
+                                                                                background: "#10b981", color: "#fff", fontSize: 12, fontWeight: 600, cursor: "pointer",
+                                                                            }}>
+                                                                                ✓ Xong
+                                                                            </button>
+                                                                        )}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
                                     )}
                                 </div>
@@ -671,7 +805,7 @@ export function SchoolProductionOrders() {
                 {/* Defect Report Modal */}
                 {showDefectModal && detail && (
                     <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.6)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1200 }}>
-                        <div style={{ background: "#fff", borderRadius: 16, padding: 28, width: "90%", maxWidth: 440 }}>
+                        <div style={{ background: "#fff", borderRadius: 16, padding: 28, width: "90%", maxWidth: 500, maxHeight: "85vh", overflow: "auto" }}>
                             <h3 style={{ margin: "0 0 16px", fontSize: 18, fontWeight: 700 }}>🐛 Báo cáo lỗi sản phẩm</h3>
                             <div style={{ display: "grid", gap: 12 }}>
                                 <div>
@@ -689,9 +823,41 @@ export function SchoolProductionOrders() {
                                         rows={3}
                                         style={{ width: "100%", padding: "8px 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 14, boxSizing: "border-box", resize: "vertical" }} />
                                 </div>
+                                {/* Proof image URLs */}
+                                <div>
+                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                                        <label style={{ fontSize: 13, color: "#555", fontWeight: 600 }}>📷 Ảnh chứng minh (URL)</label>
+                                        <span style={{ fontSize: 11, color: "#ef4444", fontWeight: 600 }}>* Bắt buộc ≥ 1 ảnh</span>
+                                    </div>
+                                    {defectForm.proofImageUrls.map((url, idx) => (
+                                        <div key={idx} style={{ display: "flex", gap: 6, marginBottom: 6 }}>
+                                            <input value={url}
+                                                onChange={e => {
+                                                    const urls = [...defectForm.proofImageUrls];
+                                                    urls[idx] = e.target.value;
+                                                    setDefectForm(f => ({ ...f, proofImageUrls: urls }));
+                                                }}
+                                                placeholder={`URL ảnh ${idx + 1}...`}
+                                                style={{ flex: 1, padding: "8px 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 13, boxSizing: "border-box" }} />
+                                            {defectForm.proofImageUrls.length > 1 && (
+                                                <button onClick={() => {
+                                                    const urls = defectForm.proofImageUrls.filter((_, i) => i !== idx);
+                                                    setDefectForm(f => ({ ...f, proofImageUrls: urls }));
+                                                }} style={{
+                                                    padding: "4px 10px", borderRadius: 6, border: "none",
+                                                    background: "#fef2f2", color: "#ef4444", fontWeight: 700, cursor: "pointer", fontSize: 16,
+                                                }}>×</button>
+                                            )}
+                                        </div>
+                                    ))}
+                                    <button onClick={() => setDefectForm(f => ({ ...f, proofImageUrls: [...f.proofImageUrls, ""] }))} style={{
+                                        padding: "4px 12px", borderRadius: 6, border: "1px dashed #a5b4fc",
+                                        background: "#eef2ff", color: "#6366f1", fontWeight: 600, cursor: "pointer", fontSize: 12,
+                                    }}>+ Thêm ảnh</button>
+                                </div>
                             </div>
                             <div style={{ display: "flex", gap: 12, marginTop: 16 }}>
-                                <button onClick={() => { setShowDefectModal(false); setDefectForm({ title: "", description: "" }); }} style={{
+                                <button onClick={() => { setShowDefectModal(false); setDefectForm({ title: "", description: "", proofImageUrls: [""] }); }} style={{
                                     flex: 1, padding: "10px 0", borderRadius: 10, border: "1px solid #ddd",
                                     background: "#fff", fontWeight: 600, cursor: "pointer",
                                 }}>Hủy</button>
@@ -701,6 +867,63 @@ export function SchoolProductionOrders() {
                                     fontWeight: 600, cursor: actionLoading ? "not-allowed" : "pointer",
                                 }}>
                                     {actionLoading ? "Đang xử lý..." : "Gửi báo cáo"}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Schedule Creation Modal */}
+                {showScheduleModal && detail && (
+                    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.6)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1200 }}>
+                        <div style={{ background: "#fff", borderRadius: 16, padding: 28, width: "90%", maxWidth: 440 }}>
+                            <h3 style={{ margin: "0 0 16px", fontSize: 18, fontWeight: 700 }}>📅 Tạo lịch phân phối</h3>
+                            <div style={{ display: "grid", gap: 12 }}>
+                                <div>
+                                    <label style={{ fontSize: 13, color: "#555", fontWeight: 600 }}>Ngày dự kiến *</label>
+                                    <input type="date" value={scheduleForm.scheduledDate}
+                                        onChange={e => setScheduleForm(f => ({ ...f, scheduledDate: e.target.value }))}
+                                        style={{ width: "100%", padding: "8px 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 14, boxSizing: "border-box" }} />
+                                </div>
+                                <div>
+                                    <label style={{ fontSize: 13, color: "#555", fontWeight: 600 }}>Hình thức</label>
+                                    <select value={scheduleForm.method}
+                                        onChange={e => setScheduleForm(f => ({ ...f, method: e.target.value }))}
+                                        style={{ width: "100%", padding: "8px 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 14, boxSizing: "border-box" }}>
+                                        <option value="AtSchool">🏫 Phát tại trường</option>
+                                        <option value="AtHome">🏠 Giao tận nhà</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label style={{ fontSize: 13, color: "#555", fontWeight: 600 }}>Khung giờ *</label>
+                                    <input value={scheduleForm.timeSlot}
+                                        onChange={e => setScheduleForm(f => ({ ...f, timeSlot: e.target.value }))}
+                                        placeholder="VD: 8:00 - 11:00"
+                                        style={{ width: "100%", padding: "8px 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 14, boxSizing: "border-box" }} />
+                                </div>
+                                <div>
+                                    <label style={{ fontSize: 13, color: "#555", fontWeight: 600 }}>Ghi chú</label>
+                                    <textarea value={scheduleForm.note}
+                                        onChange={e => setScheduleForm(f => ({ ...f, note: e.target.value }))}
+                                        placeholder="VD: Phát đồng phục cho khối 10..."
+                                        rows={2}
+                                        style={{ width: "100%", padding: "8px 12px", borderRadius: 8, border: "1px solid #ddd", fontSize: 14, boxSizing: "border-box", resize: "vertical" }} />
+                                </div>
+                            </div>
+                            <div style={{ display: "flex", gap: 12, marginTop: 16 }}>
+                                <button onClick={() => { setShowScheduleModal(false); setScheduleForm({ scheduledDate: "", method: "AtSchool", timeSlot: "", note: "" }); }} style={{
+                                    flex: 1, padding: "10px 0", borderRadius: 10, border: "1px solid #ddd",
+                                    background: "#fff", fontWeight: 600, cursor: "pointer",
+                                }}>Hủy</button>
+                                <button onClick={handleCreateSchedule}
+                                    disabled={actionLoading || !scheduleForm.scheduledDate || !scheduleForm.timeSlot.trim()}
+                                    style={{
+                                        flex: 1, padding: "10px 0", borderRadius: 10, border: "none",
+                                        background: actionLoading || !scheduleForm.scheduledDate || !scheduleForm.timeSlot.trim() ? "#ccc" : "#6366f1",
+                                        color: "#fff", fontWeight: 600,
+                                        cursor: actionLoading || !scheduleForm.scheduledDate || !scheduleForm.timeSlot.trim() ? "not-allowed" : "pointer",
+                                    }}>
+                                    {actionLoading ? "Đang tạo..." : "📅 Tạo lịch"}
                                 </button>
                             </div>
                         </div>

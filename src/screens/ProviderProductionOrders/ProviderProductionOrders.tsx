@@ -17,9 +17,11 @@ import {
     providerRejectProductionOrder,
     providerDeliver,
     getProviderDeliveryStatus,
+    getProviderDistributionOverview,
     type ProductionOrderListItemDto,
     type ProductionOrderDetailDto,
     type DeliveryStatusResponse,
+    type ProviderDistributionOverviewDto,
 } from "../../lib/api/productionOrders";
 
 const STATUS_COLORS: Record<string, string> = {
@@ -57,6 +59,9 @@ export function ProviderProductionOrders() {
     const [deliverQty, setDeliverQty] = useState(0);
     const [deliverNote, setDeliverNote] = useState("");
     const [deliveryStatus, setDeliveryStatus] = useState<DeliveryStatusResponse | null>(null);
+    // Phase 5 — Distribution overview
+    const [providerActiveTab, setProviderActiveTab] = useState<"detail" | "delivery" | "distribution">("detail");
+    const [distOverview, setDistOverview] = useState<ProviderDistributionOverviewDto | null>(null);
 
     const fetchOrders = useCallback(async () => {
         setLoading(true);
@@ -149,12 +154,20 @@ export function ProviderProductionOrders() {
             const d = await getProviderProductionOrderDetail(id);
             setDetail(d);
             setShowDetail(true);
+            setProviderActiveTab("detail");
             if (d.status === "Completed" || d.status === "Delivered") {
                 loadDeliveryHistory(id);
             }
         } catch (e: any) {
             console.error("Error fetching detail:", e);
         }
+    };
+
+    const loadDistOverview = async (batchId: string) => {
+        try {
+            const ov = await getProviderDistributionOverview(batchId);
+            setDistOverview(ov);
+        } catch (e: any) { console.error("Error loading distribution overview:", e); }
     };
 
     return (
@@ -311,85 +324,190 @@ export function ProviderProductionOrders() {
                                 </tbody>
                             </table>
 
-                            {/* Phase 4 — Delivery section for Completed/Delivered */}
-                            {(detail.status === "Completed" || detail.status === "Delivered") && deliveryStatus && (
+                            {/* Phase 4/5 — Tabs for Completed/Delivered */}
+                            {(detail.status === "Completed" || detail.status === "Delivered") && (
                                 <div style={{ marginTop: 24 }}>
-                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-                                        <h3 style={{ margin: 0, fontSize: 16, fontWeight: 600 }}>🚚 Tình trạng giao hàng</h3>
-                                        {detail.status === "Completed" && (
-                                            <button onClick={() => {
-                                                setDeliverQty(deliveryStatus.totalQuantity - deliveryStatus.totalDelivered);
-                                                setShowDeliver(true);
+                                    <div style={{ display: "flex", gap: 0, borderBottom: "2px solid #e5e7eb" }}>
+                                        {(["detail", "delivery", "distribution"] as const).map(tab => (
+                                            <button key={tab} onClick={() => {
+                                                setProviderActiveTab(tab);
+                                                if (tab === "delivery") loadDeliveryHistory(detail.batchId);
+                                                if (tab === "distribution") loadDistOverview(detail.batchId);
                                             }} style={{
-                                                padding: "8px 20px", borderRadius: 10, border: "none",
-                                                background: "linear-gradient(135deg, #6366f1, #4f46e5)", color: "#fff",
-                                                fontWeight: 600, cursor: "pointer", fontSize: 14,
+                                                padding: "10px 24px", border: "none", cursor: "pointer", fontWeight: 600, fontSize: 14,
+                                                background: providerActiveTab === tab ? "#6366f1" : "transparent",
+                                                color: providerActiveTab === tab ? "#fff" : "#888",
+                                                borderRadius: "8px 8px 0 0", transition: "all .2s",
                                             }}>
-                                                📦 Giao hàng
+                                                {tab === "detail" ? "📋 Chi tiết" : tab === "delivery" ? "🚚 Giao hàng" : "📦 Phân phối"}
                                             </button>
-                                        )}
+                                        ))}
                                     </div>
 
-                                    {/* Progress bar */}
-                                    <div style={{ marginBottom: 16 }}>
-                                        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14, color: "#555", marginBottom: 6 }}>
-                                            <span>Đã giao: <strong>{deliveryStatus.totalDelivered}/{deliveryStatus.totalQuantity}</strong></span>
-                                            <span style={{ fontWeight: 700, color: deliveryStatus.isFullyDelivered ? "#10b981" : "#6366f1" }}>
-                                                {Math.round((deliveryStatus.totalDelivered / deliveryStatus.totalQuantity) * 100)}%
-                                            </span>
-                                        </div>
-                                        <div style={{ height: 12, borderRadius: 6, background: "#e5e7eb", overflow: "hidden" }}>
-                                            <div style={{
-                                                height: "100%", borderRadius: 6,
-                                                width: `${Math.min(100, (deliveryStatus.totalDelivered / deliveryStatus.totalQuantity) * 100)}%`,
-                                                background: deliveryStatus.isFullyDelivered
-                                                    ? "linear-gradient(135deg, #10b981, #059669)"
-                                                    : "linear-gradient(135deg, #6366f1, #4f46e5)",
-                                                transition: "width .5s",
-                                            }} />
-                                        </div>
-                                        {deliveryStatus.isFullyDelivered && (
-                                            <p style={{ margin: "6px 0 0", color: "#10b981", fontSize: 13, fontWeight: 600 }}>✅ Đã giao đủ 100%</p>
-                                        )}
-                                    </div>
+                                    {/* Delivery Tab */}
+                                    {providerActiveTab === "delivery" && deliveryStatus && (
+                                        <div style={{ padding: "20px 0" }}>
+                                            {/* Delivery section (existing) */}
+                                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+                                                <h3 style={{ margin: 0, fontSize: 16, fontWeight: 600 }}>🚚 Tình trạng giao hàng</h3>
+                                                {detail.status === "Completed" && (
+                                                    <button onClick={() => {
+                                                        setDeliverQty(deliveryStatus.totalQuantity - deliveryStatus.totalDelivered);
+                                                        setShowDeliver(true);
+                                                    }} style={{
+                                                        padding: "8px 20px", borderRadius: 10, border: "none",
+                                                        background: "linear-gradient(135deg, #6366f1, #4f46e5)", color: "#fff",
+                                                        fontWeight: 600, cursor: "pointer", fontSize: 14,
+                                                    }}>
+                                                        📦 Giao hàng
+                                                    </button>
+                                                )}
+                                            </div>
 
-                                    {/* Delivery history */}
-                                    {deliveryStatus.deliveries.length === 0 ? (
-                                        <p style={{ color: "#999", textAlign: "center", padding: 16 }}>Chưa có lần giao nào.</p>
-                                    ) : (
-                                        <div style={{ display: "grid", gap: 10 }}>
-                                            {deliveryStatus.deliveries.map((d, i) => (
-                                                <div key={d.id} style={{
-                                                    padding: "12px 16px",
-                                                    background: d.isConfirmed ? "#f0fdf4" : "#fffbeb",
-                                                    borderRadius: 10,
-                                                    border: `1px solid ${d.isConfirmed ? "#86efac" : "#fde68a"}`,
-                                                }}>
-                                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                                        <div>
-                                                            <strong style={{ fontSize: 14 }}>Lần {deliveryStatus.deliveries.length - i}: {d.quantity} sản phẩm</strong>
-                                                            <span style={{ color: "#888", fontSize: 12, marginLeft: 8 }}>
-                                                                {new Date(d.deliveredAt).toLocaleDateString("vi")}
-                                                            </span>
-                                                            {d.note && <p style={{ margin: "4px 0 0", color: "#666", fontSize: 13 }}>📝 {d.note}</p>}
-                                                        </div>
-                                                        {d.isConfirmed ? (
-                                                            <div style={{ textAlign: "right" }}>
-                                                                <span style={{ padding: "3px 10px", borderRadius: 20, background: "#dcfce7", color: "#16a34a", fontSize: 11, fontWeight: 600 }}>
-                                                                    ✅ Trường đã xác nhận
-                                                                </span>
-                                                                <p style={{ margin: "4px 0 0", fontSize: 11, color: "#888" }}>
-                                                                    OK: {d.acceptedQuantity}{d.defectiveQuantity ? ` · Lỗi: ${d.defectiveQuantity}` : ""}
-                                                                </p>
-                                                            </div>
-                                                        ) : (
-                                                            <span style={{ padding: "3px 10px", borderRadius: 20, background: "#fef3c7", color: "#d97706", fontSize: 11, fontWeight: 600 }}>
-                                                                ⏳ Chờ trường xác nhận
-                                                            </span>
-                                                        )}
-                                                    </div>
+                                            {/* Progress bar */}
+                                            <div style={{ marginBottom: 16 }}>
+                                                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14, color: "#555", marginBottom: 6 }}>
+                                                    <span>Đã giao: <strong>{deliveryStatus.totalDelivered}/{deliveryStatus.totalQuantity}</strong></span>
+                                                    <span style={{ fontWeight: 700, color: deliveryStatus.isFullyDelivered ? "#10b981" : "#6366f1" }}>
+                                                        {Math.round((deliveryStatus.totalDelivered / deliveryStatus.totalQuantity) * 100)}%
+                                                    </span>
                                                 </div>
-                                            ))}
+                                                <div style={{ height: 12, borderRadius: 6, background: "#e5e7eb", overflow: "hidden" }}>
+                                                    <div style={{
+                                                        height: "100%", borderRadius: 6,
+                                                        width: `${Math.min(100, (deliveryStatus.totalDelivered / deliveryStatus.totalQuantity) * 100)}%`,
+                                                        background: deliveryStatus.isFullyDelivered
+                                                            ? "linear-gradient(135deg, #10b981, #059669)"
+                                                            : "linear-gradient(135deg, #6366f1, #4f46e5)",
+                                                        transition: "width .5s",
+                                                    }} />
+                                                </div>
+                                                {deliveryStatus.isFullyDelivered && (
+                                                    <p style={{ margin: "6px 0 0", color: "#10b981", fontSize: 13, fontWeight: 600 }}>✅ Đã giao đủ 100%</p>
+                                                )}
+                                            </div>
+
+                                            {/* Delivery history */}
+                                            {deliveryStatus.deliveries.length === 0 ? (
+                                                <p style={{ color: "#999", textAlign: "center", padding: 16 }}>Chưa có lần giao nào.</p>
+                                            ) : (
+                                                <div style={{ display: "grid", gap: 10 }}>
+                                                    {deliveryStatus.deliveries.map((d, i) => (
+                                                        <div key={d.id} style={{
+                                                            padding: "12px 16px",
+                                                            background: d.isConfirmed ? "#f0fdf4" : "#fffbeb",
+                                                            borderRadius: 10,
+                                                            border: `1px solid ${d.isConfirmed ? "#86efac" : "#fde68a"}`,
+                                                        }}>
+                                                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                                                <div>
+                                                                    <strong style={{ fontSize: 14 }}>Lần {deliveryStatus.deliveries.length - i}: {d.quantity} sản phẩm</strong>
+                                                                    <span style={{ color: "#888", fontSize: 12, marginLeft: 8 }}>
+                                                                        {new Date(d.deliveredAt).toLocaleDateString("vi")}
+                                                                    </span>
+                                                                    {d.note && <p style={{ margin: "4px 0 0", color: "#666", fontSize: 13 }}>📝 {d.note}</p>}
+                                                                </div>
+                                                                {d.isConfirmed ? (
+                                                                    <div style={{ textAlign: "right" }}>
+                                                                        <span style={{ padding: "3px 10px", borderRadius: 20, background: "#dcfce7", color: "#16a34a", fontSize: 11, fontWeight: 600 }}>
+                                                                            ✅ Trường đã xác nhận
+                                                                        </span>
+                                                                        <p style={{ margin: "4px 0 0", fontSize: 11, color: "#888" }}>
+                                                                            OK: {d.acceptedQuantity}{d.defectiveQuantity ? ` · Lỗi: ${d.defectiveQuantity}` : ""}
+                                                                        </p>
+                                                                    </div>
+                                                                ) : (
+                                                                    <span style={{ padding: "3px 10px", borderRadius: 20, background: "#fef3c7", color: "#d97706", fontSize: 11, fontWeight: 600 }}>
+                                                                        ⏳ Chờ trường xác nhận
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+
+                                    {/* Distribution Overview Tab (read-only) */}
+                                    {providerActiveTab === "distribution" && distOverview && (
+                                        <div style={{ padding: "20px 0" }}>
+                                            <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 8, marginBottom: 20 }}>
+                                                {[
+                                                    { label: "Tổng đơn", val: distOverview.totalOrders, color: "#6366f1" },
+                                                    { label: "Đã phân phối", val: distOverview.distributedCount, color: "#10b981" },
+                                                    { label: "Chờ", val: distOverview.pendingCount, color: "#f59e0b" },
+                                                    { label: "Tại trường", val: distOverview.atSchoolCount, color: "#16a34a" },
+                                                    { label: "Giao nhà", val: distOverview.atHomeCount, color: "#2563eb" },
+                                                ].map(s => (
+                                                    <div key={s.label} style={{ padding: 10, background: `${s.color}10`, borderRadius: 10, textAlign: "center" }}>
+                                                        <p style={{ margin: 0, fontSize: 20, fontWeight: 700, color: s.color }}>{s.val}</p>
+                                                        <p style={{ margin: 0, fontSize: 11, color: "#888" }}>{s.label}</p>
+                                                    </div>
+                                                ))}
+                                            </div>
+
+                                            {/* Progress bar */}
+                                            <div style={{ marginBottom: 20 }}>
+                                                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, color: "#555", marginBottom: 6 }}>
+                                                    <span>Tiến độ phân phối</span>
+                                                    <span style={{ fontWeight: 700, color: distOverview.distributedCount === distOverview.totalOrders ? "#10b981" : "#6366f1" }}>
+                                                        {distOverview.totalOrders > 0 ? Math.round((distOverview.distributedCount / distOverview.totalOrders) * 100) : 0}%
+                                                    </span>
+                                                </div>
+                                                <div style={{ height: 10, borderRadius: 5, background: "#e5e7eb", overflow: "hidden" }}>
+                                                    <div style={{
+                                                        height: "100%", borderRadius: 5,
+                                                        width: `${distOverview.totalOrders > 0 ? Math.min(100, (distOverview.distributedCount / distOverview.totalOrders) * 100) : 0}%`,
+                                                        background: distOverview.distributedCount === distOverview.totalOrders
+                                                            ? "linear-gradient(135deg, #10b981, #059669)"
+                                                            : "linear-gradient(135deg, #6366f1, #4f46e5)",
+                                                        transition: "width .5s",
+                                                    }} />
+                                                </div>
+                                            </div>
+
+                                            {/* Schedule Timeline (read-only) */}
+                                            <h4 style={{ margin: "0 0 10px", fontSize: 15, fontWeight: 600 }}>📅 Lịch phân phối</h4>
+                                            {distOverview.schedules.length === 0 ? (
+                                                <p style={{ color: "#999", textAlign: "center", padding: 16, background: "#f9fafb", borderRadius: 10 }}>
+                                                    Trường chưa lên lịch phân phối.
+                                                </p>
+                                            ) : (
+                                                <div style={{ display: "grid", gap: 10 }}>
+                                                    {distOverview.schedules.map(s => (
+                                                        <div key={s.id} style={{
+                                                            padding: "12px 16px",
+                                                            background: s.status === "Completed" ? "#f0fdf4" : "#fefce8",
+                                                            borderRadius: 12,
+                                                            border: `1px solid ${s.status === "Completed" ? "#86efac" : "#fde68a"}`,
+                                                        }}>
+                                                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                                                <div>
+                                                                    <strong style={{ fontSize: 14 }}>
+                                                                        {new Date(s.scheduledDate).toLocaleDateString("vi")} — {s.timeSlot}
+                                                                    </strong>
+                                                                    <span style={{
+                                                                        padding: "2px 8px", borderRadius: 12, fontSize: 11, fontWeight: 600, marginLeft: 8,
+                                                                        background: s.method === "AtHome" ? "#dbeafe" : "#dcfce7",
+                                                                        color: s.method === "AtHome" ? "#2563eb" : "#16a34a",
+                                                                    }}>
+                                                                        {s.method === "AtHome" ? "🏠 Giao nhà" : "🏫 Tại trường"}
+                                                                    </span>
+                                                                    {s.note && <p style={{ margin: "4px 0 0", fontSize: 13, color: "#666" }}>📝 {s.note}</p>}
+                                                                </div>
+                                                                <span style={{
+                                                                    padding: "3px 10px", borderRadius: 20, fontSize: 11, fontWeight: 600,
+                                                                    background: s.status === "Completed" ? "#dcfce7" : "#fef3c7",
+                                                                    color: s.status === "Completed" ? "#16a34a" : "#d97706",
+                                                                }}>
+                                                                    {s.status === "Completed" ? "✅ Hoàn thành" : "📋 Kế hoạch"}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
                                         </div>
                                     )}
                                 </div>
