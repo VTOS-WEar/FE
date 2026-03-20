@@ -1,8 +1,13 @@
+import {
+    LayoutDashboard, Users, Shirt, School,
+    Megaphone, FileText, Factory,
+    Truck, AlertTriangle, ShoppingBag, Wallet
+} from "lucide-react";
 import type { DashboardSidebarProps } from "../components/layout";
 
 /**
- * Sidebar config cho tất cả Dashboard screens
- * Thay đổi ở đây sẽ ảnh hưởng tất cả screens
+ * Sidebar config for School Dashboard screens.
+ * 4 sections: Quản lý, Kinh doanh, Vận hành, Tài chính
  */
 export const DASHBOARD_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, 'isCollapsed' | 'onToggle'> = {
     avatarSrc: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/frame-239353.png",
@@ -11,7 +16,7 @@ export const DASHBOARD_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, 'isCollapsed'
     name: "",
     topNavItems: [
         {
-            icon: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/material-symbols-dashboard-rounded.svg",
+            icon: LayoutDashboard,
             label: "Tổng quan",
             href: "/school/dashboard",
         },
@@ -21,53 +26,69 @@ export const DASHBOARD_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, 'isCollapsed'
             title: "QUẢN LÝ",
             items: [
                 {
-                    icon: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/material-symbols-school.svg",
-                    label: "Hồ sơ trường",
-                    href: "/school/profile",
-                },
-                {
-                    icon: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/mdi-people-group.svg",
-                    label: "Danh sách học sinh",
+                    icon: Users,
+                    label: "Học sinh",
                     href: "/school/students",
                 },
                 {
-                    icon: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/fluent-clothes-hanger-12-filled.svg",
+                    icon: Shirt,
                     label: "Đồng phục",
                     href: "/school/uniforms",
                 },
                 {
-                    icon: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/ri-bill-fill.svg",
-                    label: "Mở đơn",
+                    icon: School,
+                    label: "Hồ sơ trường",
+                    href: "/school/profile",
+                },
+            ],
+        },
+        {
+            title: "KINH DOANH",
+            items: [
+                {
+                    icon: Megaphone,
+                    label: "Chiến dịch",
                     href: "/school/campaigns",
                 },
                 {
-                    icon: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/ri-bill-fill.svg",
+                    icon: FileText,
                     label: "Hợp đồng",
                     href: "/school/contracts",
                 },
                 {
-                    icon: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/ri-bill-fill.svg",
+                    icon: Factory,
                     label: "Đơn sản xuất",
                     href: "/school/production-orders",
                 },
+            ],
+        },
+        {
+            title: "VẬN HÀNH",
+            items: [
                 {
-                    icon: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/material-symbols-shopping-bag.svg",
+                    icon: Truck,
+                    label: "Phân phối",
+                    href: "/school/distribution",
+                },
+                {
+                    icon: AlertTriangle,
                     label: "Khiếu nại",
                     href: "/school/complaints",
                 },
                 {
-                    icon: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/material-symbols-shopping-bag.svg",
-                    label: "💰 Ví trường học",
-                    href: "/school/wallet",
-                },
-                {
-                    icon: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/ri-bill-fill.svg",
-                    label: "Phân phối đồng phục",
-                },
-                {
-                    icon: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/material-symbols-shopping-bag.svg",
+                    icon: ShoppingBag,
                     label: "Đơn hàng",
                     href: "/school/orders",
+                },
+            ],
+        },
+        {
+            title: "TÀI CHÍNH",
+            items: [
+                {
+                    icon: Wallet,
+                    label: "Ví trường học",
+                    href: "/school/wallet",
                 },
             ],
         },

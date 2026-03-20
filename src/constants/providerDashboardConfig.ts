@@ -1,8 +1,12 @@
+import {
+    LayoutDashboard, Building2, FileText,
+    Factory, AlertTriangle, Wallet, BarChart3
+} from "lucide-react";
 import type { DashboardSidebarProps } from "../components/layout";
 
 /**
  * Sidebar config for Provider Dashboard screens.
- * Items match the Provider use cases from the plan.
+ * 3 sections: Quản lý, Sản xuất, Tài chính
  */
 export const PROVIDER_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, 'isCollapsed' | 'onToggle'> = {
     avatarSrc: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/frame-239353.png",
@@ -11,7 +15,7 @@ export const PROVIDER_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, 'isCollapsed' 
     name: "",
     topNavItems: [
         {
-            icon: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/material-symbols-dashboard-rounded.svg",
+            icon: LayoutDashboard,
             label: "Tổng quan",
             href: "/provider/dashboard",
         },
@@ -21,33 +25,43 @@ export const PROVIDER_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, 'isCollapsed' 
             title: "QUẢN LÝ",
             items: [
                 {
-                    icon: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/material-symbols-school.svg",
-                    label: "Hồ sơ nhà cung cấp",
+                    icon: Building2,
+                    label: "Hồ sơ NCC",
                     href: "/provider/profile",
                 },
                 {
-                    icon: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/ri-bill-fill.svg",
+                    icon: FileText,
                     label: "Hợp đồng",
                     href: "/provider/contracts",
                 },
+            ],
+        },
+        {
+            title: "SẢN XUẤT",
+            items: [
                 {
-                    icon: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/fluent-clothes-hanger-12-filled.svg",
+                    icon: Factory,
                     label: "Đơn sản xuất",
                     href: "/provider/production-orders",
                 },
                 {
-                    icon: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/material-symbols-shopping-bag.svg",
+                    icon: AlertTriangle,
                     label: "Khiếu nại",
                     href: "/provider/complaints",
                 },
+            ],
+        },
+        {
+            title: "TÀI CHÍNH",
+            items: [
                 {
-                    icon: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/material-symbols-shopping-bag.svg",
-                    label: "💰 Ví nhà cung cấp",
+                    icon: Wallet,
+                    label: "Ví NCC",
                     href: "/provider/wallet",
                 },
                 {
-                    icon: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/material-symbols-shopping-bag.svg",
-                    label: "📊 Doanh thu",
+                    icon: BarChart3,
+                    label: "Doanh thu",
                     href: "/provider/revenue",
                 },
             ],
