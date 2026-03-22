@@ -1,3 +1,4 @@
+import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -84,7 +85,7 @@ function QuickActionCard({
 export const ProviderDashboard = (): JSX.Element => {
     const navigate = useNavigate();
     const sidebarConfig = useProviderSidebarConfig();
-    const [isCollapsed, setIsCollapsed] = useState(false);
+    const [isCollapsed, toggle] = useSidebarCollapsed();
     const [providerName, setProviderName] = useState("");
     const [loading, setLoading] = useState(true);
     const [profile, setProfile] = useState<ProviderProfileDto | null>(null);
@@ -95,6 +96,7 @@ export const ProviderDashboard = (): JSX.Element => {
             const data = await getProviderProfile();
             setProfile(data);
             setProviderName(data.providerName || "");
+            if (data.providerName) localStorage.setItem("vtos_org_name", data.providerName);
         } catch {
             // Profile API might fail if not set up yet
         } finally {
@@ -115,7 +117,7 @@ export const ProviderDashboard = (): JSX.Element => {
             <div className="flex flex-1 flex-col lg:flex-row">
                 {/* Sidebar */}
                 <div className={`${isCollapsed ? "lg:w-16" : "lg:w-[20rem] xl:w-[23.75rem]"} flex-shrink-0 lg:sticky lg:top-0 lg:h-screen transition-all duration-300`}>
-                    <DashboardSidebar {...sidebarConfig} name={providerName} isCollapsed={isCollapsed} onToggle={() => setIsCollapsed((c) => !c)} onLogout={handleLogout} />
+                    <DashboardSidebar {...sidebarConfig} name={providerName} isCollapsed={isCollapsed} onToggle={toggle} onLogout={handleLogout} />
                 </div>
 
                 <div className="flex-1 flex flex-col min-w-0">

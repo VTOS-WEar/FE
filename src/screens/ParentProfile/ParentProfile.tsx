@@ -100,13 +100,13 @@ export const ParentProfile = (): JSX.Element => {
                 })}
               </nav>
 
-              {/* Logout */}
+              {/* Đăng Xuất */}
               <button
                 onClick={handleLogout}
                 className="flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all [font-family:'Montserrat',Helvetica] font-semibold text-sm text-red-500 hover:bg-red-50 mt-4 border border-red-200"
               >
                 <LogOut className="w-[18px] h-[18px]" />
-                Logout
+                Đăng Xuất
               </button>
             </div>
 

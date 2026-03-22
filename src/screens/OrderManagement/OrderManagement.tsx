@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from "react";
+import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
+import { useState, useEffect, useCallback, useRef } from "react";
 import {
     Breadcrumb, BreadcrumbItem, BreadcrumbLink,
     BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator,
@@ -31,7 +32,17 @@ const STATUS_LABELS: Record<string, string> = {
     Cancelled: "Đã huỷ",
     Refunded: "Đã hoàn tiền",
 };
-const STATUS_FILTER_TABS = ["", "Pending", "Paid", "Confirmed", "Processed", "Shipped", "Delivered", "Cancelled", "Refunded"];
+const STATUS_OPTIONS = [
+    { value: "", label: "Tất cả trạng thái" },
+    { value: "Pending", label: "Chờ thanh toán" },
+    { value: "Paid", label: "Đã thanh toán" },
+    { value: "Confirmed", label: "Đã xác nhận" },
+    { value: "Processed", label: "Đang xử lý" },
+    { value: "Shipped", label: "Đang giao" },
+    { value: "Delivered", label: "Đã giao" },
+    { value: "Cancelled", label: "Đã huỷ" },
+    { value: "Refunded", label: "Đã hoàn tiền" },
+];
 
 /* ── Helpers ── */
 function formatVND(amount: number): string {
@@ -44,23 +55,55 @@ function formatDate(iso: string): string {
 /* ── Component ── */
 export const OrderManagement = (): JSX.Element => {
     const sidebarConfig = useSidebarConfig();
-    const [isCollapsed, setIsCollapsed] = useState(false);
+    const [isCollapsed, toggle] = useSidebarCollapsed();
 
     // Data state
     const [orders, setOrders] = useState<SchoolOrderDto[]>([]);
     const [loading, setLoading] = useState(true);
     const [statusFilter, setStatusFilter] = useState("");
+    const [searchTerm, setSearchTerm] = useState("");
+    const [searchInput, setSearchInput] = useState("");
+    const debounceRef = useRef<ReturnType<typeof setTimeout>>();
     const [page, setPage] = useState(1);
     const [total, setTotal] = useState(0);
     const pageSize = 10;
 
+    // Global stats (always show totals regardless of current filter)
+    const [globalStats, setGlobalStats] = useState({ total: 0, processing: 0, completed: 0, cancelled: 0 });
+
     // Detail modal
     const [detail, setDetail] = useState<SchoolOrderDto | null>(null);
+
+    // Debounced search
+    const handleSearchChange = (value: string) => {
+        setSearchInput(value);
+        if (debounceRef.current) clearTimeout(debounceRef.current);
+        debounceRef.current = setTimeout(() => {
+            setSearchTerm(value);
+            setPage(1);
+        }, 300);
+    };
+
+    // Fetch global stats (once on mount, and refresh when orders change)
+    const fetchGlobalStats = useCallback(async () => {
+        try {
+            const res = await getSchoolOrders(1, 200); // fetch all for stats
+            const all = res.items || [];
+            setGlobalStats({
+                total: res.totalCount,
+                processing: all.filter(o => ["Paid", "Confirmed", "Processed"].includes(o.orderStatus)).length,
+                completed: all.filter(o => ["Shipped", "Delivered"].includes(o.orderStatus)).length,
+                cancelled: all.filter(o => ["Cancelled", "Refunded"].includes(o.orderStatus)).length,
+            });
+        } catch { /* */ }
+    }, []);
+
+    useEffect(() => { fetchGlobalStats(); }, [fetchGlobalStats]);
 
     const fetchOrders = useCallback(async () => {
         setLoading(true);
         try {
-            const res = await getSchoolOrders(page, pageSize, statusFilter || undefined);
+            const res = await getSchoolOrders(page, pageSize, statusFilter || undefined, searchTerm || undefined);
             setOrders(res.items);
             setTotal(res.totalCount);
         } catch (e: any) {
@@ -68,21 +111,16 @@ export const OrderManagement = (): JSX.Element => {
         } finally {
             setLoading(false);
         }
-    }, [page, statusFilter]);
+    }, [page, statusFilter, searchTerm]);
 
     useEffect(() => { fetchOrders(); }, [fetchOrders]);
 
     const totalPages = Math.ceil(total / pageSize);
 
-    // Compute stats from current page
-    const statsProcessing = orders.filter(o => ["Paid", "Confirmed", "Processed"].includes(o.orderStatus)).length;
-    const statsCompleted = orders.filter(o => ["Shipped", "Delivered"].includes(o.orderStatus)).length;
-    const statsCancelled = orders.filter(o => ["Cancelled", "Refunded"].includes(o.orderStatus)).length;
-
     return (
         <div style={{ display: "flex", minHeight: "100vh", background: "#f5f5f5" }}>
             <div className={`${isCollapsed ? "lg:w-16" : "lg:w-[20rem] xl:w-[23.75rem]"} flex-shrink-0 lg:sticky lg:top-0 lg:h-screen transition-all duration-300`}>
-                <DashboardSidebar {...sidebarConfig} isCollapsed={isCollapsed} onToggle={() => setIsCollapsed(c => !c)} />
+                <DashboardSidebar {...sidebarConfig} isCollapsed={isCollapsed} onToggle={toggle} />
             </div>
 
             <main style={{ flex: 1, padding: "32px 40px" }}>
@@ -99,13 +137,13 @@ export const OrderManagement = (): JSX.Element => {
 
                 <h1 style={{ fontSize: 28, fontWeight: 700, color: "#1a1a2e", margin: "24px 0" }}>📦 Quản lý Đơn hàng</h1>
 
-                {/* Stats Cards */}
+                {/* Stats Cards — always global */}
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 24 }}>
                     {[
-                        { label: "Tổng đơn hàng", value: total, color: "#6366f1", icon: "📦" },
-                        { label: "Đang xử lý", value: statsProcessing, color: "#3b82f6", icon: "⏳" },
-                        { label: "Hoàn thành", value: statsCompleted, color: "#10b981", icon: "✅" },
-                        { label: "Đã huỷ", value: statsCancelled, color: "#ef4444", icon: "❌" },
+                        { label: "Tổng đơn hàng", value: globalStats.total, color: "#6366f1", icon: "📦" },
+                        { label: "Đang xử lý", value: globalStats.processing, color: "#3b82f6", icon: "⏳" },
+                        { label: "Hoàn thành", value: globalStats.completed, color: "#10b981", icon: "✅" },
+                        { label: "Đã huỷ", value: globalStats.cancelled, color: "#ef4444", icon: "❌" },
                     ].map((stat, i) => (
                         <div key={i} style={{
                             background: "#fff", borderRadius: 16, padding: "20px 24px",
@@ -123,22 +161,40 @@ export const OrderManagement = (): JSX.Element => {
                     ))}
                 </div>
 
-                {/* Status filter tabs */}
-                <div style={{ display: "flex", gap: 8, marginBottom: 24, flexWrap: "wrap" }}>
-                    {STATUS_FILTER_TABS.map(s => (
-                        <button
-                            key={s}
-                            onClick={() => { setStatusFilter(s); setPage(1); }}
+                {/* Search + Status filter */}
+                <div style={{ display: "flex", gap: 12, marginBottom: 24, alignItems: "center" }}>
+                    <div style={{ flex: 1, position: "relative" }}>
+                        <span style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", fontSize: 18, pointerEvents: "none" }}>🔍</span>
+                        <input
+                            type="text"
+                            placeholder="Tìm theo tên phụ huynh hoặc học sinh..."
+                            value={searchInput}
+                            onChange={e => handleSearchChange(e.target.value)}
                             style={{
-                                padding: "8px 20px", borderRadius: 20, border: "none", cursor: "pointer",
-                                background: statusFilter === s ? "#6366f1" : "#e8e8e8",
-                                color: statusFilter === s ? "#fff" : "#555",
-                                fontWeight: 600, fontSize: 14, transition: "all .2s",
+                                width: "100%", padding: "12px 16px 12px 42px", borderRadius: 12,
+                                border: "1px solid #e5e7eb", fontSize: 14, fontWeight: 500,
+                                background: "#fff", outline: "none", boxSizing: "border-box",
+                                transition: "border-color .2s",
+                                fontFamily: "'Montserrat', sans-serif",
                             }}
-                        >
-                            {s ? STATUS_LABELS[s] || s : "Tất cả"}
-                        </button>
-                    ))}
+                            onFocus={e => e.currentTarget.style.borderColor = "#6366f1"}
+                            onBlur={e => e.currentTarget.style.borderColor = "#e5e7eb"}
+                        />
+                    </div>
+                    <select
+                        value={statusFilter}
+                        onChange={e => { setStatusFilter(e.target.value); setPage(1); }}
+                        style={{
+                            padding: "12px 16px", borderRadius: 12, border: "1px solid #e5e7eb",
+                            fontSize: 14, fontWeight: 600, background: "#fff", cursor: "pointer",
+                            outline: "none", minWidth: 180, color: "#1a1a2e",
+                            fontFamily: "'Montserrat', sans-serif",
+                        }}
+                    >
+                        {STATUS_OPTIONS.map(opt => (
+                            <option key={opt.value} value={opt.value}>{opt.label}</option>
+                        ))}
+                    </select>
                 </div>
 
                 {/* Order list */}

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import {
   ChevronRight,
@@ -7,6 +7,11 @@ import {
   Eye,
   GraduationCap,
   ChevronLeft,
+
+  X,
+  Download,
+  Sparkles,
+  Camera,
 } from "lucide-react";
 import { GuestLayout } from "../../components/layout/GuestLayout";
 import {
@@ -15,6 +20,7 @@ import {
   type OutfitDetailDto,
   type OutfitVariantDto,
 } from "../../lib/api/schools";
+import { guestTryOn, type GuestTryOnResponse } from "../../lib/api/tryOn";
 
 /* ── helpers ── */
 const fmt = (n: number) =>
@@ -34,6 +40,278 @@ type RelatedOutfit = {
   mainImageURL: string | null;
 };
 
+/* ── TryOn Modal ── */
+function TryOnModal({
+  isOpen,
+  onClose,
+  outfitId,
+  outfitImage,
+  outfitName,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  outfitId: string;
+  outfitImage: string;
+  outfitName: string;
+}) {
+  const [photo, setPhoto] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [processing, setProcessing] = useState(false);
+  const [result, setResult] = useState<GuestTryOnResponse | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [dragOver, setDragOver] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [sessionId, setSessionId] = useState<string>(() => {
+    const stored = sessionStorage.getItem("tryon_session_id");
+    return stored || "";
+  });
+
+  const handleFileSelect = useCallback((file: File) => {
+    if (!file.type.startsWith("image/")) {
+      setError("Vui lòng chọn file ảnh (JPG, PNG, WEBP).");
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      setError("Ảnh không được vượt quá 10MB.");
+      return;
+    }
+    setPhoto(file);
+    setPhotoPreview(URL.createObjectURL(file));
+    setError(null);
+    setResult(null);
+  }, []);
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOver(false);
+    const file = e.dataTransfer.files[0];
+    if (file) handleFileSelect(file);
+  }, [handleFileSelect]);
+
+  const handleTryOn = async () => {
+    if (!photo) return;
+    setProcessing(true);
+    setError(null);
+    try {
+      const res = await guestTryOn(outfitId, photo, sessionId || undefined);
+      setResult(res);
+      if (res.guestSessionId) {
+        setSessionId(res.guestSessionId);
+        sessionStorage.setItem("tryon_session_id", res.guestSessionId);
+      }
+    } catch (err: any) {
+      setError(err.message || "Có lỗi xảy ra.");
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const handleReset = () => {
+    setPhoto(null);
+    setPhotoPreview(null);
+    setResult(null);
+    setError(null);
+  };
+
+  const handleDownload = async () => {
+    if (!result?.resultPhotoUrl) return;
+    try {
+      const response = await fetch(result.resultPhotoUrl);
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `tryon-${outfitId.slice(0, 8)}.png`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      window.open(result.resultPhotoUrl, "_blank");
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
+
+      {/* Modal */}
+      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-[720px] max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-200">
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
+              <Sparkles className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h2 className="font-montserrat font-bold text-[#1a1a2e] text-lg">
+                Thử đồ ảo (VR)
+              </h2>
+              <p className="font-montserrat text-xs text-gray-400">
+                {outfitName}
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
+          >
+            <X className="w-5 h-5 text-gray-400" />
+          </button>
+        </div>
+
+        {/* Body */}
+        <div className="px-6 py-6">
+          {!result ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Left: Upload */}
+              <div>
+                <p className="font-montserrat font-semibold text-sm text-gray-700 mb-3">
+                  📸 Ảnh của bạn
+                </p>
+                {!photoPreview ? (
+                  <div
+                    onDrop={handleDrop}
+                    onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+                    onDragLeave={() => setDragOver(false)}
+                    onClick={() => fileRef.current?.click()}
+                    className={`border-2 border-dashed rounded-xl p-8 flex flex-col items-center justify-center cursor-pointer transition-all min-h-[280px] ${
+                      dragOver
+                        ? "border-purple-500 bg-purple-50"
+                        : "border-gray-300 bg-gray-50 hover:border-purple-400 hover:bg-purple-50/50"
+                    }`}
+                  >
+                    <Camera className="w-10 h-10 text-purple-300 mb-3" />
+                    <p className="font-montserrat font-semibold text-sm text-gray-600 text-center">
+                      Kéo thả ảnh vào đây
+                    </p>
+                    <p className="font-montserrat text-xs text-gray-400 mt-1">
+                      hoặc nhấp để chọn file
+                    </p>
+                    <p className="font-montserrat text-[10px] text-gray-300 mt-3">
+                      JPG, PNG, WEBP • Tối đa 10MB
+                    </p>
+                  </div>
+                ) : (
+                  <div className="relative rounded-xl overflow-hidden border border-gray-200">
+                    <img
+                      src={photoPreview}
+                      alt="Your photo"
+                      className="w-full aspect-[3/4] object-cover"
+                    />
+                    <button
+                      onClick={handleReset}
+                      className="absolute top-2 right-2 w-7 h-7 bg-black/50 hover:bg-black/70 rounded-full flex items-center justify-center transition-colors"
+                    >
+                      <X className="w-4 h-4 text-white" />
+                    </button>
+                  </div>
+                )}
+                <input
+                  ref={fileRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  className="hidden"
+                  onChange={(e) => {
+                    const f = e.target.files?.[0];
+                    if (f) handleFileSelect(f);
+                  }}
+                />
+              </div>
+
+              {/* Right: Outfit preview */}
+              <div>
+                <p className="font-montserrat font-semibold text-sm text-gray-700 mb-3">
+                  👗 Đồng phục
+                </p>
+                <div className="rounded-xl overflow-hidden border border-gray-200">
+                  <img
+                    src={outfitImage}
+                    alt={outfitName}
+                    className="w-full aspect-[3/4] object-cover"
+                  />
+                </div>
+              </div>
+            </div>
+          ) : (
+            /* Result view */
+            <div className="flex flex-col items-center">
+              <p className="font-montserrat font-bold text-lg text-[#1a1a2e] mb-4">
+                ✨ Kết quả thử đồ
+              </p>
+              <div className="rounded-2xl overflow-hidden border-2 border-purple-200 shadow-lg max-w-[400px] w-full">
+                <img
+                  src={result.resultPhotoUrl}
+                  alt="Try-on result"
+                  className="w-full aspect-[3/4] object-cover"
+                />
+              </div>
+              <div className="flex items-center gap-3 mt-5">
+                <button
+                  onClick={handleDownload}
+                  className="flex items-center gap-2 px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-montserrat font-semibold text-sm rounded-xl transition-colors shadow-md"
+                >
+                  <Download className="w-4 h-4" />
+                  Tải ảnh
+                </button>
+                <button
+                  onClick={handleReset}
+                  className="flex items-center gap-2 px-5 py-2.5 bg-white border-2 border-gray-200 text-gray-700 font-montserrat font-semibold text-sm rounded-xl hover:bg-gray-50 transition-colors"
+                >
+                  Thử lại
+                </button>
+              </div>
+              {result.remainingTries >= 0 && (
+                <p className="font-montserrat text-xs text-gray-400 mt-3">
+                  Còn {result.remainingTries} lượt thử hôm nay
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* Error */}
+          {error && (
+            <div className="mt-4 p-3 bg-red-50 border border-red-100 rounded-xl">
+              <p className="font-montserrat font-medium text-sm text-red-600">{error}</p>
+            </div>
+          )}
+        </div>
+
+        {/* Footer */}
+        {!result && (
+          <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-between">
+            <p className="font-montserrat text-xs text-gray-400">
+              Tính năng thử đồ ảo sử dụng AI
+            </p>
+            <button
+              onClick={handleTryOn}
+              disabled={!photo || processing}
+              className={`flex items-center gap-2 px-6 py-3 font-montserrat font-bold text-sm rounded-xl transition-all shadow-md ${
+                !photo || processing
+                  ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                  : "bg-gradient-to-r from-purple-600 to-pink-500 text-white hover:shadow-lg hover:scale-[1.02]"
+              }`}
+            >
+              {processing ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Đang xử lý...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-4 h-4" />
+                  Thử đồ ngay
+                </>
+              )}
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 /* ================================================================== */
 export const OutfitDetail = (): JSX.Element => {
   const { id } = useParams<{ id: string }>();
@@ -42,6 +320,7 @@ export const OutfitDetail = (): JSX.Element => {
   const [outfit, setOutfit] = useState<OutfitDetailDto | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showTryOn, setShowTryOn] = useState(false);
 
   // UI state
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
@@ -311,9 +590,12 @@ export const OutfitDetail = (): JSX.Element => {
 
             {/* CTA Button */}
             <div className="flex flex-col sm:flex-row gap-3">
-              <button className="flex-1 flex items-center justify-center gap-2 px-6 py-3.5 bg-white text-purple-600 font-montserrat font-bold text-sm rounded-xl border-2 border-purple-200 hover:bg-purple-50 hover:border-purple-400 transition-all">
+              <button
+                onClick={() => setShowTryOn(true)}
+                className="flex-1 flex items-center justify-center gap-2 px-6 py-3.5 bg-white text-purple-600 font-montserrat font-bold text-sm rounded-xl border-2 border-purple-200 hover:bg-purple-50 hover:border-purple-400 transition-all"
+              >
                 <Eye className="w-5 h-5" />
-                Thử Áo (VR)
+                Thử đồ (VR)
               </button>
             </div>
             <p className="font-montserrat text-xs text-gray-400 mt-2 text-center">
@@ -552,6 +834,15 @@ export const OutfitDetail = (): JSX.Element => {
           </div>
         )}
       </div>
+
+      {/* VR Try-On Modal */}
+      <TryOnModal
+        isOpen={showTryOn}
+        onClose={() => setShowTryOn(false)}
+        outfitId={id || ""}
+        outfitImage={mainImage}
+        outfitName={outfit.outfitName}
+      />
     </GuestLayout>
   );
 };

@@ -83,7 +83,7 @@ export const AccountHistorySection = (): JSX.Element => {
             className="h-11 w-full justify-center rounded-lg bg-[#f94144]/10 text-[#f94144] hover:bg-[#f94144]/20 hover:text-[#f94144] transition-colors mt-[184px]"
           >
             <span className="[font-family:'Montserrat',Helvetica] font-semibold text-base text-center tracking-[0] leading-[normal]">
-              Logout
+              Đăng Xuất
             </span>
           </Button>
         </aside>

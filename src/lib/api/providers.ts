@@ -16,6 +16,7 @@ export type ProviderProfileDto = {
 export async function getProviderProfile(): Promise<ProviderProfileDto> {
     return api<ProviderProfileDto>(endpoints.providers.me, {
         method: "GET",
+        auth: true,
     });
 }
 
@@ -30,6 +31,7 @@ export type UpdateProviderProfileRequest = {
 export async function updateProviderProfile(payload: UpdateProviderProfileRequest): Promise<ProviderProfileDto> {
     return api<ProviderProfileDto>(endpoints.providers.me, {
         method: "PUT",
+        auth: true,
         body: JSON.stringify(payload),
     });
 }

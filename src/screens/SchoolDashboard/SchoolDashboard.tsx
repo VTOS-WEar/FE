@@ -1,3 +1,4 @@
+import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -147,6 +148,7 @@ function StatsCard({
     indicatorType = "neutral",
     progressValue,
     progressMax,
+    onClick,
 }: {
     icon: React.ReactNode;
     iconBg: string;
@@ -156,6 +158,7 @@ function StatsCard({
     indicatorType?: "positive" | "negative" | "neutral";
     progressValue?: number;
     progressMax?: number;
+    onClick?: () => void;
 }) {
     const indicatorColor =
         indicatorType === "positive" ? "text-[#10B981]"
@@ -163,7 +166,11 @@ function StatsCard({
                 : "text-[#6B7280]";
 
     return (
-        <div className="bg-white border border-[#CBCAD7] rounded-[16px] p-5 flex-1 min-w-[180px] hover:shadow-[0_4px_16px_rgba(0,0,0,0.06)] transition-shadow duration-200">
+        <div
+            className="bg-white border border-[#CBCAD7] rounded-[16px] p-5 flex-1 min-w-[180px] hover:shadow-[0_4px_16px_rgba(0,0,0,0.06)] transition-shadow duration-200"
+            style={{ cursor: onClick ? "pointer" : undefined }}
+            onClick={onClick}
+        >
             <div className="flex items-start justify-between mb-3">
                 <p className="[font-family:'Montserrat',Helvetica] font-semibold text-[#6B7280] text-sm">{label}</p>
                 <div className={`w-10 h-10 rounded-[10px] flex items-center justify-center ${iconBg}`}>
@@ -227,7 +234,7 @@ function CategoryBar({ name, percentage, color }: { name: string; percentage: nu
 export const SchoolDashboard = (): JSX.Element => {
     const navigate = useNavigate();
     const sidebarConfig = useSidebarConfig();
-    const [isCollapsed, setIsCollapsed] = useState(false);
+    const [isCollapsed, toggle] = useSidebarCollapsed();
     const [schoolName, setSchoolName] = useState("");
 
     // Data
@@ -253,6 +260,7 @@ export const SchoolDashboard = (): JSX.Element => {
             ]);
 
             setSchoolName(profile.schoolName || "");
+            if (profile.schoolName) localStorage.setItem("vtos_org_name", profile.schoolName);
 
             const campaigns = campaignsRes.items || [];
             const actives = campaigns.filter((c) => c.status === "Active");
@@ -312,6 +320,7 @@ export const SchoolDashboard = (): JSX.Element => {
                     // Progress API might not be available yet
                 }
             }
+
         } catch {
             // Fallback: use static/sample data
         } finally {
@@ -340,7 +349,7 @@ export const SchoolDashboard = (): JSX.Element => {
             <div className="flex flex-1 flex-col lg:flex-row">
                 {/* Sidebar */}
                 <div className={`${isCollapsed ? "lg:w-16" : "lg:w-[20rem] xl:w-[23.75rem]"} flex-shrink-0 lg:sticky lg:top-0 lg:h-screen transition-all duration-300`}>
-                    <DashboardSidebar {...sidebarConfig} name={schoolName} isCollapsed={isCollapsed} onToggle={() => setIsCollapsed((c) => !c)} onLogout={handleLogout} />
+                    <DashboardSidebar {...sidebarConfig} name={schoolName} isCollapsed={isCollapsed} onToggle={toggle} onLogout={handleLogout} />
                 </div>
 
                 <div className="flex-1 flex flex-col min-w-0">
@@ -396,6 +405,7 @@ export const SchoolDashboard = (): JSX.Element => {
                                     value={formatNumber(totalOrders)}
                                     icon={<svg className="w-5 h-5 text-[#6938EF]" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm4 18H6V4h7v5h5v11z" /></svg>}
                                     iconBg="bg-[#EDE9FE]"
+                                    onClick={() => navigate("/school/orders")}
                                 />
                                 <StatsCard
                                     label="Học sinh tham gia"
@@ -410,6 +420,7 @@ export const SchoolDashboard = (): JSX.Element => {
                                     value={expectedRevenue > 0 ? formatNumber(expectedRevenue) : "0 ₫"}
                                     icon={<svg className="w-5 h-5 text-[#10B981]" viewBox="0 0 24 24" fill="currentColor"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z" /></svg>}
                                     iconBg="bg-[#D1FAE5]"
+                                    onClick={() => navigate("/school/wallet")}
                                 />
                                 <StatsCard
                                     label="Đơn chờ duyệt"
@@ -418,9 +429,11 @@ export const SchoolDashboard = (): JSX.Element => {
                                     iconBg="bg-[#FEE2E2]"
                                     indicator={pendingOrders > 0 ? "Cần xử lý" : undefined}
                                     indicatorType={pendingOrders > 0 ? "negative" : "neutral"}
+                                    onClick={() => navigate("/school/production-orders")}
                                 />
                             </div>
                         )}
+
 
                         {/* Active Campaigns Countdowns + Product Categories */}
                         <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">

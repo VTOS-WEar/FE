@@ -243,7 +243,7 @@ export async function getVerifyQuantity(batchId: string): Promise<VerifyQuantity
 }
 
 export async function reportDefect(
-    batchId: string, data: { title: string; description: string }
+    batchId: string, data: { title: string; description: string; proofImageUrls?: string[] }
 ): Promise<{ complaintId: string }> {
     return api<{ complaintId: string }>(
         `${endpoints.schools.productionOrders}/${batchId}/defect-report`,
@@ -282,6 +282,68 @@ export async function providerDeliver(
 export async function getProviderDeliveryStatus(batchId: string): Promise<DeliveryStatusResponse> {
     return api<DeliveryStatusResponse>(
         `${endpoints.providers.productionOrders}/${batchId}/delivery-status`,
+        { method: "GET", auth: true }
+    );
+}
+
+// ── Phase 5: Distribution Scheduling APIs ──
+
+export type DistributionScheduleDto = {
+    id: string;
+    batchId: string;
+    scheduledDate: string;
+    method: string;
+    timeSlot: string;
+    note?: string | null;
+    status: string;
+    createdAt: string;
+    completedAt?: string | null;
+};
+
+export type ProviderDistributionOverviewDto = {
+    batchId: string;
+    totalOrders: number;
+    distributedCount: number;
+    pendingCount: number;
+    atSchoolCount: number;
+    atHomeCount: number;
+    schedules: DistributionScheduleDto[];
+};
+
+export async function createDistributionSchedule(
+    batchId: string,
+    data: { scheduledDate: string; method: string; timeSlot: string; note?: string }
+): Promise<{ scheduleId: string }> {
+    return api<{ scheduleId: string }>(
+        `${endpoints.schools.productionOrders}/${batchId}/schedules`,
+        { method: "POST", body: JSON.stringify(data), auth: true }
+    );
+}
+
+export async function getDistributionSchedules(
+    batchId: string
+): Promise<DistributionScheduleDto[]> {
+    return api<DistributionScheduleDto[]>(
+        `${endpoints.schools.productionOrders}/${batchId}/schedules`,
+        { method: "GET", auth: true }
+    );
+}
+
+export async function updateDistributionSchedule(
+    scheduleId: string,
+    data: { scheduledDate?: string; method?: string; timeSlot?: string; note?: string; status?: string }
+): Promise<{ message: string }> {
+    return api<{ message: string }>(
+        `${endpoints.schools.productionOrders}/schedules/${scheduleId}`,
+        { method: "PUT", body: JSON.stringify(data), auth: true }
+    );
+}
+
+export async function getProviderDistributionOverview(
+    batchId: string
+): Promise<ProviderDistributionOverviewDto> {
+    return api<ProviderDistributionOverviewDto>(
+        `${endpoints.providers.productionOrders}/${batchId}/distribution-overview`,
         { method: "GET", auth: true }
     );
 }

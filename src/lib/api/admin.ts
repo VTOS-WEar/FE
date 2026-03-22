@@ -328,3 +328,105 @@ export async function getFeedbacks() {
 export async function removeFeedback(id: string) {
     return api(`/api/admin/feedback/${id}`, { method: "DELETE", auth: true });
 }
+
+// ── Phase 04: Cash Flow ──
+
+export type AdminCashFlowDto = {
+    totalParentPayments: number;
+    totalProviderPayments: number;
+    totalRefunds: number;
+    pendingPayments: number;
+    totalTransactionCount: number;
+    pendingComplaintCount: number;
+    activeCampaignCount: number;
+    pendingAccountRequestCount: number;
+    revenueChart: { date: string; income: number; expense: number }[];
+};
+
+export async function getAdminCashFlow(days = 30): Promise<AdminCashFlowDto> {
+    return api(`/api/admin/cash-flow?days=${days}`, { method: "GET", auth: true });
+}
+
+// ── Phase 04: Transactions ──
+
+export type AdminTransactionDto = {
+    id: string;
+    createdAt: string;
+    transactionType: string;
+    amount: number;
+    status: string;
+    orderId?: string;
+    orderCode?: string;
+    walletOwner?: string;
+    description?: string;
+    paymentLinkId?: string;
+};
+
+export type AdminTransactionListResult = {
+    items: AdminTransactionDto[];
+    totalCount: number;
+    page: number;
+    pageSize: number;
+    totalAmountAll: number;
+    todayCount: number;
+};
+
+export async function getAdminTransactions(params: {
+    page?: number; pageSize?: number;
+    type?: string; status?: string;
+    from?: string; to?: string;
+} = {}): Promise<AdminTransactionListResult> {
+    const q = new URLSearchParams();
+    if (params.page) q.set("page", String(params.page));
+    if (params.pageSize) q.set("pageSize", String(params.pageSize));
+    if (params.type) q.set("type", params.type);
+    if (params.status) q.set("status", params.status);
+    if (params.from) q.set("from", params.from);
+    if (params.to) q.set("to", params.to);
+    return api(`/api/admin/transactions?${q}`, { method: "GET", auth: true });
+}
+
+// ── Phase 04: Complaints ──
+
+export type AdminComplaintDto = {
+    id: string;
+    title: string;
+    description: string;
+    status: string;
+    schoolName: string;
+    providerName?: string;
+    campaignName?: string;
+    batchName?: string;
+    response?: string;
+    createdAt: string;
+    respondedAt?: string;
+    resolvedAt?: string;
+};
+
+export type AdminComplaintListResult = {
+    items: AdminComplaintDto[];
+    totalCount: number;
+    page: number;
+    pageSize: number;
+    openCount: number;
+    inProgressCount: number;
+    resolvedCount: number;
+};
+
+export async function getAdminComplaints(params: {
+    page?: number; pageSize?: number;
+    status?: string;
+} = {}): Promise<AdminComplaintListResult> {
+    const q = new URLSearchParams();
+    if (params.page) q.set("page", String(params.page));
+    if (params.pageSize) q.set("pageSize", String(params.pageSize));
+    if (params.status) q.set("status", params.status);
+    return api(`/api/admin/complaints?${q}`, { method: "GET", auth: true });
+}
+
+export async function adminInterveneComplaint(id: string, note: string, action?: string) {
+    return api(`/api/admin/complaints/${id}/intervene`, {
+        method: "POST", auth: true,
+        body: JSON.stringify({ note, action }),
+    });
+}

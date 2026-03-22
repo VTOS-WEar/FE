@@ -76,7 +76,7 @@ export const AccountManagementSection = (): JSX.Element => {
             variant="ghost"
             className="h-11 mt-[72px] bg-[#f94144]/10 text-[#f94144] hover:bg-[#f94144]/20 rounded-lg [font-family:'Montserrat',Helvetica] font-semibold text-base"
           >
-            Logout
+            Đăng Xuất
           </Button>
         </aside>
 

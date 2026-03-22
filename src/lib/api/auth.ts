@@ -61,8 +61,11 @@ export type UserInfo = {
 
 export type LoginResponse = {
     accessToken: string;
-    expiresIn: number; // thường là giây
+    expiresIn: number;
     user: UserInfo;
+    requiresTwoFactor?: boolean;
+    requiresTwoFactorSetup?: boolean;
+    twoFactorToken?: string;
 };
 
 export async function login(payload: LoginRequest) {
@@ -71,7 +74,52 @@ export async function login(payload: LoginRequest) {
         body: JSON.stringify(payload),
     });
 }
-//#endregion 
+//#endregion
+//#region Two-Factor Authentication
+export type Verify2FARequest = {
+    twoFactorToken: string;
+    code: string;
+};
+
+export type Setup2FAResponse = {
+    qrCodeUri: string;
+    manualKey: string;
+};
+
+export type Confirm2FAResponse = {
+    recoveryCodes: string[];
+};
+
+export async function verify2FA(payload: Verify2FARequest) {
+    return api<LoginResponse>(endpoints.auth.verify2fa, {
+        method: "POST",
+        body: JSON.stringify(payload),
+    });
+}
+
+export async function setup2FA(accessToken: string) {
+    return api<Setup2FAResponse>(endpoints.auth.setup2fa, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${accessToken}` },
+    });
+}
+
+export async function confirm2FA(code: string, accessToken: string) {
+    return api<Confirm2FAResponse>(endpoints.auth.confirm2fa, {
+        method: "POST",
+        body: JSON.stringify({ code }),
+        headers: { Authorization: `Bearer ${accessToken}` },
+    });
+}
+
+export async function disable2FA(code: string, accessToken: string) {
+    return api<{ message: string }>(endpoints.auth.disable2fa, {
+        method: "POST",
+        body: JSON.stringify({ code }),
+        headers: { Authorization: `Bearer ${accessToken}` },
+    });
+}
+//#endregion
 //#region Resend OTP Email
 export async function resendOtpEmail(email: string) {
     return api<{ message: string }>(endpoints.auth.resendOtp, {

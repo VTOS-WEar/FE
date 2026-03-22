@@ -1,3 +1,4 @@
+import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -33,7 +34,7 @@ import { ApprovedProfileView } from "./ApprovedProfileView";
 export const SchoolProfile = (): JSX.Element => {
     const navigate = useNavigate();
     const sidebarConfig = useSidebarConfig();
-    const [isCollapsed, setIsCollapsed] = useState(false);
+    const [isCollapsed, toggle] = useSidebarCollapsed();
 
     // ── Profile data ──
     const [profileData, setProfileData] = useState<SchoolProfileDto | null>(null);
@@ -136,7 +137,7 @@ export const SchoolProfile = (): JSX.Element => {
                         {...sidebarConfig}
                         name={profileData?.schoolName || ""}
                         isCollapsed={isCollapsed}
-                        onToggle={() => setIsCollapsed(prev => !prev)}
+                        onToggle={toggle}
                         onLogout={handleLogout}
                     />
                 </div>

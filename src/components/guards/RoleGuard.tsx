@@ -59,5 +59,11 @@ export const RoleGuard = ({
     if (user.role === "School") {
         return <Navigate to="/school/dashboard" replace />;
     }
+    if (user.role === "Admin") {
+        return <Navigate to="/admin/dashboard" replace />;
+    }
+    if (user.role === "Provider") {
+        return <Navigate to="/provider/dashboard" replace />;
+    }
     return <Navigate to="/homepage" replace />;
 };

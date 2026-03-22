@@ -1,3 +1,4 @@
+import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
@@ -47,7 +48,7 @@ function formatDate(iso: string) {
 export const CampaignDetail = (): JSX.Element => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
-    const [isCollapsed, setIsCollapsed] = useState(false);
+    const [isCollapsed, toggle] = useSidebarCollapsed();
     const sidebarConfig = useSidebarConfig();
     const [schoolName, setSchoolName] = useState("");
     const [campaign, setCampaign] = useState<CampaignDetailDto | null>(null);
@@ -138,7 +139,7 @@ export const CampaignDetail = (): JSX.Element => {
         <div className="bg-[#f6f7f8] w-full min-h-screen flex flex-col">
             <div className="flex flex-1 flex-col lg:flex-row">
                 <div className={`${isCollapsed ? "lg:w-16" : "lg:w-[20rem] xl:w-[23.75rem]"} flex-shrink-0 lg:sticky lg:top-0 lg:h-screen transition-all duration-300`}>
-                    <DashboardSidebar {...sidebarConfig} name={schoolName} isCollapsed={isCollapsed} onToggle={() => setIsCollapsed((c) => !c)} onLogout={handleLogout} />
+                    <DashboardSidebar {...sidebarConfig} name={schoolName} isCollapsed={isCollapsed} onToggle={toggle} onLogout={handleLogout} />
                 </div>
 
                 <div className="flex-1 flex flex-col min-w-0">

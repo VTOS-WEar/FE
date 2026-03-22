@@ -1,3 +1,4 @@
+import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
 import { useState, useEffect, useCallback } from "react";
 import {
     Breadcrumb, BreadcrumbItem, BreadcrumbLink,
@@ -26,7 +27,7 @@ const STATUS_LABELS: Record<string, string> = {
 
 export function SchoolComplaints() {
     const sidebarConfig = useSidebarConfig();
-    const [isCollapsed, setIsCollapsed] = useState(false);
+    const [isCollapsed, toggle] = useSidebarCollapsed();
 
     const [complaints, setComplaints] = useState<ComplaintDto[]>([]);
     const [loading, setLoading] = useState(true);
@@ -92,7 +93,7 @@ export function SchoolComplaints() {
             title: c.title,
             status: STATUS_LABELS[c.status] || c.status,
             statusColor: STATUS_COLORS[c.status] || "#888",
-            subtitle: `NCC: ${c.providerName || "—"} · ${c.campaignName || "—"}`,
+            subtitle: `Nhà Cung Cấp: ${c.providerName || "—"} · ${c.campaignName || "—"}`,
         });
         setChatOpen(true);
     };
@@ -102,7 +103,7 @@ export function SchoolComplaints() {
     return (
         <div style={{ display: "flex", minHeight: "100vh", background: "#f5f5f5" }}>
             <div className={`${isCollapsed ? "lg:w-16" : "lg:w-[20rem] xl:w-[23.75rem]"} flex-shrink-0 lg:sticky lg:top-0 lg:h-screen transition-all duration-300`}>
-                <DashboardSidebar {...sidebarConfig} isCollapsed={isCollapsed} onToggle={() => setIsCollapsed(c => !c)} />
+                <DashboardSidebar {...sidebarConfig} isCollapsed={isCollapsed} onToggle={toggle} />
             </div>
 
             <main style={{ flex: 1, padding: "32px 40px" }}>
@@ -164,7 +165,7 @@ export function SchoolComplaints() {
                                     <div>
                                         <h3 style={{ margin: 0, fontSize: 18, fontWeight: 600, color: "#1a1a2e" }}>{c.title}</h3>
                                         <p style={{ margin: "4px 0 0", color: "#888", fontSize: 14 }}>
-                                            NCC: <strong>{c.providerName || "—"}</strong> &nbsp;·&nbsp;
+                                            Nhà Cung Cấp: <strong>{c.providerName || "—"}</strong> &nbsp;·&nbsp;
                                             {c.campaignName || "—"} &nbsp;·&nbsp;
                                             {new Date(c.createdAt).toLocaleDateString("vi")}
                                         </p>
@@ -228,7 +229,7 @@ export function SchoolComplaints() {
                                         <InfoRow label="Ngày tạo" value={new Date(detail.createdAt).toLocaleString("vi")} />
                                         {detail.response && (
                                             <div style={{ padding: "12px 16px", background: "#f0fdf4", borderRadius: 12 }}>
-                                                <p style={{ margin: 0, color: "#16a34a", fontWeight: 600, fontSize: 13 }}>✅ Phản hồi từ NCC:</p>
+                                                <p style={{ margin: 0, color: "#16a34a", fontWeight: 600, fontSize: 13 }}>✅ Phản hồi từ Nhà Cung Cấp:</p>
                                                 <p style={{ margin: "4px 0 0", color: "#333", fontSize: 14 }}>{detail.response}</p>
                                                 {detail.respondedAt && (
                                                     <p style={{ margin: "4px 0 0", color: "#999", fontSize: 12 }}>
