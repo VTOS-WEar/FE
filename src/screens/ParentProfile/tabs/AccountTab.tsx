@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Mail, Phone, Camera } from "lucide-react";
+import { Mail, Phone, Camera, Shield, ShieldCheck } from "lucide-react";
 import { updateParentProfile, getParentProfile } from "../../../lib/api/users";
+import { disable2FA } from "../../../lib/api/auth";
 
 const DAYS = Array.from({ length: 31 }, (_, i) => i + 1);
 const MONTHS = Array.from({ length: 12 }, (_, i) => i + 1);
@@ -32,6 +33,13 @@ export const AccountTab = (): JSX.Element => {
   const [phoneMsg, setPhoneMsg] = useState("");
   const [emailSaving, setEmailSaving] = useState(false);
   const [phoneSaving, setPhoneSaving] = useState(false);
+
+  // 2FA state
+  const [is2FAEnabled, setIs2FAEnabled] = useState(false);
+  const [showDisable2FA, setShowDisable2FA] = useState(false);
+  const [disable2FACode, setDisable2FACode] = useState("");
+  const [disabling2FA, setDisabling2FA] = useState(false);
+  const [disable2FAMsg, setDisable2FAMsg] = useState("");
 
   const getStorage = () => localStorage.getItem("access_token") ? localStorage : sessionStorage;
   const syncUserStorage = (updates: Partial<UserInfo>) => {
@@ -71,6 +79,14 @@ export const AccountTab = (): JSX.Element => {
     };
     fetchProfile();
   }, [navigate]);
+
+    // Check 2FA status from user data in storage
+    useEffect(() => {
+      // We'll check if 2FA is enabled by trying to see if user has it set
+      // For now, we read from a localStorage flag set during login or profile fetch
+      const twoFA = localStorage.getItem("vtos_2fa_enabled");
+      setIs2FAEnabled(twoFA === "true");
+    }, []);
 
   const handleSaveProfile = async () => {
     setSaving(true); setSaveMsg("");
@@ -227,6 +243,97 @@ export const AccountTab = (): JSX.Element => {
                 Cập nhật mật khẩu
               </button>
             </div>
+          </div>
+
+          {/* 2FA Section */}
+          <div className="bg-[#f8f7fc] rounded-xl border border-[#e8e5f5] p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${is2FAEnabled ? 'bg-emerald-100' : 'bg-[#f0edff]'}`}>
+                  {is2FAEnabled ? <ShieldCheck className="w-5 h-5 text-emerald-600" /> : <Shield className="w-5 h-5 text-[#6938ef]" />}
+                </div>
+                <div>
+                  <h3 className="[font-family:'Montserrat',Helvetica] font-bold text-[#1a1a2e] text-base">Xác thực 2 bước (2FA)</h3>
+                  <p className="[font-family:'Montserrat',Helvetica] font-medium text-[#9794aa] text-sm mt-0.5">
+                    Bảo vệ tài khoản bằng Google Authenticator
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className={`px-3 py-1 rounded-full text-xs font-semibold [font-family:'Montserrat',Helvetica] ${
+                  is2FAEnabled ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500'
+                }`}>
+                  {is2FAEnabled ? 'Đang bật' : 'Đang tắt'}
+                </span>
+                {is2FAEnabled ? (
+                  <button
+                    onClick={() => setShowDisable2FA(true)}
+                    className="border border-red-300 text-red-500 hover:bg-red-50 rounded-xl px-5 py-2.5 [font-family:'Montserrat',Helvetica] font-semibold text-sm transition-colors"
+                  >
+                    Tắt 2FA
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => navigate('/2fa-setup')}
+                    className="bg-[#6938ef] hover:bg-[#5a2dd6] text-white rounded-xl px-5 py-2.5 [font-family:'Montserrat',Helvetica] font-semibold text-sm shadow-[0_2px_8px_rgba(105,56,239,0.3)] transition-all"
+                  >
+                    Bật 2FA
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Disable 2FA Dialog */}
+            {showDisable2FA && (
+              <div className="mt-4 bg-white rounded-xl border border-red-200 p-4">
+                <p className="[font-family:'Montserrat',Helvetica] font-medium text-sm text-gray-600 mb-3">
+                  Nhập mã 6 chữ số từ ứng dụng xác thực để tắt 2FA:
+                </p>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={6}
+                    value={disable2FACode}
+                    onChange={e => { if (/^\d*$/.test(e.target.value)) setDisable2FACode(e.target.value); }}
+                    placeholder="000000"
+                    className="flex-1 max-w-[160px] bg-[#f8f7fc] border border-[#cbcad7] rounded-xl px-4 py-2.5 text-center font-mono text-lg tracking-widest outline-none focus:border-red-400 transition-colors"
+                    autoFocus
+                  />
+                  <button
+                    onClick={async () => {
+                      if (disable2FACode.length !== 6) return;
+                      setDisabling2FA(true); setDisable2FAMsg("");
+                      try {
+                        const token = localStorage.getItem("access_token")!;
+                        await disable2FA(disable2FACode, token);
+                        setIs2FAEnabled(false);
+                        localStorage.setItem("vtos_2fa_enabled", "false");
+                        setShowDisable2FA(false); setDisable2FACode("");
+                        setDisable2FAMsg("✓ Đã tắt 2FA");
+                      } catch (err: any) {
+                        setDisable2FAMsg(err?.message || "Mã không hợp lệ");
+                      } finally { setDisabling2FA(false); }
+                    }}
+                    disabled={disabling2FA || disable2FACode.length !== 6}
+                    className="bg-red-500 hover:bg-red-600 disabled:opacity-50 text-white rounded-xl px-5 py-2.5 [font-family:'Montserrat',Helvetica] font-semibold text-sm transition-colors"
+                  >
+                    {disabling2FA ? "Đang xử lý..." : "Xác nhận tắt"}
+                  </button>
+                  <button
+                    onClick={() => { setShowDisable2FA(false); setDisable2FACode(""); setDisable2FAMsg(""); }}
+                    className="text-gray-400 hover:text-gray-600 [font-family:'Montserrat',Helvetica] font-medium text-sm"
+                  >
+                    Hủy
+                  </button>
+                </div>
+                {disable2FAMsg && (
+                  <p className={`mt-2 [font-family:'Montserrat',Helvetica] font-medium text-sm ${
+                    disable2FAMsg.startsWith("✓") ? "text-emerald-600" : "text-red-500"
+                  }`}>{disable2FAMsg}</p>
+                )}
+              </div>
+            )}
           </div>
         </div>
       )}

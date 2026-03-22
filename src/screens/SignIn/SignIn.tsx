@@ -1,13 +1,13 @@
-import { EyeIcon, EyeOffIcon, AlertCircle } from "lucide-react";
-import { NavbarGuest, Footer } from "../../components/layout";
+import { EyeIcon, EyeOffIcon, Shield } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { Checkbox } from "../../components/ui/checkbox";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
 import { Separator } from "../../components/ui/separator";
-import { useEffect, useState } from "react";
-import { login } from "../../lib/api/auth";
-import { Alert, AlertTitle, AlertDescription } from "../../components/ui/alert";
+import { useEffect, useState, useRef } from "react";
+import { login, verify2FA } from "../../lib/api/auth";
+import { getSchoolProfile } from "../../lib/api/schools";
+import { getProviderProfile } from "../../lib/api/providers";
 import { Notify } from "../../components/ui/notify";
 import { useNavigate, Link } from "react-router-dom";
 import { GuestLayout } from "../../components/layout/GuestLayout";
@@ -23,6 +23,33 @@ export const SignIn = (): JSX.Element => {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [notify, setNotify] = useState<{ title: string; message: string; variant: "error" | "success" | "info" } | null>(null);
+
+  // 2FA state
+  const [show2FA, setShow2FA] = useState(false);
+  const [twoFactorToken, setTwoFactorToken] = useState("");
+  const [totpDigits, setTotpDigits] = useState(["" ,"", "", "", "", ""]);
+  const [is2FALoading, setIs2FALoading] = useState(false);
+  const [useRecoveryCode, setUseRecoveryCode] = useState(false);
+  const [recoveryCode, setRecoveryCode] = useState("");
+  const digitRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  // ── Auto-redirect if already logged in ──
+  useEffect(() => {
+    const token = localStorage.getItem("access_token") || sessionStorage.getItem("access_token");
+    const userRaw = localStorage.getItem("user") || sessionStorage.getItem("user");
+    if (token && userRaw) {
+      try {
+        const u = JSON.parse(userRaw);
+        const role = u.role as string;
+        if (role === "Admin") navigate("/admin/dashboard", { replace: true });
+        else if (role === "School") navigate("/school/dashboard", { replace: true });
+        else if (role === "Provider") navigate("/provider/dashboard", { replace: true });
+        else navigate("/homepage", { replace: true });
+      } catch {
+        // Invalid user JSON — let them re-login
+      }
+    }
+  }, [navigate]);
   const handleSignIn = async () => {
     setNotify(null);
 
@@ -37,49 +64,88 @@ export const SignIn = (): JSX.Element => {
 
     try {
       setIsLoading(true);
-
       const data = await login({ email, password });
 
-      // rememberMe: lưu localStorage (bền) hoặc sessionStorage (chỉ phiên)
-      const storage = rememberMe ? localStorage : sessionStorage;
-
-      storage.setItem("access_token", data.accessToken);
-      storage.setItem("user", JSON.stringify(data.user));
-      storage.setItem("expires_in", String(data.expiresIn));
-
-      // Role-based redirect: Parent without phone → fill information first
-      let redirectTo = "/homepage";
-      if (data.user.role === "Admin") {
-        redirectTo = "/admin/dashboard";
-      } else if (data.user.role === "School") {
-        redirectTo = "/school/dashboard";
-      } else if (data.user.role === "Provider") {
-        redirectTo = "/provider/dashboard";
-      } else if (data.user.role === "Parent" && !data.user.phone) {
-        redirectTo = "/fillphonenumber";
+      // 2FA required → show TOTP input
+      if (data.requiresTwoFactor && data.twoFactorToken) {
+        setTwoFactorToken(data.twoFactorToken);
+        setShow2FA(true);
+        setIsLoading(false);
+        return;
       }
 
-      // Global toast persists across navigation
-      showToast({
-        title: "Đăng nhập thành công! 🎉",
-        message: `Xin chào, ${data.user.fullName}`,
-        variant: "success",
-      });
+      // 2FA setup required (Admin/School/Provider first login)
+      if (data.requiresTwoFactorSetup && data.accessToken) {
+        localStorage.setItem("access_token", data.accessToken);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        localStorage.setItem("expires_in", String(data.expiresIn));
+        navigate("/2fa-setup", { replace: true, state: { forced: true } });
+        setIsLoading(false);
+        return;
+      }
 
-      navigate(redirectTo, {
-        replace: true,
-        state: { from: "/login", fullName: data.user.fullName, email: data.user.email },
-      });
-
+      // Normal login → store + redirect
+      completeLogin(data);
     } catch (e: any) {
       setErrorMsg(e?.message || "Có lỗi xảy ra.");
-      setNotify({
-        title: "Đăng nhập thất bại",
-        message: e?.message || "Có lỗi xảy ra.",
-        variant: "error",
-      });
+      setNotify({ title: "Đăng nhập thất bại", message: e?.message || "Có lỗi xảy ra.", variant: "error" });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const completeLogin = (data: Awaited<ReturnType<typeof login>>) => {
+    localStorage.setItem("access_token", data.accessToken);
+    localStorage.setItem("user", JSON.stringify(data.user));
+    localStorage.setItem("expires_in", String(data.expiresIn));
+
+    let redirectTo = "/homepage";
+    if (data.user.role === "Admin") {
+      redirectTo = "/admin/dashboard";
+    } else if (data.user.role === "School") {
+      redirectTo = "/school/dashboard";
+      getSchoolProfile().then(p => { if (p.schoolName) localStorage.setItem("vtos_org_name", p.schoolName); }).catch(() => {});
+    } else if (data.user.role === "Provider") {
+      redirectTo = "/provider/dashboard";
+      getProviderProfile().then(p => { if (p.providerName) localStorage.setItem("vtos_org_name", p.providerName); }).catch(() => {});
+    } else if (data.user.role === "Parent" && !data.user.phone) {
+      redirectTo = "/fillphonenumber";
+    }
+
+    showToast({ title: "Đăng nhập thành công! 🎉", message: `Xin chào, ${data.user.fullName}`, variant: "success" });
+    navigate(redirectTo, { replace: true, state: { from: "/login", fullName: data.user.fullName, email: data.user.email } });
+  };
+
+  const handle2FAVerify = async () => {
+    const code = useRecoveryCode ? recoveryCode.trim() : totpDigits.join("");
+    if (!useRecoveryCode && code.length !== 6) return;
+    if (useRecoveryCode && !code) return;
+    try {
+      setIs2FALoading(true);
+      const data = await verify2FA({ twoFactorToken, code });
+      completeLogin(data);
+    } catch (e: any) {
+      setNotify({ title: "Xác thực thất bại", message: e?.message || "Mã không hợp lệ hoặc đã hết hạn.", variant: "error" });
+    } finally {
+      setIs2FALoading(false);
+    }
+  };
+
+  const handleDigitChange = (idx: number, value: string) => {
+    if (!/^\d*$/.test(value)) return;
+    const newDigits = [...totpDigits];
+    newDigits[idx] = value.slice(-1);
+    setTotpDigits(newDigits);
+    if (value && idx < 5) digitRefs.current[idx + 1]?.focus();
+    // Auto-submit when all 6 digits entered
+    if (value && idx === 5 && newDigits.every(d => d)) {
+      setTimeout(() => handle2FAVerify(), 100);
+    }
+  };
+
+  const handleDigitKeyDown = (idx: number, e: React.KeyboardEvent) => {
+    if (e.key === "Backspace" && !totpDigits[idx] && idx > 0) {
+      digitRefs.current[idx - 1]?.focus();
     }
   };
 
@@ -275,6 +341,84 @@ export const SignIn = (): JSX.Element => {
       </main>
 
 
+      {/* ── 2FA Modal ── */}
+      {show2FA && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 relative animate-in fade-in zoom-in-95">
+            <button
+              onClick={() => { setShow2FA(false); setTotpDigits(["","","","","",""]); setRecoveryCode(""); setUseRecoveryCode(false); }}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl"
+            >✕</button>
+
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 bg-gradient-to-br from-violet-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <Shield className="w-8 h-8 text-white" />
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900">Xác thực 2 bước</h2>
+              <p className="text-gray-500 text-sm mt-2">
+                {useRecoveryCode
+                  ? "Nhập mã khôi phục để đăng nhập"
+                  : "Nhập mã 6 chữ số từ Google Authenticator"}
+              </p>
+            </div>
+
+            {!useRecoveryCode ? (
+              <>
+                <div className="flex justify-center gap-2 mb-6">
+                  {totpDigits.map((d, i) => (
+                    <input
+                      key={i}
+                      ref={el => { digitRefs.current[i] = el; }}
+                      type="text"
+                      inputMode="numeric"
+                      maxLength={1}
+                      value={d}
+                      onChange={e => handleDigitChange(i, e.target.value)}
+                      onKeyDown={e => handleDigitKeyDown(i, e)}
+                      onFocus={e => e.target.select()}
+                      autoFocus={i === 0}
+                      className="w-12 h-14 text-center text-2xl font-bold border-2 border-gray-200 rounded-xl focus:border-violet-500 focus:ring-2 focus:ring-violet-200 outline-none transition-all"
+                    />
+                  ))}
+                </div>
+                <Button
+                  onClick={handle2FAVerify}
+                  disabled={is2FALoading || totpDigits.some(d => !d)}
+                  className="w-full h-12 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 rounded-xl text-white font-semibold"
+                >
+                  {is2FALoading ? "Đang xác thực..." : "Xác nhận"}
+                </Button>
+              </>
+            ) : (
+              <>
+                <Input
+                  value={recoveryCode}
+                  onChange={e => setRecoveryCode(e.target.value.toUpperCase())}
+                  placeholder="XXXX-XXXX"
+                  className="h-14 text-center text-lg font-mono tracking-widest border-2 border-gray-200 rounded-xl mb-4"
+                  onKeyDown={e => { if (e.key === "Enter") handle2FAVerify(); }}
+                  autoFocus
+                />
+                <Button
+                  onClick={handle2FAVerify}
+                  disabled={is2FALoading || !recoveryCode.trim()}
+                  className="w-full h-12 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 rounded-xl text-white font-semibold"
+                >
+                  {is2FALoading ? "Đang xác thực..." : "Xác nhận"}
+                </Button>
+              </>
+            )}
+
+            <button
+              onClick={() => { setUseRecoveryCode(!useRecoveryCode); setTotpDigits(["","","","","",""]); setRecoveryCode(""); }}
+              className="w-full text-center text-sm text-violet-600 hover:text-violet-800 mt-4 font-medium"
+            >
+              {useRecoveryCode ? "← Dùng mã từ ứng dụng" : "Dùng mã khôi phục"}
+            </button>
+          </div>
+        </div>
+      )}
+
       <Notify
         open={!!notify}
         title={notify?.title || ""}
@@ -284,5 +428,4 @@ export const SignIn = (): JSX.Element => {
       />
     </GuestLayout>
   );
-
 };

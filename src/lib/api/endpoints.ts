@@ -9,6 +9,10 @@ export const endpoints = {
         changePasswordTeRequest: "/api/Auth/change-password/request-otp",
         changePassword: "/api/Auth/change-password",
         verifyPhone: "/api/Auth/verify-phone",
+        verify2fa: "/api/Auth/verify-2fa",
+        setup2fa: "/api/Auth/2fa/setup",
+        confirm2fa: "/api/Auth/2fa/confirm",
+        disable2fa: "/api/Auth/2fa/disable",
     },
     admin: {
         users: "/api/admin/users",

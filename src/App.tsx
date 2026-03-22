@@ -8,6 +8,7 @@ import { Homepage } from "./screens/Homepage";
 import { MyProfile } from "./screens/MyProfile";
 import { OrderManagement } from "./screens/OrderManagement";
 import { SignIn } from "./screens/SignIn";
+import { TwoFactorSetup } from "./screens/TwoFactorSetup/TwoFactorSetup";
 import { SignUp, RoleSelect } from "./screens/SignUp";
 import { TryOnHistory } from "./screens/TryOnHistory";
 import { SchoolList } from "./screens/SchoolList";
@@ -39,6 +40,8 @@ import { ProviderDashboard } from "./screens/ProviderDashboard/ProviderDashboard
 import { SchoolContracts } from "./screens/SchoolContracts/SchoolContracts";
 import { ProviderContracts } from "./screens/ProviderContracts/ProviderContracts";
 import { SchoolProductionOrders } from "./screens/SchoolProductionOrders/SchoolProductionOrders";
+import SchoolProductionOrderDetail from "./screens/SchoolProductionOrders/SchoolProductionOrderDetail";
+import SchoolProductionOrdersLayout from "./screens/SchoolProductionOrders/SchoolProductionOrdersLayout";
 import { ProviderProductionOrders } from "./screens/ProviderProductionOrders/ProviderProductionOrders";
 import { SchoolComplaints } from "./screens/SchoolComplaints/SchoolComplaints";
 import { ProviderComplaints } from "./screens/ProviderComplaints/ProviderComplaints";
@@ -60,6 +63,7 @@ import { ContactPartnership } from "./screens/ContactPartnership";
 import { AdminAccountRequests } from "./screens/AdminAccountRequests";
 import AdminTransactions from "./screens/AdminTransactions/AdminTransactions";
 import AdminComplaints from "./screens/AdminComplaints/AdminComplaints";
+import { ProviderProfile } from "./screens/ProviderProfile/ProviderProfile";
 
 /** Smart root redirect: School→dashboard, others→homepage */
 function RootRedirect() {
@@ -82,11 +86,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/signup",
-    element: <RoleSelect />,
+    element: <RoleGuard allowedRoles={[]} allowGuest><RoleSelect /></RoleGuard>,
   },
   {
     path: "/signup/parent",
-    element: <SignUp roleName="Parent" />,
+    element: <RoleGuard allowedRoles={[]} allowGuest><SignUp roleName="Parent" /></RoleGuard>,
   },
   {
     path: "/signup/school",
@@ -98,11 +102,15 @@ const router = createBrowserRouter([
   },
   {
     path: "/contact-partnership",
-    element: <ContactPartnership />,
+    element: <RoleGuard allowedRoles={[]} allowGuest><ContactPartnership /></RoleGuard>,
   },
   {
     path: "/fillphonenumber",
     element: <FillInformation />,
+  },
+  {
+    path: "/2fa-setup",
+    element: <TwoFactorSetup />,
   },
   {
     path: "/fillinformation",
@@ -114,11 +122,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/homepage",
-    element: <RoleGuard allowedRoles={["Parent"]} allowGuest={true} redirectTo="/school/dashboard"><Homepage /></RoleGuard>,
+    element: <RoleGuard allowedRoles={["Parent"]} allowGuest={true}><Homepage /></RoleGuard>,
   },
   {
     path: "/parentprofile",
-    element: <ParentProfile />,
+    element: <RoleGuard allowedRoles={["Parent"]}><ParentProfile /></RoleGuard>,
     children: [
       { index: true, element: <Navigate to="account" replace /> },
       { path: "account",  element: <AccountTab /> },
@@ -131,7 +139,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/verify-otp",
-    element: <VerifyOTP />,
+    element: <RoleGuard allowedRoles={[]} allowGuest><VerifyOTP /></RoleGuard>,
   },
   {
     path: "/school/students/import/confirm-save",
@@ -177,7 +185,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/school/production-orders",
-    element: <RoleGuard allowedRoles={["School"]}><SchoolProductionOrders /></RoleGuard>,
+    element: <RoleGuard allowedRoles={["School"]}><SchoolProductionOrdersLayout /></RoleGuard>,
+    children: [
+      { index: true, element: <SchoolProductionOrders /> },
+      { path: ":batchId", element: <SchoolProductionOrderDetail /> },
+    ],
   },
   {
     path: "/provider/production-orders",
@@ -202,6 +214,10 @@ const router = createBrowserRouter([
   {
     path: "/provider/wallet",
     element: <RoleGuard allowedRoles={["Provider"]}><ProviderWallet /></RoleGuard>,
+  },
+  {
+    path: "/provider/profile",
+    element: <RoleGuard allowedRoles={["Provider"]}><ProviderProfile /></RoleGuard>,
   },
   // ── Admin routes ──
   {
@@ -252,21 +268,21 @@ const router = createBrowserRouter([
     path: "/school/campaigns/:id",
     element: <RoleGuard allowedRoles={["School"]}><CampaignDetail /></RoleGuard>,
   },
-  { path: "/forgot-password", element: <ForgotPassword /> },
-  { path: "/forgot-password/sent", element: <ForgotPasswordSent /> },
-  { path: "/reset-password", element: <ResetPassword /> },
+  { path: "/forgot-password", element: <RoleGuard allowedRoles={[]} allowGuest><ForgotPassword /></RoleGuard> },
+  { path: "/forgot-password/sent", element: <RoleGuard allowedRoles={[]} allowGuest><ForgotPasswordSent /></RoleGuard> },
+  { path: "/reset-password", element: <RoleGuard allowedRoles={[]} allowGuest><ResetPassword /></RoleGuard> },
   // All screens below manage their own layout (GuestLayout internally).
   // DO NOT wrap in SiteLayout — that would add a second navbar on top.
-  { path: "/signin", element: <SignIn /> },
-  { path: "/schools", element: <SchoolList /> },
-  { path: "/schools/:id", element: <SchoolDetail /> },
-  { path: "/campaigns/:campaignId", element: <PublicCampaignDetail /> },
-  { path: "/outfits/:id", element: <OutfitDetail /> },
-  { path: "/cart", element: <Cart /> },
-  { path: "/payment/success", element: <PaymentSuccess /> },
-  { path: "/payment/cancel", element: <PaymentCancel /> },
-  { path: "/products", element: <ProductList /> },
-  { path: "/products/:id", element: <ProductDetail /> },
+  { path: "/signin", element: <RoleGuard allowedRoles={[]} allowGuest><SignIn /></RoleGuard> },
+  { path: "/schools", element: <RoleGuard allowedRoles={["Parent"]} allowGuest><SchoolList /></RoleGuard> },
+  { path: "/schools/:id", element: <RoleGuard allowedRoles={["Parent"]} allowGuest><SchoolDetail /></RoleGuard> },
+  { path: "/campaigns/:campaignId", element: <RoleGuard allowedRoles={["Parent"]} allowGuest><PublicCampaignDetail /></RoleGuard> },
+  { path: "/outfits/:id", element: <RoleGuard allowedRoles={["Parent"]} allowGuest><OutfitDetail /></RoleGuard> },
+  { path: "/cart", element: <RoleGuard allowedRoles={["Parent"]}><Cart /></RoleGuard> },
+  { path: "/payment/success", element: <RoleGuard allowedRoles={["Parent"]} allowGuest><PaymentSuccess /></RoleGuard> },
+  { path: "/payment/cancel", element: <RoleGuard allowedRoles={["Parent"]} allowGuest><PaymentCancel /></RoleGuard> },
+  { path: "/products", element: <RoleGuard allowedRoles={["Parent"]} allowGuest><ProductList /></RoleGuard> },
+  { path: "/products/:id", element: <RoleGuard allowedRoles={["Parent"]} allowGuest><ProductDetail /></RoleGuard> },
 ]);
 
 export const App = () => {
