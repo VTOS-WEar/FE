@@ -7,6 +7,7 @@ export type AccountRequestListItem = {
     organizationName: string;
     contactEmail: string;
     contactPhone: string;
+    contactPersonName?: string;
     type: string;
     status: string;
     createdAt: string;
@@ -16,6 +17,7 @@ export type AccountRequestListItem = {
 export type AccountRequestDetail = AccountRequestListItem & {
     description?: string;
     address?: string;
+    contactPersonName?: string;
     rejectionReason?: string;
     processedByUserId?: string;
     processedByName?: string;
@@ -35,6 +37,7 @@ export async function submitAccountRequest(data: {
     organizationName: string;
     contactEmail: string;
     contactPhone: string;
+    contactPersonName?: string;
     type: number; // 1=School, 2=Provider
     description?: string;
     address?: string;

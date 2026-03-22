@@ -1,19 +1,59 @@
 {
   "nodes": [
     {
-      "id": "src/screens/SignUp/RoleSelect.tsx",
-      "label": "RoleSelect",
+      "id": "src/components/guards/RoleGuard.tsx",
+      "label": "RoleGuard",
       "routes": [
-        "/signup"
-      ]
-    },
-    {
-      "id": "src/screens/SignUp/SignUp.tsx",
-      "label": "SignUp",
-      "routes": [
+        "/signup",
         "/signup/parent",
-        "/signup/school",
-        "/signup/provider"
+        "/contact-partnership",
+        "/homepage",
+        "/parentprofile",
+        "/verify-otp",
+        "/school/students/import/confirm-save",
+        "/school/students/import/confirm-reimport",
+        "/school/students/import/check-preview",
+        "/school/students",
+        "/school/students/import",
+        "/school/orders",
+        "/school/dashboard",
+        "/provider/dashboard",
+        "/provider/contracts",
+        "/school/contracts",
+        "/school/production-orders",
+        "/school/production-orders/:batchId",
+        "/provider/production-orders",
+        "/school/complaints",
+        "/provider/complaints",
+        "/school/wallet",
+        "/provider/revenue",
+        "/provider/wallet",
+        "/provider/profile",
+        "/admin/dashboard",
+        "/admin/users",
+        "/admin/verification",
+        "/admin/money",
+        "/admin/account-requests",
+        "/admin/transactions",
+        "/admin/complaints",
+        "/school/profile",
+        "/school/uniforms",
+        "/school/campaigns",
+        "/school/campaigns/new",
+        "/school/campaigns/:id",
+        "/forgot-password",
+        "/forgot-password/sent",
+        "/reset-password",
+        "/signin",
+        "/schools",
+        "/schools/:id",
+        "/campaigns/:campaignId",
+        "/outfits/:id",
+        "/cart",
+        "/payment/success",
+        "/payment/cancel",
+        "/products",
+        "/products/:id"
       ]
     },
     {
@@ -30,613 +70,9 @@
       "routes": [
         "/accountsetting"
       ]
-    },
-    {
-      "id": "src/components/guards/RoleGuard.tsx",
-      "label": "RoleGuard",
-      "routes": [
-        "/homepage",
-        "/school/students/import/confirm-save",
-        "/school/students/import/confirm-reimport",
-        "/school/students/import/check-preview",
-        "/school/students",
-        "/school/students/import",
-        "/school/orders",
-        "/school/dashboard",
-        "/provider/dashboard",
-        "/provider/contracts",
-        "/school/contracts",
-        "/school/production-orders",
-        "/provider/production-orders",
-        "/school/complaints",
-        "/provider/complaints",
-        "/school/wallet",
-        "/provider/revenue",
-        "/provider/wallet",
-        "/admin/dashboard",
-        "/admin/users",
-        "/admin/verification",
-        "/admin/money",
-        "/school/profile",
-        "/school/uniforms",
-        "/school/campaigns",
-        "/school/campaigns/new",
-        "/school/campaigns/:id"
-      ]
-    },
-    {
-      "id": "src/screens/ParentProfile/ParentProfile.tsx",
-      "label": "ParentProfile",
-      "routes": [
-        "/parentprofile"
-      ]
-    },
-    {
-      "id": "src/screens/ForgotPassword/ForgotPassword.tsx",
-      "label": "ForgotPassword",
-      "routes": [
-        "/forgot-password"
-      ]
-    },
-    {
-      "id": "src/screens/ForgotPasswordSent/ForgotPasswordSent.tsx",
-      "label": "ForgotPasswordSent",
-      "routes": [
-        "/forgot-password/sent"
-      ]
-    },
-    {
-      "id": "src/screens/ResetPassword/ResetPassword.tsx",
-      "label": "ResetPassword",
-      "routes": [
-        "/reset-password"
-      ]
-    },
-    {
-      "id": "src/screens/SignIn/SignIn.tsx",
-      "label": "SignIn",
-      "routes": [
-        "/signin"
-      ]
-    },
-    {
-      "id": "src/screens/SchoolList/SchoolList.tsx",
-      "label": "SchoolList",
-      "routes": [
-        "/schools"
-      ]
-    },
-    {
-      "id": "src/screens/SchoolDetail/SchoolDetail.tsx",
-      "label": "SchoolDetail",
-      "routes": [
-        "/schools/:id"
-      ]
-    },
-    {
-      "id": "src/screens/OutfitDetail/OutfitDetail.tsx",
-      "label": "OutfitDetail",
-      "routes": [
-        "/outfits/:id"
-      ]
-    },
-    {
-      "id": "src/screens/Cart/Cart.tsx",
-      "label": "Cart",
-      "routes": [
-        "/cart"
-      ]
-    },
-    {
-      "id": "src/screens/Payment/PaymentSuccess.tsx",
-      "label": "PaymentSuccess",
-      "routes": [
-        "/payment/success"
-      ]
-    },
-    {
-      "id": "src/screens/Payment/PaymentCancel.tsx",
-      "label": "PaymentCancel",
-      "routes": [
-        "/payment/cancel"
-      ]
-    },
-    {
-      "id": "src/screens/ProductList/ProductList.tsx",
-      "label": "ProductList",
-      "routes": [
-        "/products"
-      ]
-    },
-    {
-      "id": "src/screens/ProductDetail/ProductDetail.tsx",
-      "label": "ProductDetail",
-      "routes": [
-        "/products/:id"
-      ]
     }
   ],
   "edges": [
-    {
-      "id": "src\\screens\\SignUp\\RoleSelect.tsx:73:12-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
-      "data": {
-        "viaRoute": "/signin",
-        "trigger": {
-          "element": "<Link\n              to=\"/signin\"\n              className=\"[font-family:'Montserrat',Helvetica] font-semibold italic text-[#6938ef] hover:underline\"\n            >\n              Đăng Nhập\n            </Link>",
-          "line": 73,
-          "endLine": 78,
-          "column": 12,
-          "endColumn": 19,
-          "sourceFile": "src\\screens\\SignUp\\RoleSelect.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:58:12-to-src\\components\\guards\\RoleGuard.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\components\\guards\\RoleGuard.tsx",
-      "data": {
-        "viaRoute": "/homepage",
-        "trigger": {
-          "element": "<a href=\"/homepage\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Trang chủ\r\n            </a>",
-          "line": 58,
-          "endLine": 60,
-          "column": 12,
-          "endColumn": 16,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:64:12-to-src\\screens\\SchoolList\\SchoolList.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SchoolList\\SchoolList.tsx",
-      "data": {
-        "viaRoute": "/schools",
-        "trigger": {
-          "element": "<Link to=\"/schools\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Tìm trường\r\n            </Link>",
-          "line": 64,
-          "endLine": 66,
-          "column": 12,
-          "endColumn": 19,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:91:29-to-src\\screens\\Cart\\Cart.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\Cart\\Cart.tsx",
-      "data": {
-        "viaRoute": "/cart",
-        "trigger": {
-          "element": "navigate(\"/cart\")",
-          "line": 91,
-          "endLine": 91,
-          "column": 29,
-          "endColumn": 46,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:118:31-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
-      "data": {
-        "viaRoute": "/signin",
-        "trigger": {
-          "element": "navigate(\"/signin\")",
-          "line": 118,
-          "endLine": 118,
-          "column": 31,
-          "endColumn": 50,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:137:31-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
-      "data": {
-        "viaRoute": "/signin",
-        "trigger": {
-          "element": "navigate(\"/signin\")",
-          "line": 137,
-          "endLine": 137,
-          "column": 31,
-          "endColumn": 50,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\screens\\SignUp\\SignUp.tsx:142:18-to-src\\screens\\SignUp\\RoleSelect.tsx",
-      "source": "src\\screens\\SignUp\\SignUp.tsx",
-      "target": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "data": {
-        "viaRoute": "/signup",
-        "trigger": {
-          "element": "<Link\n                    to=\"/signup\"\n                    className=\"inline-flex items-center gap-1.5 text-[#6938ef] [font-family:'Montserrat',Helvetica] font-medium text-sm hover:underline mb-4\"\n                  >\n                    <ArrowLeftIcon className=\"w-4 h-4\" />\n                    Chọn loại tài khoản khác\n                  </Link>",
-          "line": 142,
-          "endLine": 148,
-          "column": 18,
-          "endColumn": 25,
-          "sourceFile": "src\\screens\\SignUp\\SignUp.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\screens\\SignUp\\SignUp.tsx:258:24-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\SignUp\\SignUp.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
-      "data": {
-        "viaRoute": "/signin",
-        "trigger": {
-          "element": "<Link to=\"/signin\">Đăng Nhập</Link>",
-          "line": 258,
-          "endLine": 258,
-          "column": 24,
-          "endColumn": 59,
-          "sourceFile": "src\\screens\\SignUp\\SignUp.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:58:12-to-src\\components\\guards\\RoleGuard.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\components\\guards\\RoleGuard.tsx",
-      "data": {
-        "viaRoute": "/homepage",
-        "trigger": {
-          "element": "<a href=\"/homepage\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Trang chủ\r\n            </a>",
-          "line": 58,
-          "endLine": 60,
-          "column": 12,
-          "endColumn": 16,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:64:12-to-src\\screens\\SchoolList\\SchoolList.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SchoolList\\SchoolList.tsx",
-      "data": {
-        "viaRoute": "/schools",
-        "trigger": {
-          "element": "<Link to=\"/schools\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Tìm trường\r\n            </Link>",
-          "line": 64,
-          "endLine": 66,
-          "column": 12,
-          "endColumn": 19,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:91:29-to-src\\screens\\Cart\\Cart.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\Cart\\Cart.tsx",
-      "data": {
-        "viaRoute": "/cart",
-        "trigger": {
-          "element": "navigate(\"/cart\")",
-          "line": 91,
-          "endLine": 91,
-          "column": 29,
-          "endColumn": 46,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:118:31-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
-      "data": {
-        "viaRoute": "/signin",
-        "trigger": {
-          "element": "navigate(\"/signin\")",
-          "line": 118,
-          "endLine": 118,
-          "column": 31,
-          "endColumn": 50,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:137:31-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
-      "data": {
-        "viaRoute": "/signin",
-        "trigger": {
-          "element": "navigate(\"/signin\")",
-          "line": 137,
-          "endLine": 137,
-          "column": 31,
-          "endColumn": 50,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\screens\\FillInformation\\FillInformation.tsx:71:25-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\FillInformation\\FillInformation.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
-      "data": {
-        "viaRoute": "/signin",
-        "trigger": {
-          "element": "navigate(\"/signin\", { replace: true })",
-          "line": 71,
-          "endLine": 71,
-          "column": 25,
-          "endColumn": 63,
-          "sourceFile": "src\\screens\\FillInformation\\FillInformation.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\screens\\FillInformation\\FillInformation.tsx:99:8-to-src\\screens\\ParentProfile\\ParentProfile.tsx",
-      "source": "src\\screens\\FillInformation\\FillInformation.tsx",
-      "target": "src\\screens\\ParentProfile\\ParentProfile.tsx",
-      "data": {
-        "viaRoute": "/parentprofile",
-        "trigger": {
-          "element": "navigate(\"/parentprofile\", { replace: true })",
-          "line": 99,
-          "endLine": 99,
-          "column": 8,
-          "endColumn": 53,
-          "sourceFile": "src\\screens\\FillInformation\\FillInformation.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:58:12-to-src\\components\\guards\\RoleGuard.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\components\\guards\\RoleGuard.tsx",
-      "data": {
-        "viaRoute": "/homepage",
-        "trigger": {
-          "element": "<a href=\"/homepage\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Trang chủ\r\n            </a>",
-          "line": 58,
-          "endLine": 60,
-          "column": 12,
-          "endColumn": 16,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:64:12-to-src\\screens\\SchoolList\\SchoolList.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SchoolList\\SchoolList.tsx",
-      "data": {
-        "viaRoute": "/schools",
-        "trigger": {
-          "element": "<Link to=\"/schools\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Tìm trường\r\n            </Link>",
-          "line": 64,
-          "endLine": 66,
-          "column": 12,
-          "endColumn": 19,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:91:29-to-src\\screens\\Cart\\Cart.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\Cart\\Cart.tsx",
-      "data": {
-        "viaRoute": "/cart",
-        "trigger": {
-          "element": "navigate(\"/cart\")",
-          "line": 91,
-          "endLine": 91,
-          "column": 29,
-          "endColumn": 46,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:118:31-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
-      "data": {
-        "viaRoute": "/signin",
-        "trigger": {
-          "element": "navigate(\"/signin\")",
-          "line": 118,
-          "endLine": 118,
-          "column": 31,
-          "endColumn": 50,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:137:31-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
-      "data": {
-        "viaRoute": "/signin",
-        "trigger": {
-          "element": "navigate(\"/signin\")",
-          "line": 137,
-          "endLine": 137,
-          "column": 31,
-          "endColumn": 50,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:58:12-to-src\\components\\guards\\RoleGuard.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\components\\guards\\RoleGuard.tsx",
-      "data": {
-        "viaRoute": "/homepage",
-        "trigger": {
-          "element": "<a href=\"/homepage\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Trang chủ\r\n            </a>",
-          "line": 58,
-          "endLine": 60,
-          "column": 12,
-          "endColumn": 16,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:64:12-to-src\\screens\\SchoolList\\SchoolList.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SchoolList\\SchoolList.tsx",
-      "data": {
-        "viaRoute": "/schools",
-        "trigger": {
-          "element": "<Link to=\"/schools\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Tìm trường\r\n            </Link>",
-          "line": 64,
-          "endLine": 66,
-          "column": 12,
-          "endColumn": 19,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:91:29-to-src\\screens\\Cart\\Cart.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\Cart\\Cart.tsx",
-      "data": {
-        "viaRoute": "/cart",
-        "trigger": {
-          "element": "navigate(\"/cart\")",
-          "line": 91,
-          "endLine": 91,
-          "column": 29,
-          "endColumn": 46,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:118:31-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
-      "data": {
-        "viaRoute": "/signin",
-        "trigger": {
-          "element": "navigate(\"/signin\")",
-          "line": 118,
-          "endLine": 118,
-          "column": 31,
-          "endColumn": 50,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:137:31-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
-      "data": {
-        "viaRoute": "/signin",
-        "trigger": {
-          "element": "navigate(\"/signin\")",
-          "line": 137,
-          "endLine": 137,
-          "column": 31,
-          "endColumn": 50,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:58:12-to-src\\components\\guards\\RoleGuard.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\components\\guards\\RoleGuard.tsx",
-      "data": {
-        "viaRoute": "/homepage",
-        "trigger": {
-          "element": "<a href=\"/homepage\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Trang chủ\r\n            </a>",
-          "line": 58,
-          "endLine": 60,
-          "column": 12,
-          "endColumn": 16,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:64:12-to-src\\screens\\SchoolList\\SchoolList.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SchoolList\\SchoolList.tsx",
-      "data": {
-        "viaRoute": "/schools",
-        "trigger": {
-          "element": "<Link to=\"/schools\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Tìm trường\r\n            </Link>",
-          "line": 64,
-          "endLine": 66,
-          "column": 12,
-          "endColumn": 19,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:91:29-to-src\\screens\\Cart\\Cart.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\Cart\\Cart.tsx",
-      "data": {
-        "viaRoute": "/cart",
-        "trigger": {
-          "element": "navigate(\"/cart\")",
-          "line": 91,
-          "endLine": 91,
-          "column": 29,
-          "endColumn": 46,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:118:31-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
-      "data": {
-        "viaRoute": "/signin",
-        "trigger": {
-          "element": "navigate(\"/signin\")",
-          "line": 118,
-          "endLine": 118,
-          "column": 31,
-          "endColumn": 50,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:137:31-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
-      "data": {
-        "viaRoute": "/signin",
-        "trigger": {
-          "element": "navigate(\"/signin\")",
-          "line": 137,
-          "endLine": 137,
-          "column": 31,
-          "endColumn": 50,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
     {
       "id": "src\\components\\guards\\RoleGuard.tsx:60:15-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\components\\guards\\RoleGuard.tsx",
@@ -654,15 +90,47 @@
       }
     },
     {
-      "id": "src\\components\\guards\\RoleGuard.tsx:62:11-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\components\\guards\\RoleGuard.tsx:63:15-to-src\\components\\guards\\RoleGuard.tsx",
+      "source": "src\\components\\guards\\RoleGuard.tsx",
+      "target": "src\\components\\guards\\RoleGuard.tsx",
+      "data": {
+        "viaRoute": "/admin/dashboard",
+        "trigger": {
+          "element": "<Navigate to=\"/admin/dashboard\" replace />",
+          "line": 63,
+          "endLine": 63,
+          "column": 15,
+          "endColumn": 57,
+          "sourceFile": "src\\components\\guards\\RoleGuard.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\guards\\RoleGuard.tsx:66:15-to-src\\components\\guards\\RoleGuard.tsx",
+      "source": "src\\components\\guards\\RoleGuard.tsx",
+      "target": "src\\components\\guards\\RoleGuard.tsx",
+      "data": {
+        "viaRoute": "/provider/dashboard",
+        "trigger": {
+          "element": "<Navigate to=\"/provider/dashboard\" replace />",
+          "line": 66,
+          "endLine": 66,
+          "column": 15,
+          "endColumn": 60,
+          "sourceFile": "src\\components\\guards\\RoleGuard.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\guards\\RoleGuard.tsx:68:11-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\components\\guards\\RoleGuard.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/homepage",
         "trigger": {
           "element": "<Navigate to=\"/homepage\" replace />",
-          "line": 62,
-          "endLine": 62,
+          "line": 68,
+          "endLine": 68,
           "column": 11,
           "endColumn": 46,
           "sourceFile": "src\\components\\guards\\RoleGuard.tsx"
@@ -670,56 +138,216 @@
       }
     },
     {
-      "id": "src\\screens\\ParentProfile\\ParentProfile.tsx:27:18-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\ParentProfile\\ParentProfile.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
+      "id": "src\\screens\\FillInformation\\FillInformation.tsx:71:25-to-src\\components\\guards\\RoleGuard.tsx",
+      "source": "src\\screens\\FillInformation\\FillInformation.tsx",
+      "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
           "element": "navigate(\"/signin\", { replace: true })",
-          "line": 27,
-          "endLine": 27,
-          "column": 18,
-          "endColumn": 56,
-          "sourceFile": "src\\screens\\ParentProfile\\ParentProfile.tsx"
+          "line": 71,
+          "endLine": 71,
+          "column": 25,
+          "endColumn": 63,
+          "sourceFile": "src\\screens\\FillInformation\\FillInformation.tsx"
         }
       }
     },
     {
-      "id": "src\\screens\\ParentProfile\\ParentProfile.tsx:35:4-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\ParentProfile\\ParentProfile.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
+      "id": "src\\screens\\FillInformation\\FillInformation.tsx:99:8-to-src\\components\\guards\\RoleGuard.tsx",
+      "source": "src\\screens\\FillInformation\\FillInformation.tsx",
+      "target": "src\\components\\guards\\RoleGuard.tsx",
+      "data": {
+        "viaRoute": "/parentprofile",
+        "trigger": {
+          "element": "navigate(\"/parentprofile\", { replace: true })",
+          "line": 99,
+          "endLine": 99,
+          "column": 8,
+          "endColumn": 53,
+          "sourceFile": "src\\screens\\FillInformation\\FillInformation.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:58:12-to-src\\components\\guards\\RoleGuard.tsx",
+      "source": "src\\screens\\FillInformation\\FillInformation.tsx",
+      "target": "src\\components\\guards\\RoleGuard.tsx",
+      "data": {
+        "viaRoute": "/homepage",
+        "trigger": {
+          "element": "<a href=\"/homepage\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Trang chủ\r\n            </a>",
+          "line": 58,
+          "endLine": 60,
+          "column": 12,
+          "endColumn": 16,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:64:12-to-src\\components\\guards\\RoleGuard.tsx",
+      "source": "src\\screens\\FillInformation\\FillInformation.tsx",
+      "target": "src\\components\\guards\\RoleGuard.tsx",
+      "data": {
+        "viaRoute": "/schools",
+        "trigger": {
+          "element": "<Link to=\"/schools\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Tìm trường\r\n            </Link>",
+          "line": 64,
+          "endLine": 66,
+          "column": 12,
+          "endColumn": 19,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:91:29-to-src\\components\\guards\\RoleGuard.tsx",
+      "source": "src\\screens\\FillInformation\\FillInformation.tsx",
+      "target": "src\\components\\guards\\RoleGuard.tsx",
+      "data": {
+        "viaRoute": "/cart",
+        "trigger": {
+          "element": "navigate(\"/cart\")",
+          "line": 91,
+          "endLine": 91,
+          "column": 29,
+          "endColumn": 46,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:118:31-to-src\\components\\guards\\RoleGuard.tsx",
+      "source": "src\\screens\\FillInformation\\FillInformation.tsx",
+      "target": "src\\components\\guards\\RoleGuard.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\")",
+          "line": 118,
+          "endLine": 118,
+          "column": 31,
+          "endColumn": 50,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:137:31-to-src\\components\\guards\\RoleGuard.tsx",
+      "source": "src\\screens\\FillInformation\\FillInformation.tsx",
+      "target": "src\\components\\guards\\RoleGuard.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\")",
+          "line": 137,
+          "endLine": 137,
+          "column": 31,
+          "endColumn": 50,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:58:12-to-src\\components\\guards\\RoleGuard.tsx",
+      "source": "src\\screens\\FillInformation\\FillInformation.tsx",
+      "target": "src\\components\\guards\\RoleGuard.tsx",
+      "data": {
+        "viaRoute": "/homepage",
+        "trigger": {
+          "element": "<a href=\"/homepage\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Trang chủ\r\n            </a>",
+          "line": 58,
+          "endLine": 60,
+          "column": 12,
+          "endColumn": 16,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:64:12-to-src\\components\\guards\\RoleGuard.tsx",
+      "source": "src\\screens\\FillInformation\\FillInformation.tsx",
+      "target": "src\\components\\guards\\RoleGuard.tsx",
+      "data": {
+        "viaRoute": "/schools",
+        "trigger": {
+          "element": "<Link to=\"/schools\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Tìm trường\r\n            </Link>",
+          "line": 64,
+          "endLine": 66,
+          "column": 12,
+          "endColumn": 19,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:91:29-to-src\\components\\guards\\RoleGuard.tsx",
+      "source": "src\\screens\\FillInformation\\FillInformation.tsx",
+      "target": "src\\components\\guards\\RoleGuard.tsx",
+      "data": {
+        "viaRoute": "/cart",
+        "trigger": {
+          "element": "navigate(\"/cart\")",
+          "line": 91,
+          "endLine": 91,
+          "column": 29,
+          "endColumn": 46,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:118:31-to-src\\components\\guards\\RoleGuard.tsx",
+      "source": "src\\screens\\FillInformation\\FillInformation.tsx",
+      "target": "src\\components\\guards\\RoleGuard.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\")",
+          "line": 118,
+          "endLine": 118,
+          "column": 31,
+          "endColumn": 50,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:137:31-to-src\\components\\guards\\RoleGuard.tsx",
+      "source": "src\\screens\\FillInformation\\FillInformation.tsx",
+      "target": "src\\components\\guards\\RoleGuard.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\")",
+          "line": 137,
+          "endLine": 137,
+          "column": 31,
+          "endColumn": 50,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\DashboardSidebar.tsx:74:8-to-src\\components\\guards\\RoleGuard.tsx",
+      "source": "src\\screens\\AccountSetting\\AccountSetting.tsx",
+      "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
           "element": "navigate(\"/signin\", { replace: true })",
-          "line": 35,
-          "endLine": 35,
-          "column": 4,
-          "endColumn": 42,
-          "sourceFile": "src\\screens\\ParentProfile\\ParentProfile.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\screens\\ParentProfile\\ParentProfile.tsx:55:12-to-src\\components\\guards\\RoleGuard.tsx",
-      "source": "src\\screens\\ParentProfile\\ParentProfile.tsx",
-      "target": "src\\components\\guards\\RoleGuard.tsx",
-      "data": {
-        "viaRoute": "/homepage",
-        "trigger": {
-          "element": "<Link to=\"/homepage\" className=\"font-medium text-[#4c5769] text-sm hover:text-[#6938ef] transition-colors\">\n              Trang chủ\n            </Link>",
-          "line": 55,
-          "endLine": 57,
-          "column": 12,
-          "endColumn": 19,
-          "sourceFile": "src\\screens\\ParentProfile\\ParentProfile.tsx"
+          "line": 74,
+          "endLine": 74,
+          "column": 8,
+          "endColumn": 46,
+          "sourceFile": "src\\components\\layout\\DashboardSidebar.tsx"
         }
       }
     },
     {
       "id": "src\\components\\layout\\NavbarGuest.tsx:58:12-to-src\\components\\guards\\RoleGuard.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
+      "source": "src\\screens\\FillInformation\\FillInformation.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/homepage",
@@ -734,9 +362,9 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:64:12-to-src\\screens\\SchoolList\\SchoolList.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SchoolList\\SchoolList.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:64:12-to-src\\components\\guards\\RoleGuard.tsx",
+      "source": "src\\screens\\FillInformation\\FillInformation.tsx",
+      "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/schools",
         "trigger": {
@@ -750,9 +378,9 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:91:29-to-src\\screens\\Cart\\Cart.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\Cart\\Cart.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:91:29-to-src\\components\\guards\\RoleGuard.tsx",
+      "source": "src\\screens\\FillInformation\\FillInformation.tsx",
+      "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/cart",
         "trigger": {
@@ -766,9 +394,9 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:118:31-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:118:31-to-src\\components\\guards\\RoleGuard.tsx",
+      "source": "src\\screens\\FillInformation\\FillInformation.tsx",
+      "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
@@ -782,9 +410,9 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:137:31-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:137:31-to-src\\components\\guards\\RoleGuard.tsx",
+      "source": "src\\screens\\FillInformation\\FillInformation.tsx",
+      "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
@@ -794,1526 +422,6 @@
           "column": 31,
           "endColumn": 50,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\screens\\ForgotPassword\\ForgotPassword.tsx:41:12-to-src\\screens\\ForgotPasswordSent\\ForgotPasswordSent.tsx",
-      "source": "src\\screens\\ForgotPassword\\ForgotPassword.tsx",
-      "target": "src\\screens\\ForgotPasswordSent\\ForgotPasswordSent.tsx",
-      "data": {
-        "viaRoute": "/forgot-password/sent",
-        "trigger": {
-          "element": "navigate(\"/forgot-password/sent\", {\r\n                replace: true,\r\n                state: {\r\n                    email: email.trim(),\r\n                    message: res?.message,\r\n                },\r\n            })",
-          "line": 41,
-          "endLine": 47,
-          "column": 12,
-          "endColumn": 14,
-          "sourceFile": "src\\screens\\ForgotPassword\\ForgotPassword.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\screens\\ForgotPassword\\ForgotPassword.tsx:114:44-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\ForgotPassword\\ForgotPassword.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
-      "data": {
-        "viaRoute": "/signin",
-        "trigger": {
-          "element": "<Link\r\n                                                to=\"/signin\"\r\n                                                className=\"[font-family:'Montserrat',Helvetica] font-semibold italic text-[#6938ef] cursor-pointer hover:underline\"\r\n                                            >\r\n                                                Đăng nhập\r\n                                            </Link>",
-          "line": 114,
-          "endLine": 119,
-          "column": 44,
-          "endColumn": 51,
-          "sourceFile": "src\\screens\\ForgotPassword\\ForgotPassword.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:58:12-to-src\\components\\guards\\RoleGuard.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\components\\guards\\RoleGuard.tsx",
-      "data": {
-        "viaRoute": "/homepage",
-        "trigger": {
-          "element": "<a href=\"/homepage\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Trang chủ\r\n            </a>",
-          "line": 58,
-          "endLine": 60,
-          "column": 12,
-          "endColumn": 16,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:64:12-to-src\\screens\\SchoolList\\SchoolList.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SchoolList\\SchoolList.tsx",
-      "data": {
-        "viaRoute": "/schools",
-        "trigger": {
-          "element": "<Link to=\"/schools\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Tìm trường\r\n            </Link>",
-          "line": 64,
-          "endLine": 66,
-          "column": 12,
-          "endColumn": 19,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:91:29-to-src\\screens\\Cart\\Cart.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\Cart\\Cart.tsx",
-      "data": {
-        "viaRoute": "/cart",
-        "trigger": {
-          "element": "navigate(\"/cart\")",
-          "line": 91,
-          "endLine": 91,
-          "column": 29,
-          "endColumn": 46,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:118:31-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
-      "data": {
-        "viaRoute": "/signin",
-        "trigger": {
-          "element": "navigate(\"/signin\")",
-          "line": 118,
-          "endLine": 118,
-          "column": 31,
-          "endColumn": 50,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:137:31-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
-      "data": {
-        "viaRoute": "/signin",
-        "trigger": {
-          "element": "navigate(\"/signin\")",
-          "line": 137,
-          "endLine": 137,
-          "column": 31,
-          "endColumn": 50,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\screens\\ForgotPasswordSent\\ForgotPasswordSent.tsx:141:63-to-src\\screens\\ForgotPassword\\ForgotPassword.tsx",
-      "source": "src\\screens\\ForgotPasswordSent\\ForgotPasswordSent.tsx",
-      "target": "src\\screens\\ForgotPassword\\ForgotPassword.tsx",
-      "data": {
-        "viaRoute": "/forgot-password",
-        "trigger": {
-          "element": "navigate(\"/forgot-password\", { replace: true })",
-          "line": 141,
-          "endLine": 141,
-          "column": 63,
-          "endColumn": 110,
-          "sourceFile": "src\\screens\\ForgotPasswordSent\\ForgotPasswordSent.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\screens\\ForgotPasswordSent\\ForgotPasswordSent.tsx:149:48-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\ForgotPasswordSent\\ForgotPasswordSent.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
-      "data": {
-        "viaRoute": "/signin",
-        "trigger": {
-          "element": "<Link\r\n                                                    to=\"/signin\"\r\n                                                    className=\"[font-family:'Montserrat',Helvetica] font-semibold italic text-[#6938ef]\"\r\n                                                >\r\n                                                    Quay lại đăng nhập\r\n                                                </Link>",
-          "line": 149,
-          "endLine": 154,
-          "column": 48,
-          "endColumn": 55,
-          "sourceFile": "src\\screens\\ForgotPasswordSent\\ForgotPasswordSent.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:58:12-to-src\\components\\guards\\RoleGuard.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\components\\guards\\RoleGuard.tsx",
-      "data": {
-        "viaRoute": "/homepage",
-        "trigger": {
-          "element": "<a href=\"/homepage\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Trang chủ\r\n            </a>",
-          "line": 58,
-          "endLine": 60,
-          "column": 12,
-          "endColumn": 16,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:64:12-to-src\\screens\\SchoolList\\SchoolList.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SchoolList\\SchoolList.tsx",
-      "data": {
-        "viaRoute": "/schools",
-        "trigger": {
-          "element": "<Link to=\"/schools\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Tìm trường\r\n            </Link>",
-          "line": 64,
-          "endLine": 66,
-          "column": 12,
-          "endColumn": 19,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:91:29-to-src\\screens\\Cart\\Cart.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\Cart\\Cart.tsx",
-      "data": {
-        "viaRoute": "/cart",
-        "trigger": {
-          "element": "navigate(\"/cart\")",
-          "line": 91,
-          "endLine": 91,
-          "column": 29,
-          "endColumn": 46,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:118:31-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
-      "data": {
-        "viaRoute": "/signin",
-        "trigger": {
-          "element": "navigate(\"/signin\")",
-          "line": 118,
-          "endLine": 118,
-          "column": 31,
-          "endColumn": 50,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:137:31-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
-      "data": {
-        "viaRoute": "/signin",
-        "trigger": {
-          "element": "navigate(\"/signin\")",
-          "line": 137,
-          "endLine": 137,
-          "column": 31,
-          "endColumn": 50,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\screens\\ResetPassword\\ResetPassword.tsx:210:44-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\ResetPassword\\ResetPassword.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
-      "data": {
-        "viaRoute": "/signin",
-        "trigger": {
-          "element": "<Link\r\n                                                to=\"/signin\"\r\n                                                className=\"[font-family:'Montserrat',Helvetica] font-semibold italic text-[#6938ef] cursor-pointer hover:underline\"\r\n                                            >\r\n                                                Đăng nhập\r\n                                            </Link>",
-          "line": 210,
-          "endLine": 215,
-          "column": 44,
-          "endColumn": 51,
-          "sourceFile": "src\\screens\\ResetPassword\\ResetPassword.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:58:12-to-src\\components\\guards\\RoleGuard.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\components\\guards\\RoleGuard.tsx",
-      "data": {
-        "viaRoute": "/homepage",
-        "trigger": {
-          "element": "<a href=\"/homepage\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Trang chủ\r\n            </a>",
-          "line": 58,
-          "endLine": 60,
-          "column": 12,
-          "endColumn": 16,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:64:12-to-src\\screens\\SchoolList\\SchoolList.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SchoolList\\SchoolList.tsx",
-      "data": {
-        "viaRoute": "/schools",
-        "trigger": {
-          "element": "<Link to=\"/schools\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Tìm trường\r\n            </Link>",
-          "line": 64,
-          "endLine": 66,
-          "column": 12,
-          "endColumn": 19,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:91:29-to-src\\screens\\Cart\\Cart.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\Cart\\Cart.tsx",
-      "data": {
-        "viaRoute": "/cart",
-        "trigger": {
-          "element": "navigate(\"/cart\")",
-          "line": 91,
-          "endLine": 91,
-          "column": 29,
-          "endColumn": 46,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:118:31-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
-      "data": {
-        "viaRoute": "/signin",
-        "trigger": {
-          "element": "navigate(\"/signin\")",
-          "line": 118,
-          "endLine": 118,
-          "column": 31,
-          "endColumn": 50,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:137:31-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
-      "data": {
-        "viaRoute": "/signin",
-        "trigger": {
-          "element": "navigate(\"/signin\")",
-          "line": 137,
-          "endLine": 137,
-          "column": 31,
-          "endColumn": 50,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\screens\\SignIn\\SignIn.tsx:202:24-to-src\\screens\\ForgotPassword\\ForgotPassword.tsx",
-      "source": "src\\screens\\SignIn\\SignIn.tsx",
-      "target": "src\\screens\\ForgotPassword\\ForgotPassword.tsx",
-      "data": {
-        "viaRoute": "/forgot-password",
-        "trigger": {
-          "element": "<Link to=\"/forgot-password\">\r\n                          Quên mật khẩu?\r\n                        </Link>",
-          "line": 202,
-          "endLine": 204,
-          "column": 24,
-          "endColumn": 31,
-          "sourceFile": "src\\screens\\SignIn\\SignIn.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\screens\\SignIn\\SignIn.tsx:221:22-to-src\\screens\\SignUp\\RoleSelect.tsx",
-      "source": "src\\screens\\SignIn\\SignIn.tsx",
-      "target": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "data": {
-        "viaRoute": "/signup",
-        "trigger": {
-          "element": "<Link\r\n                        to=\"/signup\"\r\n                        className=\"[font-family:'Montserrat',Helvetica] font-semibold italic text-[#6938ef] cursor-pointer hover:underline\"\r\n                      >\r\n                        Tạo tài khoản\r\n                      </Link>",
-          "line": 221,
-          "endLine": 226,
-          "column": 22,
-          "endColumn": 29,
-          "sourceFile": "src\\screens\\SignIn\\SignIn.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:58:12-to-src\\components\\guards\\RoleGuard.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\components\\guards\\RoleGuard.tsx",
-      "data": {
-        "viaRoute": "/homepage",
-        "trigger": {
-          "element": "<a href=\"/homepage\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Trang chủ\r\n            </a>",
-          "line": 58,
-          "endLine": 60,
-          "column": 12,
-          "endColumn": 16,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:64:12-to-src\\screens\\SchoolList\\SchoolList.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SchoolList\\SchoolList.tsx",
-      "data": {
-        "viaRoute": "/schools",
-        "trigger": {
-          "element": "<Link to=\"/schools\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Tìm trường\r\n            </Link>",
-          "line": 64,
-          "endLine": 66,
-          "column": 12,
-          "endColumn": 19,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:91:29-to-src\\screens\\Cart\\Cart.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\Cart\\Cart.tsx",
-      "data": {
-        "viaRoute": "/cart",
-        "trigger": {
-          "element": "navigate(\"/cart\")",
-          "line": 91,
-          "endLine": 91,
-          "column": 29,
-          "endColumn": 46,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:118:31-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
-      "data": {
-        "viaRoute": "/signin",
-        "trigger": {
-          "element": "navigate(\"/signin\")",
-          "line": 118,
-          "endLine": 118,
-          "column": 31,
-          "endColumn": 50,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:137:31-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
-      "data": {
-        "viaRoute": "/signin",
-        "trigger": {
-          "element": "navigate(\"/signin\")",
-          "line": 137,
-          "endLine": 137,
-          "column": 31,
-          "endColumn": 50,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\screens\\SchoolList\\SchoolList.tsx:45:10-to-src\\components\\guards\\RoleGuard.tsx",
-      "source": "src\\screens\\SchoolList\\SchoolList.tsx",
-      "target": "src\\components\\guards\\RoleGuard.tsx",
-      "data": {
-        "viaRoute": "/homepage",
-        "trigger": {
-          "element": "<a href=\"/homepage\" className=\"font-montserrat text-black/40 hover:text-black/70 transition-colors\">Trang chủ</a>",
-          "line": 45,
-          "endLine": 45,
-          "column": 10,
-          "endColumn": 123,
-          "sourceFile": "src\\screens\\SchoolList\\SchoolList.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:58:12-to-src\\components\\guards\\RoleGuard.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\components\\guards\\RoleGuard.tsx",
-      "data": {
-        "viaRoute": "/homepage",
-        "trigger": {
-          "element": "<a href=\"/homepage\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Trang chủ\r\n            </a>",
-          "line": 58,
-          "endLine": 60,
-          "column": 12,
-          "endColumn": 16,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:64:12-to-src\\screens\\SchoolList\\SchoolList.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SchoolList\\SchoolList.tsx",
-      "data": {
-        "viaRoute": "/schools",
-        "trigger": {
-          "element": "<Link to=\"/schools\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Tìm trường\r\n            </Link>",
-          "line": 64,
-          "endLine": 66,
-          "column": 12,
-          "endColumn": 19,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:91:29-to-src\\screens\\Cart\\Cart.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\Cart\\Cart.tsx",
-      "data": {
-        "viaRoute": "/cart",
-        "trigger": {
-          "element": "navigate(\"/cart\")",
-          "line": 91,
-          "endLine": 91,
-          "column": 29,
-          "endColumn": 46,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:118:31-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
-      "data": {
-        "viaRoute": "/signin",
-        "trigger": {
-          "element": "navigate(\"/signin\")",
-          "line": 118,
-          "endLine": 118,
-          "column": 31,
-          "endColumn": 50,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:137:31-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
-      "data": {
-        "viaRoute": "/signin",
-        "trigger": {
-          "element": "navigate(\"/signin\")",
-          "line": 137,
-          "endLine": 137,
-          "column": 31,
-          "endColumn": 50,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\screens\\SchoolDetail\\SchoolDetail.tsx:68:31-to-src\\screens\\SchoolList\\SchoolList.tsx",
-      "source": "src\\screens\\SchoolDetail\\SchoolDetail.tsx",
-      "target": "src\\screens\\SchoolList\\SchoolList.tsx",
-      "data": {
-        "viaRoute": "/schools",
-        "trigger": {
-          "element": "navigate(\"/schools\")",
-          "line": 68,
-          "endLine": 68,
-          "column": 31,
-          "endColumn": 51,
-          "sourceFile": "src\\screens\\SchoolDetail\\SchoolDetail.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\screens\\SchoolDetail\\SchoolDetail.tsx:83:10-to-src\\components\\guards\\RoleGuard.tsx",
-      "source": "src\\screens\\SchoolDetail\\SchoolDetail.tsx",
-      "target": "src\\components\\guards\\RoleGuard.tsx",
-      "data": {
-        "viaRoute": "/homepage",
-        "trigger": {
-          "element": "<Link to=\"/homepage\" className=\"font-montserrat text-black/40 hover:text-black/70\">Trang chủ</Link>",
-          "line": 83,
-          "endLine": 83,
-          "column": 10,
-          "endColumn": 109,
-          "sourceFile": "src\\screens\\SchoolDetail\\SchoolDetail.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\screens\\SchoolDetail\\SchoolDetail.tsx:85:10-to-src\\screens\\SchoolList\\SchoolList.tsx",
-      "source": "src\\screens\\SchoolDetail\\SchoolDetail.tsx",
-      "target": "src\\screens\\SchoolList\\SchoolList.tsx",
-      "data": {
-        "viaRoute": "/schools",
-        "trigger": {
-          "element": "<Link to=\"/schools\" className=\"font-montserrat text-black/40 hover:text-black/70\">Danh sách trường</Link>",
-          "line": 85,
-          "endLine": 85,
-          "column": 10,
-          "endColumn": 115,
-          "sourceFile": "src\\screens\\SchoolDetail\\SchoolDetail.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:58:12-to-src\\components\\guards\\RoleGuard.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\components\\guards\\RoleGuard.tsx",
-      "data": {
-        "viaRoute": "/homepage",
-        "trigger": {
-          "element": "<a href=\"/homepage\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Trang chủ\r\n            </a>",
-          "line": 58,
-          "endLine": 60,
-          "column": 12,
-          "endColumn": 16,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:64:12-to-src\\screens\\SchoolList\\SchoolList.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SchoolList\\SchoolList.tsx",
-      "data": {
-        "viaRoute": "/schools",
-        "trigger": {
-          "element": "<Link to=\"/schools\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Tìm trường\r\n            </Link>",
-          "line": 64,
-          "endLine": 66,
-          "column": 12,
-          "endColumn": 19,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:91:29-to-src\\screens\\Cart\\Cart.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\Cart\\Cart.tsx",
-      "data": {
-        "viaRoute": "/cart",
-        "trigger": {
-          "element": "navigate(\"/cart\")",
-          "line": 91,
-          "endLine": 91,
-          "column": 29,
-          "endColumn": 46,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:118:31-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
-      "data": {
-        "viaRoute": "/signin",
-        "trigger": {
-          "element": "navigate(\"/signin\")",
-          "line": 118,
-          "endLine": 118,
-          "column": 31,
-          "endColumn": 50,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:137:31-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
-      "data": {
-        "viaRoute": "/signin",
-        "trigger": {
-          "element": "navigate(\"/signin\")",
-          "line": 137,
-          "endLine": 137,
-          "column": 31,
-          "endColumn": 50,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:58:12-to-src\\components\\guards\\RoleGuard.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\components\\guards\\RoleGuard.tsx",
-      "data": {
-        "viaRoute": "/homepage",
-        "trigger": {
-          "element": "<a href=\"/homepage\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Trang chủ\r\n            </a>",
-          "line": 58,
-          "endLine": 60,
-          "column": 12,
-          "endColumn": 16,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:64:12-to-src\\screens\\SchoolList\\SchoolList.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SchoolList\\SchoolList.tsx",
-      "data": {
-        "viaRoute": "/schools",
-        "trigger": {
-          "element": "<Link to=\"/schools\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Tìm trường\r\n            </Link>",
-          "line": 64,
-          "endLine": 66,
-          "column": 12,
-          "endColumn": 19,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:91:29-to-src\\screens\\Cart\\Cart.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\Cart\\Cart.tsx",
-      "data": {
-        "viaRoute": "/cart",
-        "trigger": {
-          "element": "navigate(\"/cart\")",
-          "line": 91,
-          "endLine": 91,
-          "column": 29,
-          "endColumn": 46,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:118:31-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
-      "data": {
-        "viaRoute": "/signin",
-        "trigger": {
-          "element": "navigate(\"/signin\")",
-          "line": 118,
-          "endLine": 118,
-          "column": 31,
-          "endColumn": 50,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:137:31-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
-      "data": {
-        "viaRoute": "/signin",
-        "trigger": {
-          "element": "navigate(\"/signin\")",
-          "line": 137,
-          "endLine": 137,
-          "column": 31,
-          "endColumn": 50,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:58:12-to-src\\components\\guards\\RoleGuard.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\components\\guards\\RoleGuard.tsx",
-      "data": {
-        "viaRoute": "/homepage",
-        "trigger": {
-          "element": "<a href=\"/homepage\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Trang chủ\r\n            </a>",
-          "line": 58,
-          "endLine": 60,
-          "column": 12,
-          "endColumn": 16,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:64:12-to-src\\screens\\SchoolList\\SchoolList.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SchoolList\\SchoolList.tsx",
-      "data": {
-        "viaRoute": "/schools",
-        "trigger": {
-          "element": "<Link to=\"/schools\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Tìm trường\r\n            </Link>",
-          "line": 64,
-          "endLine": 66,
-          "column": 12,
-          "endColumn": 19,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:91:29-to-src\\screens\\Cart\\Cart.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\Cart\\Cart.tsx",
-      "data": {
-        "viaRoute": "/cart",
-        "trigger": {
-          "element": "navigate(\"/cart\")",
-          "line": 91,
-          "endLine": 91,
-          "column": 29,
-          "endColumn": 46,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:118:31-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
-      "data": {
-        "viaRoute": "/signin",
-        "trigger": {
-          "element": "navigate(\"/signin\")",
-          "line": 118,
-          "endLine": 118,
-          "column": 31,
-          "endColumn": 50,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:137:31-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
-      "data": {
-        "viaRoute": "/signin",
-        "trigger": {
-          "element": "navigate(\"/signin\")",
-          "line": 137,
-          "endLine": 137,
-          "column": 31,
-          "endColumn": 50,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\screens\\OutfitDetail\\OutfitDetail.tsx:108:27-to-src\\screens\\SchoolList\\SchoolList.tsx",
-      "source": "src\\screens\\OutfitDetail\\OutfitDetail.tsx",
-      "target": "src\\screens\\SchoolList\\SchoolList.tsx",
-      "data": {
-        "viaRoute": "/schools",
-        "trigger": {
-          "element": "navigate(\"/schools\")",
-          "line": 108,
-          "endLine": 108,
-          "column": 27,
-          "endColumn": 47,
-          "sourceFile": "src\\screens\\OutfitDetail\\OutfitDetail.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\screens\\OutfitDetail\\OutfitDetail.tsx:127:10-to-src\\components\\guards\\RoleGuard.tsx",
-      "source": "src\\screens\\OutfitDetail\\OutfitDetail.tsx",
-      "target": "src\\components\\guards\\RoleGuard.tsx",
-      "data": {
-        "viaRoute": "/homepage",
-        "trigger": {
-          "element": "<Link\n            to=\"/homepage\"\n            className=\"font-montserrat text-black/40 hover:text-black/70\"\n          >\n            Trang chủ\n          </Link>",
-          "line": 127,
-          "endLine": 132,
-          "column": 10,
-          "endColumn": 17,
-          "sourceFile": "src\\screens\\OutfitDetail\\OutfitDetail.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:58:12-to-src\\components\\guards\\RoleGuard.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\components\\guards\\RoleGuard.tsx",
-      "data": {
-        "viaRoute": "/homepage",
-        "trigger": {
-          "element": "<a href=\"/homepage\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Trang chủ\r\n            </a>",
-          "line": 58,
-          "endLine": 60,
-          "column": 12,
-          "endColumn": 16,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:64:12-to-src\\screens\\SchoolList\\SchoolList.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SchoolList\\SchoolList.tsx",
-      "data": {
-        "viaRoute": "/schools",
-        "trigger": {
-          "element": "<Link to=\"/schools\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Tìm trường\r\n            </Link>",
-          "line": 64,
-          "endLine": 66,
-          "column": 12,
-          "endColumn": 19,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:91:29-to-src\\screens\\Cart\\Cart.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\Cart\\Cart.tsx",
-      "data": {
-        "viaRoute": "/cart",
-        "trigger": {
-          "element": "navigate(\"/cart\")",
-          "line": 91,
-          "endLine": 91,
-          "column": 29,
-          "endColumn": 46,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:118:31-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
-      "data": {
-        "viaRoute": "/signin",
-        "trigger": {
-          "element": "navigate(\"/signin\")",
-          "line": 118,
-          "endLine": 118,
-          "column": 31,
-          "endColumn": 50,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:137:31-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
-      "data": {
-        "viaRoute": "/signin",
-        "trigger": {
-          "element": "navigate(\"/signin\")",
-          "line": 137,
-          "endLine": 137,
-          "column": 31,
-          "endColumn": 50,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:58:12-to-src\\components\\guards\\RoleGuard.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\components\\guards\\RoleGuard.tsx",
-      "data": {
-        "viaRoute": "/homepage",
-        "trigger": {
-          "element": "<a href=\"/homepage\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Trang chủ\r\n            </a>",
-          "line": 58,
-          "endLine": 60,
-          "column": 12,
-          "endColumn": 16,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:64:12-to-src\\screens\\SchoolList\\SchoolList.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SchoolList\\SchoolList.tsx",
-      "data": {
-        "viaRoute": "/schools",
-        "trigger": {
-          "element": "<Link to=\"/schools\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Tìm trường\r\n            </Link>",
-          "line": 64,
-          "endLine": 66,
-          "column": 12,
-          "endColumn": 19,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:91:29-to-src\\screens\\Cart\\Cart.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\Cart\\Cart.tsx",
-      "data": {
-        "viaRoute": "/cart",
-        "trigger": {
-          "element": "navigate(\"/cart\")",
-          "line": 91,
-          "endLine": 91,
-          "column": 29,
-          "endColumn": 46,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:118:31-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
-      "data": {
-        "viaRoute": "/signin",
-        "trigger": {
-          "element": "navigate(\"/signin\")",
-          "line": 118,
-          "endLine": 118,
-          "column": 31,
-          "endColumn": 50,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:137:31-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
-      "data": {
-        "viaRoute": "/signin",
-        "trigger": {
-          "element": "navigate(\"/signin\")",
-          "line": 137,
-          "endLine": 137,
-          "column": 31,
-          "endColumn": 50,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:58:12-to-src\\components\\guards\\RoleGuard.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\components\\guards\\RoleGuard.tsx",
-      "data": {
-        "viaRoute": "/homepage",
-        "trigger": {
-          "element": "<a href=\"/homepage\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Trang chủ\r\n            </a>",
-          "line": 58,
-          "endLine": 60,
-          "column": 12,
-          "endColumn": 16,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:64:12-to-src\\screens\\SchoolList\\SchoolList.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SchoolList\\SchoolList.tsx",
-      "data": {
-        "viaRoute": "/schools",
-        "trigger": {
-          "element": "<Link to=\"/schools\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Tìm trường\r\n            </Link>",
-          "line": 64,
-          "endLine": 66,
-          "column": 12,
-          "endColumn": 19,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:91:29-to-src\\screens\\Cart\\Cart.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\Cart\\Cart.tsx",
-      "data": {
-        "viaRoute": "/cart",
-        "trigger": {
-          "element": "navigate(\"/cart\")",
-          "line": 91,
-          "endLine": 91,
-          "column": 29,
-          "endColumn": 46,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:118:31-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
-      "data": {
-        "viaRoute": "/signin",
-        "trigger": {
-          "element": "navigate(\"/signin\")",
-          "line": 118,
-          "endLine": 118,
-          "column": 31,
-          "endColumn": 50,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:137:31-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
-      "data": {
-        "viaRoute": "/signin",
-        "trigger": {
-          "element": "navigate(\"/signin\")",
-          "line": 137,
-          "endLine": 137,
-          "column": 31,
-          "endColumn": 50,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\screens\\Cart\\Cart.tsx:130:27-to-src\\screens\\SchoolList\\SchoolList.tsx",
-      "source": "src\\screens\\Cart\\Cart.tsx",
-      "target": "src\\screens\\SchoolList\\SchoolList.tsx",
-      "data": {
-        "viaRoute": "/schools",
-        "trigger": {
-          "element": "navigate(\"/schools\")",
-          "line": 130,
-          "endLine": 130,
-          "column": 27,
-          "endColumn": 47,
-          "sourceFile": "src\\screens\\Cart\\Cart.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\screens\\Cart\\Cart.tsx:145:10-to-src\\components\\guards\\RoleGuard.tsx",
-      "source": "src\\screens\\Cart\\Cart.tsx",
-      "target": "src\\components\\guards\\RoleGuard.tsx",
-      "data": {
-        "viaRoute": "/homepage",
-        "trigger": {
-          "element": "<Link\n            to=\"/homepage\"\n            className=\"font-montserrat text-black/40 hover:text-black/70\"\n          >\n            Trang chủ\n          </Link>",
-          "line": 145,
-          "endLine": 150,
-          "column": 10,
-          "endColumn": 17,
-          "sourceFile": "src\\screens\\Cart\\Cart.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:58:12-to-src\\components\\guards\\RoleGuard.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\components\\guards\\RoleGuard.tsx",
-      "data": {
-        "viaRoute": "/homepage",
-        "trigger": {
-          "element": "<a href=\"/homepage\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Trang chủ\r\n            </a>",
-          "line": 58,
-          "endLine": 60,
-          "column": 12,
-          "endColumn": 16,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:64:12-to-src\\screens\\SchoolList\\SchoolList.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SchoolList\\SchoolList.tsx",
-      "data": {
-        "viaRoute": "/schools",
-        "trigger": {
-          "element": "<Link to=\"/schools\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Tìm trường\r\n            </Link>",
-          "line": 64,
-          "endLine": 66,
-          "column": 12,
-          "endColumn": 19,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:91:29-to-src\\screens\\Cart\\Cart.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\Cart\\Cart.tsx",
-      "data": {
-        "viaRoute": "/cart",
-        "trigger": {
-          "element": "navigate(\"/cart\")",
-          "line": 91,
-          "endLine": 91,
-          "column": 29,
-          "endColumn": 46,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:118:31-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
-      "data": {
-        "viaRoute": "/signin",
-        "trigger": {
-          "element": "navigate(\"/signin\")",
-          "line": 118,
-          "endLine": 118,
-          "column": 31,
-          "endColumn": 50,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:137:31-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
-      "data": {
-        "viaRoute": "/signin",
-        "trigger": {
-          "element": "navigate(\"/signin\")",
-          "line": 137,
-          "endLine": 137,
-          "column": 31,
-          "endColumn": 50,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:58:12-to-src\\components\\guards\\RoleGuard.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\components\\guards\\RoleGuard.tsx",
-      "data": {
-        "viaRoute": "/homepage",
-        "trigger": {
-          "element": "<a href=\"/homepage\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Trang chủ\r\n            </a>",
-          "line": 58,
-          "endLine": 60,
-          "column": 12,
-          "endColumn": 16,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:64:12-to-src\\screens\\SchoolList\\SchoolList.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SchoolList\\SchoolList.tsx",
-      "data": {
-        "viaRoute": "/schools",
-        "trigger": {
-          "element": "<Link to=\"/schools\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Tìm trường\r\n            </Link>",
-          "line": 64,
-          "endLine": 66,
-          "column": 12,
-          "endColumn": 19,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:91:29-to-src\\screens\\Cart\\Cart.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\Cart\\Cart.tsx",
-      "data": {
-        "viaRoute": "/cart",
-        "trigger": {
-          "element": "navigate(\"/cart\")",
-          "line": 91,
-          "endLine": 91,
-          "column": 29,
-          "endColumn": 46,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:118:31-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
-      "data": {
-        "viaRoute": "/signin",
-        "trigger": {
-          "element": "navigate(\"/signin\")",
-          "line": 118,
-          "endLine": 118,
-          "column": 31,
-          "endColumn": 50,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:137:31-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
-      "data": {
-        "viaRoute": "/signin",
-        "trigger": {
-          "element": "navigate(\"/signin\")",
-          "line": 137,
-          "endLine": 137,
-          "column": 31,
-          "endColumn": 50,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\screens\\Payment\\PaymentSuccess.tsx:102:31-to-src\\components\\guards\\RoleGuard.tsx",
-      "source": "src\\screens\\Payment\\PaymentSuccess.tsx",
-      "target": "src\\components\\guards\\RoleGuard.tsx",
-      "data": {
-        "viaRoute": "/homepage",
-        "trigger": {
-          "element": "navigate(\"/homepage\")",
-          "line": 102,
-          "endLine": 102,
-          "column": 31,
-          "endColumn": 52,
-          "sourceFile": "src\\screens\\Payment\\PaymentSuccess.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:58:12-to-src\\components\\guards\\RoleGuard.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\components\\guards\\RoleGuard.tsx",
-      "data": {
-        "viaRoute": "/homepage",
-        "trigger": {
-          "element": "<a href=\"/homepage\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Trang chủ\r\n            </a>",
-          "line": 58,
-          "endLine": 60,
-          "column": 12,
-          "endColumn": 16,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:64:12-to-src\\screens\\SchoolList\\SchoolList.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SchoolList\\SchoolList.tsx",
-      "data": {
-        "viaRoute": "/schools",
-        "trigger": {
-          "element": "<Link to=\"/schools\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Tìm trường\r\n            </Link>",
-          "line": 64,
-          "endLine": 66,
-          "column": 12,
-          "endColumn": 19,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:91:29-to-src\\screens\\Cart\\Cart.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\Cart\\Cart.tsx",
-      "data": {
-        "viaRoute": "/cart",
-        "trigger": {
-          "element": "navigate(\"/cart\")",
-          "line": 91,
-          "endLine": 91,
-          "column": 29,
-          "endColumn": 46,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:118:31-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
-      "data": {
-        "viaRoute": "/signin",
-        "trigger": {
-          "element": "navigate(\"/signin\")",
-          "line": 118,
-          "endLine": 118,
-          "column": 31,
-          "endColumn": 50,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:137:31-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
-      "data": {
-        "viaRoute": "/signin",
-        "trigger": {
-          "element": "navigate(\"/signin\")",
-          "line": 137,
-          "endLine": 137,
-          "column": 31,
-          "endColumn": 50,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\screens\\Payment\\PaymentCancel.tsx:107:31-to-src\\screens\\Cart\\Cart.tsx",
-      "source": "src\\screens\\Payment\\PaymentCancel.tsx",
-      "target": "src\\screens\\Cart\\Cart.tsx",
-      "data": {
-        "viaRoute": "/cart",
-        "trigger": {
-          "element": "navigate(\"/cart\")",
-          "line": 107,
-          "endLine": 107,
-          "column": 31,
-          "endColumn": 48,
-          "sourceFile": "src\\screens\\Payment\\PaymentCancel.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\screens\\Payment\\PaymentCancel.tsx:121:31-to-src\\components\\guards\\RoleGuard.tsx",
-      "source": "src\\screens\\Payment\\PaymentCancel.tsx",
-      "target": "src\\components\\guards\\RoleGuard.tsx",
-      "data": {
-        "viaRoute": "/homepage",
-        "trigger": {
-          "element": "navigate(\"/homepage\")",
-          "line": 121,
-          "endLine": 121,
-          "column": 31,
-          "endColumn": 52,
-          "sourceFile": "src\\screens\\Payment\\PaymentCancel.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:58:12-to-src\\components\\guards\\RoleGuard.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\components\\guards\\RoleGuard.tsx",
-      "data": {
-        "viaRoute": "/homepage",
-        "trigger": {
-          "element": "<a href=\"/homepage\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Trang chủ\r\n            </a>",
-          "line": 58,
-          "endLine": 60,
-          "column": 12,
-          "endColumn": 16,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:64:12-to-src\\screens\\SchoolList\\SchoolList.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SchoolList\\SchoolList.tsx",
-      "data": {
-        "viaRoute": "/schools",
-        "trigger": {
-          "element": "<Link to=\"/schools\" className=\"font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors\">\r\n              Tìm trường\r\n            </Link>",
-          "line": 64,
-          "endLine": 66,
-          "column": 12,
-          "endColumn": 19,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:91:29-to-src\\screens\\Cart\\Cart.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\Cart\\Cart.tsx",
-      "data": {
-        "viaRoute": "/cart",
-        "trigger": {
-          "element": "navigate(\"/cart\")",
-          "line": 91,
-          "endLine": 91,
-          "column": 29,
-          "endColumn": 46,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:118:31-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
-      "data": {
-        "viaRoute": "/signin",
-        "trigger": {
-          "element": "navigate(\"/signin\")",
-          "line": 118,
-          "endLine": 118,
-          "column": 31,
-          "endColumn": 50,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:137:31-to-src\\screens\\SignIn\\SignIn.tsx",
-      "source": "src\\screens\\SignUp\\RoleSelect.tsx",
-      "target": "src\\screens\\SignIn\\SignIn.tsx",
-      "data": {
-        "viaRoute": "/signin",
-        "trigger": {
-          "element": "navigate(\"/signin\")",
-          "line": 137,
-          "endLine": 137,
-          "column": 31,
-          "endColumn": 50,
-          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\screens\\ProductDetail\\ProductDetail.tsx:55:10-to-src\\screens\\SchoolList\\SchoolList.tsx",
-      "source": "src\\screens\\ProductDetail\\ProductDetail.tsx",
-      "target": "src\\screens\\SchoolList\\SchoolList.tsx",
-      "data": {
-        "viaRoute": "/schools",
-        "trigger": {
-          "element": "<Link to=\"/schools\" className=\"font-montserrat text-black/40 hover:text-black transition-colors\">\r\n            Trường THPT Phan Châu Trinh\r\n          </Link>",
-          "line": 55,
-          "endLine": 57,
-          "column": 10,
-          "endColumn": 17,
-          "sourceFile": "src\\screens\\ProductDetail\\ProductDetail.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\screens\\ProductDetail\\ProductDetail.tsx:503:12-to-src\\screens\\ProductList\\ProductList.tsx",
-      "source": "src\\screens\\ProductDetail\\ProductDetail.tsx",
-      "target": "src\\screens\\ProductList\\ProductList.tsx",
-      "data": {
-        "viaRoute": "/products",
-        "trigger": {
-          "element": "<Link\r\n              to=\"/products\"\r\n              className=\"flex items-center gap-2 text-blue-accent hover:opacity-80 transition-opacity\"\r\n            >\r\n              <span className=\"font-montserrat font-medium text-xl\">Xem tất cả</span>\r\n              <ChevronRight className=\"w-5 h-5\" />\r\n            </Link>",
-          "line": 503,
-          "endLine": 509,
-          "column": 12,
-          "endColumn": 19,
-          "sourceFile": "src\\screens\\ProductDetail\\ProductDetail.tsx"
         }
       }
     }

@@ -1,3 +1,4 @@
+import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -11,7 +12,7 @@ import { getWithdrawalRequests, approveWithdrawal, type WithdrawalRequestDto } f
 export const AdminMoneyDistribution = (): JSX.Element => {
     const navigate = useNavigate();
     const sidebarConfig = useAdminSidebarConfig();
-    const [isCollapsed, setIsCollapsed] = useState(false);
+    const [isCollapsed, toggle] = useSidebarCollapsed();
     const [loading, setLoading] = useState(true);
     const [items, setItems] = useState<WithdrawalRequestDto[]>([]);
     const [total, setTotal] = useState(0);
@@ -65,7 +66,7 @@ export const AdminMoneyDistribution = (): JSX.Element => {
         <div className="bg-[#f6f7f8] w-full min-h-screen flex flex-col">
             <div className="flex flex-1 flex-col lg:flex-row">
                 <div className={`${isCollapsed ? "lg:w-16" : "lg:w-[20rem] xl:w-[23.75rem]"} flex-shrink-0 lg:sticky lg:top-0 lg:h-screen transition-all duration-300`}>
-                    <DashboardSidebar {...sidebarConfig} isCollapsed={isCollapsed} onToggle={() => setIsCollapsed(c => !c)} onLogout={handleLogout} />
+                    <DashboardSidebar {...sidebarConfig} isCollapsed={isCollapsed} onToggle={toggle} onLogout={handleLogout} />
                 </div>
                 <div className="flex-1 flex flex-col min-w-0">
                     <div className="bg-white border-b border-[#cbcad7] px-6 lg:px-10 py-5">
@@ -95,7 +96,7 @@ export const AdminMoneyDistribution = (): JSX.Element => {
                             <div className="overflow-x-auto">
                                 <table className="w-full text-sm [font-family:'Montserrat',Helvetica]">
                                     <thead><tr className="bg-[#F9FAFB] border-b border-[#CBCAD7]">
-                                        <th className="text-left px-6 py-3 font-semibold text-[#6B7280]">Trường / NCC</th>
+                                        <th className="text-left px-6 py-3 font-semibold text-[#6B7280]">Trường / Nhà Cung Cấp</th>
                                         <th className="text-right px-6 py-3 font-semibold text-[#6B7280]">Số tiền</th>
                                         <th className="text-left px-6 py-3 font-semibold text-[#6B7280]">Ngân hàng</th>
                                         <th className="text-left px-6 py-3 font-semibold text-[#6B7280]">STK</th>

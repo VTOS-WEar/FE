@@ -1,3 +1,4 @@
+import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -37,7 +38,7 @@ const REPORT_TABS = [
 export const AdminDashboard = (): JSX.Element => {
     const navigate = useNavigate();
     const sidebarConfig = useAdminSidebarConfig();
-    const [isCollapsed, setIsCollapsed] = useState(false);
+    const [isCollapsed, toggle] = useSidebarCollapsed();
 
     // Analytics
     const [analytics, setAnalytics] = useState<DashboardAnalyticsDto | null>(null);
@@ -103,7 +104,7 @@ export const AdminDashboard = (): JSX.Element => {
         <div className="bg-[#f6f7f8] w-full min-h-screen flex flex-col">
             <div className="flex flex-1 flex-col lg:flex-row">
                 <div className={`${isCollapsed ? "lg:w-16" : "lg:w-[20rem] xl:w-[23.75rem]"} flex-shrink-0 lg:sticky lg:top-0 lg:h-screen transition-all duration-300`}>
-                    <DashboardSidebar {...sidebarConfig} isCollapsed={isCollapsed} onToggle={() => setIsCollapsed(c => !c)} onLogout={handleLogout} />
+                    <DashboardSidebar {...sidebarConfig} isCollapsed={isCollapsed} onToggle={toggle} onLogout={handleLogout} />
                 </div>
                 <div className="flex-1 flex flex-col min-w-0">
                     <div className="bg-white border-b border-[#cbcad7] px-6 lg:px-10 py-5">
@@ -139,7 +140,7 @@ export const AdminDashboard = (): JSX.Element => {
                                 </div>
                             ) : (
                                 <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-                                    <StatCard icon="👥" label="Người dùng" value={fmt(analytics?.totalUsers)} sub={`${fmt(analytics?.totalParents)} PH · ${fmt(analytics?.totalSchools)} Trường · ${fmt(analytics?.totalProviders)} NCC`} color="text-[#1A1A2E]" />
+                                    <StatCard icon="👥" label="Người dùng" value={fmt(analytics?.totalUsers)} sub={`${fmt(analytics?.totalParents)} PH · ${fmt(analytics?.totalSchools)} Trường · ${fmt(analytics?.totalProviders)} Nhà Cung Cấp`} color="text-[#1A1A2E]" />
                                     <StatCard icon="📦" label="Tổng đơn hàng" value={fmt(ordersCount?.totalOrders ?? analytics?.totalOrders)} color="text-[#4338CA]" />
                                     <StatCard icon="💰" label="Tổng doanh thu" value={`${fmt(revenueData?.totalRevenue ?? analytics?.totalRevenue)} ₫`} color="text-[#059669]" />
                                     <StatCard icon="💳" label="Tỷ lệ thanh toán" value={`${paymentRate?.completionRate ?? "—"}%`} sub="Đã thanh toán / Tổng đơn" color="text-[#6366F1]" />

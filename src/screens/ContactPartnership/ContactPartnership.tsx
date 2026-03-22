@@ -6,6 +6,7 @@ import { submitAccountRequest } from "../../lib/api/accountRequests";
 export const ContactPartnership = (): JSX.Element => {
     const [form, setForm] = useState({
         organizationName: "",
+        contactPersonName: "",
         contactEmail: "",
         contactPhone: "",
         type: 1 as 1 | 2,
@@ -21,6 +22,7 @@ export const ContactPartnership = (): JSX.Element => {
         setError("");
 
         if (!form.organizationName.trim()) return setError("Vui lòng nhập tên tổ chức");
+        if (!form.contactPersonName.trim()) return setError("Vui lòng nhập họ tên người liên hệ");
         if (!form.contactEmail.trim()) return setError("Vui lòng nhập email liên hệ");
         if (!form.contactPhone.trim()) return setError("Vui lòng nhập số điện thoại");
 
@@ -29,6 +31,7 @@ export const ContactPartnership = (): JSX.Element => {
             await submitAccountRequest({
                 ...form,
                 organizationName: form.organizationName.trim(),
+                contactPersonName: form.contactPersonName.trim(),
                 contactEmail: form.contactEmail.trim(),
                 contactPhone: form.contactPhone.trim(),
                 description: form.description.trim() || undefined,
@@ -132,6 +135,20 @@ export const ContactPartnership = (): JSX.Element => {
                                 value={form.organizationName}
                                 onChange={e => setForm(f => ({ ...f, organizationName: e.target.value }))}
                                 placeholder="VD: Trường THCS Nguyễn Huệ"
+                                className="w-full px-4 py-3 rounded-xl border border-[#e5e3f0] bg-[#fafafa] focus:outline-none focus:border-[#6938ef] focus:ring-1 focus:ring-[#6938ef] transition-colors [font-family:'Montserrat',Helvetica] text-sm"
+                            />
+                        </div>
+
+                        {/* Contact person name */}
+                        <div>
+                            <label className="block text-sm font-semibold text-[#100f14] mb-1 [font-family:'Montserrat',Helvetica]">
+                                Họ tên người liên hệ <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                                type="text"
+                                value={form.contactPersonName}
+                                onChange={e => setForm(f => ({ ...f, contactPersonName: e.target.value }))}
+                                placeholder="VD: Nguyễn Văn A"
                                 className="w-full px-4 py-3 rounded-xl border border-[#e5e3f0] bg-[#fafafa] focus:outline-none focus:border-[#6938ef] focus:ring-1 focus:ring-[#6938ef] transition-colors [font-family:'Montserrat',Helvetica] text-sm"
                             />
                         </div>

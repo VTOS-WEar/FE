@@ -75,7 +75,7 @@ export const AccountSettingsSection = (): JSX.Element => {
             variant="ghost"
             className="h-11 mt-auto justify-center rounded-lg bg-[#f94144] bg-opacity-10 text-[#f94144] [font-family:'Montserrat',Helvetica] font-semibold text-base hover:opacity-90 transition-opacity"
           >
-            Logout
+            Đăng Xuất
           </Button>
         </aside>
 

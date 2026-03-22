@@ -1,3 +1,4 @@
+import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
 import { useState } from "react";
 import {
     ArrowLeftIcon,
@@ -145,7 +146,7 @@ const studentRecords: StudentRecord[] = [
 
 /* ─── Component ──────────────────────────────────── */
 export const ConfirmReimport = (): JSX.Element => {
-    const [isCollapsed, setIsCollapsed] = useState(false);
+    const [isCollapsed, toggle] = useSidebarCollapsed();
 
     return (
         <div className="bg-[#f6f7f8] w-full min-h-screen flex flex-col">
@@ -154,7 +155,7 @@ export const ConfirmReimport = (): JSX.Element => {
                 <div className={`${isCollapsed ? "lg:w-16" : "lg:w-[20rem] xl:w-[23.75rem]"} flex-shrink-0 lg:sticky lg:top-0 lg:h-screen transition-all duration-300`}>
                     <DashboardSidebar
                         isCollapsed={isCollapsed}
-                        onToggle={() => setIsCollapsed(prev => !prev)}
+                        onToggle={toggle}
                         avatarSrc={AVATAR_SRC}
                         avatarAlt="School logo"
                         greeting="Xin chào!"

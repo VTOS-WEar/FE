@@ -1,3 +1,4 @@
+import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { DashboardSidebar } from "../../components/layout";
@@ -10,7 +11,7 @@ import { getAdminTransactions, type AdminTransactionDto, type AdminTransactionLi
 
 const TYPE_BADGES: Record<string, { label: string; color: string }> = {
     OrderPayment: { label: "Thanh toán", color: "bg-emerald-100 text-emerald-700" },
-    ProviderPayment: { label: "Chi NCC", color: "bg-blue-100 text-blue-700" },
+    ProviderPayment: { label: "Chi Nhà Cung Cấp", color: "bg-blue-100 text-blue-700" },
     Refund: { label: "Hoàn tiền", color: "bg-orange-100 text-orange-700" },
 };
 
@@ -28,7 +29,7 @@ const fmt = (n: number) => new Intl.NumberFormat("vi-VN", { style: "currency", c
 export default function AdminTransactions() {
     const navigate = useNavigate();
     const sidebarConfig = useAdminSidebarConfig();
-    const [isCollapsed, setIsCollapsed] = useState(false);
+    const [isCollapsed, toggle] = useSidebarCollapsed();
     const [data, setData] = useState<AdminTransactionListResult | null>(null);
     const [page, setPage] = useState(1);
     const [filterType, setFilterType] = useState("");
@@ -60,7 +61,7 @@ export default function AdminTransactions() {
         <div className="bg-[#f6f7f8] w-full min-h-screen flex flex-col">
             <div className="flex flex-1 flex-col lg:flex-row">
                 <div className={`${isCollapsed ? "lg:w-16" : "lg:w-[20rem] xl:w-[23.75rem]"} flex-shrink-0 lg:sticky lg:top-0 lg:h-screen transition-all duration-300`}>
-                    <DashboardSidebar {...sidebarConfig} isCollapsed={isCollapsed} onToggle={() => setIsCollapsed(c => !c)} onLogout={handleLogout} />
+                    <DashboardSidebar {...sidebarConfig} isCollapsed={isCollapsed} onToggle={toggle} onLogout={handleLogout} />
                 </div>
                 <div className="flex-1 flex flex-col min-w-0">
                     <div className="bg-white border-b border-[#cbcad7] px-6 lg:px-10 py-5">
@@ -96,7 +97,7 @@ export default function AdminTransactions() {
                                 className="border border-[#CBCAD7] rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#6366F1]/30 bg-white">
                                 <option value="">Tất cả loại</option>
                                 <option value="OrderPayment">Thanh toán</option>
-                                <option value="ProviderPayment">Chi NCC</option>
+                                <option value="ProviderPayment">Chi Nhà Cung Cấp</option>
                                 <option value="Refund">Hoàn tiền</option>
                             </select>
                             <select value={filterStatus} onChange={(e) => { setFilterStatus(e.target.value); setPage(1); }}

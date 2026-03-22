@@ -1,7 +1,7 @@
 import {
     LayoutDashboard, Users, Shirt, School,
     Megaphone, FileText, Factory,
-    Truck, AlertTriangle, ShoppingBag, Wallet
+    AlertTriangle, ShoppingBag, Wallet
 } from "lucide-react";
 import type { DashboardSidebarProps } from "../components/layout";
 
@@ -65,11 +65,6 @@ export const DASHBOARD_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, 'isCollapsed'
         {
             title: "VẬN HÀNH",
             items: [
-                {
-                    icon: Truck,
-                    label: "Phân phối",
-                    href: "/school/distribution",
-                },
                 {
                     icon: AlertTriangle,
                     label: "Khiếu nại",

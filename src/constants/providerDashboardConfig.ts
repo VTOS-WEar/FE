@@ -26,7 +26,7 @@ export const PROVIDER_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, 'isCollapsed' 
             items: [
                 {
                     icon: Building2,
-                    label: "Hồ sơ NCC",
+                    label: "Hồ sơ Nhà Cung Cấp",
                     href: "/provider/profile",
                 },
                 {
@@ -56,7 +56,7 @@ export const PROVIDER_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, 'isCollapsed' 
             items: [
                 {
                     icon: Wallet,
-                    label: "Ví NCC",
+                    label: "Ví Nhà Cung Cấp",
                     href: "/provider/wallet",
                 },
                 {

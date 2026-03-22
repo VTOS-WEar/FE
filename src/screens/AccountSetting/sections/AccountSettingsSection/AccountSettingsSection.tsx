@@ -78,7 +78,7 @@ export const AccountSettingsSection = (): JSX.Element => {
 
           <button className="w-full h-11 rounded-lg flex items-center justify-center px-4 bg-[#f94144] bg-opacity-10 text-[#f94144] mt-auto">
             <span className="[font-family:'Montserrat',Helvetica] font-semibold text-base text-center tracking-[0] leading-[normal]">
-              Logout
+              Đăng Xuất
             </span>
           </button>
         </aside>

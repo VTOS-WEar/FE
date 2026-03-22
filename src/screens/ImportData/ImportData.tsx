@@ -1,3 +1,4 @@
+import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
 import { useState, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -37,7 +38,7 @@ function formatDate(isoDate: string): string {
 export const ImportData = (): JSX.Element => {
     const navigate = useNavigate();
     const sidebarConfig = useSidebarConfig();
-    const [isCollapsed, setIsCollapsed] = useState(false);
+    const [isCollapsed, toggle] = useSidebarCollapsed();
     const [schoolName, setSchoolName] = useState("");
 
     /* ── Upload state ── */
@@ -150,7 +151,7 @@ export const ImportData = (): JSX.Element => {
                         {...sidebarConfig}
                         name={schoolName}
                         isCollapsed={isCollapsed}
-                        onToggle={() => setIsCollapsed((prev) => !prev)}
+                        onToggle={toggle}
                         onLogout={handleLogout}
                     />
                 </div>

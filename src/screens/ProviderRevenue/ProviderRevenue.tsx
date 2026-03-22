@@ -1,3 +1,4 @@
+import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { DashboardSidebar } from "../../components/layout";
@@ -23,7 +24,7 @@ function fmtDate(iso: string) {
 export default function ProviderRevenue() {
     const navigate = useNavigate();
     const sidebarConfig = useProviderSidebarConfig();
-    const [isCollapsed, setIsCollapsed] = useState(false);
+    const [isCollapsed, toggle] = useSidebarCollapsed();
     const [providerName, setProviderName] = useState("");
 
     const [revenue, setRevenue] = useState<ProviderRevenueDto | null>(null);
@@ -40,7 +41,7 @@ export default function ProviderRevenue() {
                 getProviderRevenue(),
                 getProviderPaymentHistory(page, 10),
             ]);
-            setProviderName(profile.providerName || "NCC");
+            setProviderName(profile.providerName || "Nhà Cung Cấp");
             setRevenue(rev);
             setPayments(pay.items);
             setTotal(pay.total);
@@ -62,7 +63,7 @@ export default function ProviderRevenue() {
         <div className="bg-[#f6f7f8] w-full min-h-screen flex flex-col">
             <div className="flex flex-1 flex-col lg:flex-row">
                 <div className={`${isCollapsed ? "lg:w-16" : "lg:w-[20rem] xl:w-[23.75rem]"} flex-shrink-0 lg:sticky lg:top-0 lg:h-screen transition-all duration-300`}>
-                    <DashboardSidebar {...sidebarConfig} name={providerName} isCollapsed={isCollapsed} onToggle={() => setIsCollapsed(c => !c)} onLogout={handleLogout} />
+                    <DashboardSidebar {...sidebarConfig} name={providerName} isCollapsed={isCollapsed} onToggle={toggle} onLogout={handleLogout} />
                 </div>
 
                 <div className="flex-1 flex flex-col min-w-0">

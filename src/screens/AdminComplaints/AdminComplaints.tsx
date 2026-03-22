@@ -1,3 +1,4 @@
+import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { DashboardSidebar } from "../../components/layout";
@@ -29,7 +30,7 @@ const STATUS_COLORS: Record<string, string> = {
 export default function AdminComplaints() {
     const navigate = useNavigate();
     const sidebarConfig = useAdminSidebarConfig();
-    const [isCollapsed, setIsCollapsed] = useState(false);
+    const [isCollapsed, toggle] = useSidebarCollapsed();
     const [data, setData] = useState<AdminComplaintListResult | null>(null);
     const [page, setPage] = useState(1);
     const [statusFilter, setStatusFilter] = useState("");
@@ -75,7 +76,7 @@ export default function AdminComplaints() {
         <div className="bg-[#f6f7f8] w-full min-h-screen flex flex-col">
             <div className="flex flex-1 flex-col lg:flex-row">
                 <div className={`${isCollapsed ? "lg:w-16" : "lg:w-[20rem] xl:w-[23.75rem]"} flex-shrink-0 lg:sticky lg:top-0 lg:h-screen transition-all duration-300`}>
-                    <DashboardSidebar {...sidebarConfig} isCollapsed={isCollapsed} onToggle={() => setIsCollapsed(c => !c)} onLogout={handleLogout} />
+                    <DashboardSidebar {...sidebarConfig} isCollapsed={isCollapsed} onToggle={toggle} onLogout={handleLogout} />
                 </div>
                 <div className="flex-1 flex flex-col min-w-0">
                     <div className="bg-white border-b border-[#cbcad7] px-6 lg:px-10 py-5">
@@ -124,7 +125,7 @@ export default function AdminComplaints() {
                                     <thead><tr className="bg-[#F9FAFB] border-b border-[#CBCAD7]">
                                         <th className="text-left px-5 py-3 font-semibold text-[#6B7280] text-xs uppercase">Tiêu đề</th>
                                         <th className="text-left px-5 py-3 font-semibold text-[#6B7280] text-xs uppercase">Trường</th>
-                                        <th className="text-left px-5 py-3 font-semibold text-[#6B7280] text-xs uppercase">NCC</th>
+                                        <th className="text-left px-5 py-3 font-semibold text-[#6B7280] text-xs uppercase">Nhà Cung Cấp</th>
                                         <th className="text-left px-5 py-3 font-semibold text-[#6B7280] text-xs uppercase">Chiến dịch</th>
                                         <th className="text-left px-5 py-3 font-semibold text-[#6B7280] text-xs uppercase">Trạng thái</th>
                                         <th className="text-left px-5 py-3 font-semibold text-[#6B7280] text-xs uppercase">Ngày tạo</th>

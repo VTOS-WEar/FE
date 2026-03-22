@@ -1,3 +1,4 @@
+import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -328,7 +329,7 @@ function DeleteConfirmDialog({
 export const StudentListV2 = (): JSX.Element => {
     const navigate = useNavigate();
     const sidebarConfig = useSidebarConfig();
-    const [isCollapsed, setIsCollapsed] = useState(false);
+    const [isCollapsed, toggle] = useSidebarCollapsed();
     const [schoolName, setSchoolName] = useState("");
 
     /* ── Data state ── */
@@ -526,7 +527,7 @@ export const StudentListV2 = (): JSX.Element => {
                         {...sidebarConfig}
                         name={schoolName}
                         isCollapsed={isCollapsed}
-                        onToggle={() => setIsCollapsed((prev) => !prev)}
+                        onToggle={toggle}
                         onLogout={handleLogout}
                     />
                 </div>

@@ -81,9 +81,11 @@ export async function getSchoolOrders(
   page = 1,
   pageSize = 10,
   status?: string,
+  search?: string,
 ): Promise<SchoolOrderListResponse> {
   const params = new URLSearchParams({ page: String(page), pageSize: String(pageSize) });
   if (status) params.set("status", status);
+  if (search) params.set("search", search);
 
   const result = await api<{ isSuccess: boolean; value: SchoolOrderListResponse }>(
     `${endpoints.schools.schoolOrders}?${params}`,
