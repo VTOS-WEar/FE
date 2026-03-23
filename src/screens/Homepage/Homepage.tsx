@@ -1,6 +1,7 @@
 import { ArrowRight, User } from "lucide-react";
 import { GuestLayout } from "../../components/layout/GuestLayout";
 import { HeroSection } from "./sections/HeroSection/HeroSection";
+import { FeaturesHighlightSection } from "./sections/FeaturesHighlightSection";
 
 export const Homepage = (): JSX.Element => {
 
@@ -9,100 +10,52 @@ export const Homepage = (): JSX.Element => {
 
       <HeroSection />
 
-      {/* Features Section */}
-      <section className="py-12 md:py-20 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row items-center justify-center gap-8 lg:gap-16 max-w-6xl mx-auto">
-            {/* Feature 1 */}
-            <div className="relative w-full max-w-sm">
-              <div className="flex flex-col items-center gap-3 px-6 py-8 bg-[#E9F0FF] rounded-[30px] shadow-lg mt-8">
-                <h3 className="font-baloo text-xl text-text-dark text-center leading-[1.3]">
-                  Thử nhanh bằng AI
-                </h3>
-                <p className="font-baloo2 text-lg text-text-dark text-center leading-[1.3]">
-                  Tải ảnh chân dung và hệ thống tự tạo hình bạn mặc đồng phục trong vài giây.
-                </p>
-              </div>
-              <div className="absolute -top-0 left-1/2 -translate-x-1/2 w-16 h-16 bg-blue-accent rounded-full flex items-center justify-center p-2.5 shadow-lg">
-                <svg className="w-10 h-10" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path fillRule="evenodd" clipRule="evenodd" d="M28.75 7.5H11.25C10.2554 7.5 9.30161 7.89509 8.59835 8.59835C7.89509 9.30161 7.5 10.2554 7.5 11.25V23.8175L9.905 22.0675C10.6618 21.5176 11.5749 21.2248 12.5103 21.232C13.4458 21.2392 14.3543 21.546 15.1025 22.1075L17.4225 23.8475L23.3425 18.7725C24.1564 18.0755 25.1978 17.7014 26.2692 17.7212C27.3406 17.741 28.3674 18.1534 29.155 18.88L32.5 21.9675V11.25C32.5 10.2554 32.1049 9.30161 31.4017 8.59835C30.6984 7.89509 29.7446 7.5 28.75 7.5ZM36.25 26.245V11.25C36.25 9.26088 35.4598 7.35322 34.0533 5.9467C32.6468 4.54018 30.7391 3.75 28.75 3.75H11.25C9.26088 3.75 7.35322 4.54018 5.9467 5.9467C4.54018 7.35322 3.75 9.26088 3.75 11.25V28.75C3.75 30.7391 4.54018 32.6468 5.9467 34.0533C7.35322 35.4598 9.26088 36.25 11.25 36.25H28.75C30.7391 36.25 32.6468 35.4598 34.0533 34.0533C35.4598 32.6468 36.25 30.7391 36.25 28.75V26.245ZM32.5 27.07L26.6125 21.635C26.5 21.5313 26.3533 21.4726 26.2003 21.4698C26.0474 21.467 25.8987 21.5205 25.7825 21.62L18.72 27.675L17.5775 28.655L16.375 27.7525L12.85 25.11C12.7433 25.0305 12.6139 24.9871 12.4808 24.9862C12.3477 24.9853 12.2178 25.0269 12.11 25.105L7.5 28.4525V28.75C7.5 29.7446 7.89509 30.6984 8.59835 31.4017C9.30161 32.1049 10.2554 32.5 11.25 32.5H28.75C29.7446 32.5 30.6984 32.1049 31.4017 31.4017C32.1049 30.6984 32.5 29.7446 32.5 28.75V27.07ZM18.75 15C18.75 15.9946 18.3549 16.9484 17.6517 17.6517C16.9484 18.3549 15.9946 18.75 15 18.75C14.0054 18.75 13.0516 18.3549 12.3483 17.6517C11.6451 16.9484 11.25 15.9946 11.25 15C11.25 14.0054 11.6451 13.0516 12.3483 12.3483C13.0516 11.6451 14.0054 11.25 15 11.25C15.9946 11.25 16.9484 11.6451 17.6517 12.3483C18.3549 13.0516 18.75 14.0054 18.75 15Z" fill="white" />
-                </svg>
-              </div>
-            </div>
+      <FeaturesHighlightSection/>
 
-            {/* Feature 2 */}
-            <div className="relative w-full max-w-sm">
-              <div className="flex flex-col items-center gap-3 px-6 py-8 bg-[#F2EBFF] rounded-[30px] shadow-lg mt-8">
-                <h3 className="font-baloo text-xl text-text-dark text-center leading-[1.3]">
-                  Hơn 200 mẫu đồng phục
-                </h3>
-                <p className="font-baloo2 text-lg text-text-dark text-center leading-[1.3]">
-                  Hỗ trợ nhiều trường khác nhau, đầy đủ mẫu áo–quần–váy theo từng cấp học.
-                </p>
-              </div>
-              <div className="absolute -top-0 left-1/2 -translate-x-1/2 w-[70px] h-16 bg-[#7A40F2] rounded-full flex items-center justify-center p-2.5 shadow-lg">
-                <svg className="w-12 h-10" viewBox="0 0 50 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M25.0156 8.75C28.4688 8.75 31.2656 5.95312 31.2656 2.5H35.4453C36.7734 2.5 38.0469 3.02344 38.9844 3.96094L48.25 13.2344C49.2266 14.2109 49.2266 15.7969 48.25 16.7734L44.2891 20.7344C43.3125 21.7109 41.7266 21.7109 40.75 20.7344L37.5156 17.5V35C37.5156 37.7578 35.2734 40 32.5156 40H17.5156C14.7578 40 12.5156 37.7578 12.5156 35V17.5L9.28125 20.7344C8.30469 21.7109 6.71875 21.7109 5.74219 20.7344L1.78906 16.7656C0.8125 15.7891 0.8125 14.2031 1.78906 13.2266L11.0547 3.96094C11.9922 3.02344 13.2656 2.5 14.5938 2.5H18.7734C18.7734 5.95312 21.5703 8.75 25.0234 8.75H25.0156Z" fill="white" />
-                </svg>
-              </div>
-            </div>
+{/* ══ HOW IT WORKS ══ */}
+ <section id="how-it-works" className="py-[72px] px-7 bg-white">
+      <div className="max-w-[1280px] mx-auto px-7">
 
-            {/* Feature 3 */}
-            <div className="relative w-full max-w-sm">
-              <div className="flex flex-col items-center gap-3 px-6 py-8 bg-[#EAFBF5] rounded-[30px] shadow-lg mt-8">
-                <h3 className="font-baloo text-xl text-text-dark text-center leading-[1.3]">
-                  AI nhận diện dáng người chuẩn xác
-                </h3>
-                <p className="font-baloo2 text-lg text-text-dark text-center leading-[1.3]">
-                  Dự đoán form mặc và kích cỡ trực quan trực tiếp trên trình duyệt.
-                </p>
-              </div>
-              <div className="absolute -top-0 left-1/2 -translate-x-1/2 w-16 h-16 bg-teal-accent rounded-full flex items-center justify-center p-2.5 shadow-lg">
-                <svg className="w-10 h-10" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M17.0717 27.1899L10 20.1166L12.3567 17.7599L17.0717 22.4733L26.4983 13.0449L28.8567 15.4033L17.0717 27.1899Z" fill="white" />
-                  <path fillRule="evenodd" clipRule="evenodd" d="M1.66666 19.9998C1.66666 9.87484 9.87499 1.6665 20 1.6665C30.125 1.6665 38.3333 9.87484 38.3333 19.9998C38.3333 30.1248 30.125 38.3332 20 38.3332C9.87499 38.3332 1.66666 30.1248 1.66666 19.9998ZM20 34.9998C18.0302 34.9998 16.0796 34.6119 14.2597 33.858C12.4399 33.1042 10.7863 31.9993 9.39339 30.6064C8.00051 29.2136 6.89562 27.56 6.1418 25.7401C5.38798 23.9202 4.99999 21.9697 4.99999 19.9998C4.99999 18.03 5.38798 16.0795 6.1418 14.2596C6.89562 12.4397 8.00051 10.7861 9.39339 9.39323C10.7863 8.00036 12.4399 6.89546 14.2597 6.14164C16.0796 5.38782 18.0302 4.99984 20 4.99984C23.9782 4.99984 27.7935 6.58019 30.6066 9.39323C33.4196 12.2063 35 16.0216 35 19.9998C35 23.9781 33.4196 27.7934 30.6066 30.6064C27.7935 33.4195 23.9782 34.9998 20 34.9998Z" fill="white" />
-                </svg>
-              </div>
-            </div>
-          </div>
+        {/* Title */}
+        <div className="text-center">
+          <h2 className="text-[28px] font-extrabold text-[#1a1a2e] mb-2">
+            Thử Nhanh – <span className="text-purple-600">Chuẩn</span> – Không Cần Studio
+          </h2>
+          <p className="text-sm text-gray-500 mb-10">
+            Chỉ với 3 bước: Tải ảnh chân dung · Chọn mẫu đồng phục · Nhận kết quả
+          </p>
         </div>
-      </section>
 
-      {/* How It Works Section */}
-      <section id="how-it-works" className="py-12 md:py-20 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12 md:mb-20">
-            <h2 className="font-baloo text-3xl md:text-5xl leading-[1.4] mb-4">
-              <span className="text-purple-dark">Thử Nhanh – Chuẩn</span>
-              <span className="text-text-dark"> – Không Cần Studio</span>
-            </h2>
-            <p className="font-baloo2 text-xl md:text-3xl text-text-dark leading-[1.3] max-w-4xl mx-auto">
-              Chỉ với 3 bước: Tải ảnh chân dung - Chọn mẫu đồng phục - Nhận kết quả
-            </p>
-          </div>
+        {/* Compare */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 max-w-[880px] mx-auto">
 
-          <div className="flex flex-col md:flex-row items-start justify-center gap-6 lg:gap-12 max-w-6xl mx-auto">
-            {/* Before Image */}
-            <div className="w-full md:w-1/2 rounded-3xl border border-gray-200 bg-white shadow-xl overflow-hidden">
-              <img
-                src="https://api.builder.io/api/v1/image/assets/TEMP/6150de8fdb5f524f53156fc41728708d3d4ce15e?width=2434"
-                alt="Before"
-                className="w-full h-auto"
-              />
-            </div>
-
-            {/* After Image */}
-            <div className="w-full md:w-1/2 rounded-3xl border border-blue-200 bg-gradient-to-br from-blue-50 to-purple-50 shadow-xl overflow-hidden">
-              <img
-                src="https://api.builder.io/api/v1/image/assets/TEMP/33100ce90f8c3736531a7cf7d457c81e3de99876?width=2174"
-                alt="After"
-                className="w-full h-auto"
-              />
+          {/* Before */}
+          <div className="rounded-2xl overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.10)]">
+            <img
+              src="https://api.builder.io/api/v1/image/assets/TEMP/6150de8fdb5f524f53156fc41728708d3d4ce15e?width=2434s"
+              alt="before"
+              className="w-full h-[300px] object-cover"
+            />
+            <div className="py-3 text-center text-sm font-bold bg-gray-100 text-gray-700">
+              Ảnh gốc của bạn
             </div>
           </div>
+
+          {/* After */}
+          <div className="rounded-2xl overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.10)]">
+            <img
+              src="https://api.builder.io/api/v1/image/assets/TEMP/33100ce90f8c3736531a7cf7d457c81e3de99876?width=2174"
+              alt="after"
+              className="w-full h-[300px] object-cover"
+            />
+            <div className="py-3 text-center text-sm font-bold text-white bg-gradient-to-r from-purple-600 to-purple-500">
+              Sau khi thử đồng phục ✨
+            </div>
+          </div>
+
         </div>
-      </section>
-
+      </div>
+    </section>
       {/* Uniform Catalog Section */}
       <section className="py-12 md:py-20 bg-white">
         <div className="container mx-auto px-4">
