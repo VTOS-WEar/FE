@@ -89,7 +89,7 @@ export function NavbarGuest() {
 
   return (
     // <nav className="sticky top-0 z-50 border-b border-[#e0d9ff]/80 bg-[#eeebff]/75 backdrop-blur-sm py-4">
-          <nav className="sticky top-0 z-50 border-none bg-transparent py-4">
+          <nav className="sticky top-0 z-50 border-none bg-transparent py-2">
       <div className="mx-auto w-full max-w-[1240px] px-3 sm:px-4 lg:px-6">
         <div className="grid h-16 grid-cols-[auto,1fr,auto] items-center gap-2 sm:gap-3 lg:gap-5">
           <button

@@ -1,69 +1,13 @@
-import { ChevronLeft, ChevronRight, ArrowRight, User } from "lucide-react";
+import { ArrowRight, User } from "lucide-react";
 import { GuestLayout } from "../../components/layout/GuestLayout";
+import { HeroSection } from "./sections/HeroSection/HeroSection";
 
 export const Homepage = (): JSX.Element => {
 
   return (
-    <GuestLayout bgColor="white">
+    <GuestLayout bgColor="bg-gradient-to-br from-purple-50 via-white to-blue-50 ">
 
-      {/* Hero Section */}
-      <section className="relative bg-purple-light py-12 md:py-20 overflow-hidden">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-12">
-            {/* Left Arrow */}
-            <button className="hidden lg:block text-purple-main/50 hover:text-purple-main transition-colors">
-              <ChevronLeft className="w-7 h-14 stroke-[10]" strokeLinecap="round" strokeLinejoin="round" />
-            </button>
-
-            {/* Left Content */}
-            <div className="flex-1 max-w-xl text-center lg:text-left">
-              <h1 className="font-gochi text-7xl md:text-[150px] lg:text-[200px] xl:text-[300px] leading-[1.15] text-purple-main drop-shadow-lg mb-6">
-                VTOS
-              </h1>
-              <h2 className="font-baloo2 text-2xl md:text-3xl lg:text-4xl font-semibold text-text-dark leading-[1.4] mb-4">
-                Thử đồng phục trực tuyến bằng AI
-              </h2>
-              <p className="font-baloo2 text-lg md:text-xl text-text-dark leading-[1.3] mb-8 max-w-lg mx-auto lg:mx-0">
-                Tải ảnh của bạn lên và xem đồng phục trường hiển thị ngay lập tức. Không cần thử trực tiếp, không mất thời gian. Phụ huynh, học sinh và nhà trường đều có thể sử dụng dễ dàng.
-              </p>
-
-              {/* CTA Button */}
-              <button className="group relative inline-flex items-center justify-center px-12 py-3.5 bg-gradient-to-br from-purple-dark via-purple-medium to-purple-dark rounded-full shadow-2xl hover:shadow-purple-dark/50 transition-all duration-300 overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-                <span className="relative font-baloo text-2xl text-white">
-                  Bắt đầu thử ngay
-                </span>
-              </button>
-            </div>
-
-            {/* Phone Mockup */}
-            <div className="relative flex-shrink-0">
-              <div className="relative w-[280px] md:w-[350px] lg:w-[431px] h-[560px] md:h-[700px] lg:h-[888px] rounded-[50px] md:rounded-[60px] lg:rounded-[70px] bg-black overflow-hidden shadow-2xl">
-                {/* Phone Screen */}
-                <img
-                  src="https://api.builder.io/api/v1/image/assets/TEMP/eef0ae9593f6a6296eb52342229bd158fe61eb1b?width=1808"
-                  alt="App Preview"
-                  className="absolute inset-0 w-full h-full object-cover object-center"
-                />
-
-                {/* Camera Notch */}
-                <div className="absolute left-1/2 top-8 -translate-x-1/2 w-[124px] h-[36px] bg-black rounded-full flex items-center justify-end px-4">
-                  <div className="w-[18px] h-[18px] rounded-full bg-[#121212] border border-[#0E0E0E] opacity-75" />
-                </div>
-
-                {/* Phone Frame */}
-                <div className="absolute inset-0 rounded-[50px] md:rounded-[60px] lg:rounded-[70px] border-4 border-[#565553] pointer-events-none" />
-                <div className="absolute inset-0 rounded-[50px] md:rounded-[60px] lg:rounded-[70px] border-2 border-[#3F3E3B] pointer-events-none" />
-              </div>
-            </div>
-
-            {/* Right Arrow */}
-            <button className="hidden lg:block text-purple-main/50 hover:text-purple-main transition-colors">
-              <ChevronRight className="w-7 h-14 stroke-[10]" strokeLinecap="round" strokeLinejoin="round" />
-            </button>
-          </div>
-        </div>
-      </section>
+      <HeroSection />
 
       {/* Features Section */}
       <section className="py-12 md:py-20 bg-white">
