@@ -5,7 +5,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react"
 
 export function HeroSection() {
   return (
-    <section className="relative w-full overflow-hidden bg-gradient-to-br from-purple-50 via-white to-blue-50 py-10">
+    <section className="relative w-full overflow-hidden  py-10">
 
       {/* Arrows */}
       <button
@@ -28,7 +28,7 @@ export function HeroSection() {
 
         {/* Left */}
         <div className="space-y-4 text-center mt-8">
-          <h1 className="leading-[0.6] my-0 [font-family:'Gochi_Hand',cursive] text-[clamp(8rem,14vw,17rem)] font-normal tracking-[0.02em] text-[#a87af0] [text-shadow:0_8px_16px_rgba(92,71,155,0.3)]">
+          <h1 className="leading-[0.6] my-0 [font-family:'Gochi_Hand',cursive] text-[clamp(8rem,14vw,16rem)] font-normal tracking-[0.02em] text-[#a87af0] [text-shadow:0_8px_16px_rgba(92,71,155,0.3)]">
             VTOS
           </h1>
 

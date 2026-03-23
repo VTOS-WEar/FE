@@ -29,7 +29,7 @@ export const FeaturesHighlightSection = (): JSX.Element => {
   ];
 
   return (
-    <section className="w-full bg-gradient-to-br from-purple-50 via-white to-blue-50 px-4 py-12 md:px-8 md:py-16">
+    <section className="w-full px-4 py-12 md:px-8 md:py-16">
       <div className="mx-auto grid w-full max-w-[980px] grid-cols-1 justify-items-center gap-5 md:grid-cols-2 md:gap-6 xl:grid-cols-3 xl:gap-7">
         {features.map((feature, index) => {
           const Icon = feature.icon;

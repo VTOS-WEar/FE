@@ -2,60 +2,18 @@ import { ArrowRight, User } from "lucide-react";
 import { GuestLayout } from "../../components/layout/GuestLayout";
 import { HeroSection } from "./sections/HeroSection/HeroSection";
 import { FeaturesHighlightSection } from "./sections/FeaturesHighlightSection";
+import { ProductShowcaseSection } from "./sections/ProductShowcaseSection";
 
 export const Homepage = (): JSX.Element => {
 
   return (
-    <GuestLayout bgColor="bg-gradient-to-br from-purple-50 via-white to-blue-50 ">
+    <GuestLayout>
 
       <HeroSection />
 
       <FeaturesHighlightSection/>
+<ProductShowcaseSection/>
 
-{/* ══ HOW IT WORKS ══ */}
- <section id="how-it-works" className="py-[72px] px-7 bg-white">
-      <div className="max-w-[1280px] mx-auto px-7">
-
-        {/* Title */}
-        <div className="text-center">
-          <h2 className="text-[28px] font-extrabold text-[#1a1a2e] mb-2">
-            Thử Nhanh – <span className="text-purple-600">Chuẩn</span> – Không Cần Studio
-          </h2>
-          <p className="text-sm text-gray-500 mb-10">
-            Chỉ với 3 bước: Tải ảnh chân dung · Chọn mẫu đồng phục · Nhận kết quả
-          </p>
-        </div>
-
-        {/* Compare */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 max-w-[880px] mx-auto">
-
-          {/* Before */}
-          <div className="rounded-2xl overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.10)]">
-            <img
-              src="https://api.builder.io/api/v1/image/assets/TEMP/6150de8fdb5f524f53156fc41728708d3d4ce15e?width=2434s"
-              alt="before"
-              className="w-full h-[300px] object-cover"
-            />
-            <div className="py-3 text-center text-sm font-bold bg-gray-100 text-gray-700">
-              Ảnh gốc của bạn
-            </div>
-          </div>
-
-          {/* After */}
-          <div className="rounded-2xl overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.10)]">
-            <img
-              src="https://api.builder.io/api/v1/image/assets/TEMP/33100ce90f8c3736531a7cf7d457c81e3de99876?width=2174"
-              alt="after"
-              className="w-full h-[300px] object-cover"
-            />
-            <div className="py-3 text-center text-sm font-bold text-white bg-gradient-to-r from-purple-600 to-purple-500">
-              Sau khi thử đồng phục ✨
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </section>
       {/* Uniform Catalog Section */}
       <section className="py-12 md:py-20 bg-white">
         <div className="container mx-auto px-4">
