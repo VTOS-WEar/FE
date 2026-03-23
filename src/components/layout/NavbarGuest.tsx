@@ -1,253 +1,221 @@
-// import { Search, ShoppingCart, Bell, ChevronDown, LogIn, User } from "lucide-react";
-// import { useState, useEffect } from "react";
-// import { useNavigate, Link } from "react-router-dom";
-// import { useCart } from "../../contexts/CartContext";
-
-// function getSessionUser(): { fullName: string; role: string } | null {
-//   const raw = localStorage.getItem("user") || sessionStorage.getItem("user");
-//   if (!raw) return null;
-//   try { return JSON.parse(raw); } catch { return null; }
-// }
-
-// function isLoggedIn(): boolean {
-//   return !!(localStorage.getItem("access_token") || sessionStorage.getItem("access_token"));
-// }
-
-// export const NavbarGuest = (): JSX.Element => {
-//   const navigate = useNavigate();
-//   const cartCtx = useCart();
-//   const [loggedIn, setLoggedIn] = useState(isLoggedIn);
-//   const [userName, setUserName] = useState("");
-//   const [userRole, setUserRole] = useState("");
-
-//   // Poll login status so navbar reacts immediately to logout/login
-//   useEffect(() => {
-//     const check = () => {
-//       const hasSession = isLoggedIn();
-//       setLoggedIn(hasSession);
-//       if (hasSession) {
-//         const u = getSessionUser();
-//         setUserName(u?.fullName || "Hồ sơ");
-//         setUserRole(u?.role || "");
-//       }
-//     };
-//     check(); // run once immediately
-//     const interval = setInterval(check, 500);
-//     return () => clearInterval(interval);
-//   }, []);
-
-//   // Only show cart badge for logged-in users
-//   const cartCount = loggedIn ? cartCtx.getItemCount() : 0;
-
-//   const profilePath = userRole === "School" ? "/school/profile" : "/parentprofile";
-
-//   return (
-//     <header className="relative z-10 bg-purple-light/80 backdrop-blur-sm">
-//       <div className="container mx-auto px-4 py-3">
-//         <nav className="flex items-center justify-between gap-3">
-//           {/* Logo */}
-//           <img
-//             src="https://api.builder.io/api/v1/image/assets/TEMP/b5b02bd27ae25e8fcc3a61694891ffa491402bfb?width=328"
-//             alt="VTOS Logo"
-//             className="h-14 w-auto object-contain cursor-pointer"
-//             onClick={() => navigate("/")}
-//           />
-
-//           {/* Navigation Menu - Pill shape */}
-//           <div className="hidden lg:flex items-center gap-8 px-8 py-3 bg-white rounded-full shadow-lg">
-//             <a href="/homepage" className="font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors">
-//               Trang chủ
-//             </a>
-//             <a href="#how-it-works" className="font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors">
-//               Cách hoạt động
-//             </a>
-//             <Link to="/schools" className="font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors">
-//               Tìm trường
-//             </Link>
-//             <div className="flex items-center gap-2 cursor-pointer group">
-//               <span className="font-baloo font-semibold text-base text-black group-hover:text-purple-dark transition-colors">
-//                 Sản phẩm
-//               </span>
-//               <ChevronDown className="w-3 h-3 stroke-2" />
-//             </div>
-//             <a href="#contact" className="font-baloo font-semibold text-base text-black hover:text-purple-dark transition-colors">
-//               Liên hệ
-//             </a>
-//             <div className="relative">
-//               <input
-//                 type="text"
-//                 placeholder="Tìm kiếm..."
-//                 className="font-roboto text-base text-black/60 bg-transparent outline-none w-48 placeholder:text-black/60"
-//               />
-//             </div>
-//             <button className="flex items-center justify-center w-10 h-10 bg-purple-medium rounded-full shadow-md hover:shadow-lg transition-shadow">
-//               <Search className="w-6 h-6 text-white" />
-//             </button>
-//           </div>
-
-//           {/* Right Icons */}
-//           <div className="flex items-center gap-3">
-//             <button
-//               onClick={() => navigate("/cart")}
-//               className="relative flex items-center justify-center p-2.5 bg-white rounded-full shadow-md hover:shadow-lg transition-shadow"
-//             >
-//               <ShoppingCart className="w-6 h-6" />
-//               {cartCount > 0 && (
-//                 <span className="absolute -top-1 -right-1 w-5 h-5 bg-purple-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
-//                   {cartCount > 99 ? "99+" : cartCount}
-//                 </span>
-//               )}
-//             </button>
-//             <button className="flex items-center justify-center p-2.5 bg-white rounded-full shadow-md hover:shadow-lg transition-shadow">
-//               <Bell className="w-6 h-6" />
-//             </button>
-
-//             {loggedIn ? (
-//               /* Logged in: show user name + link to profile */
-//               <Link
-//                 to={profilePath}
-//                 className="hidden lg:flex items-center gap-2.5 bg-white rounded-[50px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] px-5 py-2.5 hover:bg-gray-50 transition-colors cursor-pointer"
-//               >
-//                 <User className="w-6 h-6" />
-//                 <span className="font-baloo font-semibold text-base text-black truncate max-w-[160px]">{userName}</span>
-//                 <ChevronDown className="w-3 h-3 stroke-2" />
-//               </Link>
-//             ) : (
-//               /* Not logged in: show Đăng nhập */
-//               <button
-//                 onClick={() => navigate("/signin")}
-//                 className="hidden lg:flex items-center gap-2.5 bg-white rounded-[50px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] px-5 py-2.5 hover:bg-gray-50 transition-colors cursor-pointer"
-//               >
-//                 <LogIn className="w-6 h-6" />
-//                 <span className="font-baloo font-semibold text-base text-black">Đăng nhập</span>
-//               </button>
-//             )}
-
-//             {/* Mobile */}
-//             {loggedIn ? (
-//               <Link
-//                 to={profilePath}
-//                 className="lg:hidden flex items-center gap-2 bg-white rounded-full shadow-md px-4 py-2"
-//               >
-//                 <User className="w-6 h-6" />
-//                 <span className="font-baloo text-sm truncate max-w-[100px]">{userName}</span>
-//               </Link>
-//             ) : (
-//               <button
-//                 onClick={() => navigate("/signin")}
-//                 className="lg:hidden flex items-center gap-2 bg-white rounded-full shadow-md px-4 py-2"
-//               >
-//                 <LogIn className="w-6 h-6" />
-//                 <span className="font-baloo text-sm">Menu</span>
-//               </button>
-//             )}
-//           </div>
-//         </nav>
-//       </div>
-//     </header>
-//   );
-// };
-
 import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
-import { ShoppingCart, Bell, User, Search, ChevronDown } from "lucide-react"
+import { Bell, ChevronDown, LogIn, Menu, Search, ShoppingCart, User } from "lucide-react"
+import { useState, useEffect } from "react"
+import { useNavigate, Link } from "react-router-dom"
+import { useCart } from "../../contexts/CartContext"
 
-export default function Navbar() {
+function getSessionUser(): { fullName: string; role: string } | null {
+  const raw = localStorage.getItem("user") || sessionStorage.getItem("user")
+  if (!raw) return null
+  try { return JSON.parse(raw) } catch { return null }
+}
+
+function isLoggedIn(): boolean {
+  return !!(localStorage.getItem("access_token") || sessionStorage.getItem("access_token"))
+}
+
+export function NavbarGuest() {
+  const navigate = useNavigate()
+  const cartCtx = useCart()
+  const [loggedIn, setLoggedIn] = useState(isLoggedIn())
+  const [userName, setUserName] = useState("")
+  const [userRole, setUserRole] = useState("")
+
+  useEffect(() => {
+    const check = () => {
+      const hasSession = isLoggedIn()
+      setLoggedIn(hasSession)
+      if (hasSession) {
+        const u = getSessionUser()
+        setUserName(u?.fullName || "Hồ sơ")
+        setUserRole(u?.role || "")
+      }
+    }
+    check()
+    const interval = setInterval(check, 500)
+    return () => clearInterval(interval)
+  }, [])
+
+  const cartCount = loggedIn ? cartCtx.getItemCount() : 0
+  const profilePath = userRole === "School" ? "/school/profile" : "/parentprofile"
+
+  const navItems = [
+    { label: "Trang chủ", type: "route", to: "/homepage" },
+    { label: "Cách hoạt động", type: "anchor", href: "#how-it-works" },
+    { label: "Liên hệ", type: "anchor", href: "#contact" },
+  ] as const
+  const desktopNavClass = "flex h-10 items-center rounded-full px-3 lg:px-4 text-sm font-semibold transition-colors"
+
   return (
-    <nav className="sticky top-0 z-50 bg-[#eeebff] border-b border-[#e0d9ff]">
-      <div className="flex items-center gap-4 h-16 px-6 w-full">
+    <nav className="sticky top-0 z-50 border-b border-[#e0d9ff] bg-[#eeebff]">
+      <div className="mx-auto w-full max-w-[1240px] px-3 sm:px-4 lg:px-6">
+        <div className="grid h-16 grid-cols-[auto,1fr,auto] items-center gap-2 sm:gap-3 lg:gap-5">
 
-        {/* Logo */}
-        <div className="flex items-center gap-2 shrink-0 mr-2">
-          <div className="w-[38px] h-[38px] rounded-full flex items-center justify-center bg-[conic-gradient(from_180deg,_#a855f7,_#3b82f6,_#06b6d4,_#a855f7)]">
-            <div className="w-5 h-5 bg-[#0a0a0f] rounded-full flex items-center justify-center">
-              <svg width="12" height="12" viewBox="0 0 12 12">
-                <path d="M6 1L11 6L6 11M1 6H11" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
-              </svg>
+          <button
+            type="button"
+            onClick={() => navigate("/")}
+            className="inline-flex items-center"
+            aria-label="Về trang chủ"
+          >
+            <img
+              src="https://api.builder.io/api/v1/image/assets/TEMP/b5b02bd27ae25e8fcc3a61694891ffa491402bfb?width=328"
+              alt="VTOS Logo"
+              className="h-10 w-auto object-contain sm:h-12"
+            />
+          </button>
+
+          <div className="hidden w-full items-center justify-center md:flex">
+            <div className="flex h-11 w-full max-w-[760px] items-center rounded-full border border-purple-200 bg-white px-2 shadow-sm">
+              <div className="flex items-center gap-1">
+                {navItems.map((item, index) => {
+                  if (item.type === "route") {
+                    return (
+                      <Link
+                        key={item.label}
+                        to={item.to}
+                        className={`${desktopNavClass} ${
+                          index === 0 ? "text-purple-600" : "text-gray-700"
+                        }`}
+                      >
+                        {item.label}
+                      </Link>
+                    )
+                  }
+
+                  return (
+                    <a
+                      key={item.label}
+                      href={item.href}
+                      className={`${desktopNavClass} text-gray-700`}
+                    >
+                      {item.label}
+                    </a>
+                  )
+                })}
+
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="h-10 rounded-full px-3 lg:px-4 text-sm font-semibold text-gray-700">
+                      Sản phẩm <ChevronDown size={14} className="ml-1" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" className="w-52">
+                    <DropdownMenuItem asChild>
+                      <Link to="/schools">Tìm trường</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/products">Kho đồng phục</Link>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+
+              <div className="mx-2 h-6 w-px bg-purple-200" />
+
+              <div className="flex min-w-0 flex-1 items-center gap-2">
+                <Input
+                  placeholder="Tìm kiếm..."
+                  className="h-9 border-none bg-transparent text-sm shadow-none focus-visible:ring-0"
+                />
+                <Button
+                  size="icon"
+                  className="h-9 w-9 rounded-full bg-gradient-to-br from-purple-600 to-purple-500 hover:opacity-90"
+                >
+                  <Search size={16} />
+                </Button>
+              </div>
             </div>
           </div>
-          <span className="font-black text-2xl bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-400 text-transparent bg-clip-text">
-            VTOS
-          </span>
-        </div>
 
-        {/* Search pill */}
-        <div className="flex-1 flex items-center bg-white rounded-full border border-purple-200 px-2 h-11 shadow-sm">
-
-          {/* Nav links */}
-          <div className="flex items-center">
-            {["Trang chủ", "Cách hoạt động"].map((link, i) => (
-              <Button
-                key={link}
-                variant="ghost"
-                className={`h-11 px-4 text-sm font-semibold ${
-                  i === 0 ? "text-purple-600 font-extrabold" : "text-gray-700"
-                }`}
-              >
-                {link}
-              </Button>
-            ))}
-
-            <Button variant="ghost" className="h-11 px-4 text-sm font-semibold flex items-center gap-1">
-              Sản phẩm <ChevronDown size={14} />
+          <div className="flex items-center justify-end gap-1 sm:gap-2">
+            <Button
+              onClick={() => navigate("/cart")}
+              variant="outline"
+              size="icon"
+              className="relative h-9 w-9 rounded-full shadow-sm transition hover:-translate-y-[1px]"
+            >
+              <ShoppingCart size={18} />
+              {cartCount > 0 && (
+                <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-purple-600 text-[10px] font-bold text-white">
+                  {cartCount > 99 ? "99+" : cartCount}
+                </span>
+              )}
             </Button>
-
-            <Button variant="ghost" className="h-11 px-4 text-sm font-semibold text-gray-700">
-              Liên hệ
-            </Button>
-          </div>
-
-          {/* Divider */}
-          <div className="w-px h-6 bg-purple-200 mx-2" />
-
-          {/* Search input */}
-          <div className="flex items-center flex-1">
-            <Input
-              placeholder="Tìm kiếm..."
-              className="border-none shadow-none focus-visible:ring-0 text-sm"
-            />
 
             <Button
+              variant="outline"
               size="icon"
-              className="rounded-full bg-gradient-to-br from-purple-600 to-purple-500 hover:opacity-90"
+              className="h-9 w-9 rounded-full shadow-sm transition hover:-translate-y-[1px]"
             >
-              <Search size={16} />
+              <Bell size={18} />
             </Button>
+
+            {loggedIn ? (
+              <Link
+                to={profilePath}
+                className="hidden h-9 items-center gap-2 rounded-full border border-gray-200 bg-white px-3 shadow-sm transition hover:-translate-y-[1px] hover:bg-gray-50 lg:flex"
+              >
+                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-purple-100">
+                  <User size={14} className="text-purple-600" />
+                </div>
+                <span className="max-w-[120px] truncate text-sm font-semibold">{userName}</span>
+                <ChevronDown size={14} className="text-gray-400" />
+              </Link>
+            ) : (
+              <Button
+                onClick={() => navigate("/signin")}
+                variant="outline"
+                className="hidden h-9 items-center gap-2 rounded-full px-3 shadow-sm transition hover:-translate-y-[1px] lg:flex"
+              >
+                <LogIn size={14} />
+                <span className="text-sm font-semibold">Đăng nhập</span>
+              </Button>
+            )}
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-9 w-9 rounded-full shadow-sm md:hidden"
+                >
+                  <Menu size={18} />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                {navItems.map((item) => (
+                  <DropdownMenuItem key={item.label} asChild>
+                    {item.type === "route" ? (
+                      <Link to={item.to}>{item.label}</Link>
+                    ) : (
+                      <a href={item.href}>{item.label}</a>
+                    )}
+                  </DropdownMenuItem>
+                ))}
+                <DropdownMenuItem asChild>
+                  <Link to="/schools">Tìm trường</Link>
+                </DropdownMenuItem>
+                {loggedIn ? (
+                  <DropdownMenuItem asChild>
+                    <Link to={profilePath}>Hồ sơ</Link>
+                  </DropdownMenuItem>
+                ) : (
+                  <DropdownMenuItem asChild>
+                    <button type="button" onClick={() => navigate("/signin")} className="w-full text-left">
+                      Đăng nhập
+                    </button>
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
-        </div>
-
-        {/* Right icons */}
-        <div className="flex items-center gap-2 shrink-0 ml-2">
-
-          {/* Cart */}
-          <Button
-            variant="outline"
-            size="icon"
-            className="rounded-full shadow-sm hover:-translate-y-[1px] transition"
-          >
-            <ShoppingCart size={18} />
-          </Button>
-
-          {/* Bell */}
-          <Button
-            variant="outline"
-            size="icon"
-            className="rounded-full shadow-sm hover:-translate-y-[1px] transition"
-          >
-            <Bell size={18} />
-          </Button>
-
-          {/* Profile */}
-          <Button
-            variant="outline"
-            className="rounded-full px-4 flex items-center gap-2 shadow-sm hover:-translate-y-[1px] transition"
-          >
-            <div className="w-6 h-6 rounded-full bg-purple-100 flex items-center justify-center">
-              <User size={14} className="text-purple-600" />
-            </div>
-            <span className="font-semibold text-sm">Hồ sơ</span>
-            <ChevronDown size={14} className="text-gray-400" />
-          </Button>
         </div>
       </div>
     </nav>

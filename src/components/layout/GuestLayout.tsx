@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
-import { NavbarGuest } from "./NavbarGuest";
 import { Footer } from "./Footer";
+import { NavbarGuest } from "./NavbarGuest";
 
 interface GuestLayoutProps {
     children: ReactNode;
