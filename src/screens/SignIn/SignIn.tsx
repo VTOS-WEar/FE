@@ -5,7 +5,8 @@ import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
 import { Separator } from "../../components/ui/separator";
 import { useEffect, useState, useRef } from "react";
-import { login, verify2FA } from "../../lib/api/auth";
+import { login, verify2FA, googleLogin } from "../../lib/api/auth";
+import { useGoogleLogin } from "@react-oauth/google";
 import { getSchoolProfile } from "../../lib/api/schools";
 import { getProviderProfile } from "../../lib/api/providers";
 import { Notify } from "../../components/ui/notify";
@@ -23,6 +24,7 @@ export const SignIn = (): JSX.Element => {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [notify, setNotify] = useState<{ title: string; message: string; variant: "error" | "success" | "info" } | null>(null);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
   // 2FA state
   const [show2FA, setShow2FA] = useState(false);
@@ -50,6 +52,28 @@ export const SignIn = (): JSX.Element => {
       }
     }
   }, [navigate]);
+
+  // Google Login
+  const handleGoogleLogin = useGoogleLogin({
+    flow: 'implicit',
+    onSuccess: async (tokenResponse) => {
+      try {
+        setIsGoogleLoading(true);
+        // Send access_token to backend — it will fetch user info from Google
+        const data = await googleLogin(tokenResponse.access_token);
+        completeLogin(data);
+      } catch (e: any) {
+        setNotify({ title: "Google Login thất bại", message: e?.message || "Có lỗi xảy ra.", variant: "error" });
+      } finally {
+        setIsGoogleLoading(false);
+      }
+    },
+    onError: (error) => {
+      console.error('Google login error:', error);
+      setNotify({ title: "Google Login thất bại", message: "Không thể kết nối Google. Vui lòng thử lại.", variant: "error" });
+    },
+  });
+
   const handleSignIn = async () => {
     setNotify(null);
 
@@ -167,9 +191,11 @@ export const SignIn = (): JSX.Element => {
                     variant="outline"
                     className="w-full h-auto flex items-center justify-center gap-3 px-5 py-3 lg:py-4 rounded-lg border border-[#cac9d6] hover:bg-gray-50"
                     type="button"
+                    onClick={() => handleGoogleLogin()}
+                    disabled={isGoogleLoading}
                   >
                     <span className="[font-family:'Montserrat',Helvetica] font-medium text-[#19181f] text-sm lg:text-base">
-                      Đăng nhập với Google
+                      {isGoogleLoading ? "Đang xử lý..." : "Đăng nhập với Google"}
                     </span>
                     <img
                       className="w-6 lg:w-7 h-6 lg:h-7"

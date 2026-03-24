@@ -284,13 +284,18 @@ const router = createBrowserRouter([
   { path: "/products", element: <RoleGuard allowedRoles={["Parent"]} allowGuest><ProductList /></RoleGuard> },
   { path: "/products/:id", element: <RoleGuard allowedRoles={["Parent"]} allowGuest><ProductDetail /></RoleGuard> },
 ]);
+import { GoogleOAuthProvider } from "@react-oauth/google";
+
+const GOOGLE_CLIENT_ID = "749245119490-h5bee9k35vijgfl6vjfbkaut0qpmpit9.apps.googleusercontent.com";
 
 export const App = () => {
   return (
-    <CartProvider>
-      <ToastProvider>
-        <RouterProvider router={router} />
-      </ToastProvider>
-    </CartProvider>
+    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+      <CartProvider>
+        <ToastProvider>
+          <RouterProvider router={router} />
+        </ToastProvider>
+      </CartProvider>
+    </GoogleOAuthProvider>
   );
 };

@@ -119,6 +119,13 @@ export async function disable2FA(code: string, accessToken: string) {
         headers: { Authorization: `Bearer ${accessToken}` },
     });
 }
+
+export async function googleLogin(idToken: string) {
+    return api<LoginResponse>(endpoints.auth.googleLogin, {
+        method: "POST",
+        body: JSON.stringify({ idToken }),
+    });
+}
 //#endregion
 //#region Resend OTP Email
 export async function resendOtpEmail(email: string) {

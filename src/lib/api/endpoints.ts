@@ -13,6 +13,7 @@ export const endpoints = {
         setup2fa: "/api/Auth/2fa/setup",
         confirm2fa: "/api/Auth/2fa/confirm",
         disable2fa: "/api/Auth/2fa/disable",
+        googleLogin: "/api/Auth/google-login",
     },
     admin: {
         users: "/api/admin/users",
