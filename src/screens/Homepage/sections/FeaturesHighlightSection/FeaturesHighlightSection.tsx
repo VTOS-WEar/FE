@@ -1,57 +1,94 @@
-import { Button } from "../../../../components/ui/button";
+import { CheckCircle2, ImageIcon, Shirt } from "lucide-react";
+import { motion } from "framer-motion";
 
 export const FeaturesHighlightSection = (): JSX.Element => {
+  const features = [
+    {
+      title: "Thử nhanh bằng AI",
+      description:
+        "Tải ảnh chân dung và hệ thống tự tạo hình bạn mặc đồng phục trong vài giây.",
+      icon: ImageIcon,
+      iconBg: "bg-[#3f6fe8]",
+      cardBg: "bg-[#e9f0ff]",
+    },
+    {
+      title: "Hơn 200 mẫu đồng phục",
+      description:
+        "Hỗ trợ nhiều trường khác nhau, đầy đủ mẫu áo-quần-váy theo từng cấp học.",
+      icon: Shirt,
+      iconBg: "bg-[#6b3ce5]",
+      cardBg: "bg-[#f2ebff]",
+    },
+    {
+      title: "AI nhận diện dáng người chuẩn xác",
+      description:
+        "Dự đoán form mặc và kích cỡ trực quan trực tiếp trên trình duyệt.",
+      icon: CheckCircle2,
+      iconBg: "bg-[#27c8c3]",
+      cardBg: "bg-[#eafbf5]",
+    },
+  ];
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { y: 40, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: { type: "spring", stiffness: 100, damping: 12 },
+    },
+  };
+
   return (
-    <section className="flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-[50px] w-full px-4 py-8">
-      <img
-        className="w-[37px] h-[65px] flex-shrink-0 opacity-0 animate-fade-in [--animation-delay:0ms] hidden lg:block"
-        alt="Vector"
-        src="https://c.animaapp.com/mjxt3t8wNP0otU/img/vector-6.svg"
-      />
+    <section className="w-full px-4 pt-10 pb-16 md:px-8">
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-100px" }}
+        className="mx-auto grid w-full max-w-[980px] grid-cols-1 justify-items-center gap-5 md:grid-cols-2 md:gap-6 xl:grid-cols-3 xl:gap-7"
+      >
+        {features.map((feature, index) => {
+          const Icon = feature.icon;
 
-      <div className="flex flex-col items-center lg:items-end gap-5 w-full max-w-[603px] opacity-0 animate-fade-in [--animation-delay:200ms]">
-        <div className="relative w-full">
-          <h1 className="w-full [text-shadow:0px_4px_4px_#00000040] [font-family:'Gochi_Hand',Helvetica] font-normal text-[#a87af0] text-[120px] lg:text-[300px] text-center tracking-[0] leading-[1.2] lg:leading-[346.2px] opacity-0 animate-fade-in [--animation-delay:400ms]">
-            VTOS
-          </h1>
+          return (
+            <motion.article
+              variants={itemVariants}
+              whileHover={{
+                y: -10,
+                scale: 1.02,
+                transition: { type: "spring", stiffness: 400, damping: 10 }
+              }}
+              key={feature.title}
+              className={`group relative w-full max-w-[240px] min-h-[180px] rounded-[24px] px-4 pb-4 pt-8 text-center shadow-[0_6px_12px_rgba(0,0,0,0.1)] sm:max-w-[250px] sm:min-h-[195px] sm:px-5 sm:pb-5 sm:pt-9 md:max-w-[280px] md:min-h-[210px] hover:shadow-2xl transition-all duration-300 ${feature.cardBg} ${index === 2 ? "md:col-span-2 xl:col-span-1" : ""
+                }`}
+            >
+              <div
+                className={`absolute left-1/2 top-0 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-none text-white shadow-[0_2px_8px_rgba(0,0,0,0.16)] sm:h-16 sm:w-16 ${feature.iconBg}`}
+              >
+                <Icon className="h-6 w-6 sm:h-7 sm:w-7" strokeWidth={3} />
+              </div>
 
-          <h2 className="mt-[-30px] lg:mt-[-76px] w-full [font-family:'Baloo_2',Helvetica] font-semibold text-[#332623] text-2xl lg:text-4xl text-center tracking-[0] leading-[1.4] lg:leading-[50.4px] opacity-0 animate-fade-in [--animation-delay:600ms]">
-            Thử đồng phục trực tuyến bằng AI
-          </h2>
+              <h3 className="[font-family:'Baloo_2',Helvetica] pt-4 text-lg font-bold leading-[1.25] text-[#332623] sm:text-xl">
+                {feature.title}
+              </h3>
 
-          <p className="mt-[10px] px-4 lg:px-[17px] w-full [font-family:'Baloo_2',Helvetica] font-normal text-[#332623] text-base lg:text-xl text-center tracking-[0] leading-[1.6] lg:leading-[26px] opacity-0 animate-fade-in [--animation-delay:800ms]">
-            Tải ảnh của bạn lên và xem đồng phục trường hiển thị ngay lập tức.
-            Không cần thử trực tiếp, không mất thời gian. Phụ huynh, học sinh và
-            nhà trường đều có thể sử dụng dễ dàng.
-          </p>
-        </div>
-
-        <div className="relative flex w-[298px] h-[56.51px] items-center justify-center opacity-0 animate-fade-in [--animation-delay:1000ms]">
-          <img
-            className="absolute top-[-70px] left-[-70px] w-[458px] h-[223px] pointer-events-none"
-            alt="Frame"
-            src="https://c.animaapp.com/mjxt3t8wNP0otU/img/frame-10.svg"
-          />
-
-          <Button className="relative w-[272px] h-auto bg-transparent hover:bg-transparent border-0 shadow-none p-0">
-            <span className="[font-family:'Baloo-Regular',Helvetica] font-normal text-white-100 text-2xl text-center tracking-[0] leading-6">
-              Bắt đầu thử ngay
-            </span>
-          </Button>
-        </div>
-      </div>
-
-      <img
-        className="w-[250px] lg:w-[431px] h-auto flex-shrink-0 opacity-0 animate-fade-in [--animation-delay:1200ms]"
-        alt="Place YOUR SCREEN"
-        src="https://c.animaapp.com/mjxt3t8wNP0otU/img/----place-your-screen-here.svg"
-      />
-
-      <img
-        className="w-[37px] h-[65px] flex-shrink-0 opacity-0 animate-fade-in [--animation-delay:1400ms] hidden lg:block"
-        alt="Vector"
-        src="https://c.animaapp.com/mjxt3t8wNP0otU/img/vector-15.svg"
-      />
+              <p className="mt-2.5 [font-family:'Baloo_2',Helvetica] text-sm font-medium leading-[1.35] text-[#3f3331] sm:mt-3 sm:text-base">
+                {feature.description}
+              </p>
+            </motion.article>
+          );
+        })}
+      </motion.div>
     </section>
   );
 };

@@ -1,58 +1,72 @@
 import { Card, CardContent } from "../../../../components/ui/card";
+import { motion } from "framer-motion";
 
 export const ProductShowcaseSection = (): JSX.Element => {
   const showcaseImages = [
     {
-      src: "https://c.animaapp.com/mjxt3t8wNP0otU/img/image--w-full-.png",
-      bgClass: "bg-white",
-      borderClass: "border",
-      leftOffset: "left-[-312px]",
-      topOffset: "top-0",
+      id: "original-image",
+      src: "https://api.builder.io/api/v1/image/assets/TEMP/6150de8fdb5f524f53156fc41728708d3d4ce15e?width=2434s",
+      caption: "Ảnh gốc của bạn",
     },
     {
-      src: "https://c.animaapp.com/mjxt3t8wNP0otU/img/image--w-full--1.png",
-      bgClass:
-        "bg-[linear-gradient(135deg,rgba(239,246,255,1)_0%,rgba(250,245,255,1)_100%)]",
-      borderClass: "border-blue-200",
-      leftOffset: "left-[-247px]",
-      topOffset: "top-[-15px]",
+      id: "after-tryon-image",
+      src: "https://i.ibb.co/Pvscprsd/Image-w-full.png",
+      caption: "Sau khi thử đồng phục ✨",
     },
   ];
 
   return (
-    <section className="w-full flex justify-center py-20 translate-y-[-1rem] animate-fade-in opacity-0">
-      <div className="flex flex-col items-center gap-20 max-w-[1307px] w-full px-4">
-        <header className="relative w-full max-w-[1311px]">
-          <h2 className="[font-family:'Baloo-Regular',Helvetica] font-normal text-5xl text-center tracking-[0] leading-[67.2px] mb-4 translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:200ms]">
-            <span className="text-[#8b008be6]">Thử Nhanh – Chuẩn</span>
-            <span className="text-[#332623]"> – Không Cần Studio</span>
+    <section id="how-it-works" className="w-full bg-white py-24">
+      <div className="mx-auto w-full max-w-[1300px] px-4 md:px-8">
+        <motion.header
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mx-auto max-w-[1100px] text-center"
+        >
+          <h2 className="[font-family:'Baloo_2',Helvetica] text-3xl font-bold leading-[1.2] text-[#332623] md:text-4xl">
+            <span className="text-[#9323a6]">Thử Nhanh - Chuẩn</span>
+            <span> - Không Cần Studio</span>
           </h2>
 
-          <p className="[font-family:'Baloo_2',Helvetica] font-normal text-[#332623] text-[32px] text-center tracking-[0] leading-[41.6px] max-w-[1014px] mx-auto translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:400ms]">
-            Chỉ với 3 bước: Tải ảnh chân dung - Chọn mẫu đồng phục - Nhận kết
-            quả
+          <p className="mt-2 [font-family:'Baloo_2',Helvetica] text-xl font-medium leading-[1.3] text-[#3f3331] md:text-xl">
+            Chỉ với 3 bước: Tải ảnh chân dung - Chọn mẫu đồng phục - Nhận kết quả
           </p>
-        </header>
+        </motion.header>
 
-        <div className="flex flex-wrap items-start gap-12 w-full max-w-[1232px] justify-center translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:600ms]">
-          {showcaseImages.map((image, index) => (
-            <Card
-              key={index}
-              className={`w-full max-w-[592px] h-[592px] rounded-3xl overflow-hidden border-solid ${image.borderClass} shadow-[0px_0px_0px_transparent,0px_0px_0px_transparent,0px_10px_15px_-3px_#0000001a,0px_4px_6px_-4px_#0000001a] ${image.bgClass}`}
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          transition={{ staggerChildren: 0.3 }}
+          className="mx-auto mt-12 grid w-fit grid-cols-2 gap-10 md:gap-10"
+        >
+          {showcaseImages.map((image) => (
+            <motion.div
+              variants={{
+                hidden: { opacity: 0, scale: 0.95 },
+                visible: { opacity: 1, scale: 1 }
+              }}
+              key={image.id}
+              className="group w-[44vw] max-w-[430px] min-w-[150px]"
             >
-              <CardContent className="p-0 h-full relative">
-                <div
-                  className={`relative ${image.topOffset} ${image.leftOffset} w-[1217px] h-[622px] [background:url(${image.src})_50%_50%_/_cover]`}
-                  style={{
-                    backgroundImage: `url(${image.src})`,
-                    backgroundPosition: "50% 50%",
-                    backgroundSize: "cover",
-                  }}
-                />
-              </CardContent>
-            </Card>
+              <Card className="overflow-hidden rounded-[24px] border border-[#d8d8e2] bg-white shadow-[0_6px_14px_rgba(0,0,0,0.1)] transition-all duration-500 group-hover:shadow-[0_20px_40px_rgba(0,0,0,0.2)]">
+                <CardContent className="p-0">
+                  <motion.img
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ duration: 0.6, ease: [0.33, 1, 0.68, 1] }}
+                    src={image.src}
+                    alt={image.caption}
+                    className="h-[420px] w-full object-cover object-center"
+                  />
+                  <div className="absolute bottom-4 left-4 rounded-full bg-black/50 px-4 py-1 text-white backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-sm">
+                    {image.caption}
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );
