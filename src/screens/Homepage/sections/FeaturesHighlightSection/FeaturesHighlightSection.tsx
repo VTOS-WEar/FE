@@ -1,4 +1,5 @@
 import { CheckCircle2, ImageIcon, Shirt } from "lucide-react";
+import { motion } from "framer-motion";
 
 export const FeaturesHighlightSection = (): JSX.Element => {
   const features = [
@@ -28,16 +29,47 @@ export const FeaturesHighlightSection = (): JSX.Element => {
     },
   ];
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { y: 40, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: { type: "spring", stiffness: 100, damping: 12 },
+    },
+  };
+
   return (
-    <section className="w-full px-4 py-12 md:px-8 md:py-16">
-      <div className="mx-auto grid w-full max-w-[980px] grid-cols-1 justify-items-center gap-5 md:grid-cols-2 md:gap-6 xl:grid-cols-3 xl:gap-7">
+    <section className="w-full px-4 py-16 md:px-8">
+      <motion.div 
+        variants={containerVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-100px" }}
+        className="mx-auto grid w-full max-w-[980px] grid-cols-1 justify-items-center gap-5 md:grid-cols-2 md:gap-6 xl:grid-cols-3 xl:gap-7"
+      >
         {features.map((feature, index) => {
           const Icon = feature.icon;
 
           return (
-            <article
+            <motion.article
+              variants={itemVariants}
+              whileHover={{ 
+                y: -10, 
+                scale: 1.02,
+                transition: { type: "spring", stiffness: 400, damping: 10 }
+              }}
               key={feature.title}
-              className={`relative w-full max-w-[240px] min-h-[180px] rounded-[24px] px-4 pb-4 pt-8 text-center shadow-[0_6px_12px_rgba(0,0,0,0.22)] sm:max-w-[250px] sm:min-h-[195px] sm:px-5 sm:pb-5 sm:pt-9 md:max-w-[280px] md:min-h-[210px] hover:shadow-lg transition-all duration-300 hover:-translate-y-1 ${feature.cardBg} ${
+              className={`group relative w-full max-w-[240px] min-h-[180px] rounded-[24px] px-4 pb-4 pt-8 text-center shadow-[0_6px_12px_rgba(0,0,0,0.1)] sm:max-w-[250px] sm:min-h-[195px] sm:px-5 sm:pb-5 sm:pt-9 md:max-w-[280px] md:min-h-[210px] hover:shadow-2xl transition-all duration-300 ${feature.cardBg} ${
                 index === 2 ? "md:col-span-2 xl:col-span-1" : ""
               }`}
             >
@@ -54,10 +86,10 @@ export const FeaturesHighlightSection = (): JSX.Element => {
               <p className="mt-2.5 [font-family:'Baloo_2',Helvetica] text-sm font-medium leading-[1.35] text-[#3f3331] sm:mt-3 sm:text-base">
                 {feature.description}
               </p>
-            </article>
+            </motion.article>
           );
         })}
-      </div>
+      </motion.div>
     </section>
   );
 };
