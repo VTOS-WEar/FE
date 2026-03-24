@@ -50,12 +50,12 @@ export const CallToActionSection = (): JSX.Element => {
   ];
 
   return (
-    <motion.section 
+    <motion.section
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
       transition={{ duration: 0.8 }}
-      className="w-full rounded-[22px] bg-white px-4 py-16 md:px-6"
+      className="w-full rounded-[22px] bg-white px-4 py-8 md:px-6"
     >
       <div className="mx-auto w-full max-w-[1050px] bg-[linear-gradient(135deg,#fff_0%,#f1f5f9_100%)] rounded-[22px] px-4 py-10">
         <header className="mx-auto mb-8 w-full max-w-[1100px] text-center md:mb-10">
@@ -75,12 +75,12 @@ export const CallToActionSection = (): JSX.Element => {
               <div className="w-full rounded-[14px] border border-[#d8dde6]  bg-[linear-gradient(135deg,#fff_0%,#f1f5f9_100%)] p-4 sm:p-5 lg:max-w-[390px]">
                 <div className="flex flex-col items-start gap-5">
                   {steps.map((step, index) => (
-                    <motion.div 
+                    <motion.div
                       initial={{ opacity: 0, x: -20 }}
                       whileInView={{ opacity: 1, x: 0 }}
                       viewport={{ once: true }}
                       transition={{ delay: index * 0.2 }}
-                      key={step.number} 
+                      key={step.number}
                       className="w-full"
                     >
                       <div className="relative w-full pt-10">
@@ -105,7 +105,7 @@ export const CallToActionSection = (): JSX.Element => {
                         </div>
 
                         {step.hasButton && (
-                          <motion.div 
+                          <motion.div
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
                             className="mt-4 flex h-10 w-full items-center justify-center rounded-full bg-[#b178c5] cursor-pointer shadow-md hover:shadow-lg transition-shadow duration-300"
@@ -125,7 +125,7 @@ export const CallToActionSection = (): JSX.Element => {
                 </div>
               </div>
 
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}

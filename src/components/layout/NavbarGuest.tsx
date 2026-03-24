@@ -64,6 +64,21 @@ export function NavbarGuest() {
     navigate("/")
   }
 
+  const handleAnchorClick = (e: React.MouseEvent<HTMLElement>, href: string) => {
+    if (href.startsWith("/homepage#")) {
+      const hash = href.replace("/homepage", "")
+      if (location.pathname === "/homepage") {
+        e.preventDefault()
+        const element = document.querySelector(hash)
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth" })
+          window.history.pushState(null, "", href)
+        }
+      }
+    }
+    setIsMenuOpen(false)
+  }
+
   const navItems = [
     { label: "Trang chủ", type: "route", to: "/homepage" },
     { label: "Cách hoạt động", type: "anchor", href: "/homepage#how-it-works" },
@@ -122,7 +137,7 @@ export function NavbarGuest() {
             </button>
           </div>
 
-          <div className="hidden w-full max-w-[760px] items-center rounded-full border border-purple-200 bg-white px-2 shadow-md transition-all duration-200 hover:-translate-y-[1px] hover:shadow-lg lg:flex">
+          <div className="hidden w-full max-w-[760px] items-center rounded-full border border-purple-200 bg-white px-2 py-1 shadow-md transition-all duration-200 hover:-translate-y-[1px] hover:shadow-lg lg:flex">
             <div className="flex items-center gap-1">
               {navItems.map((item) => {
                 if (item.type === "route") {
@@ -145,7 +160,12 @@ export function NavbarGuest() {
                 }
                 const isActive = isAnchorActive(item.href)
                 return (
-                  <a key={item.label} href={item.href} className={`${desktopNavClass} ${isActive ? activeNavClass : "text-gray-700"} font-bold`}>
+                  <a 
+                    key={item.label} 
+                    href={item.href} 
+                    onClick={(e) => handleAnchorClick(e, item.href)}
+                    className={`${desktopNavClass} ${isActive ? activeNavClass : "text-gray-700"} font-bold`}
+                  >
                     {item.label}
                   </a>
                 )
@@ -316,16 +336,30 @@ export function NavbarGuest() {
               </div>
 
               <div className="space-y-2">
-                {navItems.map((item) => (
-                  <Link
-                    key={item.label}
-                    to={item.type === "route" ? item.to : item.href}
-                    className="flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors"
-                  >
-                    {item.label}
-                  </Link>
-                ))}
-                
+                {navItems.map((item) => {
+                  if (item.type === "route") {
+                    return (
+                      <Link
+                        key={item.label}
+                        to={item.to}
+                        className="flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors"
+                      >
+                        {item.label}
+                      </Link>
+                    )
+                  }
+                  return (
+                    <a
+                      key={item.label}
+                      href={item.href}
+                      onClick={(e) => handleAnchorClick(e, item.href)}
+                      className="flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors"
+                    >
+                      {item.label}
+                    </a>
+                  )
+                })}
+
                 <div className="pt-4 mt-4 border-t border-gray-100">
                   <p className="px-4 mb-2 text-xs font-semibold uppercase tracking-wider text-gray-400">Sản phẩm</p>
                   <Link to="/schools" className="flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors">
@@ -336,7 +370,16 @@ export function NavbarGuest() {
                   </Link>
                 </div>
 
-                <a href="#contact" className="flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors">
+                <a 
+                  href="#contact" 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    const element = document.querySelector("#contact");
+                    if (element) element.scrollIntoView({ behavior: "smooth" });
+                    setIsMenuOpen(false);
+                  }}
+                  className="flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors"
+                >
                   Liên hệ
                 </a>
 

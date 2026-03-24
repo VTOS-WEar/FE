@@ -22,8 +22,8 @@ const uniformCategories = [
 
 export const CustomUniformOptionsSection = (): JSX.Element => {
   return (
-    <section className="flex bg-white w-full flex-col items-center gap-5 px-4 py-16">
-      <motion.header 
+    <section className="flex bg-white w-full flex-col items-center gap-5 px-4 py-8">
+      <motion.header
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
@@ -36,10 +36,10 @@ export const CustomUniformOptionsSection = (): JSX.Element => {
 
         <p className="mx-auto w-full max-w-[1014px] text-center [font-family:'Baloo_2',Helvetica] text-xl font-medium leading-[1.3] text-[#3f3331] md:text-xl">
           Khám phá cách AI giúp bạn thử đồng phục nhanh chóng
-          </p>
+        </p>
       </motion.header>
 
-      <motion.div 
+      <motion.div
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, margin: "-100px" }}
@@ -47,21 +47,21 @@ export const CustomUniformOptionsSection = (): JSX.Element => {
         className=" mx-auto grid w-full max-w-6xl grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4"
       >
         {uniformCategories.map((category) => (
-            <motion.div
-              variants={{
-                hidden: { opacity: 0, scale: 0.9 },
-                visible: { opacity: 1, scale: 1 }
-              }}
-              whileHover={{ 
-                y: -12,
-                transition: { type: "spring", stiffness: 300, damping: 20 }
-              }}
-              key={category.label}
-              className="cursor-pointer"
+          <motion.div
+            variants={{
+              hidden: { opacity: 0, scale: 0.9 },
+              visible: { opacity: 1, scale: 1 }
+            }}
+            whileHover={{
+              y: -12,
+              transition: { type: "spring", stiffness: 300, damping: 20 }
+            }}
+            key={category.label}
+            className="cursor-pointer"
+          >
+            <Card
+              className="relative overflow-hidden rounded-[20px] border-0 bg-gray-200 shadow-md transition-all duration-500 hover:shadow-2xl hover:border-[#9323a6]/30 border-transparent border"
             >
-              <Card
-                className="relative overflow-hidden rounded-[20px] border-0 bg-gray-200 shadow-md transition-all duration-500 hover:shadow-2xl hover:border-[#9323a6]/30 border-transparent border"
-              >
               <CardContent className="relative p-0">
                 <img
                   className="h-auto w-full rounded-[20px] p-2.5 transition-transform duration-500 group-hover:scale-110"

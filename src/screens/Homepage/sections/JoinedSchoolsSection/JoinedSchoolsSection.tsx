@@ -59,7 +59,7 @@ const itemVariants = {
 
 export const JoinedSchoolsSection = (): JSX.Element => {
     return (
-        <section className="relative w-full overflow-hidden bg-white py-16 px-4 md:px-6 lg:px-8">
+        <section className="relative w-full overflow-hidden bg-white py-8 px-4 md:px-6 lg:px-8 ">
             {/* Decorative Background Elements */}
             <div className="absolute -top-24 -right-24 h-64 w-64 rounded-full bg-[#8b008b]/5 blur-3xl opacity-60" />
             <div className="absolute -bottom-24 -left-24 h-64 w-64 rounded-full bg-[#d96ede]/5 blur-3xl opacity-60" />
@@ -98,7 +98,7 @@ export const JoinedSchoolsSection = (): JSX.Element => {
                                 y: -12,
                                 transition: { type: "spring", stiffness: 300, damping: 20 }
                             }}
-                            className="shadow-lg group relative flex flex-col items-center overflow-hidden rounded-[24px] border border-[#e2e8f0]/60 bg-white p-8 transition-all duration-500 hover:shadow-[0_20px_40px_-15px_rgba(139,92,246,0.2)] cursor-pointer"
+                            className="shadow-lg group relative flex flex-col items-center overflow-hidden rounded-[24px] border border-[#e2e8f0]/60 bg-white mb-12 p-8 transition-all duration-500 hover:shadow-[0_20px_40px_-15px_rgba(139,92,246,0.2)] cursor-pointer"
                         >
                             {/* Decorative Badge */}
                             <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
