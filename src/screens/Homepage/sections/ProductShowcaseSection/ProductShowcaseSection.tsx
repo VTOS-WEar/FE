@@ -10,7 +10,7 @@ export const ProductShowcaseSection = (): JSX.Element => {
     },
     {
       id: "after-tryon-image",
-      src: "https://api.builder.io/api/v1/image/assets/TEMP/33100ce90f8c3736531a7cf7d457c81e3de99876?width=2174",
+      src: "https://i.ibb.co/Pvscprsd/Image-w-full.png",
       caption: "Sau khi thử đồng phục ✨",
       delayClass: "[--animation-delay:180ms]",
     },
