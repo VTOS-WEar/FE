@@ -22,7 +22,7 @@ const uniformCategories = [
 
 export const CustomUniformOptionsSection = (): JSX.Element => {
   return (
-    <section className="flex bg-white w-full flex-col items-center gap-5 px-4 py-8">
+    <section className="flex bg-white w-full flex-col items-center gap-5 px-4  pb-10">
       <motion.header
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}

@@ -59,7 +59,7 @@ const itemVariants = {
 
 export const JoinedSchoolsSection = (): JSX.Element => {
     return (
-        <section className="relative w-full overflow-hidden bg-white py-8 px-4 md:px-6 lg:px-8 ">
+        <section className="relative w-full overflow-hidden bg-white py-16 px-4 md:px-6 lg:px-8 ">
             {/* Decorative Background Elements */}
             <div className="absolute -top-24 -right-24 h-64 w-64 rounded-full bg-[#8b008b]/5 blur-3xl opacity-60" />
             <div className="absolute -bottom-24 -left-24 h-64 w-64 rounded-full bg-[#d96ede]/5 blur-3xl opacity-60" />

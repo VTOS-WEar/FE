@@ -49,8 +49,8 @@ export const FeaturesHighlightSection = (): JSX.Element => {
   };
 
   return (
-    <section className="w-full px-4 py-16 md:px-8">
-      <motion.div 
+    <section className="w-full px-4 pt-10 pb-16 md:px-8">
+      <motion.div
         variants={containerVariants}
         initial="hidden"
         whileInView="visible"
@@ -63,15 +63,14 @@ export const FeaturesHighlightSection = (): JSX.Element => {
           return (
             <motion.article
               variants={itemVariants}
-              whileHover={{ 
-                y: -10, 
+              whileHover={{
+                y: -10,
                 scale: 1.02,
                 transition: { type: "spring", stiffness: 400, damping: 10 }
               }}
               key={feature.title}
-              className={`group relative w-full max-w-[240px] min-h-[180px] rounded-[24px] px-4 pb-4 pt-8 text-center shadow-[0_6px_12px_rgba(0,0,0,0.1)] sm:max-w-[250px] sm:min-h-[195px] sm:px-5 sm:pb-5 sm:pt-9 md:max-w-[280px] md:min-h-[210px] hover:shadow-2xl transition-all duration-300 ${feature.cardBg} ${
-                index === 2 ? "md:col-span-2 xl:col-span-1" : ""
-              }`}
+              className={`group relative w-full max-w-[240px] min-h-[180px] rounded-[24px] px-4 pb-4 pt-8 text-center shadow-[0_6px_12px_rgba(0,0,0,0.1)] sm:max-w-[250px] sm:min-h-[195px] sm:px-5 sm:pb-5 sm:pt-9 md:max-w-[280px] md:min-h-[210px] hover:shadow-2xl transition-all duration-300 ${feature.cardBg} ${index === 2 ? "md:col-span-2 xl:col-span-1" : ""
+                }`}
             >
               <div
                 className={`absolute left-1/2 top-0 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-none text-white shadow-[0_2px_8px_rgba(0,0,0,0.16)] sm:h-16 sm:w-16 ${feature.iconBg}`}

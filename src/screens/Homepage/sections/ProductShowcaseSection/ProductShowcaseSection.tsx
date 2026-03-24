@@ -16,9 +16,9 @@ export const ProductShowcaseSection = (): JSX.Element => {
   ];
 
   return (
-    <section id="how-it-works" className="w-full bg-white py-16">
+    <section id="how-it-works" className="w-full bg-white py-24">
       <div className="mx-auto w-full max-w-[1300px] px-4 md:px-8">
-        <motion.header 
+        <motion.header
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -34,7 +34,7 @@ export const ProductShowcaseSection = (): JSX.Element => {
           </p>
         </motion.header>
 
-        <motion.div 
+        <motion.div
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}

@@ -2,7 +2,7 @@ import { Facebook, Youtube, Play, AtSign, MapPin, Phone, Mail, Instagram } from 
 
 export const Footer = (): JSX.Element => {
   return (
-    <footer className="relative w-full overflow-hidden bg-gradient-to-b from-[#f8fafc] via-[#f3e8ff] to-[#60a5fa] pt-12 md:pt-16 mt-12 md:mt-16">
+    <footer className="relative w-full overflow-hidden bg-gradient-to-b from-[#f8fafc] via-[#f3e8ff] to-[#60a5fa] pt-14">
       {/* Mesh Gradient Overlay */}
       <div className="absolute inset-0 opacity-15 bg-[radial-gradient(circle_at_20%_30%,#f0abfc_0%,transparent_50%),radial-gradient(circle_at_80%_70%,#60a5fa_0%,transparent_50%)]" />
 

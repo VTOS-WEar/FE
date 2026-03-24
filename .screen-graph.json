@@ -176,47 +176,47 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:160:22-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:185:20-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\FillInformation\\FillInformation.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/schools",
         "trigger": {
-          "element": "<Link to=\"/schools\" className=\"flex w-full items-center gap-3\">\r\n                        <div className=\"flex h-9 w-9 items-center justify-center rounded-lg bg-purple-100 text-purple-700\">\r\n                          <GraduationCap size={16} />\r\n                        </div>\r\n                        <div className=\"min-w-0\">\r\n                          <p className=\"text-sm font-semibold text-gray-800\">Tìm trường</p>\r\n                          <p className=\"text-xs text-gray-500\">Danh sách trường và đối tác đồng phục</p>\r\n                        </div>\r\n                      </Link>",
-          "line": 160,
-          "endLine": 168,
-          "column": 22,
-          "endColumn": 29,
+          "element": "<Link to=\"/schools\" className=\"flex w-full items-center gap-3\">\r\n                      <div className=\"flex h-9 w-9 items-center justify-center rounded-lg bg-purple-100 text-purple-700\">\r\n                        <GraduationCap size={16} />\r\n                      </div>\r\n                      <div className=\"min-w-0\">\r\n                        <p className=\"text-sm font-semibold text-gray-800\">Tìm trường</p>\r\n                        <p className=\"text-xs text-gray-500\">Danh sách trường và đối tác đồng phục</p>\r\n                      </div>\r\n                    </Link>",
+          "line": 185,
+          "endLine": 193,
+          "column": 20,
+          "endColumn": 27,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
         }
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:171:22-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:196:20-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\FillInformation\\FillInformation.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/products",
         "trigger": {
-          "element": "<Link to=\"/products\" className=\"flex w-full items-center gap-3\">\r\n                        <div className=\"flex h-9 w-9 items-center justify-center rounded-lg bg-purple-100 text-purple-700\">\r\n                          <Package size={16} />\r\n                        </div>\r\n                        <div className=\"min-w-0\">\r\n                          <p className=\"text-sm font-semibold text-gray-800\">Kho đồng phục</p>\r\n                          <p className=\"text-xs text-gray-500\">Mẫu sản phẩm sẵn có để đặt nhanh</p>\r\n                        </div>\r\n                      </Link>",
-          "line": 171,
-          "endLine": 179,
-          "column": 22,
-          "endColumn": 29,
+          "element": "<Link to=\"/products\" className=\"flex w-full items-center gap-3\">\r\n                      <div className=\"flex h-9 w-9 items-center justify-center rounded-lg bg-purple-100 text-purple-700\">\r\n                        <Package size={16} />\r\n                      </div>\r\n                      <div className=\"min-w-0\">\r\n                        <p className=\"text-sm font-semibold text-gray-800\">Kho đồng phục</p>\r\n                        <p className=\"text-xs text-gray-500\">Mẫu sản phẩm sẵn có để đặt nhanh</p>\r\n                      </div>\r\n                    </Link>",
+          "line": 196,
+          "endLine": 204,
+          "column": 20,
+          "endColumn": 27,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
         }
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:215:29-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:226:29-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\FillInformation\\FillInformation.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/cart",
         "trigger": {
           "element": "navigate(\"/cart\")",
-          "line": 215,
-          "endLine": 215,
+          "line": 226,
+          "endLine": 226,
           "column": 29,
           "endColumn": 46,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -224,17 +224,65 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:303:31-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:304:37-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\FillInformation\\FillInformation.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
           "element": "navigate(\"/signin\")",
-          "line": 303,
-          "endLine": 303,
-          "column": 31,
-          "endColumn": 50,
+          "line": 304,
+          "endLine": 304,
+          "column": 37,
+          "endColumn": 56,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:365:18-to-src\\components\\guards\\RoleGuard.tsx",
+      "source": "src\\screens\\FillInformation\\FillInformation.tsx",
+      "target": "src\\components\\guards\\RoleGuard.tsx",
+      "data": {
+        "viaRoute": "/schools",
+        "trigger": {
+          "element": "<Link to=\"/schools\" className=\"flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors\">\r\n                    <GraduationCap size={18} className=\"text-purple-600\" /> Tìm trường\r\n                  </Link>",
+          "line": 365,
+          "endLine": 367,
+          "column": 18,
+          "endColumn": 25,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:368:18-to-src\\components\\guards\\RoleGuard.tsx",
+      "source": "src\\screens\\FillInformation\\FillInformation.tsx",
+      "target": "src\\components\\guards\\RoleGuard.tsx",
+      "data": {
+        "viaRoute": "/products",
+        "trigger": {
+          "element": "<Link to=\"/products\" className=\"flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors\">\r\n                    <Package size={18} className=\"text-purple-600\" /> Kho đồng phục\r\n                  </Link>",
+          "line": 368,
+          "endLine": 370,
+          "column": 18,
+          "endColumn": 25,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:388:43-to-src\\components\\guards\\RoleGuard.tsx",
+      "source": "src\\screens\\FillInformation\\FillInformation.tsx",
+      "target": "src\\components\\guards\\RoleGuard.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\")",
+          "line": 388,
+          "endLine": 388,
+          "column": 43,
+          "endColumn": 62,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
         }
       }
@@ -304,47 +352,47 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:160:22-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:185:20-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\FillInformation\\FillInformation.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/schools",
         "trigger": {
-          "element": "<Link to=\"/schools\" className=\"flex w-full items-center gap-3\">\r\n                        <div className=\"flex h-9 w-9 items-center justify-center rounded-lg bg-purple-100 text-purple-700\">\r\n                          <GraduationCap size={16} />\r\n                        </div>\r\n                        <div className=\"min-w-0\">\r\n                          <p className=\"text-sm font-semibold text-gray-800\">Tìm trường</p>\r\n                          <p className=\"text-xs text-gray-500\">Danh sách trường và đối tác đồng phục</p>\r\n                        </div>\r\n                      </Link>",
-          "line": 160,
-          "endLine": 168,
-          "column": 22,
-          "endColumn": 29,
+          "element": "<Link to=\"/schools\" className=\"flex w-full items-center gap-3\">\r\n                      <div className=\"flex h-9 w-9 items-center justify-center rounded-lg bg-purple-100 text-purple-700\">\r\n                        <GraduationCap size={16} />\r\n                      </div>\r\n                      <div className=\"min-w-0\">\r\n                        <p className=\"text-sm font-semibold text-gray-800\">Tìm trường</p>\r\n                        <p className=\"text-xs text-gray-500\">Danh sách trường và đối tác đồng phục</p>\r\n                      </div>\r\n                    </Link>",
+          "line": 185,
+          "endLine": 193,
+          "column": 20,
+          "endColumn": 27,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
         }
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:171:22-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:196:20-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\FillInformation\\FillInformation.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/products",
         "trigger": {
-          "element": "<Link to=\"/products\" className=\"flex w-full items-center gap-3\">\r\n                        <div className=\"flex h-9 w-9 items-center justify-center rounded-lg bg-purple-100 text-purple-700\">\r\n                          <Package size={16} />\r\n                        </div>\r\n                        <div className=\"min-w-0\">\r\n                          <p className=\"text-sm font-semibold text-gray-800\">Kho đồng phục</p>\r\n                          <p className=\"text-xs text-gray-500\">Mẫu sản phẩm sẵn có để đặt nhanh</p>\r\n                        </div>\r\n                      </Link>",
-          "line": 171,
-          "endLine": 179,
-          "column": 22,
-          "endColumn": 29,
+          "element": "<Link to=\"/products\" className=\"flex w-full items-center gap-3\">\r\n                      <div className=\"flex h-9 w-9 items-center justify-center rounded-lg bg-purple-100 text-purple-700\">\r\n                        <Package size={16} />\r\n                      </div>\r\n                      <div className=\"min-w-0\">\r\n                        <p className=\"text-sm font-semibold text-gray-800\">Kho đồng phục</p>\r\n                        <p className=\"text-xs text-gray-500\">Mẫu sản phẩm sẵn có để đặt nhanh</p>\r\n                      </div>\r\n                    </Link>",
+          "line": 196,
+          "endLine": 204,
+          "column": 20,
+          "endColumn": 27,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
         }
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:215:29-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:226:29-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\FillInformation\\FillInformation.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/cart",
         "trigger": {
           "element": "navigate(\"/cart\")",
-          "line": 215,
-          "endLine": 215,
+          "line": 226,
+          "endLine": 226,
           "column": 29,
           "endColumn": 46,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -352,17 +400,65 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:303:31-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:304:37-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\FillInformation\\FillInformation.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
           "element": "navigate(\"/signin\")",
-          "line": 303,
-          "endLine": 303,
-          "column": 31,
-          "endColumn": 50,
+          "line": 304,
+          "endLine": 304,
+          "column": 37,
+          "endColumn": 56,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:365:18-to-src\\components\\guards\\RoleGuard.tsx",
+      "source": "src\\screens\\FillInformation\\FillInformation.tsx",
+      "target": "src\\components\\guards\\RoleGuard.tsx",
+      "data": {
+        "viaRoute": "/schools",
+        "trigger": {
+          "element": "<Link to=\"/schools\" className=\"flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors\">\r\n                    <GraduationCap size={18} className=\"text-purple-600\" /> Tìm trường\r\n                  </Link>",
+          "line": 365,
+          "endLine": 367,
+          "column": 18,
+          "endColumn": 25,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:368:18-to-src\\components\\guards\\RoleGuard.tsx",
+      "source": "src\\screens\\FillInformation\\FillInformation.tsx",
+      "target": "src\\components\\guards\\RoleGuard.tsx",
+      "data": {
+        "viaRoute": "/products",
+        "trigger": {
+          "element": "<Link to=\"/products\" className=\"flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors\">\r\n                    <Package size={18} className=\"text-purple-600\" /> Kho đồng phục\r\n                  </Link>",
+          "line": 368,
+          "endLine": 370,
+          "column": 18,
+          "endColumn": 25,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:388:43-to-src\\components\\guards\\RoleGuard.tsx",
+      "source": "src\\screens\\FillInformation\\FillInformation.tsx",
+      "target": "src\\components\\guards\\RoleGuard.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\")",
+          "line": 388,
+          "endLine": 388,
+          "column": 43,
+          "endColumn": 62,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
         }
       }
@@ -384,47 +480,47 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:160:22-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:185:20-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\FillInformation\\FillInformation.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/schools",
         "trigger": {
-          "element": "<Link to=\"/schools\" className=\"flex w-full items-center gap-3\">\r\n                        <div className=\"flex h-9 w-9 items-center justify-center rounded-lg bg-purple-100 text-purple-700\">\r\n                          <GraduationCap size={16} />\r\n                        </div>\r\n                        <div className=\"min-w-0\">\r\n                          <p className=\"text-sm font-semibold text-gray-800\">Tìm trường</p>\r\n                          <p className=\"text-xs text-gray-500\">Danh sách trường và đối tác đồng phục</p>\r\n                        </div>\r\n                      </Link>",
-          "line": 160,
-          "endLine": 168,
-          "column": 22,
-          "endColumn": 29,
+          "element": "<Link to=\"/schools\" className=\"flex w-full items-center gap-3\">\r\n                      <div className=\"flex h-9 w-9 items-center justify-center rounded-lg bg-purple-100 text-purple-700\">\r\n                        <GraduationCap size={16} />\r\n                      </div>\r\n                      <div className=\"min-w-0\">\r\n                        <p className=\"text-sm font-semibold text-gray-800\">Tìm trường</p>\r\n                        <p className=\"text-xs text-gray-500\">Danh sách trường và đối tác đồng phục</p>\r\n                      </div>\r\n                    </Link>",
+          "line": 185,
+          "endLine": 193,
+          "column": 20,
+          "endColumn": 27,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
         }
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:171:22-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:196:20-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\FillInformation\\FillInformation.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/products",
         "trigger": {
-          "element": "<Link to=\"/products\" className=\"flex w-full items-center gap-3\">\r\n                        <div className=\"flex h-9 w-9 items-center justify-center rounded-lg bg-purple-100 text-purple-700\">\r\n                          <Package size={16} />\r\n                        </div>\r\n                        <div className=\"min-w-0\">\r\n                          <p className=\"text-sm font-semibold text-gray-800\">Kho đồng phục</p>\r\n                          <p className=\"text-xs text-gray-500\">Mẫu sản phẩm sẵn có để đặt nhanh</p>\r\n                        </div>\r\n                      </Link>",
-          "line": 171,
-          "endLine": 179,
-          "column": 22,
-          "endColumn": 29,
+          "element": "<Link to=\"/products\" className=\"flex w-full items-center gap-3\">\r\n                      <div className=\"flex h-9 w-9 items-center justify-center rounded-lg bg-purple-100 text-purple-700\">\r\n                        <Package size={16} />\r\n                      </div>\r\n                      <div className=\"min-w-0\">\r\n                        <p className=\"text-sm font-semibold text-gray-800\">Kho đồng phục</p>\r\n                        <p className=\"text-xs text-gray-500\">Mẫu sản phẩm sẵn có để đặt nhanh</p>\r\n                      </div>\r\n                    </Link>",
+          "line": 196,
+          "endLine": 204,
+          "column": 20,
+          "endColumn": 27,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
         }
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:215:29-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:226:29-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\FillInformation\\FillInformation.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/cart",
         "trigger": {
           "element": "navigate(\"/cart\")",
-          "line": 215,
-          "endLine": 215,
+          "line": 226,
+          "endLine": 226,
           "column": 29,
           "endColumn": 46,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -432,17 +528,65 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:303:31-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:304:37-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\FillInformation\\FillInformation.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
           "element": "navigate(\"/signin\")",
-          "line": 303,
-          "endLine": 303,
-          "column": 31,
-          "endColumn": 50,
+          "line": 304,
+          "endLine": 304,
+          "column": 37,
+          "endColumn": 56,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:365:18-to-src\\components\\guards\\RoleGuard.tsx",
+      "source": "src\\screens\\FillInformation\\FillInformation.tsx",
+      "target": "src\\components\\guards\\RoleGuard.tsx",
+      "data": {
+        "viaRoute": "/schools",
+        "trigger": {
+          "element": "<Link to=\"/schools\" className=\"flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors\">\r\n                    <GraduationCap size={18} className=\"text-purple-600\" /> Tìm trường\r\n                  </Link>",
+          "line": 365,
+          "endLine": 367,
+          "column": 18,
+          "endColumn": 25,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:368:18-to-src\\components\\guards\\RoleGuard.tsx",
+      "source": "src\\screens\\FillInformation\\FillInformation.tsx",
+      "target": "src\\components\\guards\\RoleGuard.tsx",
+      "data": {
+        "viaRoute": "/products",
+        "trigger": {
+          "element": "<Link to=\"/products\" className=\"flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors\">\r\n                    <Package size={18} className=\"text-purple-600\" /> Kho đồng phục\r\n                  </Link>",
+          "line": 368,
+          "endLine": 370,
+          "column": 18,
+          "endColumn": 25,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:388:43-to-src\\components\\guards\\RoleGuard.tsx",
+      "source": "src\\screens\\FillInformation\\FillInformation.tsx",
+      "target": "src\\components\\guards\\RoleGuard.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\")",
+          "line": 388,
+          "endLine": 388,
+          "column": 43,
+          "endColumn": 62,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
         }
       }
