@@ -3,6 +3,7 @@ import { GuestLayout } from "../../components/layout/GuestLayout";
 import { HeroSection } from "./sections/HeroSection/HeroSection";
 import { FeaturesHighlightSection } from "./sections/FeaturesHighlightSection";
 import { ProductShowcaseSection } from "./sections/ProductShowcaseSection";
+import { CustomUniformOptionsSection } from "./sections/CustomUniformOptionsSection";
 
 export const Homepage = (): JSX.Element => {
 
@@ -12,72 +13,8 @@ export const Homepage = (): JSX.Element => {
       <HeroSection />
 
       <FeaturesHighlightSection/>
-<ProductShowcaseSection/>
-
-      {/* Uniform Catalog Section */}
-      <section className="py-12 md:py-20 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12 md:mb-20">
-            <h2 className="font-baloo text-3xl md:text-5xl leading-[1.4] mb-4">
-              <span className="text-text-dark">Kho Đồng Phục</span>
-              <span className="text-purple-dark"> Đầy Đủ Cấp Học</span>
-            </h2>
-            <p className="font-baloo2 text-xl md:text-3xl text-text-dark leading-[1.3]">
-              Khám phá cách AI giúp bạn thử đồng phục nhanh chóng
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 max-w-6xl mx-auto">
-            {/* Elementary */}
-            <div className="relative rounded-[20px] bg-gray-200 shadow-lg overflow-hidden">
-              <img
-                src="https://api.builder.io/api/v1/image/assets/TEMP/e3defdf92d068d668152ccfe742e9151eef887df?width=596"
-                alt="Tiểu học"
-                className="w-full h-auto rounded-[20px] p-2.5"
-              />
-              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 bg-gray-200 rounded-t-[20px] px-4 py-1.5">
-                <span className="font-baloo2 text-xl font-semibold text-black">Tiểu học</span>
-              </div>
-            </div>
-
-            {/* Middle School */}
-            <div className="relative rounded-[20px] bg-gray-200 shadow-lg overflow-hidden">
-              <img
-                src="https://api.builder.io/api/v1/image/assets/TEMP/ca53d5716185773c3e8e3503a9b32095d88cfa1f?width=596"
-                alt="THCS"
-                className="w-full h-auto rounded-[20px] p-2.5"
-              />
-              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 bg-gray-200 rounded-t-[20px] px-4 py-1.5">
-                <span className="font-baloo2 text-xl font-semibold text-black">THCS</span>
-              </div>
-            </div>
-
-            {/* High School */}
-            <div className="relative rounded-[20px] bg-gray-200 shadow-lg overflow-hidden">
-              <img
-                src="https://api.builder.io/api/v1/image/assets/TEMP/ed766d21bca5438c8806828f3173e1b87b085ebf?width=596"
-                alt="THPT"
-                className="w-full h-auto rounded-[20px] p-2.5"
-              />
-              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 bg-gray-200 rounded-t-[20px] px-4 py-1.5">
-                <span className="font-baloo2 text-xl font-semibold text-black">THPT</span>
-              </div>
-            </div>
-
-            {/* Sports */}
-            <div className="relative rounded-[20px] bg-gray-200 shadow-lg overflow-hidden">
-              <img
-                src="https://api.builder.io/api/v1/image/assets/TEMP/494a01f52ff7ab433c4802d5684890349010cb4a?width=596"
-                alt="Thể dục"
-                className="w-full h-auto rounded-[20px] p-2.5"
-              />
-              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 bg-gray-200 rounded-t-[20px] px-4 py-1.5">
-                <span className="font-baloo2 text-xl font-semibold text-black">Thể dục</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <ProductShowcaseSection/>
+      <CustomUniformOptionsSection/>
 
       {/* Generator/Workspace Section */}
       <section className="py-12 md:py-20 bg-white">

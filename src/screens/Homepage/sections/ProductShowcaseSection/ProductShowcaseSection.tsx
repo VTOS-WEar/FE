@@ -20,7 +20,7 @@ export const ProductShowcaseSection = (): JSX.Element => {
     <section id="how-it-works" className="w-full bg-white py-12 md:py-16">
       <div className="mx-auto w-full max-w-[1300px] px-4 md:px-8">
         <header className="mx-auto max-w-[1100px] text-center">
-          <h2 className="[font-family:'Baloo_2',Helvetica] text-2xl font-bold leading-[1.2] text-[#332623] md:text-3xl">
+          <h2 className="[font-family:'Baloo_2',Helvetica] text-3xl font-bold leading-[1.2] text-[#332623] md:text-4xl">
             <span className="text-[#9323a6]">Thử Nhanh - Chuẩn</span>
             <span> - Không Cần Studio</span>
           </h2>
