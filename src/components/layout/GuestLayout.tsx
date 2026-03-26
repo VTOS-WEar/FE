@@ -13,14 +13,14 @@ interface GuestLayoutProps {
  */
 export const GuestLayout = ({ children, bgColor = "#f5f3ff" }: GuestLayoutProps) => {
     return (
-        <div 
+        <div
             className="w-full min-h-screen flex flex-col"
             style={{ backgroundColor: bgColor }}
         >
             <NavbarGuest />
 
             {/* Main content area */}
-            <main className="flex-1">
+            <main className="flex-1 flex flex-col min-h-[100vh]">
                 {children}
             </main>
 

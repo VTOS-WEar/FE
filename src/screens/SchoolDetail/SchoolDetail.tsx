@@ -254,17 +254,45 @@ export const SchoolDetail = (): JSX.Element => {
 
             {/* School Info */}
             <div className="flex-1 z-10 w-full">
-              <div className="flex justify-between items-start gap-4 flex-col lg:flex-row mb-4 w-full">
+              <div className="flex justify-between items-start gap-4 flex-col lg:flex-row mb-2 w-full">
                 <div className="flex-1">
-                  <h1 className="font-baloo tracking-tight font-extrabold text-3xl lg:text-4xl text-gray-900 mb-2 leading-tight">
+                  <h1 className="font-baloo tracking-tight font-extrabold text-3xl lg:text-4xl text-gray-900 mb-4 leading-tight">
                     {school.schoolName}
                   </h1>
+                  
+                  {/* Address */}
                   {contact.address && (
-                    <div className="flex items-start gap-2 text-gray-500 max-w-2xl">
-                      <MapPin className="w-4 h-4 text-purple-400 flex-shrink-0 mt-0.5" />
-                      <span className="text-sm font-medium">{contact.address}</span>
+                    <div className="flex items-start gap-3 text-gray-600 mb-5">
+                      <div className="p-2 bg-purple-50 rounded-xl text-purple-600 shrink-0 shadow-sm border border-purple-100/50">
+                        <MapPin className="w-4 h-4 shadow-sm" />
+                      </div>
+                      <span className="text-[15px] font-medium leading-relaxed max-w-2xl mt-1.5">
+                        {contact.address}
+                      </span>
                     </div>
                   )}
+
+                  {/* Metadata Chips */}
+                  <div className="flex flex-wrap items-center gap-3">
+                    {contact.phone && (
+                      <div className="flex items-center gap-2 bg-white px-3.5 py-2 rounded-xl border border-gray-200 shadow-sm shadow-gray-200/20 hover:border-purple-300 hover:shadow-purple-100 transition-all cursor-default">
+                        <Phone className="w-4 h-4 text-purple-500" />
+                        <span className="text-[13px] font-bold text-gray-700 tracking-wide">{contact.phone}</span>
+                      </div>
+                    )}
+                    {contact.email && (
+                      <div className="flex items-center gap-2 bg-white px-3.5 py-2 rounded-xl border border-gray-200 shadow-sm shadow-gray-200/20 hover:border-purple-300 hover:shadow-purple-100 transition-all cursor-default">
+                        <Mail className="w-4 h-4 text-purple-500" />
+                        <span className="text-[13px] font-bold text-gray-700 tracking-wide">{contact.email}</span>
+                      </div>
+                    )}
+                    {contact.foundedYear && (
+                      <div className="flex items-center gap-2 bg-white px-3.5 py-2 rounded-xl border border-gray-200 shadow-sm shadow-gray-200/20 hover:border-purple-300 hover:shadow-purple-100 transition-all cursor-default">
+                        <Calendar className="w-4 h-4 text-purple-500" />
+                        <span className="text-[13px] font-bold text-gray-500">Thành lập: <span className="text-gray-900">{contact.foundedYear}</span></span>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 {/* Actions */}
@@ -276,48 +304,6 @@ export const SchoolDetail = (): JSX.Element => {
                   </motion.div>
                 </div>
               </div>
-
-              {/* Grid Metadata */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-4 gap-x-6 mt-6 pt-6 border-t border-gray-100/80">
-                {contact.phone && (
-                  <div className="flex items-center gap-2.5">
-                    <div className="p-1.5 bg-purple-50 rounded-lg text-purple-500"><Phone className="w-3.5 h-3.5" /></div>
-                    <span className="text-[13px] font-medium text-gray-600">{contact.phone}</span>
-                  </div>
-                )}
-                {contact.email && (
-                  <div className="flex items-center gap-2.5">
-                    <div className="p-1.5 bg-purple-50 rounded-lg text-purple-500"><Mail className="w-3.5 h-3.5" /></div>
-                    <span className="text-[13px] font-medium text-gray-600 break-all line-clamp-1" title={contact.email}>{contact.email}</span>
-                  </div>
-                )}
-                {contact.website && (
-                  <div className="flex items-center gap-2.5">
-                    <div className="p-1.5 bg-purple-50 rounded-lg text-purple-500"><Globe className="w-3.5 h-3.5" /></div>
-                    <a href={contact.website} target="_blank" rel="noopener noreferrer" className="text-[13px] font-bold text-purple-600 hover:underline break-all line-clamp-1" title={contact.website}>{contact.website}</a>
-                  </div>
-                )}
-                {school.level && (
-                  <div className="flex items-center gap-2.5">
-                    <div className="p-1.5 bg-purple-50 rounded-lg text-purple-500"><BookOpen className="w-3.5 h-3.5" /></div>
-                    <span className="text-[13px] font-medium text-gray-600">Level: {school.level}</span>
-                  </div>
-                )}
-                {contact.academicYear && (
-                  <div className="flex items-center gap-2.5">
-                    <div className="p-1.5 bg-purple-50 rounded-lg text-purple-500"><Calendar className="w-3.5 h-3.5" /></div>
-                    <span className="text-[13px] font-medium text-gray-600">Niên khóa: {contact.academicYear}</span>
-                  </div>
-                )}
-              </div>
-
-              {contact.description && (
-                <div className="mt-8 bg-gray-50/50 rounded-2xl p-5 border border-gray-100">
-                  <p className="text-sm font-medium text-gray-500 leading-relaxed">
-                    {contact.description}
-                  </p>
-                </div>
-              )}
             </div>
           </Card>
         </motion.div>
@@ -342,40 +328,64 @@ export const SchoolDetail = (): JSX.Element => {
               <p className="font-medium text-gray-500">Chưa có chương trình đồng phục nào.</p>
             </div>
           ) : (
-            <motion.div variants={staggerGrid} initial="hidden" animate="visible" className="space-y-4">
+            <motion.div variants={staggerGrid} initial="hidden" animate="visible" className="grid grid-cols-1 lg:grid-cols-2 gap-5 xl:gap-6">
               {[...activeCampaigns, ...otherCampaigns].map(c => {
                 const s = STATUS_LABEL[c.status] ?? { label: c.status, color: "bg-gray-100 text-gray-600" };
                 const canViewDetail = isParent;
+                const startYear = new Date(c.startDate).getFullYear();
+                const endYear = new Date(c.endDate).getFullYear();
+                const academicYearStr = startYear === endYear ? `${startYear}` : `${startYear} - ${endYear}`;
+
                 return (
-                  <motion.div key={c.campaignId} variants={cardItem} whileHover={canViewDetail ? { scale: 1.01, y: -2 } : {}} whileTap={canViewDetail ? { scale: 0.99 } : {}}
+                  <motion.div key={c.campaignId} variants={cardItem} whileHover={canViewDetail ? { scale: 1.02, y: -2 } : {}} whileTap={canViewDetail ? { scale: 0.98 } : {}}
                     onClick={() => canViewDetail && navigate(`/campaigns/${c.campaignId}`)}
-                    className={`bg-white rounded-[24px] p-6 shadow-[0_4px_16px_rgba(0,0,0,0.02)] border border-gray-100/60 transition-all flex flex-col md:flex-row md:items-center gap-6 ${canViewDetail ? "hover:border-purple-200 hover:shadow-[0_16px_40px_rgba(124,58,237,0.1)] cursor-pointer group" : ""}`}>
+                    className={`bg-white rounded-[24px] overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-gray-100/60 transition-all flex flex-col sm:flex-row ${canViewDetail ? "hover:border-purple-200 hover:shadow-[0_20px_48px_-12px_rgba(124,58,237,0.15)] cursor-pointer group" : ""}`}>
 
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2.5 flex-wrap">
-                        <h3 className="font-bold text-lg text-gray-900 group-hover:text-purple-600 transition-colors">{c.campaignName}</h3>
-                        <span className={`inline-flex text-[10px] uppercase tracking-wider font-bold px-3 py-1 rounded-full shadow-sm ${s.color}`}>{s.label}</span>
-                      </div>
-
-                      {c.description && <p className="text-sm font-medium text-gray-500 mb-4 line-clamp-2 leading-relaxed">{c.description}</p>}
-
-                      <div className="flex items-center gap-4 text-xs font-semibold text-gray-400 flex-wrap">
-                        <div className="flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5 text-purple-300" /> <span>{new Date(c.startDate).toLocaleDateString("vi-VN")} – {new Date(c.endDate).toLocaleDateString("vi-VN")}</span></div>
-                        <div className="flex items-center gap-1.5"><Shirt className="w-3.5 h-3.5 text-purple-300" /> <span>{c.outfitCount} mẫu đồng phục</span></div>
-                      </div>
+                    {/* Left/Top Highlight: Niên Khóa */}
+                    <div className="bg-gradient-to-br from-purple-500 to-indigo-600 p-6 flex flex-col justify-center items-center text-white shrink-0 sm:w-[150px] md:w-[170px] relative overflow-hidden">
+                      <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+                      <Calendar className="w-7 h-7 mb-2.5 text-white/90 drop-shadow-md z-10" />
+                      <span className="text-[10px] uppercase tracking-[0.15em] font-bold text-white/80 mb-1 z-10">Niên khóa</span>
+                      <span className="font-baloo font-extrabold text-[24px] md:text-[28px] leading-none text-center drop-shadow-md z-10">
+                        {academicYearStr}
+                      </span>
                     </div>
 
-                    {canViewDetail ? (
-                      <div className="flex-shrink-0 lg:opacity-0 lg:-translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
-                        <div className="w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center text-purple-600 group-hover:bg-purple-600 group-hover:text-white transition-colors">
-                          <ArrowRight className="w-5 h-5" />
+                    {/* Right/Bottom Context */}
+                    <div className="flex-1 p-6 flex flex-col justify-center relative bg-white">
+                      <div className="flex items-start justify-between gap-4 mb-3">
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-bold text-lg text-gray-900 group-hover:text-purple-600 transition-colors leading-tight line-clamp-2 md:line-clamp-1">{c.campaignName}</h3>
+                        </div>
+                        <span className={`shrink-0 inline-flex text-[10px] uppercase tracking-wider font-extrabold px-3 py-1.5 rounded-lg shadow-sm ${s.color}`}>{s.label}</span>
+                      </div>
+
+                      {c.description && <p className="text-[13px] font-medium text-gray-500 mb-4 line-clamp-2 leading-relaxed">{c.description}</p>}
+
+                      <div className="flex items-center gap-4 mt-auto pt-2 flex-wrap">
+                        <div className="flex items-center gap-1.5 font-bold text-[13px] text-gray-500 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100/50">
+                          <Shirt className="w-4 h-4 text-purple-400" />
+                          <span><span className="text-gray-900">{c.outfitCount}</span> mẫu</span>
+                        </div>
+                        <div className="flex items-center gap-1.5 font-bold text-[13px] text-gray-500 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100/50">
+                          <Calendar className="w-4 h-4 text-purple-400" />
+                          <span>Hạn: <span className="text-gray-900">{new Date(c.endDate).toLocaleDateString("vi-VN")}</span></span>
                         </div>
                       </div>
-                    ) : (
-                      <div className="flex-shrink-0">
-                        <Badge variant="outline" className="text-xs bg-gray-50 text-gray-400 border-gray-200">Đăng nhập để xem</Badge>
-                      </div>
-                    )}
+
+                      {canViewDetail ? (
+                        <div className="absolute bottom-6 right-6 lg:opacity-0 lg:-translate-x-3 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
+                          <div className="w-9 h-9 rounded-full bg-purple-50 flex items-center justify-center text-purple-600 group-hover:bg-purple-600 group-hover:text-white transition-colors shadow-sm">
+                            <ArrowRight className="w-4 h-4" />
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="absolute bottom-6 right-6">
+                          <Badge variant="outline" className="text-[10px] bg-gray-50 text-gray-400 border-gray-200">Đăng nhập</Badge>
+                        </div>
+                      )}
+                    </div>
+
                   </motion.div>
                 );
               })}
@@ -403,7 +413,7 @@ export const SchoolDetail = (): JSX.Element => {
               <p className="font-medium text-gray-500">Chưa có đồng phục nào.</p>
             </div>
           ) : (
-            <motion.div variants={staggerGrid} initial="hidden" animate="visible" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <motion.div variants={staggerGrid} initial="hidden" animate="visible" className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
               {uniforms.map(u => (
                 <motion.div
                   key={u.outfitId}
@@ -415,7 +425,7 @@ export const SchoolDetail = (): JSX.Element => {
                 >
                   <div className="absolute -inset-2 rounded-[32px] bg-purple-300/0 group-hover:bg-purple-300/10 blur-xl transition-all duration-500 pointer-events-none" />
                   <Card className="relative w-full h-full bg-white rounded-[24px] overflow-hidden border border-gray-100/60 shadow-[0_4px_20px_rgba(0,0,0,0.03)] group-hover:shadow-[0_24px_48px_-12px_rgba(124,58,237,0.15)] group-hover:border-purple-100/80 transition-all duration-500 flex flex-col">
-                    <div className="w-full aspect-square overflow-hidden bg-gray-50 relative shrink-0">
+                    <div className="w-full aspect-[5/4] overflow-hidden bg-gray-50 relative shrink-0">
                       {u.mainImageURL != null ? (
                         <img src={u.mainImageURL} alt={u.outfitName} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                       ) : (
