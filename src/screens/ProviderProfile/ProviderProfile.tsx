@@ -71,7 +71,7 @@ export const ProviderProfile = (): JSX.Element => {
         navigate("/signin", { replace: true });
     };
 
-    const fieldClass = "nb-input py-3 text-sm";
+    const fieldClass = "nb-input w-full py-3 text-sm";
     const labelClass = "font-bold text-[#1A1A2E] text-sm mb-2 block";
     const sc = statusConfig[status];
 

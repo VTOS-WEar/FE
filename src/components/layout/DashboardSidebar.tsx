@@ -1,4 +1,4 @@
-import { ChevronLeftIcon, ChevronRightIcon, LogOut } from "lucide-react";
+import { ChevronLeftIcon, ChevronRightIcon, LogOut, School, Building2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useMemo } from "react";
 
@@ -18,8 +18,9 @@ export interface NavSection {
 export interface DashboardSidebarProps {
     isCollapsed: boolean;
     onToggle: () => void;
-    avatarSrc: string;
+    avatarSrc?: string;
     avatarAlt?: string;
+    iconType?: "school" | "provider";
     greeting?: string;
     name: string;
     navSections: NavSection[];
@@ -41,7 +42,7 @@ function getStoredOrgName(): string {
 }
 
 export const DashboardSidebar = ({
-    isCollapsed, onToggle, avatarSrc, avatarAlt = "avatar",
+    isCollapsed, onToggle, iconType = "school",
     name, navSections, topNavItems = [], onLogout,
 }: DashboardSidebarProps): JSX.Element => {
     const navigate = useNavigate();
@@ -59,20 +60,22 @@ export const DashboardSidebar = ({
         <Icon className={`w-[18px] h-[18px] flex-shrink-0 ${active ? "text-[#6938ef]" : "text-[#6b7280]"}`} strokeWidth={1.75} />
     );
 
+    const IconComponent = iconType === "provider" ? Building2 : School;
+    const iconBg = iconType === "provider" ? "bg-[#DBEAFE]" : "bg-[#EDE9FE]";
+    const iconColor = iconType === "provider" ? "text-[#3B82F6]" : "text-[#6938EF]";
+
     return (
         <aside className="nb-sidebar w-full h-full">
             {/* Logo + Name header */}
-            <div className={`flex items-center gap-3 ${isCollapsed ? "justify-center px-2 py-4" : "px-4 py-4"} border-b-2 border-[#E5E7EB]`}>
-                <img
-                    src={avatarSrc}
-                    alt={avatarAlt}
-                    className={`${isCollapsed ? "w-8 h-8" : "w-9 h-9"} rounded-full border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E] object-cover flex-shrink-0`}
-                />
+            <div className={`flex ${isCollapsed ? "flex-col items-center gap-2 px-2 py-3" : "items-center gap-3 px-4 py-4"} border-b-2 border-[#E5E7EB]`}>
+                <div className={`${isCollapsed ? "w-8 h-8" : "w-9 h-9"} rounded-full border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E] ${iconBg} flex items-center justify-center flex-shrink-0`}>
+                    <IconComponent className={`${isCollapsed ? "w-4 h-4" : "w-5 h-5"} ${iconColor}`} strokeWidth={1.75} />
+                </div>
                 {!isCollapsed && (
                     <div className="flex-1 min-w-0">
-                        <p className="font-bold text-[#1A1A2E] text-sm leading-tight truncate">{displayName}</p>
+                        <p className="font-bold text-[#1A1A2E] text-sm leading-tight">{displayName}</p>
                         {displayName !== personName && personName && (
-                            <p className="font-medium text-[#9CA3AF] text-xs truncate">{personName}</p>
+                            <p className="font-medium text-[#9CA3AF] text-xs">{personName}</p>
                         )}
                     </div>
                 )}
