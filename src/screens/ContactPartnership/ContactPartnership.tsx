@@ -55,7 +55,7 @@ export const ContactPartnership = (): JSX.Element => {
                             <h1 className="[font-family:'Baloo_2',Helvetica] font-extrabold text-[#100f14] text-2xl lg:text-3xl mb-3">
                                 Yêu cầu đã được gửi!
                             </h1>
-                            <p className="[font-family:'Montserrat',Helvetica] font-medium text-[#676576] text-base mb-6">
+                            <p className="font-medium text-[#676576] text-base mb-6">
                                 Cảm ơn bạn đã quan tâm đến VTOS. Đội ngũ chăm sóc sẽ liên hệ với bạn trong thời gian sớm nhất.
                             </p>
                             <Link
@@ -79,7 +79,7 @@ export const ContactPartnership = (): JSX.Element => {
                         <h1 className="[font-family:'Baloo_2',Helvetica] font-extrabold text-[#100f14] text-3xl lg:text-4xl mb-3">
                             Liên hệ hợp tác
                         </h1>
-                        <p className="[font-family:'Montserrat',Helvetica] font-medium text-[#676576] text-base lg:text-lg">
+                        <p className="font-medium text-[#676576] text-base lg:text-lg">
                             Bạn là trường học hoặc nhà cung cấp? Điền form bên dưới, chúng tôi sẽ liên hệ lại.
                         </p>
                     </div>
@@ -90,7 +90,7 @@ export const ContactPartnership = (): JSX.Element => {
                     >
                         {/* Type selector */}
                         <div>
-                            <label className="block text-sm font-semibold text-[#100f14] mb-2 [font-family:'Montserrat',Helvetica]">
+                            <label className="block text-sm font-semibold text-[#100f14] mb-2 ">
                                 Bạn là?
                             </label>
                             <div className="grid grid-cols-2 gap-3">
@@ -104,7 +104,7 @@ export const ContactPartnership = (): JSX.Element => {
                                     }`}
                                 >
                                     <div className="text-3xl mb-1">🏫</div>
-                                    <div className="font-semibold text-sm [font-family:'Montserrat',Helvetica]">
+                                    <div className="font-semibold text-sm ">
                                         Trường học
                                     </div>
                                 </button>
@@ -118,7 +118,7 @@ export const ContactPartnership = (): JSX.Element => {
                                     }`}
                                 >
                                     <div className="text-3xl mb-1">🏭</div>
-                                    <div className="font-semibold text-sm [font-family:'Montserrat',Helvetica]">
+                                    <div className="font-semibold text-sm ">
                                         Nhà cung cấp
                                     </div>
                                 </button>
@@ -127,7 +127,7 @@ export const ContactPartnership = (): JSX.Element => {
 
                         {/* Organization name */}
                         <div>
-                            <label className="block text-sm font-semibold text-[#100f14] mb-1 [font-family:'Montserrat',Helvetica]">
+                            <label className="block text-sm font-semibold text-[#100f14] mb-1 ">
                                 Tên tổ chức <span className="text-red-500">*</span>
                             </label>
                             <input
@@ -135,13 +135,13 @@ export const ContactPartnership = (): JSX.Element => {
                                 value={form.organizationName}
                                 onChange={e => setForm(f => ({ ...f, organizationName: e.target.value }))}
                                 placeholder="VD: Trường THCS Nguyễn Huệ"
-                                className="w-full px-4 py-3 rounded-xl border border-[#e5e3f0] bg-[#fafafa] focus:outline-none focus:border-[#6938ef] focus:ring-1 focus:ring-[#6938ef] transition-colors [font-family:'Montserrat',Helvetica] text-sm"
+                                className="w-full px-4 py-3 rounded-xl border border-[#e5e3f0] bg-[#fafafa] focus:outline-none focus:border-[#6938ef] focus:ring-1 focus:ring-[#6938ef] transition-colors text-sm"
                             />
                         </div>
 
                         {/* Contact person name */}
                         <div>
-                            <label className="block text-sm font-semibold text-[#100f14] mb-1 [font-family:'Montserrat',Helvetica]">
+                            <label className="block text-sm font-semibold text-[#100f14] mb-1 ">
                                 Họ tên người liên hệ <span className="text-red-500">*</span>
                             </label>
                             <input
@@ -149,13 +149,13 @@ export const ContactPartnership = (): JSX.Element => {
                                 value={form.contactPersonName}
                                 onChange={e => setForm(f => ({ ...f, contactPersonName: e.target.value }))}
                                 placeholder="VD: Nguyễn Văn A"
-                                className="w-full px-4 py-3 rounded-xl border border-[#e5e3f0] bg-[#fafafa] focus:outline-none focus:border-[#6938ef] focus:ring-1 focus:ring-[#6938ef] transition-colors [font-family:'Montserrat',Helvetica] text-sm"
+                                className="w-full px-4 py-3 rounded-xl border border-[#e5e3f0] bg-[#fafafa] focus:outline-none focus:border-[#6938ef] focus:ring-1 focus:ring-[#6938ef] transition-colors text-sm"
                             />
                         </div>
 
                         {/* Email */}
                         <div>
-                            <label className="block text-sm font-semibold text-[#100f14] mb-1 [font-family:'Montserrat',Helvetica]">
+                            <label className="block text-sm font-semibold text-[#100f14] mb-1 ">
                                 Email liên hệ <span className="text-red-500">*</span>
                             </label>
                             <input
@@ -163,13 +163,13 @@ export const ContactPartnership = (): JSX.Element => {
                                 value={form.contactEmail}
                                 onChange={e => setForm(f => ({ ...f, contactEmail: e.target.value }))}
                                 placeholder="email@example.com"
-                                className="w-full px-4 py-3 rounded-xl border border-[#e5e3f0] bg-[#fafafa] focus:outline-none focus:border-[#6938ef] focus:ring-1 focus:ring-[#6938ef] transition-colors [font-family:'Montserrat',Helvetica] text-sm"
+                                className="w-full px-4 py-3 rounded-xl border border-[#e5e3f0] bg-[#fafafa] focus:outline-none focus:border-[#6938ef] focus:ring-1 focus:ring-[#6938ef] transition-colors text-sm"
                             />
                         </div>
 
                         {/* Phone */}
                         <div>
-                            <label className="block text-sm font-semibold text-[#100f14] mb-1 [font-family:'Montserrat',Helvetica]">
+                            <label className="block text-sm font-semibold text-[#100f14] mb-1 ">
                                 Số điện thoại <span className="text-red-500">*</span>
                             </label>
                             <input
@@ -177,13 +177,13 @@ export const ContactPartnership = (): JSX.Element => {
                                 value={form.contactPhone}
                                 onChange={e => setForm(f => ({ ...f, contactPhone: e.target.value }))}
                                 placeholder="0901234567"
-                                className="w-full px-4 py-3 rounded-xl border border-[#e5e3f0] bg-[#fafafa] focus:outline-none focus:border-[#6938ef] focus:ring-1 focus:ring-[#6938ef] transition-colors [font-family:'Montserrat',Helvetica] text-sm"
+                                className="w-full px-4 py-3 rounded-xl border border-[#e5e3f0] bg-[#fafafa] focus:outline-none focus:border-[#6938ef] focus:ring-1 focus:ring-[#6938ef] transition-colors text-sm"
                             />
                         </div>
 
                         {/* Address */}
                         <div>
-                            <label className="block text-sm font-semibold text-[#100f14] mb-1 [font-family:'Montserrat',Helvetica]">
+                            <label className="block text-sm font-semibold text-[#100f14] mb-1 ">
                                 Địa chỉ
                             </label>
                             <input
@@ -191,13 +191,13 @@ export const ContactPartnership = (): JSX.Element => {
                                 value={form.address}
                                 onChange={e => setForm(f => ({ ...f, address: e.target.value }))}
                                 placeholder="123 Đường ABC, Quận 1, TP.HCM"
-                                className="w-full px-4 py-3 rounded-xl border border-[#e5e3f0] bg-[#fafafa] focus:outline-none focus:border-[#6938ef] focus:ring-1 focus:ring-[#6938ef] transition-colors [font-family:'Montserrat',Helvetica] text-sm"
+                                className="w-full px-4 py-3 rounded-xl border border-[#e5e3f0] bg-[#fafafa] focus:outline-none focus:border-[#6938ef] focus:ring-1 focus:ring-[#6938ef] transition-colors text-sm"
                             />
                         </div>
 
                         {/* Description */}
                         <div>
-                            <label className="block text-sm font-semibold text-[#100f14] mb-1 [font-family:'Montserrat',Helvetica]">
+                            <label className="block text-sm font-semibold text-[#100f14] mb-1 ">
                                 Mô tả thêm
                             </label>
                             <textarea
@@ -205,12 +205,12 @@ export const ContactPartnership = (): JSX.Element => {
                                 onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
                                 placeholder="Thông tin thêm về trường/công ty của bạn..."
                                 rows={3}
-                                className="w-full px-4 py-3 rounded-xl border border-[#e5e3f0] bg-[#fafafa] focus:outline-none focus:border-[#6938ef] focus:ring-1 focus:ring-[#6938ef] transition-colors [font-family:'Montserrat',Helvetica] text-sm resize-none"
+                                className="w-full px-4 py-3 rounded-xl border border-[#e5e3f0] bg-[#fafafa] focus:outline-none focus:border-[#6938ef] focus:ring-1 focus:ring-[#6938ef] transition-colors text-sm resize-none"
                             />
                         </div>
 
                         {error && (
-                            <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-red-600 text-sm [font-family:'Montserrat',Helvetica]">
+                            <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-red-600 text-sm ">
                                 {error}
                             </div>
                         )}
@@ -218,7 +218,7 @@ export const ContactPartnership = (): JSX.Element => {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full bg-gradient-to-r from-[#6938ef] to-[#9b6dff] text-white py-3.5 rounded-xl font-semibold text-base hover:opacity-90 transition-opacity disabled:opacity-50 [font-family:'Montserrat',Helvetica]"
+                            className="w-full bg-gradient-to-r from-[#6938ef] to-[#9b6dff] text-white py-3.5 rounded-xl font-semibold text-base hover:opacity-90 transition-opacity disabled:opacity-50 "
                         >
                             {loading ? "Đang gửi..." : "Gửi yêu cầu liên hệ"}
                         </button>
@@ -228,7 +228,7 @@ export const ContactPartnership = (): JSX.Element => {
                         <span className="text-[#494759]">Bạn là phụ huynh? </span>
                         <Link
                             to="/signup/parent"
-                            className="[font-family:'Montserrat',Helvetica] font-semibold italic text-[#6938ef] hover:underline"
+                            className="font-semibold italic text-[#6938ef] hover:underline"
                         >
                             Đăng ký tài khoản
                         </Link>

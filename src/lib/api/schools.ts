@@ -101,7 +101,7 @@ export async function updateSchoolProfile(data: UpdateSchoolProfileRequest) {
     });
 }
 
-/** UC-42: Upload school logo via BE → ImgBB, returns { logoURL } */
+/** UC-42: Upload school logo via BE → MinIO, returns { logoURL } */
 export async function uploadSchoolLogo(file: File): Promise<{ logoURL: string }> {
     const formData = new FormData();
     formData.append("file", file);

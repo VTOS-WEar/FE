@@ -115,7 +115,7 @@ export const ResetPassword = (): JSX.Element => {
 
                                     <div className="flex items-center gap-4 lg:gap-6 my-5 lg:my-6">
                                         <Separator className="flex-1 h-[1px] bg-[#cac9d6]" />
-                                        <span className="[font-family:'Montserrat',Helvetica] font-medium text-[#676576] text-base">
+                                        <span className="font-medium text-[#676576] text-base">
                                             Nhập mật khẩu mới
                                         </span>
                                         <Separator className="flex-1 h-[1px] bg-[#cac9d6]" />
@@ -124,7 +124,7 @@ export const ResetPassword = (): JSX.Element => {
                                     <div className="space-y-4 lg:space-y-5">
                                         {/* Password */}
                                         <div className="space-y-2">
-                                            <Label className="[font-family:'Montserrat',Helvetica] font-medium text-[#9794aa] text-sm lg:text-base">
+                                            <Label className="font-medium text-[#9794aa] text-sm lg:text-base">
                                                 Mật khẩu mới
                                             </Label>
                                             <div className="relative">
@@ -133,7 +133,7 @@ export const ResetPassword = (): JSX.Element => {
                                                     placeholder="Nhập mật khẩu mới"
                                                     value={newPassword}
                                                     onChange={(e) => setNewPassword(e.target.value)}
-                                                    className="h-11 lg:h-12 px-4 lg:px-5 pr-12 rounded-md border border-[#cac9d6] [font-family:'Montserrat',Helvetica] font-medium text-sm lg:text-base"
+                                                    className="h-11 lg:h-12 px-4 lg:px-5 pr-12 rounded-md border border-[#cac9d6] font-medium text-sm lg:text-base"
                                                 />
                                                 <button
                                                     type="button"
@@ -149,14 +149,14 @@ export const ResetPassword = (): JSX.Element => {
                                                 </button>
                                             </div>
 
-                                            <p className="[font-family:'Montserrat',Helvetica] text-xs lg:text-sm text-[#676576] italic">
+                                            <p className="text-xs lg:text-sm text-[#676576] italic">
                                                 Gợi ý: tối thiểu 8 ký tự.
                                             </p>
                                         </div>
 
                                         {/* Re Password */}
                                         <div className="space-y-2">
-                                            <Label className="[font-family:'Montserrat',Helvetica] font-medium text-[#9794aa] text-sm lg:text-base">
+                                            <Label className="font-medium text-[#9794aa] text-sm lg:text-base">
                                                 Nhập lại mật khẩu
                                             </Label>
                                             <div className="relative">
@@ -166,7 +166,7 @@ export const ResetPassword = (): JSX.Element => {
                                                     value={rePassword}
                                                     onChange={(e) => setRePassword(e.target.value)}
                                                     className={[
-                                                        "h-11 lg:h-12 px-4 lg:px-5 pr-12 rounded-md border [font-family:'Montserrat',Helvetica] font-medium text-sm lg:text-base",
+                                                        "h-11 lg:h-12 px-4 lg:px-5 pr-12 rounded-md border font-medium text-sm lg:text-base",
                                                         passwordsMatch ? "border-[#cac9d6]" : "border-red-400",
                                                     ].join(" ")}
                                                     onKeyDown={(e) => {
@@ -188,7 +188,7 @@ export const ResetPassword = (): JSX.Element => {
                                             </div>
 
                                             {!passwordsMatch && (
-                                                <p className="[font-family:'Montserrat',Helvetica] text-xs lg:text-sm text-red-500 italic">
+                                                <p className="text-xs lg:text-sm text-red-500 italic">
                                                     Mật khẩu nhập lại không khớp.
                                                 </p>
                                             )}
@@ -209,7 +209,7 @@ export const ResetPassword = (): JSX.Element => {
                                             <span className="text-[#494759]">Quay lại </span>
                                             <Link
                                                 to="/signin"
-                                                className="[font-family:'Montserrat',Helvetica] font-semibold italic text-[#6938ef] cursor-pointer hover:underline"
+                                                className="font-semibold italic text-[#6938ef] cursor-pointer hover:underline"
                                             >
                                                 Đăng nhập
                                             </Link>
@@ -245,7 +245,7 @@ export const ResetPassword = (): JSX.Element => {
                                         src="https://c.animaapp.com/mjxt3t8wNP0otU/img/vtos--1--removebg-preview-2-1.png"
                                     />
 
-                                    <p className="[font-family:'Montserrat',Helvetica] font-semibold italic text-white text-xl lg:text-3xl leading-relaxed mb-6">
+                                    <p className="font-semibold italic text-white text-xl lg:text-3xl leading-relaxed mb-6">
                                         Đổi mật khẩu nhanh chóng & an toàn
                                     </p>
 

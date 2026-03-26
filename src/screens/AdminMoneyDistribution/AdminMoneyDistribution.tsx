@@ -9,6 +9,17 @@ import { DashboardSidebar } from "../../components/layout";
 import { useAdminSidebarConfig } from "../../hooks/useAdminSidebarConfig";
 import { getWithdrawalRequests, approveWithdrawal, type WithdrawalRequestDto } from "../../lib/api/admin";
 
+const statusBadge: Record<string, string> = {
+    Pending: "nb-badge nb-badge-yellow",
+    Approved: "nb-badge nb-badge-green",
+    Rejected: "nb-badge nb-badge-red",
+};
+const statusLabels: Record<string, string> = {
+    Pending: "Chờ xử lý",
+    Approved: "Đã chuyển",
+    Rejected: "Từ chối",
+};
+
 export const AdminMoneyDistribution = (): JSX.Element => {
     const navigate = useNavigate();
     const sidebarConfig = useAdminSidebarConfig();
@@ -50,88 +61,78 @@ export const AdminMoneyDistribution = (): JSX.Element => {
         navigate("/signin", { replace: true });
     };
 
-    const statusColors: Record<string, string> = {
-        Pending: "bg-[#FEF3C7] text-[#92400E]",
-        Approved: "bg-[#D1FAE5] text-[#065F46]",
-        Rejected: "bg-[#FEE2E2] text-[#991B1B]",
-    };
-
-    const statusLabels: Record<string, string> = {
-        Pending: "Chờ xử lý",
-        Approved: "Đã chuyển",
-        Rejected: "Từ chối",
-    };
-
     return (
-        <div className="bg-[#f6f7f8] w-full min-h-screen flex flex-col">
+        <div className="nb-page flex flex-col">
             <div className="flex flex-1 flex-col lg:flex-row">
-                <div className={`${isCollapsed ? "lg:w-16" : "lg:w-[20rem] xl:w-[23.75rem]"} flex-shrink-0 lg:sticky lg:top-0 lg:h-screen transition-all duration-300`}>
+                <div className={`${isCollapsed ? "lg:w-16" : "lg:w-[16rem]"} flex-shrink-0 lg:sticky lg:top-0 lg:h-screen transition-all duration-300`}>
                     <DashboardSidebar {...sidebarConfig} isCollapsed={isCollapsed} onToggle={toggle} onLogout={handleLogout} />
                 </div>
                 <div className="flex-1 flex flex-col min-w-0">
-                    <div className="bg-white border-b border-[#cbcad7] px-6 lg:px-10 py-5">
+                    <div className="nb-breadcrumb-bar">
                         <Breadcrumb><BreadcrumbList>
-                            <BreadcrumbItem><BreadcrumbLink href="/admin/dashboard" className="[font-family:'Montserrat',Helvetica] font-semibold text-[#4c5769] text-base">Trang chủ</BreadcrumbLink></BreadcrumbItem>
+                            <BreadcrumbItem><BreadcrumbLink href="/admin/dashboard" className="font-semibold text-[#4c5769] text-base">Trang chủ</BreadcrumbLink></BreadcrumbItem>
                             <BreadcrumbSeparator className="text-[#cbcad7]">/</BreadcrumbSeparator>
-                            <BreadcrumbItem><BreadcrumbPage className="[font-family:'Montserrat',Helvetica] font-semibold text-[#4c5769] text-base">Phân phối tiền</BreadcrumbPage></BreadcrumbItem>
+                            <BreadcrumbItem><BreadcrumbPage className="font-bold text-[#1A1A2E] text-base">Phân phối tiền</BreadcrumbPage></BreadcrumbItem>
                         </BreadcrumbList></Breadcrumb>
                     </div>
                     <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-6">
-                        <h1 className="[font-family:'Montserrat',Helvetica] font-bold text-black text-[28px]">💰 Phân phối tiền</h1>
-                        <p className="text-sm text-[#6B7280] [font-family:'Montserrat',Helvetica]">
-                            Xem yêu cầu rút tiền từ Quản lý trường và Nhà cung cấp. Sau khi kiểm tra, admin chuyển tiền thủ công qua ngân hàng.
-                        </p>
+                        <div>
+                            <h1 className="font-extrabold text-[#1A1A2E] text-[28px]">💰 Phân phối tiền</h1>
+                            <p className="text-sm text-[#6B7280] mt-1 font-medium">
+                                Xem yêu cầu rút tiền từ Quản lý trường và Nhà cung cấp. Sau khi kiểm tra, admin chuyển tiền thủ công qua ngân hàng.
+                            </p>
+                        </div>
 
-                        {/* Filter */}
+                        {/* Filter — NB select */}
                         <select value={filterStatus} onChange={e => { setFilterStatus(e.target.value); setPage(1); }}
-                            className="border border-[#CBCAD7] rounded-xl px-4 py-2.5 text-sm [font-family:'Montserrat',Helvetica] focus:outline-none focus:ring-2 focus:ring-[#6366F1]/30">
+                            className="nb-select text-sm">
                             <option value="">Tất cả trạng thái</option>
                             <option value="Pending">Chờ xử lý</option>
                             <option value="Approved">Đã chuyển</option>
                             <option value="Rejected">Từ chối</option>
                         </select>
 
-                        {/* Table */}
-                        <div className="bg-white border border-[#CBCAD7] rounded-2xl overflow-hidden">
+                        {/* Table — NB table */}
+                        <div className="nb-card-static overflow-hidden">
                             <div className="overflow-x-auto">
-                                <table className="w-full text-sm [font-family:'Montserrat',Helvetica]">
-                                    <thead><tr className="bg-[#F9FAFB] border-b border-[#CBCAD7]">
-                                        <th className="text-left px-6 py-3 font-semibold text-[#6B7280]">Trường / Nhà Cung Cấp</th>
-                                        <th className="text-right px-6 py-3 font-semibold text-[#6B7280]">Số tiền</th>
-                                        <th className="text-left px-6 py-3 font-semibold text-[#6B7280]">Ngân hàng</th>
-                                        <th className="text-left px-6 py-3 font-semibold text-[#6B7280]">STK</th>
-                                        <th className="text-left px-6 py-3 font-semibold text-[#6B7280]">Trạng thái</th>
-                                        <th className="text-left px-6 py-3 font-semibold text-[#6B7280]">Ngày yêu cầu</th>
-                                        <th className="text-center px-6 py-3 font-semibold text-[#6B7280]">Hành động</th>
+                                <table className="nb-table">
+                                    <thead><tr>
+                                        <th>Trường / Nhà Cung Cấp</th>
+                                        <th className="text-right">Số tiền</th>
+                                        <th>Ngân hàng</th>
+                                        <th>STK</th>
+                                        <th>Trạng thái</th>
+                                        <th>Ngày yêu cầu</th>
+                                        <th className="text-center">Hành động</th>
                                     </tr></thead>
                                     <tbody>
                                         {loading ? Array.from({ length: 5 }).map((_, i) => (
-                                            <tr key={i} className="border-b animate-pulse">
-                                                {Array.from({ length: 7 }).map((_, j) => <td key={j} className="px-6 py-4"><div className="h-4 bg-gray-200 rounded w-20" /></td>)}
+                                            <tr key={i}>
+                                                {Array.from({ length: 7 }).map((_, j) => <td key={j}><div className="h-4 bg-gray-200 rounded w-20 animate-pulse" /></td>)}
                                             </tr>
                                         )) : items.length === 0 ? (
                                             <tr><td colSpan={7} className="text-center py-12 text-[#9CA3AF]">Không có yêu cầu rút tiền nào</td></tr>
                                         ) : items.map(w => (
-                                            <tr key={w.id} className="border-b border-gray-100 hover:bg-[#F9FAFB] transition-colors">
-                                                <td className="px-6 py-4 font-semibold text-[#1A1A2E]">{w.schoolName}</td>
-                                                <td className="px-6 py-4 text-right font-bold text-[#1A1A2E]">{w.amount.toLocaleString("vi")} ₫</td>
-                                                <td className="px-6 py-4 text-[#4c5769]">{w.bankName}</td>
-                                                <td className="px-6 py-4 font-mono text-xs text-[#4c5769]">{w.bankAccount}</td>
-                                                <td className="px-6 py-4">
-                                                    <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${statusColors[w.status] || "bg-gray-100"}`}>
+                                            <tr key={w.id}>
+                                                <td className="font-bold text-[#1A1A2E]">{w.schoolName}</td>
+                                                <td className="text-right font-extrabold text-[#1A1A2E]">{w.amount.toLocaleString("vi")} ₫</td>
+                                                <td>{w.bankName}</td>
+                                                <td className="font-mono text-xs">{w.bankAccount}</td>
+                                                <td>
+                                                    <span className={statusBadge[w.status] || "nb-badge"}>
                                                         {statusLabels[w.status] || w.status}
                                                     </span>
                                                 </td>
-                                                <td className="px-6 py-4 text-[#6B7280]">{new Date(w.requestedAt).toLocaleDateString("vi")}</td>
-                                                <td className="px-6 py-4 text-center">
+                                                <td className="text-[#6B7280]">{new Date(w.requestedAt).toLocaleDateString("vi")}</td>
+                                                <td className="text-center">
                                                     {w.status === "Pending" && (
                                                         <button onClick={() => setSelectedItem(w)}
-                                                            className="px-3 py-1.5 text-xs font-semibold bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5] transition-colors">
+                                                            className="nb-btn nb-btn-purple nb-btn-sm text-xs">
                                                             💸 Đánh dấu đã chuyển
                                                         </button>
                                                     )}
                                                     {w.status === "Approved" && w.processedAt && (
-                                                        <span className="text-xs text-[#059669]">✅ {new Date(w.processedAt).toLocaleDateString("vi")}</span>
+                                                        <span className="text-xs text-[#059669] font-bold">✅ {new Date(w.processedAt).toLocaleDateString("vi")}</span>
                                                     )}
                                                 </td>
                                             </tr>
@@ -139,12 +140,12 @@ export const AdminMoneyDistribution = (): JSX.Element => {
                                     </tbody>
                                 </table>
                             </div>
-                            <div className="px-6 py-3 bg-[#F9FAFB] border-t border-[#CBCAD7] flex items-center justify-between text-xs text-[#6B7280]">
+                            <div className="px-6 py-3 bg-[#F9FAFB] border-t-2 border-[#1A1A2E] flex items-center justify-between text-xs text-[#6B7280] font-semibold">
                                 <span>Tổng: {total} yêu cầu</span>
                                 <div className="flex gap-2">
-                                    <button disabled={page <= 1} onClick={() => setPage(p => p - 1)} className="px-3 py-1 border rounded-lg disabled:opacity-40 hover:bg-gray-100">← Trước</button>
-                                    <span className="px-3 py-1">Trang {page}</span>
-                                    <button onClick={() => setPage(p => p + 1)} disabled={items.length < 10} className="px-3 py-1 border rounded-lg disabled:opacity-40 hover:bg-gray-100">Sau →</button>
+                                    <button disabled={page <= 1} onClick={() => setPage(p => p - 1)} className="nb-btn nb-btn-outline nb-btn-sm text-xs disabled:opacity-40">← Trước</button>
+                                    <span className="px-3 py-1 font-bold">Trang {page}</span>
+                                    <button onClick={() => setPage(p => p + 1)} disabled={items.length < 10} className="nb-btn nb-btn-outline nb-btn-sm text-xs disabled:opacity-40">Sau →</button>
                                 </div>
                             </div>
                         </div>
@@ -152,46 +153,50 @@ export const AdminMoneyDistribution = (): JSX.Element => {
                 </div>
             </div>
 
-            {/* Confirm Transfer Modal */}
+            {/* Confirm Transfer Modal — NB style */}
             {selectedItem && (
-                <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4" onClick={() => setSelectedItem(null)}>
-                    <div className="bg-white rounded-2xl w-full max-w-md p-6 space-y-4 shadow-xl" onClick={e => e.stopPropagation()}>
-                        <h2 className="[font-family:'Montserrat',Helvetica] font-bold text-lg">💸 Xác nhận đã chuyển tiền</h2>
+                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setSelectedItem(null)}>
+                    <div className="bg-white rounded-xl w-full max-w-md p-6 space-y-4 border-2 border-[#1A1A2E] shadow-[6px_6px_0_#1A1A2E]" onClick={e => e.stopPropagation()}>
+                        <div className="flex justify-between items-center">
+                            <h2 className="font-extrabold text-lg text-[#1A1A2E]">💸 Xác nhận đã chuyển tiền</h2>
+                            <button onClick={() => setSelectedItem(null)} className="w-8 h-8 flex items-center justify-center rounded-lg border-2 border-[#1A1A2E] hover:bg-[#F3F4F6] font-bold">✕</button>
+                        </div>
 
-                        <div className="bg-[#F9FAFB] rounded-xl p-4 space-y-2 text-sm [font-family:'Montserrat',Helvetica]">
+                        <div className="nb-card-static p-4 space-y-2 text-sm">
                             <div className="flex justify-between">
-                                <span className="text-[#6B7280]">Người nhận:</span>
-                                <span className="font-semibold">{selectedItem.schoolName}</span>
+                                <span className="text-[#6B7280] font-medium">Người nhận:</span>
+                                <span className="font-bold">{selectedItem.schoolName}</span>
                             </div>
                             <div className="flex justify-between">
-                                <span className="text-[#6B7280]">Số tiền:</span>
-                                <span className="font-bold text-[#DC2626]">{selectedItem.amount.toLocaleString("vi")} ₫</span>
+                                <span className="text-[#6B7280] font-medium">Số tiền:</span>
+                                <span className="font-extrabold text-[#DC2626]">{selectedItem.amount.toLocaleString("vi")} ₫</span>
                             </div>
                             <div className="flex justify-between">
-                                <span className="text-[#6B7280]">Ngân hàng:</span>
-                                <span className="font-semibold">{selectedItem.bankName}</span>
+                                <span className="text-[#6B7280] font-medium">Ngân hàng:</span>
+                                <span className="font-bold">{selectedItem.bankName}</span>
                             </div>
                             <div className="flex justify-between">
-                                <span className="text-[#6B7280]">STK:</span>
-                                <span className="font-mono font-semibold">{selectedItem.bankAccount}</span>
+                                <span className="text-[#6B7280] font-medium">STK:</span>
+                                <span className="font-mono font-bold">{selectedItem.bankAccount}</span>
                             </div>
                         </div>
 
-                        <div className="bg-[#FEF3C7] rounded-xl p-3 text-xs text-[#92400E] [font-family:'Montserrat',Helvetica]">
-                            ⚠️ Hãy chắc chắn bạn đã chuyển tiền thủ công qua ngân hàng trước khi xác nhận.
+                        <div className="nb-alert nb-alert-warning text-xs">
+                            <span>⚠️</span>
+                            <span>Hãy chắc chắn bạn đã chuyển tiền thủ công qua ngân hàng trước khi xác nhận.</span>
                         </div>
 
                         <textarea value={adminNote} onChange={e => setAdminNote(e.target.value)}
                             placeholder="Ghi chú (mã GD ngân hàng, thời gian chuyển...)"
-                            className="w-full border border-[#CBCAD7] rounded-xl px-4 py-3 text-sm resize-none h-20 [font-family:'Montserrat',Helvetica] focus:outline-none focus:ring-2 focus:ring-[#6366F1]/30" />
+                            className="nb-input w-full resize-none h-20" />
 
                         <div className="flex gap-2">
                             <button onClick={handleMarkTransferred} disabled={actionLoading}
-                                className="flex-1 bg-[#10B981] text-white py-2.5 rounded-xl font-semibold hover:bg-[#059669] disabled:opacity-50 text-sm [font-family:'Montserrat',Helvetica]">
+                                className="flex-1 nb-btn nb-btn-green text-sm disabled:opacity-50">
                                 {actionLoading ? "Đang xử lý..." : "✅ Xác nhận đã chuyển tiền"}
                             </button>
                             <button onClick={() => setSelectedItem(null)}
-                                className="flex-1 border border-[#CBCAD7] py-2.5 rounded-xl font-semibold hover:bg-gray-50 text-sm [font-family:'Montserrat',Helvetica]">
+                                className="flex-1 nb-btn nb-btn-outline text-sm">
                                 Huỷ
                             </button>
                         </div>

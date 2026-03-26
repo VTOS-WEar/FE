@@ -16,11 +16,11 @@ export const AccountSetting = (): JSX.Element => {
 
         <div className="max-w-7xl mx-auto relative z-10">
           <nav className="flex items-center gap-2.5 mb-6">
-            <span className="[font-family:'Montserrat',Helvetica] font-normal text-black text-base opacity-40">
+            <span className="font-normal text-black text-base opacity-40">
               Trang chủ
             </span>
             <ChevronRightIcon className="w-4 h-4 text-black opacity-40" />
-            <span className="[font-family:'Montserrat',Helvetica] font-semibold text-black text-base">
+            <span className="font-semibold text-black text-base">
               Cài đặt tài khoản
             </span>
           </nav>

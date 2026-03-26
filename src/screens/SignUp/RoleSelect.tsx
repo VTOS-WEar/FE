@@ -43,7 +43,7 @@ export const RoleSelect = (): JSX.Element => {
             <h1 className="[font-family:'Baloo_2',Helvetica] font-extrabold text-[#100f14] text-3xl lg:text-4xl mb-3">
               Tạo tài khoản mới
             </h1>
-            <p className="[font-family:'Montserrat',Helvetica] font-medium text-[#676576] text-base lg:text-lg">
+            <p className="font-medium text-[#676576] text-base lg:text-lg">
               Chọn loại tài khoản phù hợp với bạn
             </p>
           </div>
@@ -62,11 +62,11 @@ export const RoleSelect = (): JSX.Element => {
                 <h2 className="[font-family:'Baloo_2',Helvetica] font-bold text-[#100f14] text-xl mb-2">
                   {role.title}
                 </h2>
-                <p className="[font-family:'Montserrat',Helvetica] font-medium text-[#9794aa] text-sm leading-relaxed">
+                <p className="font-medium text-[#9794aa] text-sm leading-relaxed">
                   {role.description}
                 </p>
 
-                <div className={`mt-5 inline-flex items-center gap-1 bg-gradient-to-r ${role.color} text-white px-5 py-2.5 rounded-full [font-family:'Montserrat',Helvetica] font-semibold text-sm transition-transform group-hover:scale-105`}>
+                <div className={`mt-5 inline-flex items-center gap-1 bg-gradient-to-r ${role.color} text-white px-5 py-2.5 rounded-full font-semibold text-sm transition-transform group-hover:scale-105`}>
                   {role.btnText}
                   <span className="ml-1">→</span>
                 </div>
@@ -78,7 +78,7 @@ export const RoleSelect = (): JSX.Element => {
             <span className="text-[#494759]">Bạn đã có tài khoản? </span>
             <Link
               to="/signin"
-              className="[font-family:'Montserrat',Helvetica] font-semibold italic text-[#6938ef] hover:underline"
+              className="font-semibold italic text-[#6938ef] hover:underline"
             >
               Đăng Nhập
             </Link>

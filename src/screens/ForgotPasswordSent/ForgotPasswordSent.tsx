@@ -92,19 +92,19 @@ export const ForgotPasswordSent = (): JSX.Element => {
 
                                     <div className="flex items-center gap-4 lg:gap-6 my-5 lg:my-6">
                                         <Separator className="flex-1 h-[1px] bg-[#cac9d6]" />
-                                        <span className="[font-family:'Montserrat',Helvetica] font-medium text-[#676576] text-base">
+                                        <span className="font-medium text-[#676576] text-base">
                                             Link đặt lại đã được gửi
                                         </span>
                                         <Separator className="flex-1 h-[1px] bg-[#cac9d6]" />
                                     </div>
 
                                     <div className="space-y-4 lg:space-y-5">
-                                        <p className="[font-family:'Montserrat',Helvetica] font-medium text-[#19181f] text-sm lg:text-base leading-relaxed">
+                                        <p className="font-medium text-[#19181f] text-sm lg:text-base leading-relaxed">
                                             {serverMessage}
                                         </p>
 
                                         <div className="space-y-2">
-                                            <Label className="[font-family:'Montserrat',Helvetica] font-medium text-[#9794aa] text-sm lg:text-base">
+                                            <Label className="font-medium text-[#9794aa] text-sm lg:text-base">
                                                 Email (để gửi lại nếu cần)
                                             </Label>
                                             <Input
@@ -112,12 +112,12 @@ export const ForgotPasswordSent = (): JSX.Element => {
                                                 placeholder="Nhập email của bạn"
                                                 value={email}
                                                 onChange={(e) => setEmail(e.target.value)}
-                                                className="h-11 lg:h-12 px-4 lg:px-5 rounded-md border border-[#cac9d6] [font-family:'Montserrat',Helvetica] font-medium text-sm lg:text-base"
+                                                className="h-11 lg:h-12 px-4 lg:px-5 rounded-md border border-[#cac9d6] font-medium text-sm lg:text-base"
                                                 onKeyDown={(e) => {
                                                     if (e.key === "Enter") handleResend();
                                                 }}
                                             />
-                                            <p className="[font-family:'Montserrat',Helvetica] text-xs lg:text-sm text-[#676576] italic">
+                                            <p className="text-xs lg:text-sm text-[#676576] italic">
                                                 Không thấy email? Hãy kiểm tra mục Spam/Quảng cáo.
                                             </p>
                                         </div>
@@ -140,7 +140,7 @@ export const ForgotPasswordSent = (): JSX.Element => {
                                                 className="rounded-[2.5rem] px-6"
                                                 onClick={() => navigate("/forgot-password", { replace: true })}
                                             >
-                                                <span className="[font-family:'Montserrat',Helvetica] font-semibold italic text-[#19181f]">
+                                                <span className="font-semibold italic text-[#19181f]">
                                                     Đổi email khác
                                                 </span>
                                             </Button>
@@ -148,7 +148,7 @@ export const ForgotPasswordSent = (): JSX.Element => {
                                             <Button asChild variant="link" className="p-0 h-auto hover:underline">
                                                 <Link
                                                     to="/signin"
-                                                    className="[font-family:'Montserrat',Helvetica] font-semibold italic text-[#6938ef]"
+                                                    className="font-semibold italic text-[#6938ef]"
                                                 >
                                                     Quay lại đăng nhập
                                                 </Link>
@@ -185,7 +185,7 @@ export const ForgotPasswordSent = (): JSX.Element => {
                                         src="https://c.animaapp.com/mjxt3t8wNP0otU/img/vtos--1--removebg-preview-2-1.png"
                                     />
 
-                                    <p className="[font-family:'Montserrat',Helvetica] font-semibold italic text-white text-xl lg:text-3xl leading-relaxed mb-6">
+                                    <p className="font-semibold italic text-white text-xl lg:text-3xl leading-relaxed mb-6">
                                         Đừng quên kiểm tra Spam
                                     </p>
 

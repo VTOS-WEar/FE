@@ -3,11 +3,11 @@ import { HubConnectionBuilder, HubConnectionState, LogLevel } from "@microsoft/s
 import { getChatMessages, sendChatMessage, type ChatMessageDto } from "../../lib/api/chat";
 
 export type ChatContextInfo = {
-    icon: string;       // emoji icon
-    title: string;      // e.g. contract name or complaint title
-    status: string;     // e.g. "Chờ duyệt", "Mở"
-    statusColor: string;// hex color for badge
-    subtitle: string;   // e.g. "NCC: Nhà CC 1 · Chiến dịch X"
+    icon: string;
+    title: string;
+    status: string;
+    statusColor: string;
+    subtitle: string;
 };
 
 type ChatWidgetProps = {
@@ -36,205 +36,118 @@ export function ChatWidget({ channelType, channelId, isOpen, onClose, contextInf
 
     function buildConnection() {
         return new HubConnectionBuilder()
-            .withUrl(`${API_BASE}/hubs/chat`, {
-                accessTokenFactory: () => getAccessToken(),
-            })
+            .withUrl(`${API_BASE}/hubs/chat`, { accessTokenFactory: () => getAccessToken() })
             .withAutomaticReconnect([0, 2000, 5000, 10000])
             .configureLogging(LogLevel.Warning)
             .build();
     }
 
     const fetchMessages = useCallback(async () => {
-        try {
-            const res = await getChatMessages(channelType, channelId);
-            setMessages(res.items);
-        } catch (e) {
-            console.error("Error fetching messages:", e);
-        }
+        try { const res = await getChatMessages(channelType, channelId); setMessages(res.items); }
+        catch (e) { console.error("Error fetching messages:", e); }
     }, [channelType, channelId]);
 
-    // SignalR connection lifecycle
     useEffect(() => {
         if (!isOpen || !channelId) return;
-
         const connection = buildConnection();
         connectionRef.current = connection;
 
-        // Listen for real-time messages
         connection.on("ReceiveMessage", (msg: ChatMessageDto) => {
-            setMessages(prev => {
-                // Avoid duplicates
-                if (prev.some(m => m.messageId === msg.messageId)) return prev;
-                return [...prev, msg];
-            });
+            setMessages(prev => prev.some(m => m.messageId === msg.messageId) ? prev : [...prev, msg]);
         });
-
         connection.onreconnected(() => {
-            // Rejoin channel after reconnect
             connection.invoke("JoinChannel", channelType, channelId).catch(() => {});
             setConnected(true);
         });
-
         connection.onclose(() => setConnected(false));
-
-        // Start connection + join channel
         connection.start()
-            .then(() => {
-                setConnected(true);
-                return connection.invoke("JoinChannel", channelType, channelId);
-            })
-            .catch(err => {
-                console.warn("SignalR connection failed, using polling fallback:", err);
-                setConnected(false);
-            });
+            .then(() => { setConnected(true); return connection.invoke("JoinChannel", channelType, channelId); })
+            .catch(err => { console.warn("SignalR failed, polling fallback:", err); setConnected(false); });
 
         return () => {
-            if (connection.state === HubConnectionState.Connected) {
+            if (connection.state === HubConnectionState.Connected)
                 connection.invoke("LeaveChannel", channelType, channelId).catch(() => {});
-            }
-            connection.stop();
-            connectionRef.current = null;
-            setConnected(false);
+            connection.stop(); connectionRef.current = null; setConnected(false);
         };
     }, [isOpen, channelId, channelType]);
 
-    // Initial load + polling fallback (only if SignalR is not connected)
     useEffect(() => {
         if (!isOpen || !channelId) return;
-        setLoading(true);
-        fetchMessages().finally(() => setLoading(false));
-
-        // Poll only as fallback when SignalR is not connected
-        pollRef.current = setInterval(() => {
-            if (!connected) fetchMessages();
-        }, 5000);
+        setLoading(true); fetchMessages().finally(() => setLoading(false));
+        pollRef.current = setInterval(() => { if (!connected) fetchMessages(); }, 5000);
         return () => { if (pollRef.current) clearInterval(pollRef.current); };
     }, [isOpen, channelId, fetchMessages, connected]);
 
-    useEffect(() => {
-        bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, [messages]);
+    useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
 
     const handleSend = async () => {
-        const content = newMsg.trim();
-        if (!content || sending) return;
+        const content = newMsg.trim(); if (!content || sending) return;
         setSending(true);
-        try {
-            await sendChatMessage(channelType, channelId, content);
-            setNewMsg("");
-            // If not connected via SignalR, fetch manually to show sent msg
-            if (!connected) await fetchMessages();
-        } catch (e: any) {
-            console.error("Error sending message:", e);
-        } finally {
-            setSending(false);
-        }
+        try { await sendChatMessage(channelType, channelId, content); setNewMsg(""); if (!connected) await fetchMessages(); }
+        catch (e: any) { console.error("Error sending:", e); }
+        finally { setSending(false); }
     };
 
-    const handleKeyDown = (e: React.KeyboardEvent) => {
-        if (e.key === "Enter" && !e.shiftKey) {
-            e.preventDefault();
-            handleSend();
-        }
-    };
+    const handleKeyDown = (e: React.KeyboardEvent) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(); } };
 
     if (!isOpen) return null;
 
     return (
-        <div style={{
-            position: "fixed", bottom: 24, right: 24, width: 400, height: 520,
-            background: "#fff", borderRadius: 20, boxShadow: "0 8px 40px rgba(0,0,0,.18)",
-            display: "flex", flexDirection: "column", zIndex: 9999,
-            border: "1px solid rgba(0,0,0,.08)", overflow: "hidden",
-        }}>
-            {/* Header */}
-            <div style={{
-                padding: "16px 20px", background: "linear-gradient(135deg, #6366f1, #8b5cf6)",
-                color: "#fff", display: "flex", justifyContent: "space-between", alignItems: "center",
-            }}>
+        <div className="fixed bottom-6 right-6 w-[400px] h-[520px] flex flex-col z-[9999] border-2 border-[#1A1A2E] rounded-xl shadow-[6px_6px_0_#1A1A2E] bg-white overflow-hidden">
+            {/* Header — NB purple with border */}
+            <div className="px-5 py-4 bg-[#6938EF] border-b-2 border-[#1A1A2E] flex justify-between items-center">
                 <div>
-                    <h3 style={{ margin: 0, fontSize: 16, fontWeight: 700 }}>💬 Chat</h3>
-                    <p style={{ margin: 0, fontSize: 12, opacity: .8, display: "flex", alignItems: "center", gap: 6 }}>
+                    <h3 className="text-white font-extrabold text-base m-0">💬 Chat</h3>
+                    <p className="text-white/80 text-xs mt-0.5 flex items-center gap-1.5">
                         {channelType === "complaint" ? "Khiếu nại" : "Hợp đồng"}
-                        <span style={{
-                            width: 7, height: 7, borderRadius: "50%", display: "inline-block",
-                            background: connected ? "#4ade80" : "#facc15",
-                        }} title={connected ? "Real-time" : "Polling"} />
+                        <span className={`inline-block w-2 h-2 rounded-full ${connected ? "bg-[#4ADE80]" : "bg-[#FACC15]"}`}
+                            title={connected ? "Real-time" : "Polling"} />
                     </p>
                 </div>
-                <button onClick={onClose} style={{
-                    border: "none", background: "rgba(255,255,255,.2)", color: "#fff",
-                    width: 32, height: 32, borderRadius: "50%", cursor: "pointer",
-                    fontSize: 18, display: "flex", alignItems: "center", justifyContent: "center",
-                }}>✕</button>
+                <button onClick={onClose}
+                    className="w-8 h-8 rounded-lg border-2 border-white/30 bg-white/20 text-white flex items-center justify-center text-lg font-bold hover:bg-white/30 transition-colors cursor-pointer">
+                    ✕
+                </button>
             </div>
 
-            {/* Context Card — pinned reference like Shopee "ask about product" */}
+            {/* Context Card — NB bordered */}
             {contextInfo && (
-                <div style={{
-                    margin: "12px 16px 0", padding: "10px 14px",
-                    background: "linear-gradient(135deg, #f8fafc, #eef2ff)",
-                    borderRadius: 12, border: "1px solid #e0e7ff",
-                    display: "flex", gap: 10, alignItems: "center",
-                }}>
-                    <span style={{ fontSize: 28, lineHeight: 1 }}>{contextInfo.icon}</span>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                            <span style={{
-                                fontSize: 13, fontWeight: 700, color: "#1a1a2e",
-                                overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-                            }}>{contextInfo.title}</span>
-                            <span style={{
-                                padding: "2px 8px", borderRadius: 10, fontSize: 10, fontWeight: 600,
-                                background: `${contextInfo.statusColor}18`,
-                                color: contextInfo.statusColor, whiteSpace: "nowrap",
-                            }}>{contextInfo.status}</span>
+                <div className="mx-3 mt-3 p-3 border-2 border-[#1A1A2E] rounded-lg shadow-[2px_2px_0_#1A1A2E] bg-[#EDE9FE] flex items-center gap-3">
+                    <span className="text-2xl leading-none">{contextInfo.icon}</span>
+                    <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                            <span className="text-xs font-bold text-[#1A1A2E] truncate">{contextInfo.title}</span>
+                            <span className="nb-badge text-[10px] px-2 py-0.5"
+                                style={{ background: `${contextInfo.statusColor}18`, color: contextInfo.statusColor, borderColor: contextInfo.statusColor }}>
+                                {contextInfo.status}
+                            </span>
                         </div>
-                        <p style={{
-                            margin: "2px 0 0", fontSize: 11, color: "#888",
-                            overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-                        }}>{contextInfo.subtitle}</p>
+                        <p className="text-[11px] text-[#6B7280] mt-0.5 truncate">{contextInfo.subtitle}</p>
                     </div>
                 </div>
             )}
 
-            {/* Messages */}
-            <div style={{
-                flex: 1, overflowY: "auto", padding: "16px 20px",
-                display: "flex", flexDirection: "column", gap: 8,
-                background: "#f8fafc",
-            }}>
+            {/* Messages area */}
+            <div className="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-2 bg-[#FFF8F0]">
                 {loading ? (
-                    <div style={{ textAlign: "center", color: "#999", padding: 40 }}>Đang tải...</div>
+                    <div className="text-center text-[#9CA3AF] py-10">Đang tải...</div>
                 ) : messages.length === 0 ? (
-                    <div style={{ textAlign: "center", color: "#aaa", padding: 40 }}>
-                        <div style={{ fontSize: 40, marginBottom: 8 }}>💬</div>
-                        <p style={{ fontSize: 14 }}>Chưa có tin nhắn nào. Gửi tin nhắn đầu tiên!</p>
+                    <div className="text-center py-10">
+                        <p className="text-4xl mb-2">💬</p>
+                        <p className="text-sm text-[#9CA3AF]">Chưa có tin nhắn nào. Gửi tin nhắn đầu tiên!</p>
                     </div>
                 ) : (
                     messages.map(m => (
-                        <div key={m.messageId} style={{
-                            alignSelf: m.isMe ? "flex-end" : "flex-start",
-                            maxWidth: "80%",
-                        }}>
-                            {!m.isMe && (
-                                <span style={{ fontSize: 11, color: "#888", marginBottom: 2, display: "block" }}>
-                                    {m.senderName}
-                                </span>
-                            )}
-                            <div style={{
-                                padding: "10px 14px", borderRadius: m.isMe ? "16px 16px 4px 16px" : "16px 16px 16px 4px",
-                                background: m.isMe ? "linear-gradient(135deg, #6366f1, #8b5cf6)" : "#fff",
-                                color: m.isMe ? "#fff" : "#333",
-                                fontSize: 14, lineHeight: 1.5,
-                                boxShadow: "0 1px 4px rgba(0,0,0,.06)",
-                            }}>
+                        <div key={m.messageId} className={`max-w-[80%] ${m.isMe ? "self-end" : "self-start"}`}>
+                            {!m.isMe && <span className="text-[11px] text-[#6B7280] mb-0.5 block font-bold">{m.senderName}</span>}
+                            <div className={`px-3.5 py-2.5 text-sm leading-relaxed border-2 border-[#1A1A2E] ${
+                                m.isMe
+                                    ? "bg-[#6938EF] text-white rounded-xl rounded-br-sm shadow-[2px_2px_0_#1A1A2E]"
+                                    : "bg-white text-[#1A1A2E] rounded-xl rounded-bl-sm shadow-[2px_2px_0_#1A1A2E]"
+                            }`}>
                                 {m.content}
                             </div>
-                            <span style={{
-                                fontSize: 10, color: "#aaa", marginTop: 2, display: "block",
-                                textAlign: m.isMe ? "right" : "left",
-                            }}>
+                            <span className={`text-[10px] text-[#9CA3AF] mt-0.5 block ${m.isMe ? "text-right" : "text-left"}`}>
                                 {new Date(m.sentAt).toLocaleTimeString("vi", { hour: "2-digit", minute: "2-digit" })}
                             </span>
                         </div>
@@ -243,31 +156,15 @@ export function ChatWidget({ channelType, channelId, isOpen, onClose, contextInf
                 <div ref={bottomRef} />
             </div>
 
-            {/* Input */}
-            <div style={{
-                padding: "12px 16px", borderTop: "1px solid #eee",
-                display: "flex", gap: 8, background: "#fff",
-            }}>
+            {/* Input — NB styled */}
+            <div className="px-4 py-3 border-t-2 border-[#1A1A2E] flex gap-2 bg-white">
                 <input
-                    value={newMsg}
-                    onChange={e => setNewMsg(e.target.value)}
-                    onKeyDown={handleKeyDown}
+                    value={newMsg} onChange={e => setNewMsg(e.target.value)} onKeyDown={handleKeyDown}
                     placeholder="Nhập tin nhắn..."
-                    style={{
-                        flex: 1, padding: "10px 14px", borderRadius: 12,
-                        border: "1px solid #e0e0e0", fontSize: 14, outline: "none",
-                    }}
+                    className="nb-input flex-1 text-sm"
                 />
-                <button
-                    onClick={handleSend}
-                    disabled={sending || !newMsg.trim()}
-                    style={{
-                        padding: "10px 18px", borderRadius: 12, border: "none",
-                        background: sending || !newMsg.trim() ? "#ccc" : "linear-gradient(135deg, #6366f1, #8b5cf6)",
-                        color: "#fff", fontWeight: 600, cursor: sending ? "not-allowed" : "pointer",
-                        fontSize: 14, transition: "all .2s",
-                    }}
-                >
+                <button onClick={handleSend} disabled={sending || !newMsg.trim()}
+                    className="nb-btn nb-btn-purple nb-btn-sm text-sm disabled:opacity-50">
                     {sending ? "..." : "Gửi"}
                 </button>
             </div>

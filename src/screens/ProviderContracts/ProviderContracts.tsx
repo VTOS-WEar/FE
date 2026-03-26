@@ -125,7 +125,7 @@ export function ProviderContracts() {
 
     return (
         <div style={{ display: "flex", minHeight: "100vh", background: "#f5f5f5" }}>
-            <div className={`${isCollapsed ? "lg:w-16" : "lg:w-[20rem] xl:w-[23.75rem]"} flex-shrink-0 lg:sticky lg:top-0 lg:h-screen transition-all duration-300`}>
+            <div className={`${isCollapsed ? "lg:w-16" : "lg:w-[16rem]"} flex-shrink-0 lg:sticky lg:top-0 lg:h-screen transition-all duration-300`}>
                 <DashboardSidebar {...sidebarConfig} isCollapsed={isCollapsed} onToggle={toggle} />
             </div>
 
