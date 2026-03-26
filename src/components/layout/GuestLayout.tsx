@@ -11,9 +11,12 @@ interface GuestLayoutProps {
  * GuestLayout - Layout cho các screen không có sidebar (SignIn, SignUp, etc.)
  * Includes NavbarGuest + Footer
  */
-export const GuestLayout = ({ children }: GuestLayoutProps) => {
+export const GuestLayout = ({ children, bgColor = "#f5f3ff" }: GuestLayoutProps) => {
     return (
-        <div className="bg-[#f5f3ff] w-full min-h-screen flex flex-col">
+        <div 
+            className="w-full min-h-screen flex flex-col"
+            style={{ backgroundColor: bgColor }}
+        >
             <NavbarGuest />
 
             {/* Main content area */}

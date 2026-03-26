@@ -658,8 +658,17 @@ export type PublicCampaignDetailDto = {
 };
 
 /** Guest & Parent: list all public schools (paginated) */
-export async function getPublicSchools(): Promise<unknown> {
-    return api<unknown>(endpoints.public.schools, { method: "GET" });
+export type PublicSchoolsResponse = {
+    schools: PublicSchoolDto[];
+    totalCount: number;
+};
+
+export async function getPublicSchools(page?: number, pageSize?: number): Promise<PublicSchoolsResponse> {
+    const q = new URLSearchParams();
+    if (page) q.set("page", String(page));
+    if (pageSize) q.set("pageSize", String(pageSize));
+    const url = q.toString() ? `${endpoints.public.schools}?${q}` : endpoints.public.schools;
+    return api<PublicSchoolsResponse>(url, { method: "GET" });
 }
 
 /** Guest & Parent: public school detail with active campaigns */
