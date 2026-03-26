@@ -8,7 +8,16 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 import { getPublicSchools, PublicSchoolDto, parseContactInfo } from "@/lib/api/schools";
+import { fetchProvinces, type Province, type District } from "@/lib/utils/vietnamProvinces";
 
 /* ═══════════════════════════════════════════════════════
    ANIMATION VARIANTS
@@ -114,6 +123,120 @@ function Toast({ message, show, onHide }: { message: string; show: boolean; onHi
 }
 
 /* ═══════════════════════════════════════════════════════
+   SEARCHABLE SELECT COMPONENT
+   ═══════════════════════════════════════════════════════ */
+function SearchableSelect({
+  value,
+  onValueChange,
+  options,
+  placeholder = "Chọn...",
+  disabled = false,
+}: {
+  value: string;
+  onValueChange: (val: string) => void;
+  options: { value: string; label: string }[];
+  placeholder?: string;
+  disabled?: boolean;
+}) {
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const containerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Close on click outside
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setOpen(false);
+        setQuery("");
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  // Auto-focus search when opened
+  useEffect(() => {
+    if (open) setTimeout(() => inputRef.current?.focus(), 50);
+  }, [open]);
+
+  const filtered = query
+    ? options.filter((o) => o.label.toLowerCase().includes(query.toLowerCase()))
+    : options;
+
+  const selectedLabel = options.find((o) => o.value === value)?.label || placeholder;
+
+  return (
+    <div ref={containerRef} className="relative">
+      <button
+        type="button"
+        disabled={disabled}
+        onClick={() => !disabled && setOpen(!open)}
+        className={`w-full h-9 px-3 rounded-lg border border-purple-50 bg-gray-50/50 text-sm flex items-center justify-between gap-2 transition-all ${disabled ? "opacity-50 cursor-not-allowed" : "hover:border-purple-200 cursor-pointer"
+          } ${open ? "ring-2 ring-purple-400/10 border-purple-200" : ""}`}
+      >
+        <span className={value === "all" ? "text-gray-400" : "text-gray-700 truncate"}>
+          {selectedLabel}
+        </span>
+        <ChevronRight className={`w-3 h-3 text-gray-300 shrink-0 transition-transform duration-200 ${open ? "rotate-90" : ""}`} />
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: -4, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -4, scale: 0.98 }}
+            transition={{ duration: 0.15 }}
+            className="absolute z-50 top-full mt-1 left-0 w-full min-w-[220px] bg-white rounded-xl border border-gray-100 shadow-[0_12px_40px_rgba(0,0,0,0.1)] overflow-hidden"
+          >
+            {/* Search input */}
+            <div className="p-2 border-b border-gray-50">
+              <div className="relative">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-300" />
+                <input
+                  ref={inputRef}
+                  type="text"
+                  placeholder="Tìm kiếm..."
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  className="w-full h-8 pl-8 pr-3 text-sm rounded-lg bg-gray-50/80 border-none outline-none focus:bg-white transition-colors placeholder:text-gray-300"
+                />
+              </div>
+            </div>
+
+            {/* Options list */}
+            <div className="max-h-[240px] overflow-y-auto py-1 ">
+              {filtered.length === 0 ? (
+                <div className="px-3 py-6 text-center text-xs text-gray-300">Không tìm thấy</div>
+              ) : (
+                filtered.map((opt) => (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => {
+                      onValueChange(opt.value);
+                      setOpen(false);
+                      setQuery("");
+                    }}
+                    className={`w-full text-left px-3 py-2 text-sm transition-colors ${opt.value === value
+                      ? "bg-purple-50 text-purple-700 font-medium"
+                      : "text-gray-600 hover:bg-gray-50"
+                      }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════
    MAIN COMPONENT
    ═══════════════════════════════════════════════════════ */
 const SchoolList = () => {
@@ -121,27 +244,37 @@ const SchoolList = () => {
   const [schools, setSchools] = useState<PublicSchoolDto[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Filter states
   const [search, setSearch] = useState("");
   const [district, setDistrict] = useState("all");
-  const [city, setCity] = useState("danang");
+  const [city, setCity] = useState("all");
   const [sortBy, setSortBy] = useState("popular");
   const [toast, setToast] = useState({ show: false, message: "" });
 
+  // Province/District data from API
+  const [provinces, setProvinces] = useState<Province[]>([]);
+  const [districts, setDistricts] = useState<District[]>([]);
+
   const [activeFilters, setActiveFilters] = useState({
-    search: "", district: "all", city: "danang"
+    search: "", district: "all", city: "all"
   });
 
+  // Fetch schools + provinces on mount
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const data = await getPublicSchools(1, 100);
-        const schoolList = Array.isArray(data)
-          ? data
-          : (data?.schools || (data as any)?.items || []);
+        const [schoolData, provinceData] = await Promise.all([
+          getPublicSchools(1, 100),
+          fetchProvinces(),
+        ]);
+        const schoolList = Array.isArray(schoolData)
+          ? schoolData
+          : (schoolData?.schools || (schoolData as any)?.items || []);
         setSchools(schoolList);
+        setProvinces(provinceData);
       } catch (error) {
-        console.error("Error fetching schools:", error);
+        console.error("Error fetching data:", error);
       } finally {
         setLoading(false);
       }
@@ -149,15 +282,45 @@ const SchoolList = () => {
     fetchData();
   }, []);
 
+  // Update districts when city selection changes
+  useEffect(() => {
+    if (city === "all") {
+      setDistricts([]);
+    } else {
+      const selected = provinces.find((p) => p.codename === city);
+      setDistricts(selected?.districts ?? []);
+    }
+    setDistrict("all"); // reset district when city changes
+  }, [city, provinces]);
+
   const handleSearch = () => {
     setActiveFilters({ search, district, city });
     setToast({ show: true, message: "Đã áp dụng bộ lọc tìm kiếm!" });
   };
 
+  // Auto-filter when changing city
+  const handleCityChange = (val: string) => {
+    setCity(val);
+    // district will reset via useEffect, so apply filter with district=all
+    setActiveFilters((prev) => ({ ...prev, city: val, district: "all" }));
+  };
+
+  // Auto-filter when changing district
+  const handleDistrictChange = (val: string) => {
+    setDistrict(val);
+    setActiveFilters((prev) => ({ ...prev, district: val }));
+  };
+
   const handleReset = () => {
-    setSearch(""); setDistrict("all"); setCity("danang");
-    setActiveFilters({ search: "", district: "all", city: "danang" });
+    setSearch(""); setDistrict("all"); setCity("all");
+    setActiveFilters({ search: "", district: "all", city: "all" });
     setToast({ show: true, message: "Đã đặt lại bộ lọc!" });
+  };
+
+  // Get display names for active filters
+  const getProvinceName = (codename: string) => {
+    if (codename === "all") return "Tất cả";
+    return provinces.find((p) => p.codename === codename)?.name ?? codename;
   };
 
   const filteredSchools = useMemo(() => {
@@ -165,13 +328,34 @@ const SchoolList = () => {
     return schools.filter(school => {
       const matchSearch = !activeFilters.search ||
         school.schoolName.toLowerCase().includes(activeFilters.search.toLowerCase());
+
       const contact = parseContactInfo(school.contactInfo);
       const address = (contact.address ?? "").toLowerCase();
-      const matchCity = activeFilters.city === "all" ||
-        (activeFilters.city === "danang" && (address.includes("đà nẵng") || address.includes("da nang")));
-      return matchSearch && matchCity;
+
+      // Match city (province)
+      let matchCity = true;
+      if (activeFilters.city !== "all") {
+        const provinceName = getProvinceName(activeFilters.city)
+          .replace(/^(Thành phố |Tỉnh )/i, "")
+          .toLowerCase();
+        matchCity = address.includes(provinceName);
+      }
+
+      // Match district
+      let matchDistrict = true;
+      if (activeFilters.district !== "all") {
+        const districtObj = districts.find((d) => d.codename === activeFilters.district);
+        if (districtObj) {
+          const districtName = districtObj.name
+            .replace(/^(Quận |Huyện |Thị xã |Thành phố |Phường |Xã )/i, "")
+            .toLowerCase();
+          matchDistrict = address.includes(districtName);
+        }
+      }
+
+      return matchSearch && matchCity && matchDistrict;
     });
-  }, [schools, activeFilters]);
+  }, [schools, activeFilters, provinces, districts]);
 
   return (
     <GuestLayout bgColor="#faf9ff">
@@ -197,13 +381,32 @@ const SchoolList = () => {
         />
       </div>
 
-      <div className="relative z-10 max-w-[1440px] mx-auto px-32 xl:px-28 py-10 min-h-screen">
+      <div className="relative z-10 max-w-[1360px] mx-auto px-32 xl:px-28 py-10 min-h-screen">
+
+        {/* ═══════════════════════════════════════════════════
+            BREADCRUMB
+           ═══════════════════════════════════════════════════ */}
+        <motion.div custom={0} variants={fadeUp} initial="hidden" animate="visible" className="mb-6">
+          <Breadcrumb>
+            <BreadcrumbList className="text-[14px]">
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/" className="text-gray-500 hover:text-purple-600 font-medium transition-colors">
+                  Trang chủ
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage className="text-gray-900 font-bold">Danh sách trường</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </motion.div>
 
         {/* ═══════════════════════════════════════════════════
             HERO HEADER — page load fade-up
            ═══════════════════════════════════════════════════ */}
         <div className="mb-8">
-          <motion.div custom={0} variants={fadeUp} initial="hidden" animate="visible"
+          {/* <motion.div custom={0} variants={fadeUp} initial="hidden" animate="visible"
             className="flex items-center gap-2 mb-3"
           >
             <motion.div
@@ -213,7 +416,7 @@ const SchoolList = () => {
               <Sparkles className="w-4 h-4 text-purple-500" />
             </motion.div>
             <span className="text-xs font-bold tracking-widest uppercase text-purple-400">Khám Phá Giáo Dục</span>
-          </motion.div>
+          </motion.div> */}
 
           <motion.h1 custom={1} variants={fadeUp} initial="hidden" animate="visible"
             className="text-[36px] font-extrabold text-gray-900 mb-1.5 leading-tight font-baloo tracking-tight"
@@ -242,8 +445,8 @@ const SchoolList = () => {
         {/* ═══════════════════════════════════════════════════
             SINGLE-ROW FILTER BAR — page load fade-up
            ═══════════════════════════════════════════════════ */}
-        <motion.div custom={3} variants={fadeUp} initial="hidden" animate="visible" className="-mx-8 px-8 mb-4">
-          <div className="bg-white/80 backdrop-blur-2xl rounded-2xl p-5 border border-purple-100/30 shadow-[0_8px_32px_rgba(124,58,237,0.06),0_1px_2px_rgba(0,0,0,0.04)] hover:shadow-[0_16px_48px_rgba(124,58,237,0.1),0_4px_12px_rgba(0,0,0,0.03)] hover:border-purple-200/50 transition-all duration-500">
+        <motion.div custom={3} variants={fadeUp} initial="hidden" animate="visible" className="-mx-8 px-8 mb-4 relative z-20">
+          <div className="bg-white/80 backdrop-blur-2xl rounded-2xl p-5 border border-purple-100/30 shadow-[0_8px_32px_rgba(124,58,237,0.06),0_1px_2px_rgba(0,0,0,0.04)] hover:shadow-[0_16px_48px_rgba(124,58,237,0.1),0_4px_12px_rgba(0,0,0,0.03)] hover:border-purple-200/50 transition-all duration-500 overflow-visible">
             <div className="flex items-end gap-4">
               {/* Search */}
               <div className="flex-1 min-w-0 space-y-1">
@@ -260,31 +463,33 @@ const SchoolList = () => {
                 </div>
               </div>
 
-              {/* District */}
-              <div className="w-[160px] shrink-0 space-y-1">
-                <label className="text-[10px] font-bold text-gray-400 ml-1 uppercase tracking-widest">Quận/Huyện</label>
-                <Select value={district} onValueChange={setDistrict}>
-                  <SelectTrigger className="h-9 rounded-lg border-purple-50 bg-gray-50/50 text-sm">
-                    <SelectValue placeholder="Tất cả" />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-xl">
-                    <SelectItem value="all">Tất cả</SelectItem>
-                    <SelectItem value="hai-chau">Hải Châu</SelectItem>
-                  </SelectContent>
-                </Select>
+              {/* Tỉnh/Thành phố — searchable */}
+              <div className="w-[180px] shrink-0 space-y-1">
+                <label className="text-[10px] font-bold text-gray-400 ml-1 uppercase tracking-widest">Tỉnh/Thành phố</label>
+                <SearchableSelect
+                  value={city}
+                  onValueChange={handleCityChange}
+                  placeholder="Chọn tỉnh..."
+                  options={[
+                    { value: "all", label: "Tất cả" },
+                    ...provinces.map((p) => ({ value: p.codename, label: p.name })),
+                  ]}
+                />
               </div>
 
-              {/* City */}
-              <div className="w-[160px] shrink-0 space-y-1">
-                <label className="text-[10px] font-bold text-gray-400 ml-1 uppercase tracking-widest">Thành phố</label>
-                <Select value={city} onValueChange={setCity}>
-                  <SelectTrigger className="h-9 rounded-lg border-purple-50 bg-gray-50/50 text-sm">
-                    <SelectValue placeholder="Đà Nẵng" />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-xl">
-                    <SelectItem value="danang">Đà Nẵng</SelectItem>
-                  </SelectContent>
-                </Select>
+              {/* Quận/Huyện — searchable, depends on Tỉnh */}
+              <div className="w-[180px] shrink-0 space-y-1">
+                <label className="text-[10px] font-bold text-gray-400 ml-1 uppercase tracking-widest">Quận/Huyện</label>
+                <SearchableSelect
+                  value={district}
+                  onValueChange={handleDistrictChange}
+                  disabled={city === "all"}
+                  placeholder={city === "all" ? "Chọn tỉnh trước" : "Tất cả"}
+                  options={[
+                    { value: "all", label: "Tất cả" },
+                    ...districts.map((d) => ({ value: d.codename, label: d.name })),
+                  ]}
+                />
               </div>
 
               {/* Buttons */}
@@ -327,7 +532,7 @@ const SchoolList = () => {
             <div className="flex items-center gap-2 text-sm font-medium text-gray-700">
               <span>Kết quả cho:</span>
               <Badge className="bg-purple-600 text-white border-none py-0.5 px-3 rounded-full font-bold text-xs shadow-md shadow-purple-600/20">
-                {activeFilters.city === "danang" ? "Đà Nẵng" : "Tất cả"}
+                {getProvinceName(activeFilters.city)}
               </Badge>
               <span className="text-gray-300 ml-1 text-sm">({filteredSchools.length} trường)</span>
             </div>
@@ -387,7 +592,6 @@ const SchoolList = () => {
             >
               {filteredSchools.map((school) => {
                 const contact = parseContactInfo(school.contactInfo);
-                const rating = (4.5 + Math.random() * 0.5).toFixed(1);
 
                 return (
                   <motion.div
@@ -412,6 +616,7 @@ const SchoolList = () => {
                       <div className="relative aspect-[4/3] overflow-hidden">
                         <motion.img
                           src={school.logoURL || "https://i.pinimg.com/1200x/95/4a/d9/954ad94edd7118ca3a5eb38b73087363.jpg"}
+                          // src={"https://i.pinimg.com/1200x/95/4a/d9/954ad94edd7118ca3a5eb38b73087363.jpg"}
                           alt={school.schoolName}
                           className="w-full h-full object-cover transition-transform duration-[800ms] ease-[cubic-bezier(0.33,1,0.68,1)] group-hover:scale-[1.1]"
                         />
@@ -421,13 +626,13 @@ const SchoolList = () => {
                         {/* Badges */}
                         <div className="absolute top-3 left-3">
                           <Badge className="bg-white/90 backdrop-blur-sm text-purple-700 rounded-lg px-3 py-1 font-bold text-[11px] shadow-sm group-hover:shadow-md group-hover:bg-white border-none transition-all duration-300">
-                            {school.level || "Cấp 2"}
+                            {school.level || "No level"}
                           </Badge>
                         </div>
                         <div className="absolute top-3 right-3">
                           <div className="bg-black/50 backdrop-blur-sm text-white rounded-lg px-2.5 py-1 font-bold text-[11px] flex items-center gap-1 shadow-lg group-hover:shadow-xl group-hover:bg-black/60 transition-all duration-300">
                             <Star className="w-3 h-3 fill-orange-400 text-orange-400" />
-                            {rating}
+                            {school.rating || "No rating"}
                           </div>
                         </div>
                       </div>
@@ -440,7 +645,7 @@ const SchoolList = () => {
                         <div className="flex items-start gap-2 text-gray-400 mb-5 flex-1">
                           <MapPin className="w-3.5 h-3.5 mt-0.5 shrink-0 text-purple-200 group-hover:text-purple-400 transition-colors" />
                           <p className="text-[13px] leading-relaxed line-clamp-2">
-                            {contact.address || "Khu đô thị FPT, Hòa Hải, Ngũ Hành Sơn, Đà Nẵng"}
+                            {contact.address || "No address"}
                           </p>
                         </div>
 

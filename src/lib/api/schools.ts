@@ -622,6 +622,7 @@ export type PublicSchoolDto = {
     schoolName: string;
     logoURL: string | null;
     level: string | null;
+    rating: number | null;
     contactInfo: string | null;
 };
 
@@ -641,6 +642,8 @@ export type PublicSchoolDetailDto = {
     schoolId: string;
     schoolName: string;
     logoURL: string | null;
+    level?: string | null;
+    rating?: number | null;
     contactInfo: string | null;
     outfitCount: number;
     activeCampaigns: PublicCampaignSummaryDto[];
