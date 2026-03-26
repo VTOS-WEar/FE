@@ -1,8 +1,20 @@
-import { useState, useEffect } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
-import { ChevronRight, MapPin, Phone, Mail, Globe, Calendar, GraduationCap, ArrowRight, BookOpen, Shirt } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { MapPin, Phone, Mail, Globe, Calendar, GraduationCap, ArrowRight, BookOpen, Shirt, Building2, CheckCircle, Copy } from "lucide-react";
 import { GuestLayout } from "../../components/layout/GuestLayout";
 import { getPublicSchoolDetail, getSchoolUniforms, parseContactInfo, type PublicSchoolDetailDto } from "../../lib/api/schools";
+import { motion, AnimatePresence, useInView } from "framer-motion";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 type UniformItem = {
   outfitId: string;
@@ -12,40 +24,123 @@ type UniformItem = {
   outfitType: string;
 };
 
-const fmt = (n: number) => n.toLocaleString("vi-VN", { maximumFractionDigits: 0 }) + " VN\u0110";
+const fmt = (n: number) => n.toLocaleString("vi-VN", { maximumFractionDigits: 0 }) + " VNĐ";
 
 const STATUS_LABEL: Record<string, { label: string; color: string }> = {
-  Active:   { label: "Đang diễn ra", color: "bg-green-100 text-green-700" },
-  Draft:    { label: "Bản nháp",     color: "bg-gray-100 text-gray-600"   },
-  Locked:   { label: "Đã khoá",      color: "bg-red-100 text-red-600"     },
-  Ended:    { label: "Đã kết thúc",  color: "bg-amber-100 text-amber-700" },
+  Active: { label: "Đang diễn ra", color: "bg-emerald-100 text-emerald-700 shadow-emerald-700/20" },
+  Draft: { label: "Bản nháp", color: "bg-gray-100 text-gray-600 shadow-gray-600/20" },
+  Locked: { label: "Đã khoá", color: "bg-red-100 text-red-600 shadow-red-600/20" },
+  Ended: { label: "Đã kết thúc", color: "bg-amber-100 text-amber-700 shadow-amber-700/20" },
 };
 
+/* ═══════════════════════════════════════════════════════
+   ANIMATION VARIANTS
+   ═══════════════════════════════════════════════════════ */
+const fadeUp = {
+  hidden: { opacity: 0, y: 28 },
+  visible: (i: number) => ({
+    opacity: 1, y: 0,
+    transition: { delay: i * 0.12, duration: 0.7, ease: [0.22, 1, 0.36, 1] },
+  }),
+};
+
+const staggerGrid = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1, delayChildren: 0.15 },
+  },
+};
+
+const cardItem = {
+  hidden: { opacity: 0, y: 36, scale: 0.96 },
+  visible: {
+    opacity: 1, y: 0, scale: 1,
+    transition: { duration: 0.65, ease: [0.22, 1, 0.36, 1] },
+  },
+};
+
+/* ═══════════════════════════════════════════════════════
+   COMPONENTS
+   ═══════════════════════════════════════════════════════ */
+function ScrollSection({ children, className = "", delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-60px" });
+  return (
+    <motion.div
+      ref={ref}
+      initial="hidden"
+      animate={isInView ? "visible" : "hidden"}
+      variants={{
+        hidden: { opacity: 0, y: 40 },
+        visible: { opacity: 1, y: 0, transition: { duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] } },
+      }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+function Toast({ message, show, onHide }: { message: string; show: boolean; onHide: () => void }) {
+  useEffect(() => {
+    if (show) { const t = setTimeout(onHide, 3000); return () => clearTimeout(t); }
+  }, [show, onHide]);
+
+  return (
+    <AnimatePresence>
+      {show && (
+        <motion.div
+          initial={{ opacity: 0, y: -30, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: -20, scale: 0.95 }}
+          transition={{ type: "spring", stiffness: 400, damping: 25 }}
+          className="fixed top-24 right-6 z-50 bg-white/90 backdrop-blur-2xl border border-purple-100 shadow-[0_16px_48px_rgba(124,58,237,0.15)] rounded-2xl px-6 py-4 flex items-center gap-3 max-w-sm"
+        >
+          <div className="p-1.5 bg-emerald-50 rounded-full">
+            <CheckCircle className="w-5 h-5 text-emerald-500" />
+          </div>
+          <span className="text-sm font-medium text-gray-700">{message}</span>
+          <motion.div
+            className="absolute bottom-0 left-0 h-[3px] bg-purple-500 rounded-b-2xl"
+            initial={{ width: "100%" }}
+            animate={{ width: "0%" }}
+            transition={{ duration: 3, ease: "linear" }}
+          />
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════
+   MAIN SCREEN
+   ═══════════════════════════════════════════════════════ */
 export const SchoolDetail = (): JSX.Element => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [school, setSchool] = useState<PublicSchoolDetailDto | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [toast, setToast] = useState({ show: false, message: "" });
+  const [uniforms, setUniforms] = useState<UniformItem[]>([]);
 
   useEffect(() => {
     if (!id) return;
+
+    // Fetch School Detail
     getPublicSchoolDetail(id)
       .then(setSchool)
       .catch(() => setError("Không tìm thấy thông tin trường học."))
       .finally(() => setLoading(false));
-  }, [id]);
 
-  // Fetch uniforms for this school
-  const [uniforms, setUniforms] = useState<UniformItem[]>([]);
-  useEffect(() => {
-    if (!id) return;
+    // Fetch uniforms
     getSchoolUniforms(id, 1, 20)
       .then((res: any) => {
         const items = Array.isArray(res) ? res : (res?.items ?? []);
         setUniforms(items);
       })
-      .catch(() => {});
+      .catch(() => { });
   }, [id]);
 
   const isParent = (() => {
@@ -53,19 +148,41 @@ export const SchoolDetail = (): JSX.Element => {
     try { return raw ? JSON.parse(raw).role === "Parent" : false; } catch { return false; }
   })();
 
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(window.location.href);
+    setToast({ show: true, message: "Đã lưu đường dẫn liên kết!" });
+  };
+
+  /* ───── Loading Skeleton ───── */
   if (loading) return (
-    <GuestLayout bgColor="#F4F6FF">
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="w-10 h-10 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin" />
+    <GuestLayout bgColor="#faf9ff">
+      <div className="relative z-10 max-w-[1360px] mx-auto px-6 xl:px-28 py-10 min-h-screen">
+        <div className="mb-6"><div className="h-4 w-64 bg-gray-200 rounded animate-pulse" /></div>
+        <div className="w-full h-[240px] bg-gradient-to-r from-gray-100/60 via-gray-50/80 to-gray-100/60 rounded-[32px] mb-8 animate-pulse" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="h-[300px] w-full bg-gradient-to-r from-gray-100/60 via-gray-50/80 to-gray-100/60 rounded-[28px] animate-pulse" />
+          ))}
+        </div>
       </div>
     </GuestLayout>
   );
 
+  /* ───── Error State ───── */
   if (error || !school) return (
-    <GuestLayout bgColor="#F4F6FF">
+    <GuestLayout bgColor="#faf9ff">
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
-        <p className="font-montserrat text-gray-500">{error || "Không tìm thấy trường học."}</p>
-        <button onClick={() => navigate("/schools")} className="text-purple-600 hover:underline font-montserrat font-semibold">← Quay lại danh sách</button>
+        <motion.div
+          className="w-20 h-20 mx-auto mb-2 bg-purple-50 rounded-full flex items-center justify-center"
+          animate={{ rotate: [0, 10, -10, 0] }}
+          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <Building2 className="w-8 h-8 text-purple-300" />
+        </motion.div>
+        <p className="text-gray-500 font-medium">{error || "Không tìm thấy trường học."}</p>
+        <Button onClick={() => navigate("/schools")} variant="outline" className="mt-2 rounded-xl text-purple-600 border-purple-200 hover:bg-purple-50 transition-colors">
+          ← Quay lại danh sách
+        </Button>
       </div>
     </GuestLayout>
   );
@@ -76,159 +193,261 @@ export const SchoolDetail = (): JSX.Element => {
   const otherCampaigns = allCampaigns.filter(c => c.status !== "Active");
 
   return (
-    <GuestLayout bgColor="#F4F6FF">
-      <div className="max-w-[1200px] mx-auto px-4 lg:px-8 py-8">
+    <GuestLayout bgColor="#faf9ff">
+      <Toast message={toast.message} show={toast.show} onHide={() => setToast(t => ({ ...t, show: false }))} />
+
+      {/* ── Ambient Glow Background ───────── */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        <motion.div
+          className="absolute top-[-8%] right-[-8%] w-[600px] h-[600px] bg-gradient-to-br from-purple-100/60 to-violet-50/40 rounded-full blur-[120px]"
+          animate={{ scale: [1, 1.08, 1], opacity: [0.5, 0.7, 0.5] }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className="absolute bottom-[20%] left-[-5%] w-[500px] h-[500px] bg-gradient-to-tr from-blue-50/50 to-indigo-50/30 rounded-full blur-[100px]"
+          animate={{ scale: [1, 1.05, 1], opacity: [0.4, 0.6, 0.4] }}
+          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+        />
+      </div>
+
+      <div className="relative z-10 max-w-[1360px] mx-auto px-6 lg:px-12 xl:px-28 py-10 min-h-screen">
+
         {/* Breadcrumb */}
-        <div className="flex items-center gap-2 text-sm mb-8 flex-wrap">
-          <Link to="/homepage" className="font-montserrat text-black/40 hover:text-black/70">Trang chủ</Link>
-          <ChevronRight className="w-4 h-4 text-black/40" />
-          <Link to="/schools" className="font-montserrat text-black/40 hover:text-black/70">Danh sách trường</Link>
-          <ChevronRight className="w-4 h-4 text-black/40" />
-          <span className="font-montserrat font-semibold text-black line-clamp-1">{school.schoolName}</span>
-        </div>
+        <motion.div custom={0} variants={fadeUp} initial="hidden" animate="visible" className="mb-6">
+          <Breadcrumb>
+            <BreadcrumbList className="text-[14px]">
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/" className="text-gray-500 hover:text-purple-600 font-medium transition-colors">
+                  Trang chủ
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/schools" className="text-gray-500 hover:text-purple-600 font-medium transition-colors">
+                  Danh sách trường
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage className="text-gray-900 font-bold line-clamp-1 max-w-[200px] sm:max-w-[400px]">
+                  {school.schoolName}
+                </BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </motion.div>
 
-        {/* School Header Card */}
-        <div className="bg-white rounded-2xl shadow-sm p-6 lg:p-8 mb-8 flex flex-col md:flex-row gap-6 items-start">
-          {/* Logo */}
-          <div className="w-28 h-28 rounded-xl overflow-hidden border border-gray-100 flex-shrink-0 bg-purple-50 flex items-center justify-center shadow-sm">
-            {school.logoURL
-              ? <img src={school.logoURL} alt={school.schoolName} className="w-full h-full object-cover" />
-              : <GraduationCap className="w-12 h-12 text-purple-300" />}
-          </div>
+        {/* ═══════════════════════════════════════════════════
+            HERO CARD SECTION
+           ═══════════════════════════════════════════════════ */}
+        <motion.div custom={1} variants={fadeUp} initial="hidden" animate="visible">
+          <Card className="bg-white/80 backdrop-blur-3xl rounded-[32px] border border-purple-100/30 shadow-[0_16px_48px_rgba(124,58,237,0.05)] p-6 lg:p-10 mb-12 flex flex-col md:flex-row gap-8 items-start relative overflow-hidden group hover:shadow-[0_24px_64px_rgba(124,58,237,0.1)] transition-all duration-700">
+            {/* Ambient inner glow */}
+            <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-purple-400/5 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2 pointer-events-none group-hover:bg-purple-400/10 transition-colors duration-700" />
 
-          <div className="flex-1">
-            <h1 className="font-montserrat font-extrabold text-2xl lg:text-3xl text-black mb-2">{school.schoolName}</h1>
+            {/* Logo */}
+            <div className="relative w-32 h-32 lg:w-40 lg:h-40 rounded-[28px] overflow-hidden border border-gray-100 flex-shrink-0 bg-white flex items-center justify-center shadow-lg shadow-purple-900/5 z-10 group-hover:scale-105 transition-transform duration-500">
+              {school.logoURL
+                ? <img src={school.logoURL} alt={school.schoolName} className="w-full h-full object-cover" />
+                : <GraduationCap className="w-16 h-16 text-purple-200" />}
+            </div>
 
-            {/* Contact Info Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
-              {contact.address && (
-                <div className="flex items-start gap-2">
-                  <MapPin className="w-4 h-4 text-purple-500 flex-shrink-0 mt-0.5" />
-                  <span className="font-montserrat text-sm text-gray-600">{contact.address}</span>
+            {/* School Info */}
+            <div className="flex-1 z-10 w-full">
+              <div className="flex justify-between items-start gap-4 flex-col lg:flex-row mb-4 w-full">
+                <div className="flex-1">
+                  <h1 className="font-baloo tracking-tight font-extrabold text-3xl lg:text-4xl text-gray-900 mb-2 leading-tight">
+                    {school.schoolName}
+                  </h1>
+                  {contact.address && (
+                    <div className="flex items-start gap-2 text-gray-500 max-w-2xl">
+                      <MapPin className="w-4 h-4 text-purple-400 flex-shrink-0 mt-0.5" />
+                      <span className="text-sm font-medium">{contact.address}</span>
+                    </div>
+                  )}
                 </div>
-              )}
-              {contact.phone && (
-                <div className="flex items-center gap-2">
-                  <Phone className="w-4 h-4 text-purple-500 flex-shrink-0" />
-                  <span className="font-montserrat text-sm text-gray-600">{contact.phone}</span>
+
+                {/* Actions */}
+                <div className="flex gap-2 shrink-0 self-start lg:mt-0 mt-2">
+                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                    <Button onClick={handleCopyLink} variant="outline" className="h-10 px-4 rounded-xl border-gray-200 text-gray-600 hover:text-purple-600 hover:border-purple-300 hover:bg-purple-50 transition-all font-bold gap-2 shadow-sm">
+                      <Copy className="w-4 h-4" /> Chia sẻ
+                    </Button>
+                  </motion.div>
                 </div>
-              )}
-              {contact.email && (
-                <div className="flex items-center gap-2">
-                  <Mail className="w-4 h-4 text-purple-500 flex-shrink-0" />
-                  <span className="font-montserrat text-sm text-gray-600">{contact.email}</span>
-                </div>
-              )}
-              {contact.website && (
-                <div className="flex items-center gap-2">
-                  <Globe className="w-4 h-4 text-purple-500 flex-shrink-0" />
-                  <a href={contact.website} target="_blank" rel="noopener noreferrer"
-                    className="font-montserrat text-sm text-purple-600 hover:underline">{contact.website}</a>
-                </div>
-              )}
-              {contact.foundedYear && (
-                <div className="flex items-center gap-2">
-                  <Calendar className="w-4 h-4 text-purple-500 flex-shrink-0" />
-                  <span className="font-montserrat text-sm text-gray-600">Thành lập: {contact.foundedYear}</span>
-                </div>
-              )}
-              {contact.academicYear && (
-                <div className="flex items-center gap-2">
-                  <BookOpen className="w-4 h-4 text-purple-500 flex-shrink-0" />
-                  <span className="font-montserrat text-sm text-gray-600">Năm học: {contact.academicYear}</span>
+              </div>
+
+              {/* Grid Metadata */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-4 gap-x-6 mt-6 pt-6 border-t border-gray-100/80">
+                {contact.phone && (
+                  <div className="flex items-center gap-2.5">
+                    <div className="p-1.5 bg-purple-50 rounded-lg text-purple-500"><Phone className="w-3.5 h-3.5" /></div>
+                    <span className="text-[13px] font-medium text-gray-600">{contact.phone}</span>
+                  </div>
+                )}
+                {contact.email && (
+                  <div className="flex items-center gap-2.5">
+                    <div className="p-1.5 bg-purple-50 rounded-lg text-purple-500"><Mail className="w-3.5 h-3.5" /></div>
+                    <span className="text-[13px] font-medium text-gray-600 break-all line-clamp-1" title={contact.email}>{contact.email}</span>
+                  </div>
+                )}
+                {contact.website && (
+                  <div className="flex items-center gap-2.5">
+                    <div className="p-1.5 bg-purple-50 rounded-lg text-purple-500"><Globe className="w-3.5 h-3.5" /></div>
+                    <a href={contact.website} target="_blank" rel="noopener noreferrer" className="text-[13px] font-bold text-purple-600 hover:underline break-all line-clamp-1" title={contact.website}>{contact.website}</a>
+                  </div>
+                )}
+                {school.level && (
+                  <div className="flex items-center gap-2.5">
+                    <div className="p-1.5 bg-purple-50 rounded-lg text-purple-500"><BookOpen className="w-3.5 h-3.5" /></div>
+                    <span className="text-[13px] font-medium text-gray-600">Level: {school.level}</span>
+                  </div>
+                )}
+                {contact.academicYear && (
+                  <div className="flex items-center gap-2.5">
+                    <div className="p-1.5 bg-purple-50 rounded-lg text-purple-500"><Calendar className="w-3.5 h-3.5" /></div>
+                    <span className="text-[13px] font-medium text-gray-600">Niên khóa: {contact.academicYear}</span>
+                  </div>
+                )}
+              </div>
+
+              {contact.description && (
+                <div className="mt-8 bg-gray-50/50 rounded-2xl p-5 border border-gray-100">
+                  <p className="text-sm font-medium text-gray-500 leading-relaxed">
+                    {contact.description}
+                  </p>
                 </div>
               )}
             </div>
+          </Card>
+        </motion.div>
 
-            {contact.description && (
-              <p className="font-montserrat text-sm text-gray-500 mt-4 leading-relaxed">{contact.description}</p>
+        {/* ═══════════════════════════════════════════════════
+            CAMPAIGNS SECTION 
+           ═══════════════════════════════════════════════════ */}
+        <ScrollSection delay={0.1}>
+          <div className="flex items-center gap-3 mb-6">
+            <div className="p-2.5 bg-purple-100/50 rounded-xl text-purple-600"><Calendar className="w-5 h-5" /></div>
+            <h2 className="font-baloo font-extrabold text-2xl text-gray-900 tracking-tight">
+              Chương trình đồng phục
+            </h2>
+            {allCampaigns.length > 0 && (
+              <Badge className="bg-purple-100 text-purple-700 hover:bg-purple-200 border-none font-bold px-2 py-0.5 rounded-md ml-1">{allCampaigns.length}</Badge>
             )}
           </div>
-        </div>
 
-        {/* Campaigns Section */}
-        <h2 className="font-montserrat font-extrabold text-xl text-black mb-5">
-          Chương trình đồng phục
-          {allCampaigns.length > 0 && (
-            <span className="ml-2 text-base font-medium text-gray-400">({allCampaigns.length})</span>
+          {allCampaigns.length === 0 ? (
+            <div className="bg-white/50 backdrop-blur-sm rounded-3xl p-12 text-center border border-dashed border-gray-200">
+              <div className="mx-auto w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mb-4"><GraduationCap className="w-8 h-8 text-gray-400" /></div>
+              <p className="font-medium text-gray-500">Chưa có chương trình đồng phục nào.</p>
+            </div>
+          ) : (
+            <motion.div variants={staggerGrid} initial="hidden" animate="visible" className="space-y-4">
+              {[...activeCampaigns, ...otherCampaigns].map(c => {
+                const s = STATUS_LABEL[c.status] ?? { label: c.status, color: "bg-gray-100 text-gray-600" };
+                const canViewDetail = isParent;
+                return (
+                  <motion.div key={c.campaignId} variants={cardItem} whileHover={canViewDetail ? { scale: 1.01, y: -2 } : {}} whileTap={canViewDetail ? { scale: 0.99 } : {}}
+                    onClick={() => canViewDetail && navigate(`/campaigns/${c.campaignId}`)}
+                    className={`bg-white rounded-[24px] p-6 shadow-[0_4px_16px_rgba(0,0,0,0.02)] border border-gray-100/60 transition-all flex flex-col md:flex-row md:items-center gap-6 ${canViewDetail ? "hover:border-purple-200 hover:shadow-[0_16px_40px_rgba(124,58,237,0.1)] cursor-pointer group" : ""}`}>
+
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2.5 flex-wrap">
+                        <h3 className="font-bold text-lg text-gray-900 group-hover:text-purple-600 transition-colors">{c.campaignName}</h3>
+                        <span className={`inline-flex text-[10px] uppercase tracking-wider font-bold px-3 py-1 rounded-full shadow-sm ${s.color}`}>{s.label}</span>
+                      </div>
+
+                      {c.description && <p className="text-sm font-medium text-gray-500 mb-4 line-clamp-2 leading-relaxed">{c.description}</p>}
+
+                      <div className="flex items-center gap-4 text-xs font-semibold text-gray-400 flex-wrap">
+                        <div className="flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5 text-purple-300" /> <span>{new Date(c.startDate).toLocaleDateString("vi-VN")} – {new Date(c.endDate).toLocaleDateString("vi-VN")}</span></div>
+                        <div className="flex items-center gap-1.5"><Shirt className="w-3.5 h-3.5 text-purple-300" /> <span>{c.outfitCount} mẫu đồng phục</span></div>
+                      </div>
+                    </div>
+
+                    {canViewDetail ? (
+                      <div className="flex-shrink-0 lg:opacity-0 lg:-translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
+                        <div className="w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center text-purple-600 group-hover:bg-purple-600 group-hover:text-white transition-colors">
+                          <ArrowRight className="w-5 h-5" />
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex-shrink-0">
+                        <Badge variant="outline" className="text-xs bg-gray-50 text-gray-400 border-gray-200">Đăng nhập để xem</Badge>
+                      </div>
+                    )}
+                  </motion.div>
+                );
+              })}
+            </motion.div>
           )}
-        </h2>
+        </ScrollSection>
 
-        {allCampaigns.length === 0 ? (
-          <div className="bg-white rounded-xl p-12 text-center shadow-sm">
-            <GraduationCap className="w-10 h-10 text-gray-300 mx-auto mb-3" />
-            <p className="font-montserrat font-medium text-gray-400">Chưa có chương trình đồng phục nào.</p>
+        {/* ═══════════════════════════════════════════════════
+            UNIFORMS SECTION 
+           ═══════════════════════════════════════════════════ */}
+        <ScrollSection delay={0.2} className="mt-16">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="p-2.5 bg-pink-100/50 rounded-xl text-pink-600"><Shirt className="w-5 h-5" /></div>
+            <h2 className="font-baloo font-extrabold text-2xl text-gray-900 tracking-tight">
+              Tất cả đồng phục
+            </h2>
+            {uniforms.length > 0 && (
+              <Badge className="bg-pink-100 text-pink-700 hover:bg-pink-200 border-none font-bold px-2 py-0.5 rounded-md ml-1">{uniforms.length}</Badge>
+            )}
           </div>
-        ) : (
-          <div className="space-y-4">
-            {[...activeCampaigns, ...otherCampaigns].map(c => {
-              const s = STATUS_LABEL[c.status] ?? { label: c.status, color: "bg-gray-100 text-gray-600" };
-              const canViewDetail = isParent;
-              return (
-                <div key={c.campaignId}
-                  onClick={() => canViewDetail && navigate(`/campaigns/${c.campaignId}`)}
-                  className={`bg-white rounded-xl p-6 shadow-sm border border-transparent transition-all flex flex-col sm:flex-row sm:items-center gap-4 ${canViewDetail ? "hover:border-purple-200 hover:shadow-md cursor-pointer" : ""}`}>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2 flex-wrap">
-                      <h3 className="font-montserrat font-bold text-lg text-black">{c.campaignName}</h3>
-                      <span className={`inline-flex text-xs font-montserrat font-semibold px-2.5 py-1 rounded-full ${s.color}`}>{s.label}</span>
+
+          {uniforms.length === 0 ? (
+            <div className="bg-white/50 backdrop-blur-sm rounded-3xl p-12 text-center border border-dashed border-gray-200">
+              <div className="mx-auto w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mb-4"><Shirt className="w-8 h-8 text-gray-400" /></div>
+              <p className="font-medium text-gray-500">Chưa có đồng phục nào.</p>
+            </div>
+          ) : (
+            <motion.div variants={staggerGrid} initial="hidden" animate="visible" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {uniforms.map(u => (
+                <motion.div
+                  key={u.outfitId}
+                  variants={cardItem}
+                  onClick={() => navigate(`/outfits/${u.outfitId}`)}
+                  whileHover={{ y: -8, scale: 1.02, transition: { type: "spring", stiffness: 350, damping: 20 } }}
+                  whileTap={{ scale: 0.97 }}
+                  className="group relative h-full cursor-pointer flex"
+                >
+                  <div className="absolute -inset-2 rounded-[32px] bg-purple-300/0 group-hover:bg-purple-300/10 blur-xl transition-all duration-500 pointer-events-none" />
+                  <Card className="relative w-full h-full bg-white rounded-[24px] overflow-hidden border border-gray-100/60 shadow-[0_4px_20px_rgba(0,0,0,0.03)] group-hover:shadow-[0_24px_48px_-12px_rgba(124,58,237,0.15)] group-hover:border-purple-100/80 transition-all duration-500 flex flex-col">
+                    <div className="w-full aspect-square overflow-hidden bg-gray-50 relative shrink-0">
+                      {u.mainImageURL != null ? (
+                        <img src={u.mainImageURL} alt={u.outfitName} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center"><Shirt className="w-12 h-12 text-gray-300" /></div>
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      <div className="absolute top-3 left-3">
+                        <Badge className="bg-white/90 backdrop-blur-sm text-gray-700 border-none font-bold text-[10px] uppercase shadow-sm group-hover:shadow-md transition-all">
+                          {u.outfitType || "Tiêu chuẩn"}
+                        </Badge>
+                      </div>
                     </div>
-                    {c.description && <p className="font-montserrat text-sm text-gray-500 mb-2 line-clamp-2">{c.description}</p>}
-                    <div className="flex items-center gap-4 text-sm text-gray-400 font-montserrat flex-wrap">
-                      <span>🗓 {new Date(c.startDate).toLocaleDateString("vi-VN")} – {new Date(c.endDate).toLocaleDateString("vi-VN")}</span>
-                      <span>👕 {c.outfitCount} mẫu đồng phục</span>
+                    <div className="p-5 flex-1 flex flex-col justify-between">
+                      <h3 className="font-bold text-gray-900 line-clamp-2 mb-2 group-hover:text-purple-600 transition-colors leading-snug text-sm sm:text-base">{u.outfitName}</h3>
+                      <div className="flex items-center justify-between mt-auto pt-2">
+                        <p className="font-extrabold text-purple-600 text-sm sm:text-base">{fmt(u.price)}</p>
+                        <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-purple-600 group-hover:text-white transition-colors shrink-0">
+                          <ArrowRight className="w-4 h-4" />
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                  {canViewDetail && (
-                    <div className="flex-shrink-0">
-                      <ArrowRight className="w-6 h-6 text-purple-500" />
-                    </div>
-                  )}
-                  {!canViewDetail && (
-                    <div className="flex-shrink-0">
-                      <span className="text-xs font-montserrat text-gray-400 bg-gray-50 px-3 py-1.5 rounded-lg">Đăng nhập để xem chi tiết</span>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        )}
-        {/* ───── Uniforms Section ───── */}
-        <h2 className="font-montserrat font-extrabold text-xl text-black mb-5 mt-10">
-          Đồng phục
-          {uniforms.length > 0 && (
-            <span className="ml-2 text-base font-medium text-gray-400">({uniforms.length})</span>
+                  </Card>
+                </motion.div>
+              ))}
+            </motion.div>
           )}
-        </h2>
-
-        {uniforms.length === 0 ? (
-          <div className="bg-white rounded-xl p-12 text-center shadow-sm">
-            <Shirt className="w-10 h-10 text-gray-300 mx-auto mb-3" />
-            <p className="font-montserrat font-medium text-gray-400">Ch\u01b0a c\u00f3 \u0111\u1ed3ng ph\u1ee5c n\u00e0o.</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
-            {uniforms.map(u => (
-              <div
-                key={u.outfitId}
-                onClick={() => navigate(`/outfits/${u.outfitId}`)}
-                className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all cursor-pointer group"
-              >
-                <div className="w-full aspect-square overflow-hidden bg-purple-50 flex items-center justify-center">
-                  {u.mainImageURL
-                    ? <img src={u.mainImageURL} alt={u.outfitName} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                    : <Shirt className="w-12 h-12 text-purple-200" />}
-                </div>
-                <div className="p-4">
-                  <h3 className="font-montserrat font-bold text-sm text-black line-clamp-2 mb-1">{u.outfitName}</h3>
-                  <p className="font-montserrat font-semibold text-sm text-blue-600">{fmt(u.price)}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+        </ScrollSection>
       </div>
+
+      <style>{`
+        .font-baloo { font-family: 'Baloo 2', cursive; }
+      `}</style>
     </GuestLayout>
   );
 };
