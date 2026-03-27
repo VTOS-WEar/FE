@@ -28,11 +28,26 @@ export const Homepage = (): JSX.Element => {
   };
 
   return (
-    <GuestLayout>
+    <GuestLayout bgColor="#faf9ff">
+      {/* ── Ambient Glow Background ───────── */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        <motion.div
+          className="absolute top-[-5%] left-[-10%] w-[600px] h-[600px] bg-gradient-to-br from-purple-100/40 to-indigo-50/30 rounded-full blur-[120px]"
+          animate={{ scale: [1, 1.1, 1], opacity: [0.4, 0.6, 0.4] }}
+          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className="absolute bottom-[20%] right-[-5%] w-[500px] h-[500px] bg-gradient-to-tr from-sky-50/40 to-fuchsia-50/20 rounded-full blur-[100px]"
+          animate={{ scale: [1, 1.05, 1], opacity: [0.3, 0.5, 0.3] }}
+          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 3 }}
+        />
+      </div>
+
       <motion.div
         variants={containerVariants}
         initial="hidden"
         animate="visible"
+        className="relative z-10"
       >
         <motion.div variants={sectionVariants}>
           <HeroSection />
