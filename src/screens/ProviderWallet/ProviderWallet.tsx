@@ -2,11 +2,13 @@ import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { DashboardSidebar } from "../../components/layout";
+import { TopNavBar } from "../../components/layout/TopNavBar";
 import { useProviderSidebarConfig } from "../../hooks/useProviderSidebarConfig";
 import {
     getProviderWallet,
     getProviderWalletTransactions,
     updateProviderWalletBankInfo,
+    requestProviderWithdrawal,
     type WalletDto,
     type WalletTransactionDto,
 } from "../../lib/api/payments";
@@ -53,6 +55,12 @@ export default function ProviderWallet() {
     const [bankForm, setBankForm] = useState({ bankCode: "", bankName: "", accountNumber: "", accountName: "" });
     const [savingBank, setSavingBank] = useState(false);
 
+    // Withdraw modal state
+    const [showWithdraw, setShowWithdraw] = useState(false);
+    const [withdrawAmount, setWithdrawAmount] = useState("");
+    const [withdrawing, setWithdrawing] = useState(false);
+    const [withdrawMsg, setWithdrawMsg] = useState<{ type: "ok" | "err"; text: string } | null>(null);
+
     const fetchData = useCallback(async () => {
         setLoading(true);
         try {
@@ -90,10 +98,10 @@ export default function ProviderWallet() {
                 </div>
 
                 <div className="flex-1 flex flex-col min-w-0">
-                    <div className="nb-breadcrumb-bar px-6 lg:px-10 py-5">
+                    <TopNavBar>
                         <h1 className="font-extrabold text-[#1A1A2E] text-2xl">💰 Ví nhà cung cấp</h1>
                         <p className="font-medium text-[#6B7280] text-sm mt-1">Theo dõi số dư và lịch sử giao dịch</p>
-                    </div>
+                    </TopNavBar>
 
                     <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-6">
                         {loading ? (
@@ -114,6 +122,13 @@ export default function ProviderWallet() {
                                             Cập nhật: {wallet?.updatedAt ? fmtDate(wallet.updatedAt) : "—"}
                                         </p>
                                     </div>
+                                </div>
+
+                                {/* Withdraw Button */}
+                                <div className="flex justify-end">
+                                    <button className="nb-btn nb-btn-green" onClick={() => { setShowWithdraw(true); setWithdrawMsg(null); setWithdrawAmount(""); }}>
+                                        💸 Yêu cầu rút tiền
+                                    </button>
                                 </div>
 
                                 {/* Info note — NB alert */}
@@ -209,6 +224,47 @@ export default function ProviderWallet() {
                     </main>
                 </div>
             </div>
+
+            {/* Withdraw Modal */}
+            {showWithdraw && (
+                <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+                    <div className="nb-card-static p-6 w-full max-w-md space-y-4">
+                        <h3 className="font-extrabold text-[#1A1A2E] text-lg">💸 Yêu cầu rút tiền</h3>
+                        <p className="text-sm text-[#6B7280]">Số dư hiện tại: <span className="font-extrabold text-[#10B981]">{fmt(wallet?.balance ?? 0)}</span></p>
+                        <div>
+                            <label className="block text-xs font-bold text-[#6B7280] mb-1">Số tiền muốn rút (₫)</label>
+                            <input className="nb-input w-full" type="number" min={1} max={wallet?.balance ?? 0}
+                                value={withdrawAmount} onChange={e => setWithdrawAmount(e.target.value)}
+                                placeholder="Nhập số tiền..." />
+                        </div>
+                        {withdrawMsg && (
+                            <div className={`nb-alert ${withdrawMsg.type === "ok" ? "nb-alert-success" : "nb-alert-error"}`}>
+                                <p className="text-sm font-medium">{withdrawMsg.text}</p>
+                            </div>
+                        )}
+                        <div className="flex gap-2 justify-end">
+                            <button className="nb-btn nb-btn-outline text-sm" onClick={() => setShowWithdraw(false)}>Hủy</button>
+                            <button className="nb-btn nb-btn-green text-sm" disabled={withdrawing} onClick={async () => {
+                                const amt = Number(withdrawAmount);
+                                const max = wallet?.balance ?? 0;
+                                if (!amt || amt <= 0) { setWithdrawMsg({ type: "err", text: "Số tiền không hợp lệ" }); return; }
+                                if (amt > max) { setWithdrawMsg({ type: "err", text: "Số tiền vượt quá số dư" }); return; }
+                                if (!wallet?.bankAccountNumber) { setWithdrawMsg({ type: "err", text: "Vui lòng cập nhật thông tin ngân hàng trước" }); return; }
+                                setWithdrawing(true);
+                                try {
+                                    await requestProviderWithdrawal(amt);
+                                    setWithdrawMsg({ type: "ok", text: "Đã gửi yêu cầu rút tiền! Quản trị viên sẽ xử lý." });
+                                    setWithdrawAmount("");
+                                    await fetchData();
+                                } catch { setWithdrawMsg({ type: "err", text: "Gửi yêu cầu thất bại" }); }
+                                finally { setWithdrawing(false); }
+                            }}>
+                                {withdrawing ? "Đang gửi..." : "Gửi yêu cầu"}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

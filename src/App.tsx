@@ -57,7 +57,7 @@ import ProviderRevenue from "./screens/ProviderRevenue/ProviderRevenue";
 import ProviderWallet from "./screens/ProviderWallet/ProviderWallet";
 import { AdminDashboard } from "./screens/AdminDashboard/AdminDashboard";
 import { AdminUsers } from "./screens/AdminUsers/AdminUsers";
-import { AdminVerification } from "./screens/AdminVerification/AdminVerification";
+import { AdminWithdrawals } from "./screens/AdminWithdrawals/AdminWithdrawals";
 import { AdminMoneyDistribution } from "./screens/AdminMoneyDistribution/AdminMoneyDistribution";
 import { ContactPartnership } from "./screens/ContactPartnership";
 import { AdminAccountRequests } from "./screens/AdminAccountRequests";
@@ -229,8 +229,8 @@ const router = createBrowserRouter([
     element: <RoleGuard allowedRoles={["Admin"]}><AdminUsers /></RoleGuard>,
   },
   {
-    path: "/admin/verification",
-    element: <RoleGuard allowedRoles={["Admin"]}><AdminVerification /></RoleGuard>,
+    path: "/admin/withdrawals",
+    element: <RoleGuard allowedRoles={["Admin"]}><AdminWithdrawals /></RoleGuard>,
   },
   {
     path: "/admin/money",

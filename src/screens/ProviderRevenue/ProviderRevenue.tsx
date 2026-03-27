@@ -2,6 +2,7 @@ import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { DashboardSidebar } from "../../components/layout";
+import { TopNavBar } from "../../components/layout/TopNavBar";
 import { useProviderSidebarConfig } from "../../hooks/useProviderSidebarConfig";
 import {
     getProviderRevenue,
@@ -65,10 +66,10 @@ export default function ProviderRevenue() {
                 </div>
 
                 <div className="flex-1 flex flex-col min-w-0">
-                    <div className="nb-breadcrumb-bar px-6 lg:px-10 py-5">
+                    <TopNavBar>
                         <h1 className="font-extrabold text-[#1A1A2E] text-2xl">📊 Doanh thu</h1>
                         <p className="font-medium text-[#6B7280] text-sm mt-1">Theo dõi thu nhập và thanh toán</p>
-                    </div>
+                    </TopNavBar>
 
                     <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-6">
                         {loading ? (

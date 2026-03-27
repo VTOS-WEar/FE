@@ -464,15 +464,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\DashboardSidebar.tsx:55:8-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\components\\layout\\DashboardSidebar.tsx:56:8-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\AccountSetting\\AccountSetting.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
           "element": "navigate(\"/signin\", { replace: true })",
-          "line": 55,
-          "endLine": 55,
+          "line": 56,
+          "endLine": 56,
           "column": 8,
           "endColumn": 46,
           "sourceFile": "src\\components\\layout\\DashboardSidebar.tsx"
@@ -480,15 +480,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\DashboardSidebar.tsx:55:8-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\components\\layout\\DashboardSidebar.tsx:56:8-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\AccountSetting\\AccountSetting.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
           "element": "navigate(\"/signin\", { replace: true })",
-          "line": 55,
-          "endLine": 55,
+          "line": 56,
+          "endLine": 56,
           "column": 8,
           "endColumn": 46,
           "sourceFile": "src\\components\\layout\\DashboardSidebar.tsx"

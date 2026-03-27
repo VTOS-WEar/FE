@@ -75,4 +75,10 @@ export const endpoints = {
         providerWalletTransactions: "/api/payments/provider/wallet/transactions",
         providerWalletBankInfo: "/api/payments/provider/wallet/bank-info",
     },
+    notifications: {
+        list: "/api/notifications",
+        unreadCount: "/api/notifications/unread-count",
+        read: "/api/notifications", // append /{id}/read
+        readAll: "/api/notifications/read-all",
+    },
 } as const;

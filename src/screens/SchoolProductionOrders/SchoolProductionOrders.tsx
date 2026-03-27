@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import {
     Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator,
 } from "../../components/ui/breadcrumb";
+import { TopNavBar } from "../../components/layout/TopNavBar";
 import { getSchoolProductionOrders, type ProductionOrderListItemDto } from "../../lib/api/productionOrders";
 
 const STATUS_BADGE: Record<string, string> = {
@@ -38,13 +39,13 @@ export function SchoolProductionOrders() {
 
     return (
         <div className="space-y-6">
-            <div className="nb-breadcrumb-bar -mx-4 sm:-mx-6 lg:-mx-10 -mt-6 lg:-mt-8 mb-6">
+            <TopNavBar>
                 <Breadcrumb><BreadcrumbList>
                     <BreadcrumbItem><BreadcrumbLink href="/school/dashboard" className="font-semibold text-[#4c5769] text-base">Trang chủ</BreadcrumbLink></BreadcrumbItem>
                     <BreadcrumbSeparator className="text-[#cbcad7]">/</BreadcrumbSeparator>
                     <BreadcrumbItem><BreadcrumbPage className="font-bold text-[#1A1A2E] text-base">Đơn sản xuất</BreadcrumbPage></BreadcrumbItem>
                 </BreadcrumbList></Breadcrumb>
-            </div>
+            </TopNavBar>
 
             <h1 className="font-extrabold text-[#1A1A2E] text-[28px]">🏭 Đơn sản xuất</h1>
 
