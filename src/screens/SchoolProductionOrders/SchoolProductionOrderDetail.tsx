@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "../../components/ui/breadcrumb";
+import { TopNavBar } from "../../components/layout/TopNavBar";
 import {
     getSchoolProductionOrderDetail,
     confirmProductionOrder, rejectProductionOrder,
@@ -144,7 +145,7 @@ export default function SchoolProductionOrderDetail() {
     return (
         <div className="space-y-6">
             {/* Breadcrumb */}
-            <div className="nb-breadcrumb-bar -mx-4 sm:-mx-6 lg:-mx-10 -mt-6 lg:-mt-8 mb-6">
+            <TopNavBar>
                 <Breadcrumb><BreadcrumbList>
                     <BreadcrumbItem><BreadcrumbLink href="/school/dashboard" className="font-semibold text-[#4c5769] text-base">Trang chủ</BreadcrumbLink></BreadcrumbItem>
                     <BreadcrumbSeparator className="text-[#cbcad7]">/</BreadcrumbSeparator>
@@ -152,7 +153,7 @@ export default function SchoolProductionOrderDetail() {
                     <BreadcrumbSeparator className="text-[#cbcad7]">/</BreadcrumbSeparator>
                     <BreadcrumbItem><BreadcrumbPage className="font-bold text-[#1A1A2E] text-base">{detail.batchName}</BreadcrumbPage></BreadcrumbItem>
                 </BreadcrumbList></Breadcrumb>
-            </div>
+            </TopNavBar>
 
             {/* Header */}
             <div className="flex items-center justify-between">

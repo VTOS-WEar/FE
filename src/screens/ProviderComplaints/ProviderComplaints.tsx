@@ -1,6 +1,7 @@
 import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
 import { useState, useEffect, useCallback } from "react";
 import { DashboardSidebar } from "../../components/layout";
+import { TopNavBar } from "../../components/layout/TopNavBar";
 import { useProviderSidebarConfig } from "../../hooks/useProviderSidebarConfig";
 import { ChatWidget, type ChatContextInfo } from "../../components/ChatWidget/ChatWidget";
 import {
@@ -111,10 +112,10 @@ export function ProviderComplaints() {
                 </div>
 
                 <div className="flex-1 flex flex-col min-w-0">
-                    <div className="nb-breadcrumb-bar px-6 lg:px-10 py-5">
+                    <TopNavBar>
                         <h1 className="font-extrabold text-[#1A1A2E] text-2xl">📋 Khiếu nại từ Trường học</h1>
                         <p className="font-medium text-[#6B7280] text-sm mt-1">Xem và phản hồi các khiếu nại</p>
-                    </div>
+                    </TopNavBar>
 
                     <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-6">
                         {/* Status tabs */}

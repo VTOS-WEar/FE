@@ -98,14 +98,9 @@ export const SignIn = (): JSX.Element => {
         return;
       }
 
-      // 2FA setup required (Admin/School/Provider first login)
-      if (data.requiresTwoFactorSetup && data.accessToken) {
-        localStorage.setItem("access_token", data.accessToken);
-        localStorage.setItem("user", JSON.stringify(data.user));
-        localStorage.setItem("expires_in", String(data.expiresIn));
-        navigate("/2fa-setup", { replace: true, state: { forced: true } });
-        setIsLoading(false);
-        return;
+      // 2FA soft hint — store flag for dashboard banner (no longer forced)
+      if (data.shouldSetup2FA) {
+        localStorage.setItem("vtos_should_setup_2fa", "true");
       }
 
       // Normal login → store + redirect
@@ -157,6 +152,17 @@ export const SignIn = (): JSX.Element => {
 
   const handleDigitChange = (idx: number, value: string) => {
     if (!/^\d*$/.test(value)) return;
+    // Handle multi-char input (e.g. from paste or autofill)
+    if (value.length > 1) {
+      const digits = value.replace(/\D/g, "").slice(0, 6).split("");
+      const newDigits = [...totpDigits];
+      digits.forEach((d, i) => { if (idx + i < 6) newDigits[idx + i] = d; });
+      setTotpDigits(newDigits);
+      const lastIdx = Math.min(idx + digits.length - 1, 5);
+      digitRefs.current[lastIdx]?.focus();
+      if (newDigits.every(d => d)) setTimeout(() => handle2FAVerify(), 100);
+      return;
+    }
     const newDigits = [...totpDigits];
     newDigits[idx] = value.slice(-1);
     setTotpDigits(newDigits);
@@ -165,6 +171,17 @@ export const SignIn = (): JSX.Element => {
     if (value && idx === 5 && newDigits.every(d => d)) {
       setTimeout(() => handle2FAVerify(), 100);
     }
+  };
+
+  const handlePaste = (e: React.ClipboardEvent) => {
+    const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
+    if (pasted.length === 0) return;
+    e.preventDefault();
+    const newDigits = pasted.split("").concat(Array(6).fill("")).slice(0, 6);
+    setTotpDigits(newDigits);
+    const lastIdx = Math.min(pasted.length - 1, 5);
+    digitRefs.current[lastIdx]?.focus();
+    if (newDigits.every(d => d)) setTimeout(() => handle2FAVerify(), 100);
   };
 
   const handleDigitKeyDown = (idx: number, e: React.KeyboardEvent) => {
@@ -367,21 +384,21 @@ export const SignIn = (): JSX.Element => {
       </main>
 
 
-      {/* ── 2FA Modal ── */}
+      {/* ── 2FA Modal — Neubrutalism ── */}
       {show2FA && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 relative animate-in fade-in zoom-in-95">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+          <div className="bg-white w-full max-w-md p-8 relative border-2 border-[#1A1A2E] rounded-2xl shadow-[6px_6px_0_#1A1A2E]">
             <button
               onClick={() => { setShow2FA(false); setTotpDigits(["","","","","",""]); setRecoveryCode(""); setUseRecoveryCode(false); }}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl"
+              className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-lg border-2 border-[#1A1A2E] bg-[#F5D5D5] text-[#1A1A2E] font-bold text-sm hover:bg-[#E8A0A0] shadow-[2px_2px_0_#1A1A2E] transition-all active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
             >✕</button>
 
             <div className="text-center mb-6">
-              <div className="w-16 h-16 bg-gradient-to-br from-violet-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <Shield className="w-8 h-8 text-white" />
+              <div className="w-16 h-16 bg-[#EDE9FE] rounded-xl flex items-center justify-center mx-auto mb-4 border-2 border-[#1A1A2E] shadow-[3px_3px_0_#1A1A2E]">
+                <Shield className="w-8 h-8 text-[#1A1A2E]" />
               </div>
-              <h2 className="text-2xl font-bold text-gray-900">Xác thực 2 bước</h2>
-              <p className="text-gray-500 text-sm mt-2">
+              <h2 className="text-2xl font-extrabold text-[#1A1A2E]">Xác thực 2 bước</h2>
+              <p className="text-[#6B7280] text-sm mt-2 font-medium">
                 {useRecoveryCode
                   ? "Nhập mã khôi phục để đăng nhập"
                   : "Nhập mã 6 chữ số từ Google Authenticator"}
@@ -390,7 +407,7 @@ export const SignIn = (): JSX.Element => {
 
             {!useRecoveryCode ? (
               <>
-                <div className="flex justify-center gap-2 mb-6">
+                <div className="flex justify-center gap-2 mb-6" onPaste={handlePaste}>
                   {totpDigits.map((d, i) => (
                     <input
                       key={i}
@@ -401,45 +418,46 @@ export const SignIn = (): JSX.Element => {
                       value={d}
                       onChange={e => handleDigitChange(i, e.target.value)}
                       onKeyDown={e => handleDigitKeyDown(i, e)}
+                      onPaste={handlePaste}
                       onFocus={e => e.target.select()}
                       autoFocus={i === 0}
-                      className="w-12 h-14 text-center text-2xl font-bold border-2 border-gray-200 rounded-xl focus:border-violet-500 focus:ring-2 focus:ring-violet-200 outline-none transition-all"
+                      className="w-12 h-14 text-center text-2xl font-extrabold border-2 border-[#1A1A2E] rounded-xl bg-white shadow-[3px_3px_0_#1A1A2E] focus:shadow-[3px_3px_0_#1A1A2E,0_0_0_2px_#B8A9E8] outline-none transition-all"
                     />
                   ))}
                 </div>
-                <Button
+                <button
                   onClick={handle2FAVerify}
                   disabled={is2FALoading || totpDigits.some(d => !d)}
-                  className="w-full h-12 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 rounded-xl text-white font-semibold"
+                  className="w-full h-12 nb-btn nb-btn-purple text-base font-bold disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {is2FALoading ? "Đang xác thực..." : "Xác nhận"}
-                </Button>
+                  {is2FALoading ? "Đang xác thực..." : "Xác nhận ✦"}
+                </button>
               </>
             ) : (
               <>
-                <Input
+                <input
                   value={recoveryCode}
                   onChange={e => setRecoveryCode(e.target.value.toUpperCase())}
                   placeholder="XXXX-XXXX"
-                  className="h-14 text-center text-lg font-mono tracking-widest border-2 border-gray-200 rounded-xl mb-4"
+                  className="w-full h-14 text-center text-lg font-mono tracking-widest border-2 border-[#1A1A2E] rounded-xl bg-white shadow-[3px_3px_0_#1A1A2E] focus:shadow-[3px_3px_0_#1A1A2E,0_0_0_2px_#B8A9E8] outline-none transition-all mb-4 px-4"
                   onKeyDown={e => { if (e.key === "Enter") handle2FAVerify(); }}
                   autoFocus
                 />
-                <Button
+                <button
                   onClick={handle2FAVerify}
                   disabled={is2FALoading || !recoveryCode.trim()}
-                  className="w-full h-12 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 rounded-xl text-white font-semibold"
+                  className="w-full h-12 nb-btn nb-btn-purple text-base font-bold disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {is2FALoading ? "Đang xác thực..." : "Xác nhận"}
-                </Button>
+                  {is2FALoading ? "Đang xác thực..." : "Xác nhận ✦"}
+                </button>
               </>
             )}
 
             <button
               onClick={() => { setUseRecoveryCode(!useRecoveryCode); setTotpDigits(["","","","","",""]); setRecoveryCode(""); }}
-              className="w-full text-center text-sm text-violet-600 hover:text-violet-800 mt-4 font-medium"
+              className="w-full text-center text-sm text-[#1A1A2E] hover:text-[#B8A9E8] mt-4 font-bold border-2 border-transparent hover:border-[#E5E7EB] rounded-lg py-2 transition-all"
             >
-              {useRecoveryCode ? "← Dùng mã từ ứng dụng" : "Dùng mã khôi phục"}
+              {useRecoveryCode ? "← Dùng mã từ ứng dụng" : "Dùng mã khôi phục →"}
             </button>
           </div>
         </div>

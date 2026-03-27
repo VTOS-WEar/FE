@@ -92,11 +92,19 @@ export type UserReportDto = {
 // ── User Management ──
 
 export async function getUsers(): Promise<UserDto[]> {
-    return api<UserDto[]>("/api/admin/users", { method: "GET", auth: true });
+    const raw = await api<any[]>("/api/admin/users", { method: "GET", auth: true });
+    return raw.map(u => ({
+        ...u,
+        status: u.status || (u.isDeleted ? "Suspended" : u.isActive ? "Active" : "Pending"),
+    }));
 }
 
 export async function getUserDetail(id: string): Promise<UserDetailDto> {
-    return api<UserDetailDto>(`/api/admin/users/${id}`, { method: "GET", auth: true });
+    const raw = await api<any>(`/api/admin/users/${id}`, { method: "GET", auth: true });
+    return {
+        ...raw,
+        status: raw.status || (raw.isDeleted ? "Suspended" : raw.isActive ? "Active" : "Pending"),
+    };
 }
 
 export async function approveUser(id: string): Promise<void> {
@@ -199,6 +207,13 @@ export async function getWithdrawalRequests(params?: {
 
 export async function approveWithdrawal(id: string, adminNote?: string) {
     return api(`/api/admin/withdrawals/${id}/approve`, {
+        method: "POST", auth: true,
+        body: JSON.stringify({ adminNote }),
+    });
+}
+
+export async function rejectWithdrawal(id: string, adminNote?: string) {
+    return api(`/api/admin/withdrawals/${id}/reject`, {
         method: "POST", auth: true,
         body: JSON.stringify({ adminNote }),
     });

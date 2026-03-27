@@ -1,6 +1,6 @@
 import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
 import { useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import {
  Breadcrumb,
  BreadcrumbItem,
@@ -10,6 +10,7 @@ import {
  BreadcrumbSeparator,
 } from "../../components/ui/breadcrumb";
 import { DashboardSidebar } from "../../components/layout";
+import { TopNavBar } from "../../components/layout/TopNavBar";
 import { useSidebarConfig } from "../../hooks/useSidebarConfig";
 import {
  getSchoolProfile,
@@ -348,7 +349,7 @@ export const SchoolDashboard = (): JSX.Element => {
 
  <div className="flex-1 flex flex-col min-w-0">
  {/* Breadcrumb */}
- <div className="nb-breadcrumb-bar">
+ <TopNavBar>
  <Breadcrumb>
  <BreadcrumbList>
  <BreadcrumbItem><BreadcrumbLink href="/school/dashboard" className=" font-semibold text-[#4c5769] text-base">Trang chủ</BreadcrumbLink></BreadcrumbItem>
@@ -356,18 +357,28 @@ export const SchoolDashboard = (): JSX.Element => {
  <BreadcrumbItem><BreadcrumbPage className=" font-bold text-[#1A1A2E] text-base">Tổng quan</BreadcrumbPage></BreadcrumbItem>
  </BreadcrumbList>
  </Breadcrumb>
- <div className="flex items-center gap-3">
- <button className="w-10 h-10 flex items-center justify-center rounded-full border-2 border-[#1A1A2E] bg-white hover:bg-[#FFF5EB] shadow-[2px_2px_0_#1A1A2E] transition-all">
- <svg className="w-5 h-5 text-[#1A1A2E]" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4a2 2 0 002 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.93 6 11v5l-2 2v1h16v-1l-2-2z" /></svg>
- </button>
- <div className="w-9 h-9 rounded-full bg-[#6938EF] flex items-center justify-center cursor-pointer border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E] hover:shadow-[3px_3px_0_#1A1A2E] transition-all">
- <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" /></svg>
- </div>
- </div>
- </div>
+ </TopNavBar>
 
  {/* Content */}
  <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-6">
+ {/* 2FA Setup Banner */}
+ {localStorage.getItem("vtos_should_setup_2fa") === "true" && (
+ <div className="nb-card-static border-[#F59E0B] bg-[#FEF3C7] px-5 py-4 flex items-center justify-between gap-4">
+ <div className="flex items-center gap-3">
+ <div className="w-9 h-9 rounded-lg bg-[#F59E0B] flex items-center justify-center border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E] flex-shrink-0">
+ <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z" /></svg>
+ </div>
+ <div>
+ <p className="font-bold text-[#92400E] text-sm">⚠️ Tài khoản chưa bật xác thực 2 bước (2FA)</p>
+ <p className="font-medium text-[#92400E] text-xs mt-0.5">Bật 2FA để bảo vệ tài khoản của bạn.</p>
+ </div>
+ </div>
+ <Link to="/2fa-setup" className="nb-btn nb-btn-yellow text-xs px-4 py-2 flex-shrink-0">
+ 🔐 Bật ngay
+ </Link>
+ </div>
+ )}
+
  {/* Greeting */}
  <div>
  <h1 className=" font-extrabold text-[#1A1A2E] text-[28px] lg:text-[32px] leading-[1.22]">

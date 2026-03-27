@@ -116,6 +116,14 @@ export async function refundOrder(orderId: string, reason?: string): Promise<Ref
         auth: true,
     });
 }
+
+export async function requestSchoolWithdrawal(amount: number): Promise<{ id: string }> {
+    return api<{ id: string }>("/api/schools/me/wallet/withdrawals", {
+        method: "POST",
+        body: JSON.stringify({ amount }),
+        auth: true,
+    });
+}
 //#endregion
 
 //#region Parent
@@ -170,6 +178,14 @@ export async function updateProviderWalletBankInfo(data: {
     return api<{ success: boolean }>(endpoints.payments.providerWalletBankInfo, {
         method: "PUT",
         body: JSON.stringify(data),
+        auth: true,
+    });
+}
+
+export async function requestProviderWithdrawal(amount: number): Promise<{ id: string }> {
+    return api<{ id: string }>("/api/providers/me/wallet/withdrawals", {
+        method: "POST",
+        body: JSON.stringify({ amount }),
         auth: true,
     });
 }

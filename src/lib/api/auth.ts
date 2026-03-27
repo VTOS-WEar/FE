@@ -65,6 +65,7 @@ export type LoginResponse = {
     user: UserInfo;
     requiresTwoFactor?: boolean;
     requiresTwoFactorSetup?: boolean;
+    shouldSetup2FA?: boolean;
     twoFactorToken?: string;
 };
 

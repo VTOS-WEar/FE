@@ -10,6 +10,7 @@ import {
     BreadcrumbSeparator,
 } from "../../components/ui/breadcrumb";
 import { DashboardSidebar } from "../../components/layout";
+import { TopNavBar } from "../../components/layout/TopNavBar";
 import { useSidebarConfig } from "../../hooks/useSidebarConfig";
 import { Button } from "../../components/ui/button";
 import {
@@ -159,7 +160,7 @@ export const ImportData = (): JSX.Element => {
                 {/* Content */}
                 <div className="flex-1 flex flex-col min-w-0">
                     {/* Breadcrumb header */}
-                    <div className="nb-breadcrumb-bar px-4 sm:px-6 lg:px-10 py-5">
+                    <TopNavBar>
                         <Breadcrumb>
                             <BreadcrumbList className="gap-2.5">
                                 <BreadcrumbItem>
@@ -185,7 +186,7 @@ export const ImportData = (): JSX.Element => {
                                 </BreadcrumbItem>
                             </BreadcrumbList>
                         </Breadcrumb>
-                    </div>
+                    </TopNavBar>
 
                     <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-6">
                         {/* ── Page header ── */}

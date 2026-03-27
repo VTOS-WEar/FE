@@ -1,6 +1,6 @@
 import {
-    LayoutDashboard, Users, ShieldCheck, UserPlus,
-    CreditCard, Landmark, AlertTriangle
+    LayoutDashboard, Users, UserPlus,
+    CreditCard, AlertTriangle, Wallet
 } from "lucide-react";
 import type { DashboardSidebarProps } from "../components/layout";
 
@@ -30,11 +30,6 @@ export const ADMIN_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, 'isCollapsed' | '
                     href: "/admin/users",
                 },
                 {
-                    icon: ShieldCheck,
-                    label: "Xác minh tài khoản",
-                    href: "/admin/verification",
-                },
-                {
                     icon: UserPlus,
                     label: "Yêu cầu hợp tác",
                     href: "/admin/account-requests",
@@ -50,9 +45,9 @@ export const ADMIN_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, 'isCollapsed' | '
                     href: "/admin/transactions",
                 },
                 {
-                    icon: Landmark,
-                    label: "Phân phối tiền",
-                    href: "/admin/money",
+                    icon: Wallet,
+                    label: "Yêu cầu rút tiền",
+                    href: "/admin/withdrawals",
                 },
             ],
         },

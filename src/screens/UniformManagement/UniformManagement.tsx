@@ -10,6 +10,7 @@ import {
     BreadcrumbSeparator,
 } from "../../components/ui/breadcrumb";
 import { DashboardSidebar } from "../../components/layout";
+import { TopNavBar } from "../../components/layout/TopNavBar";
 import { useSidebarConfig } from "../../hooks/useSidebarConfig";
 import {
     getSchoolProfile,
@@ -509,7 +510,7 @@ export const UniformManagement = (): JSX.Element => {
 
                 <div className="flex-1 flex flex-col min-w-0">
                     {/* Breadcrumb */}
-                    <div className="nb-breadcrumb-bar px-6 lg:px-10 py-5 flex items-center justify-between">
+                    <TopNavBar>
                         <Breadcrumb>
                             <BreadcrumbList>
                                 <BreadcrumbItem><BreadcrumbLink href="/school/dashboard" className="font-semibold text-[#4c5769] text-base">Trang chủ</BreadcrumbLink></BreadcrumbItem>
@@ -517,12 +518,7 @@ export const UniformManagement = (): JSX.Element => {
                                 <BreadcrumbItem><BreadcrumbPage className="font-semibold text-[#4c5769] text-base">Quản lý đồng phục</BreadcrumbPage></BreadcrumbItem>
                             </BreadcrumbList>
                         </Breadcrumb>
-                        <div className="flex items-center gap-3">
-                            <button className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-[#f0f0f5] transition-colors">
-                                <svg className="w-6 h-6 text-[#4c5769]" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4a2 2 0 002 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.93 6 11v5l-2 2v1h16v-1l-2-2z" /></svg>
-                            </button>
-                        </div>
-                    </div>
+                    </TopNavBar>
 
                     <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-6">
                         {/* Header */}

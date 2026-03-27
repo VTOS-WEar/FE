@@ -5,6 +5,7 @@ import {
     Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator,
 } from "../../components/ui/breadcrumb";
 import { DashboardSidebar } from "../../components/layout";
+import { TopNavBar } from "../../components/layout/TopNavBar";
 import { useSidebarConfig } from "../../hooks/useSidebarConfig";
 import { getSchoolProfile, getCampaigns, type CampaignListItemDto } from "../../lib/api/schools";
 
@@ -120,13 +121,13 @@ export const CampaignList = (): JSX.Element => {
                 </div>
                 <div className="flex-1 flex flex-col min-w-0">
                     {/* Breadcrumb */}
-                    <div className="nb-breadcrumb-bar">
+                    <TopNavBar>
                         <Breadcrumb><BreadcrumbList>
                             <BreadcrumbItem><BreadcrumbLink href="/school/dashboard" className="font-semibold text-[#4c5769] text-base">Trang chủ</BreadcrumbLink></BreadcrumbItem>
                             <BreadcrumbSeparator className="text-[#cbcad7]">/</BreadcrumbSeparator>
                             <BreadcrumbItem><BreadcrumbPage className="font-bold text-[#1A1A2E] text-base">Quản lý chiến dịch</BreadcrumbPage></BreadcrumbItem>
                         </BreadcrumbList></Breadcrumb>
-                    </div>
+                    </TopNavBar>
 
                     <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-6">
                         {/* Header */}
