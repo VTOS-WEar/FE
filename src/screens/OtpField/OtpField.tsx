@@ -274,7 +274,7 @@ export const VerifyOtp = (): JSX.Element => {
                                         Nhập mã OTP
                                     </h1>
 
-                                    <p className="text-center [font-family:'Montserrat',Helvetica] font-medium text-[#676576] text-sm lg:text-base mb-6">
+                                    <p className="text-center font-medium text-[#676576] text-sm lg:text-base mb-6">
                                         Mã đã được gửi tới{" "}
                                         <span className="font-semibold text-[#19181f]">
                                             {email ? maskEmail(email) : "email của bạn"}
@@ -283,7 +283,7 @@ export const VerifyOtp = (): JSX.Element => {
 
                                     <div className="flex items-center gap-4 lg:gap-6 my-5 lg:my-6">
                                         <Separator className="flex-1 h-[1px] bg-[#cac9d6]" />
-                                        <span className="[font-family:'Montserrat',Helvetica] font-medium text-[#676576] text-base">
+                                        <span className="font-medium text-[#676576] text-base">
                                             Xác thực
                                         </span>
                                         <Separator className="flex-1 h-[1px] bg-[#cac9d6]" />
@@ -291,7 +291,7 @@ export const VerifyOtp = (): JSX.Element => {
 
                                     <div className="space-y-4">
                                         <div className="space-y-2">
-                                            <Label className="[font-family:'Montserrat',Helvetica] font-medium text-[#9794aa] text-sm lg:text-base">
+                                            <Label className="font-medium text-[#9794aa] text-sm lg:text-base">
                                                 OTP (6 chữ số)
                                             </Label>
 
@@ -321,7 +321,7 @@ export const VerifyOtp = (): JSX.Element => {
                                                 <button
                                                     type="button"
                                                     onClick={() => navigate(-1)}
-                                                    className="[font-family:'Montserrat',Helvetica] font-medium italic text-[#676576] hover:opacity-70"
+                                                    className="font-medium italic text-[#676576] hover:opacity-70"
                                                 >
                                                     Quay lại
                                                 </button>
@@ -330,7 +330,7 @@ export const VerifyOtp = (): JSX.Element => {
                                                     type="button"
                                                     disabled={cooldown > 0 || isLoading}
                                                     onClick={() => void handleResend()}
-                                                    className="[font-family:'Montserrat',Helvetica] font-semibold italic text-[#6938ef] disabled:opacity-50 disabled:cursor-not-allowed hover:underline"
+                                                    className="font-semibold italic text-[#6938ef] disabled:opacity-50 disabled:cursor-not-allowed hover:underline"
                                                 >
                                                     {cooldown > 0 ? `Gửi lại OTP (${cooldown}s)` : "Gửi lại OTP"}
                                                 </button>
@@ -352,7 +352,7 @@ export const VerifyOtp = (): JSX.Element => {
                                             <span className="text-[#494759]">Sai email? </span>
                                             <span
                                                 onClick={() => navigate("/register", { replace: true })}
-                                                className="[font-family:'Montserrat',Helvetica] font-semibold italic text-[#6938ef] cursor-pointer hover:underline"
+                                                className="font-semibold italic text-[#6938ef] cursor-pointer hover:underline"
                                             >
                                                 Đăng ký lại
                                             </span>
@@ -387,7 +387,7 @@ export const VerifyOtp = (): JSX.Element => {
                                         alt="Vtos logo"
                                         src="https://c.animaapp.com/mjxt3t8wNP0otU/img/vtos--1--removebg-preview-2-1.png"
                                     />
-                                    <p className="[font-family:'Montserrat',Helvetica] font-semibold italic text-white text-xl lg:text-3xl leading-relaxed mb-6">
+                                    <p className="font-semibold italic text-white text-xl lg:text-3xl leading-relaxed mb-6">
                                         AI Try-On đồng phục trong vài giây
                                     </p>
                                     <img

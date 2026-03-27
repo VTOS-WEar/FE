@@ -5,8 +5,19 @@ import {
 } from "../../components/ui/breadcrumb";
 import { getSchoolProductionOrders, type ProductionOrderListItemDto } from "../../lib/api/productionOrders";
 
-const STATUS_COLORS: Record<string, string> = { Pending: "#f59e0b", Approved: "#3b82f6", InProduction: "#8b5cf6", Completed: "#10b981", Rejected: "#ef4444", Delivered: "#06b6d4" };
-const STATUS_LABELS: Record<string, string> = { Pending: "Chờ xử lý", Approved: "Đã duyệt", InProduction: "Đang sản xuất", Completed: "Hoàn thành", Rejected: "Từ chối", Delivered: "Đã giao" };
+const STATUS_BADGE: Record<string, string> = {
+    Pending: "nb-badge nb-badge-yellow",
+    Approved: "nb-badge nb-badge-blue",
+    InProduction: "nb-badge nb-badge-purple",
+    Completed: "nb-badge nb-badge-green",
+    Rejected: "nb-badge nb-badge-red",
+    Delivered: "nb-badge bg-[#CFFAFE] text-[#0E7490]",
+};
+const STATUS_LABELS: Record<string, string> = {
+    Pending: "Chờ xử lý", Approved: "Đã duyệt", InProduction: "Đang sản xuất",
+    Completed: "Hoàn thành", Rejected: "Từ chối", Delivered: "Đã giao",
+};
+const STATUS_TABS = ["", "Pending", "Approved", "InProduction", "Completed", "Rejected", "Delivered"];
 
 export function SchoolProductionOrders() {
     const navigate = useNavigate();
@@ -26,76 +37,53 @@ export function SchoolProductionOrders() {
     useEffect(() => { fetchOrders(); }, [fetchOrders]);
 
     return (
-        <>
-            <div style={{ marginBottom: 8 }}>
-                <Breadcrumb>
-                    <BreadcrumbList>
-                        <BreadcrumbItem><BreadcrumbLink href="/school/dashboard" className="font-semibold text-[#4c5769] text-base">Trang chủ</BreadcrumbLink></BreadcrumbItem>
-                        <BreadcrumbSeparator className="text-[#cbcad7]">/</BreadcrumbSeparator>
-                        <BreadcrumbItem><BreadcrumbPage className="font-semibold text-[#4c5769] text-base">Đơn sản xuất</BreadcrumbPage></BreadcrumbItem>
-                    </BreadcrumbList>
-                </Breadcrumb>
+        <div className="space-y-6">
+            <div className="nb-breadcrumb-bar -mx-4 sm:-mx-6 lg:-mx-10 -mt-6 lg:-mt-8 mb-6">
+                <Breadcrumb><BreadcrumbList>
+                    <BreadcrumbItem><BreadcrumbLink href="/school/dashboard" className="font-semibold text-[#4c5769] text-base">Trang chủ</BreadcrumbLink></BreadcrumbItem>
+                    <BreadcrumbSeparator className="text-[#cbcad7]">/</BreadcrumbSeparator>
+                    <BreadcrumbItem><BreadcrumbPage className="font-bold text-[#1A1A2E] text-base">Đơn sản xuất</BreadcrumbPage></BreadcrumbItem>
+                </BreadcrumbList></Breadcrumb>
             </div>
 
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", margin: "24px 0" }}>
-                <h1 style={{ fontSize: 28, fontWeight: 700, color: "#1a1a2e" }}>🏭 Đơn sản xuất</h1>
-            </div>
+            <h1 className="font-extrabold text-[#1A1A2E] text-[28px]">🏭 Đơn sản xuất</h1>
 
-            {/* Status filter tabs */}
-            <div style={{ display: "flex", gap: 8, marginBottom: 24, flexWrap: "wrap" }}>
-                {["", "Pending", "Approved", "InProduction", "Completed", "Rejected", "Delivered"].map(s => (
-                    <button key={s} onClick={() => setStatusFilter(s)} style={{
-                        padding: "8px 20px", borderRadius: 20, border: "none", cursor: "pointer",
-                        background: statusFilter === s ? "#6366f1" : "#e8e8e8",
-                        color: statusFilter === s ? "#fff" : "#555", fontWeight: 600, fontSize: 14, transition: "all .2s",
-                    }}>
+            {/* Status tabs — NB */}
+            <div className="nb-tabs w-fit flex-wrap">
+                {STATUS_TABS.map(s => (
+                    <button key={s} onClick={() => setStatusFilter(s)}
+                        className={`nb-tab ${statusFilter === s ? "nb-tab-active" : ""}`}>
                         {s ? STATUS_LABELS[s] || s : "Tất cả"}
                     </button>
                 ))}
             </div>
 
-            {/* Order list */}
+            {/* Order list — NB cards */}
             {loading ? (
-                <div style={{ textAlign: "center", padding: 60, color: "#999" }}>Đang tải...</div>
+                <div className="text-center py-16">
+                    <div className="inline-block w-8 h-8 border-4 border-[#6938EF] border-t-transparent rounded-full animate-spin" />
+                </div>
             ) : orders.length === 0 ? (
-                <div style={{ textAlign: "center", padding: 60, background: "#fff", borderRadius: 16, color: "#aaa" }}>
-                    <div style={{ fontSize: 48, marginBottom: 12 }}>🏭</div>
-                    <p style={{ fontSize: 16 }}>Chưa có đơn sản xuất nào.</p>
+                <div className="nb-card-static p-12 text-center">
+                    <p className="text-4xl mb-3">🏭</p>
+                    <p className="font-medium text-[#9CA3AF]">Chưa có đơn sản xuất nào.</p>
                 </div>
             ) : (
-                <div style={{ display: "grid", gap: 16 }}>
+                <div className="grid gap-4">
                     {orders.map(o => (
-                        <div
-                            key={o.batchId}
-                            onClick={() => navigate(`/school/production-orders/${o.batchId}`)}
-                            style={{
-                                background: "#fff", borderRadius: 16, padding: "20px 28px",
-                                boxShadow: "0 2px 12px rgba(0,0,0,.06)", cursor: "pointer",
-                                borderLeft: `5px solid ${STATUS_COLORS[o.status] || "#ccc"}`,
-                                transition: "transform .15s, box-shadow .15s",
-                            }}
-                            onMouseOver={e => { (e.currentTarget as any).style.transform = "translateY(-2px)"; (e.currentTarget as any).style.boxShadow = "0 6px 20px rgba(0,0,0,.1)"; }}
-                            onMouseOut={e => { (e.currentTarget as any).style.transform = "none"; (e.currentTarget as any).style.boxShadow = "0 2px 12px rgba(0,0,0,.06)"; }}
-                        >
-                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                <div>
-                                    <h3 style={{ margin: 0, fontSize: 18, fontWeight: 600, color: "#1a1a2e" }}>{o.batchName}</h3>
-                                    <p style={{ margin: "4px 0 0", color: "#888", fontSize: 14 }}>
-                                        Chiến dịch: <strong>{o.campaignName}</strong> &nbsp;·&nbsp;
-                                        Nhà Cung Cấp: <strong>{o.providerName || "—"}</strong> &nbsp;·&nbsp;
-                                        SL: <strong>{o.totalQuantity}</strong> &nbsp;·&nbsp;
-                                        {new Date(o.createdDate).toLocaleDateString("vi")}
+                        <div key={o.batchId} onClick={() => navigate(`/school/production-orders/${o.batchId}`)}
+                            className="nb-card p-5 cursor-pointer">
+                            <div className="flex items-center justify-between">
+                                <div className="flex-1 min-w-0">
+                                    <h3 className="font-bold text-[#1A1A2E] text-lg">{o.batchName}</h3>
+                                    <p className="text-sm text-[#6B7280] mt-1">
+                                        Chiến dịch: <strong className="text-[#1A1A2E]">{o.campaignName}</strong> · NCC: <strong className="text-[#1A1A2E]">{o.providerName || "—"}</strong> · SL: <strong>{o.totalQuantity}</strong> · {new Date(o.createdDate).toLocaleDateString("vi")}
                                     </p>
                                     {o.deliveryDeadline && (
-                                        <p style={{ margin: "2px 0 0", color: "#666", fontSize: 13 }}>
-                                            📅 Hạn giao: <strong>{new Date(o.deliveryDeadline).toLocaleDateString("vi")}</strong>
-                                        </p>
+                                        <p className="text-xs text-[#4C5769] mt-1">📅 Hạn giao: <strong>{new Date(o.deliveryDeadline).toLocaleDateString("vi")}</strong></p>
                                     )}
                                 </div>
-                                <span style={{
-                                    padding: "6px 16px", borderRadius: 20, fontSize: 13, fontWeight: 600,
-                                    background: `${STATUS_COLORS[o.status]}18`, color: STATUS_COLORS[o.status],
-                                }}>
+                                <span className={STATUS_BADGE[o.status] || "nb-badge"}>
                                     {STATUS_LABELS[o.status] || o.status}
                                 </span>
                             </div>
@@ -103,6 +91,6 @@ export function SchoolProductionOrders() {
                     ))}
                 </div>
             )}
-        </>
+        </div>
     );
 }

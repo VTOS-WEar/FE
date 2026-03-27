@@ -32,7 +32,7 @@ export const MainLayoutSection = (): JSX.Element => {
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="ghost"
-                    className="inline-flex items-center gap-2.5 p-1 h-auto [font-family:'Baloo-Regular',Helvetica] font-normal text-black text-base hover:bg-transparent"
+                    className="inline-flex items-center gap-2.5 p-1 h-auto [font-family:'Baloo_2',Helvetica] font-normal text-black text-base hover:bg-transparent"
                   >
                     {item.label}
                     <ChevronDownIcon className="w-3.5 h-2" />
@@ -45,7 +45,7 @@ export const MainLayoutSection = (): JSX.Element => {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <button className="flex items-center justify-center [font-family:'Baloo-Regular',Helvetica] font-normal text-black text-base text-center tracking-[0] leading-[normal] hover:opacity-70 transition-opacity">
+              <button className="flex items-center justify-center [font-family:'Baloo_2',Helvetica] font-normal text-black text-base text-center tracking-[0] leading-[normal] hover:opacity-70 transition-opacity">
                 {item.label}
               </button>
             )}
@@ -106,7 +106,7 @@ export const MainLayoutSection = (): JSX.Element => {
               alt="Mingcute user fill"
               src="https://c.animaapp.com/mjxt3t8wNP0otU/img/mingcute-user-4-fill.svg"
             />
-            <span className="flex items-center justify-center [font-family:'Baloo-Regular',Helvetica] font-normal text-black text-base text-center tracking-[0] leading-[normal]">
+            <span className="flex items-center justify-center [font-family:'Baloo_2',Helvetica] font-normal text-black text-base text-center tracking-[0] leading-[normal]">
               Hồ sơ
             </span>
             <ChevronDownIcon className="w-3.5 h-2" />

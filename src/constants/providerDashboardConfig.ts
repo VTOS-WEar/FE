@@ -9,8 +9,7 @@ import type { DashboardSidebarProps } from "../components/layout";
  * 3 sections: Quản lý, Sản xuất, Tài chính
  */
 export const PROVIDER_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, 'isCollapsed' | 'onToggle'> = {
-    avatarSrc: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/frame-239353.png",
-    avatarAlt: "Provider logo",
+    iconType: "provider" as const,
     greeting: "Xin chào!",
     name: "",
     topNavItems: [

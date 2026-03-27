@@ -48,7 +48,7 @@ function OrderStatusStepper({ orderStatus }: { orderStatus: string }) {
             <div className="mt-4 px-4 py-3 bg-red-50 rounded-xl border border-red-100">
                 <div className="flex items-center gap-2">
                     <XCircle className="w-5 h-5 text-red-500" />
-                    <span className="[font-family:'Montserrat',Helvetica] font-semibold text-red-700 text-sm">
+                    <span className="font-semibold text-red-700 text-sm">
                         {cancelledAt === "Cancelled" ? "Đơn hàng đã bị hủy" : "Đơn hàng đã hoàn tiền"}
                     </span>
                 </div>
@@ -97,7 +97,7 @@ function OrderStatusStepper({ orderStatus }: { orderStatus: string }) {
                                 )}
                             </div>
                             {/* Label */}
-                            <span className={`mt-2 [font-family:'Montserrat',Helvetica] text-[11px] font-semibold text-center leading-tight ${
+                            <span className={`mt-2 text-[11px] font-semibold text-center leading-tight ${
                                 isCompleted ? "text-emerald-700" : isCurrent ? "text-blue-600" : "text-gray-400"
                             }`}>
                                 {step.label}
@@ -159,7 +159,7 @@ export const OrdersTab = (): JSX.Element => {
                 <div className="w-16 h-16 bg-[#f4f2ff] rounded-full flex items-center justify-center">
                     <ShoppingBag className="w-8 h-8 text-[#6938ef] opacity-50" />
                 </div>
-                <p className="[font-family:'Montserrat',Helvetica] font-medium text-[#1a1a2e]/50 text-sm text-center">
+                <p className="font-medium text-[#1a1a2e]/50 text-sm text-center">
                     Bạn chưa có đơn hàng nào.
                 </p>
             </div>
@@ -186,16 +186,16 @@ export const OrdersTab = (): JSX.Element => {
                                     <CreditCard className="w-6 h-6 text-[#6938EF]" />
                                 </div>
                                 <div>
-                                    <p className="[font-family:'Montserrat',Helvetica] font-semibold text-[#1A1A2E] text-sm">
+                                    <p className="font-semibold text-[#1A1A2E] text-sm">
                                         Đơn #{p.orderId.slice(0, 8)}
                                     </p>
-                                    <p className="[font-family:'Montserrat',Helvetica] font-medium text-[#9CA3AF] text-xs mt-0.5">
+                                    <p className="font-medium text-[#9CA3AF] text-xs mt-0.5">
                                         {fmtDate(p.timestamp)}
                                     </p>
                                 </div>
                             </div>
                             <div className="flex items-center gap-4">
-                                <p className="[font-family:'Montserrat',Helvetica] font-bold text-[#1A1A2E] text-base">
+                                <p className="font-bold text-[#1A1A2E] text-base">
                                     {fmt(p.amount)}
                                 </p>
                                 <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold ${badge.bg} ${badge.text}`}>
@@ -220,7 +220,7 @@ export const OrdersTab = (): JSX.Element => {
                         {/* Expanded stepper */}
                         {isExpanded && showStepper && (
                             <div className="px-5 pb-5 border-t border-[#F3F4F6]">
-                                <p className="[font-family:'Montserrat',Helvetica] font-semibold text-[#6B7280] text-xs mt-3 mb-1">
+                                <p className="font-semibold text-[#6B7280] text-xs mt-3 mb-1">
                                     📍 Trạng thái đơn hàng
                                 </p>
                                 <OrderStatusStepper orderStatus={p.orderStatus} />

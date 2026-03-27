@@ -33,11 +33,11 @@ export const ImportInstructionsSection = (): JSX.Element => {
                             src={step.icon}
                         />
 
-                        <h3 className="w-full flex items-center justify-center [font-family:'Montserrat',Helvetica] font-bold text-black text-lg sm:text-xl tracking-[0] leading-[normal] mb-2">
+                        <h3 className="w-full flex items-center justify-center font-bold text-black text-lg sm:text-xl tracking-[0] leading-[normal] mb-2">
                             {step.title}
                         </h3>
 
-                        <p className="w-full text-[#677489] text-sm sm:text-base flex items-center justify-center [font-family:'Montserrat',Helvetica] font-medium tracking-[0] leading-[normal] text-center">
+                        <p className="w-full text-[#677489] text-sm sm:text-base flex items-center justify-center font-medium tracking-[0] leading-[normal] text-center">
                             {step.description}
                         </p>
                     </CardContent>

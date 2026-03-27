@@ -10,8 +10,7 @@ import type { DashboardSidebarProps } from "../components/layout";
  * 4 sections: Quản lý, Kinh doanh, Vận hành, Tài chính
  */
 export const DASHBOARD_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, 'isCollapsed' | 'onToggle'> = {
-    avatarSrc: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/frame-239353.png",
-    avatarAlt: "School logo",
+    iconType: "school" as const,
     greeting: "Xin chào!",
     name: "",
     topNavItems: [

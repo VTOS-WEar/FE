@@ -194,7 +194,7 @@ export const SignIn = (): JSX.Element => {
                     onClick={() => handleGoogleLogin()}
                     disabled={isGoogleLoading}
                   >
-                    <span className="[font-family:'Montserrat',Helvetica] font-medium text-[#19181f] text-sm lg:text-base">
+                    <span className="font-medium text-[#19181f] text-sm lg:text-base">
                       {isGoogleLoading ? "Đang xử lý..." : "Đăng nhập với Google"}
                     </span>
                     <img
@@ -206,7 +206,7 @@ export const SignIn = (): JSX.Element => {
 
                   <div className="flex items-center gap-4 lg:gap-6 my-5 lg:my-6">
                     <Separator className="flex-1 h-[1px] bg-[#cac9d6]" />
-                    <span className="[font-family:'Montserrat',Helvetica] font-medium text-[#676576] text-base">
+                    <span className="font-medium text-[#676576] text-base">
                       Hoặc
                     </span>
                     <Separator className="flex-1 h-[1px] bg-[#cac9d6]" />
@@ -233,7 +233,7 @@ export const SignIn = (): JSX.Element => {
                     )} */}
 
                     <div className="space-y-2">
-                      <Label className="[font-family:'Montserrat',Helvetica] font-medium text-[#9794aa] text-sm lg:text-base">
+                      <Label className="font-medium text-[#9794aa] text-sm lg:text-base">
                         Email
                       </Label>
                       <Input
@@ -241,12 +241,12 @@ export const SignIn = (): JSX.Element => {
                         placeholder="Nhập email của bạn"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="h-11 lg:h-12 px-4 lg:px-5 rounded-md border border-[#cac9d6] [font-family:'Montserrat',Helvetica] font-medium text-sm lg:text-base"
+                        className="h-11 lg:h-12 px-4 lg:px-5 rounded-md border border-[#cac9d6] font-medium text-sm lg:text-base"
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <Label className="[font-family:'Montserrat',Helvetica] font-medium text-[#9794aa] text-sm lg:text-base">
+                      <Label className="font-medium text-[#9794aa] text-sm lg:text-base">
                         Mật khẩu
                       </Label>
                       <div className="relative">
@@ -255,7 +255,7 @@ export const SignIn = (): JSX.Element => {
                           placeholder="Nhập mật khẩu của bạn"
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
-                          className="h-11 lg:h-12 px-4 lg:px-5 pr-12 rounded-md border border-[#cac9d6] [font-family:'Montserrat',Helvetica] font-medium text-sm lg:text-base"
+                          className="h-11 lg:h-12 px-4 lg:px-5 pr-12 rounded-md border border-[#cac9d6] font-medium text-sm lg:text-base"
                           onKeyDown={(e) => {
                             if (e.key === "Enter") handleSignIn();
                           }}
@@ -284,14 +284,14 @@ export const SignIn = (): JSX.Element => {
                           onCheckedChange={(v) => setRememberMe(Boolean(v))}
                           className="w-4 lg:w-5 h-4 lg:h-5"
                         />
-                        <span className="[font-family:'Montserrat',Helvetica] font-medium italic text-[#676576] text-sm lg:text-base">
+                        <span className="font-medium italic text-[#676576] text-sm lg:text-base">
                           Ghi nhớ mật khẩu
                         </span>
                       </label>
 
                       <button
                         type="button"
-                        className="[font-family:'Montserrat',Helvetica] font-medium italic text-[#676576] text-sm lg:text-base hover:opacity-70"
+                        className="font-medium italic text-[#676576] text-sm lg:text-base hover:opacity-70"
                       >
                         <Link to="/forgot-password">
                           Quên mật khẩu?
@@ -314,7 +314,7 @@ export const SignIn = (): JSX.Element => {
                       <span className="text-[#494759]">Bạn chưa có tài khoản? </span>
                       <Link
                         to="/signup"
-                        className="[font-family:'Montserrat',Helvetica] font-semibold italic text-[#6938ef] cursor-pointer hover:underline"
+                        className="font-semibold italic text-[#6938ef] cursor-pointer hover:underline"
                       >
                         Tạo tài khoản
                       </Link>
@@ -350,7 +350,7 @@ export const SignIn = (): JSX.Element => {
                     src="https://c.animaapp.com/mjxt3t8wNP0otU/img/vtos--1--removebg-preview-2-1.png"
                   />
 
-                  <p className="[font-family:'Montserrat',Helvetica] font-semibold italic text-white text-xl lg:text-3xl leading-relaxed mb-6">
+                  <p className="font-semibold italic text-white text-xl lg:text-3xl leading-relaxed mb-6">
                     Hỗ trợ hơn 200 mẫu đồng phục
                   </p>
 

@@ -131,8 +131,8 @@ export default function VariantManager({
 
     /* ── Inline styles ── */
     const inputClass =
-        "w-full bg-[#f8f9fb] border border-[#cbcad7] rounded-[10px] px-3 py-2.5 [font-family:'Montserrat',Helvetica] font-medium text-sm text-[#1a1a2e] outline-none focus:border-[#6938ef] focus:ring-1 focus:ring-[#6938ef]/20 transition-colors";
-    const labelClass = "[font-family:'Montserrat',Helvetica] font-semibold text-[#1a1a2e] text-sm mb-1.5 block";
+        "w-full bg-[#f8f9fb] border border-[#cbcad7] rounded-[10px] px-3 py-2.5 font-medium text-sm text-[#1a1a2e] outline-none focus:border-[#6938ef] focus:ring-1 focus:ring-[#6938ef]/20 transition-colors";
+    const labelClass = "font-semibold text-[#1a1a2e] text-sm mb-1.5 block";
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -141,10 +141,10 @@ export default function VariantManager({
                 {/* Header */}
                 <div className="flex items-center justify-between px-6 py-5 border-b border-[#f0f0f5] sticky top-0 bg-white z-10 rounded-t-2xl">
                     <div>
-                        <h2 className="[font-family:'Montserrat',Helvetica] font-bold text-[#1a1a2e] text-xl">
+                        <h2 className="font-bold text-[#1a1a2e] text-xl">
                             Quản lý kích cỡ
                         </h2>
-                        <p className="[font-family:'Montserrat',Helvetica] font-medium text-[#97a3b6] text-sm mt-0.5">
+                        <p className="font-medium text-[#97a3b6] text-sm mt-0.5">
                             {outfitName}
                         </p>
                     </div>
@@ -163,7 +163,7 @@ export default function VariantManager({
                     {!showForm && (
                         <button
                             onClick={openCreate}
-                            className="mb-4 flex items-center gap-2 px-4 py-2.5 rounded-[10px] bg-gradient-to-r from-[#6938EF] to-[#5B2FD6] hover:from-[#5B2FD6] hover:to-[#4F22C7] text-white [font-family:'Montserrat',Helvetica] font-semibold text-sm shadow-[0_2px_8px_rgba(105,56,239,0.3)] transition-colors"
+                            className="mb-4 flex items-center gap-2 px-4 py-2.5 rounded-[10px] bg-gradient-to-r from-[#6938EF] to-[#5B2FD6] hover:from-[#5B2FD6] hover:to-[#4F22C7] text-white font-semibold text-sm shadow-[0_2px_8px_rgba(105,56,239,0.3)] transition-colors"
                         >
                             <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
@@ -176,7 +176,7 @@ export default function VariantManager({
                     {showForm && (
                         <form onSubmit={handleSave} className="mb-5 p-4 bg-[#f8f9fb] rounded-[10px] border border-[#e5e7eb] space-y-3">
                             <div className="flex items-center justify-between mb-1">
-                                <h3 className="[font-family:'Montserrat',Helvetica] font-bold text-[#1a1a2e] text-sm">
+                                <h3 className="font-bold text-[#1a1a2e] text-sm">
                                     {editingId ? "Sửa kích cỡ" : "Thêm kích cỡ mới"}
                                 </h3>
                                 <button
@@ -201,7 +201,7 @@ export default function VariantManager({
                                             key={s}
                                             type="button"
                                             onClick={() => setForm((f) => ({ ...f, size: s }))}
-                                            className={`px-2.5 py-1 rounded-lg text-xs font-semibold border transition-colors [font-family:'Montserrat',Helvetica] ${
+                                            className={`px-2.5 py-1 rounded-lg text-xs font-semibold border transition-colors ${
                                                 form.size === s
                                                     ? "bg-[#6938EF] text-white border-[#6938EF]"
                                                     : "bg-white text-[#4c5769] border-[#cbcad7] hover:border-[#6938EF] hover:text-[#6938EF]"
@@ -225,14 +225,14 @@ export default function VariantManager({
                                 <button
                                     type="button"
                                     onClick={() => { setShowForm(false); setEditingId(null); }}
-                                    className="px-4 py-2 rounded-[10px] border border-[#cbcad7] bg-white hover:bg-[#f6f7f8] [font-family:'Montserrat',Helvetica] font-semibold text-sm text-[#4c5769] transition-colors"
+                                    className="px-4 py-2 rounded-[10px] border border-[#cbcad7] bg-white hover:bg-[#f6f7f8] font-semibold text-sm text-[#4c5769] transition-colors"
                                 >
                                     Hủy
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={saving || !form.size.trim()}
-                                    className="px-4 py-2 rounded-[10px] bg-gradient-to-r from-[#6938EF] to-[#5B2FD6] text-white [font-family:'Montserrat',Helvetica] font-semibold text-sm shadow-[0_2px_8px_rgba(105,56,239,0.3)] disabled:opacity-50 transition-colors flex items-center gap-2"
+                                    className="px-4 py-2 rounded-[10px] bg-gradient-to-r from-[#6938EF] to-[#5B2FD6] text-white font-semibold text-sm shadow-[0_2px_8px_rgba(105,56,239,0.3)] disabled:opacity-50 transition-colors flex items-center gap-2"
                                 >
                                     {saving && (
                                         <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -261,10 +261,10 @@ export default function VariantManager({
                             <table className="w-full">
                                 <thead>
                                     <tr className="bg-[#f8f9fb]">
-                                        <th className="px-4 py-3 text-left [font-family:'Montserrat',Helvetica] font-bold text-[#4c5769] text-xs uppercase tracking-wider">
+                                        <th className="px-4 py-3 text-left font-bold text-[#4c5769] text-xs uppercase tracking-wider">
                                             Kích cỡ
                                         </th>
-                                        <th className="px-4 py-3 text-right [font-family:'Montserrat',Helvetica] font-bold text-[#4c5769] text-xs uppercase tracking-wider">
+                                        <th className="px-4 py-3 text-right font-bold text-[#4c5769] text-xs uppercase tracking-wider">
                                             Thao tác
                                         </th>
                                     </tr>
@@ -273,7 +273,7 @@ export default function VariantManager({
                                     {variants.map((v) => (
                                         <tr key={v.productVariantId} className="hover:bg-[#fafbfc] transition-colors">
                                             <td className="px-4 py-3">
-                                                <span className="inline-flex items-center justify-center min-w-[40px] px-2.5 py-1 rounded-lg bg-[#F5F3FF] border border-[#DDD6FE] [font-family:'Montserrat',Helvetica] font-bold text-[#6938EF] text-sm">
+                                                <span className="inline-flex items-center justify-center min-w-[40px] px-2.5 py-1 rounded-lg bg-[#F5F3FF] border border-[#DDD6FE] font-bold text-[#6938EF] text-sm">
                                                     {v.size}
                                                 </span>
                                             </td>
@@ -312,10 +312,10 @@ export default function VariantManager({
                             <svg className="w-12 h-12 text-[#CBCAD7] mx-auto mb-3" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M21 16V7.99C21 6.89 20.1 6 19 6H5C3.9 6 3 6.89 3 7.99V16C3 17.1 3.9 18 5 18H19C20.1 18 21 17.1 21 16ZM12 14L17 10H7L12 14Z" />
                             </svg>
-                            <p className="[font-family:'Montserrat',Helvetica] font-semibold text-[#4C5769] text-sm">
+                            <p className="font-semibold text-[#4C5769] text-sm">
                                 Chưa có kích cỡ nào
                             </p>
-                            <p className="[font-family:'Montserrat',Helvetica] font-medium text-[#97A3B6] text-xs mt-1">
+                            <p className="font-medium text-[#97A3B6] text-xs mt-1">
                                 Nhấn "Thêm kích cỡ" để bắt đầu
                             </p>
                         </div>
@@ -333,21 +333,21 @@ export default function VariantManager({
                                 <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
                             </svg>
                         </div>
-                        <h3 className="[font-family:'Montserrat',Helvetica] font-bold text-[#1a1a2e] text-lg mb-2">Xóa kích cỡ?</h3>
-                        <p className="[font-family:'Montserrat',Helvetica] font-medium text-[#4c5769] text-sm mb-5">
+                        <h3 className="font-bold text-[#1a1a2e] text-lg mb-2">Xóa kích cỡ?</h3>
+                        <p className="font-medium text-[#4c5769] text-sm mb-5">
                             Hành động này không thể hoàn tác.
                         </p>
                         <div className="flex justify-center gap-3">
                             <button
                                 onClick={() => setDeletingId(null)}
-                                className="px-5 py-2.5 rounded-[10px] border border-[#cbcad7] bg-white hover:bg-[#f6f7f8] [font-family:'Montserrat',Helvetica] font-semibold text-sm text-[#4c5769] transition-colors"
+                                className="px-5 py-2.5 rounded-[10px] border border-[#cbcad7] bg-white hover:bg-[#f6f7f8] font-semibold text-sm text-[#4c5769] transition-colors"
                             >
                                 Hủy
                             </button>
                             <button
                                 onClick={handleDelete}
                                 disabled={saving}
-                                className="px-5 py-2.5 rounded-[10px] bg-red-500 hover:bg-red-600 text-white [font-family:'Montserrat',Helvetica] font-semibold text-sm disabled:opacity-50 transition-colors"
+                                className="px-5 py-2.5 rounded-[10px] bg-red-500 hover:bg-red-600 text-white font-semibold text-sm disabled:opacity-50 transition-colors"
                             >
                                 Xóa
                             </button>
@@ -370,7 +370,7 @@ export default function VariantManager({
                             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
                         </svg>
                     )}
-                    <span className="[font-family:'Montserrat',Helvetica] font-semibold text-sm">{toast.msg}</span>
+                    <span className="font-semibold text-sm">{toast.msg}</span>
                 </div>
             )}
         </div>

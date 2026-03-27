@@ -141,11 +141,11 @@ export const ImportData = (): JSX.Element => {
 
     /* ── Render ── */
     return (
-        <div className="bg-[#f6f7f8] w-full min-h-screen flex flex-col">
+        <div className="nb-page flex flex-col">
             <div className="flex flex-1 flex-col lg:flex-row">
                 {/* Sidebar */}
                 <div
-                    className={`${isCollapsed ? "lg:w-16" : "lg:w-[20rem] xl:w-[23.75rem]"} flex-shrink-0 lg:sticky lg:top-0 lg:h-screen transition-all duration-300`}
+                    className={`${isCollapsed ? "lg:w-16" : "lg:w-[16rem]"} flex-shrink-0 lg:sticky lg:top-0 lg:h-screen transition-all duration-300`}
                 >
                     <DashboardSidebar
                         {...sidebarConfig}
@@ -159,27 +159,27 @@ export const ImportData = (): JSX.Element => {
                 {/* Content */}
                 <div className="flex-1 flex flex-col min-w-0">
                     {/* Breadcrumb header */}
-                    <div className="bg-white border-b border-[#cbcad7] px-4 sm:px-6 lg:px-10 py-5">
+                    <div className="nb-breadcrumb-bar px-4 sm:px-6 lg:px-10 py-5">
                         <Breadcrumb>
                             <BreadcrumbList className="gap-2.5">
                                 <BreadcrumbItem>
-                                    <BreadcrumbLink className="[font-family:'Montserrat',Helvetica] font-semibold text-[#4c5769] text-base">
+                                    <BreadcrumbLink className="font-semibold text-[#4c5769] text-base">
                                         Trang chủ
                                     </BreadcrumbLink>
                                 </BreadcrumbItem>
-                                <BreadcrumbSeparator className="[font-family:'Montserrat',Helvetica] font-semibold text-[#cbcad7] text-base">
+                                <BreadcrumbSeparator className="font-semibold text-[#cbcad7] text-base">
                                     /
                                 </BreadcrumbSeparator>
                                 <BreadcrumbItem>
-                                    <BreadcrumbLink className="[font-family:'Montserrat',Helvetica] font-semibold text-[#4c5769] text-base">
+                                    <BreadcrumbLink className="font-semibold text-[#4c5769] text-base">
                                         Danh sách học sinh
                                     </BreadcrumbLink>
                                 </BreadcrumbItem>
-                                <BreadcrumbSeparator className="[font-family:'Montserrat',Helvetica] font-semibold text-[#cbcad7] text-base">
+                                <BreadcrumbSeparator className="font-semibold text-[#cbcad7] text-base">
                                     /
                                 </BreadcrumbSeparator>
                                 <BreadcrumbItem>
-                                    <BreadcrumbPage className="[font-family:'Montserrat',Helvetica] font-semibold text-black text-base">
+                                    <BreadcrumbPage className="font-semibold text-black text-base">
                                         Nhập dữ liệu học sinh
                                     </BreadcrumbPage>
                                 </BreadcrumbItem>
@@ -191,16 +191,16 @@ export const ImportData = (): JSX.Element => {
                         {/* ── Page header ── */}
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                             <div>
-                                <h1 className="[font-family:'Montserrat',Helvetica] font-bold text-black text-[28px] lg:text-[32px] leading-[1.22]">
+                                <h1 className="font-bold text-black text-[28px] lg:text-[32px] leading-[1.22]">
                                     Nhập dữ liệu học sinh
                                 </h1>
-                                <p className="mt-1 [font-family:'Montserrat',Helvetica] font-medium text-[#4c5769] text-sm lg:text-base">
+                                <p className="mt-1 font-medium text-[#4c5769] text-sm lg:text-base">
                                     Cập nhật danh sách học sinh đầu kỳ để kích hoạt tính năng thử đồ ảo và đặt mua đồng phục.
                                 </p>
                             </div>
                             <Button
                                 variant="outline"
-                                className="bg-white shadow-[0_1px_3px_rgba(0,0,0,0.08)] border-[#cbcad7] rounded-[10px] [font-family:'Montserrat',Helvetica] font-semibold text-black text-sm gap-2 px-4 py-2.5 h-auto whitespace-nowrap"
+                                className="bg-white shadow-[0_1px_3px_rgba(0,0,0,0.08)] border-[#cbcad7] rounded-[10px] font-semibold text-black text-sm gap-2 px-4 py-2.5 h-auto whitespace-nowrap"
                                 onClick={() => historySectionRef.current?.scrollIntoView({ behavior: "smooth" })}
                             >
                                 <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
@@ -219,14 +219,14 @@ export const ImportData = (): JSX.Element => {
                             </div>
                             <div className="flex-1">
                                 <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                                    <h3 className="[font-family:'Montserrat',Helvetica] font-bold text-black text-base">
+                                    <h3 className="font-bold text-black text-base">
                                         Cần cập nhật: Dữ liệu Học kỳ 1 (2026-2027)
                                     </h3>
-                                    <span className="px-2.5 py-0.5 bg-[#FFF3E0] border border-[#FFB74D] rounded-[5px] [font-family:'Montserrat',Helvetica] font-semibold text-[#E65100] text-xs">
+                                    <span className="px-2.5 py-0.5 bg-[#FFF3E0] border border-[#FFB74D] rounded-[5px] font-semibold text-[#E65100] text-xs">
                                         Chưa nhập liệu
                                     </span>
                                 </div>
-                                <p className="[font-family:'Montserrat',Helvetica] font-medium text-[#5D4037] text-sm leading-relaxed mb-2">
+                                <p className="font-medium text-[#5D4037] text-sm leading-relaxed mb-2">
                                     Hệ thống chưa ghi nhận danh sách học sinh cho học kỳ mới. Nhà trường vui lòng cập nhật sớm để
                                     đảm bảo học sinh có thể truy cập Phòng thử ảo và đặt mua đồng phục đúng hạn.
                                 </p>
@@ -234,7 +234,7 @@ export const ImportData = (): JSX.Element => {
                                     <svg className="w-5 h-5 text-[#E65100]" viewBox="0 0 24 24" fill="currentColor">
                                         <path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm4-7h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z" />
                                     </svg>
-                                    <span className="[font-family:'Montserrat',Helvetica] font-semibold text-[#BF360C] text-sm">
+                                    <span className="font-semibold text-[#BF360C] text-sm">
                                         Hạn chót đề xuất: 30/08/2026
                                     </span>
                                 </div>
@@ -268,15 +268,15 @@ export const ImportData = (): JSX.Element => {
                                     className="bg-white rounded-[10px] shadow-[0_1px_3px_rgba(0,0,0,0.08)] p-5 flex flex-col items-start gap-3"
                                 >
                                     <div
-                                        className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold [font-family:'Montserrat',Helvetica] text-lg"
+                                        className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-lg"
                                         style={{ backgroundColor: color }}
                                     >
                                         {step}
                                     </div>
-                                    <h3 className="[font-family:'Montserrat',Helvetica] font-bold text-black text-base">
+                                    <h3 className="font-bold text-black text-base">
                                         {title}
                                     </h3>
-                                    <p className="[font-family:'Montserrat',Helvetica] font-medium text-[#4c5769] text-sm leading-relaxed">
+                                    <p className="font-medium text-[#4c5769] text-sm leading-relaxed">
                                         {desc}
                                     </p>
                                 </div>
@@ -293,18 +293,18 @@ export const ImportData = (): JSX.Element => {
                                         <svg className="w-8 h-8 text-[#478aea]" viewBox="0 0 24 24" fill="currentColor">
                                             <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zM6 20V4h7v5h5v11H6z" />
                                         </svg>
-                                        <h3 className="[font-family:'Montserrat',Helvetica] font-bold text-black text-base">
+                                        <h3 className="font-bold text-black text-base">
                                             File mẫu nhập liệu
                                         </h3>
                                     </div>
-                                    <p className="[font-family:'Montserrat',Helvetica] font-medium text-[#4c5769] text-sm leading-relaxed">
+                                    <p className="font-medium text-[#4c5769] text-sm leading-relaxed">
                                         Vui lòng sử dụng file mẫu mới nhất để tránh lỗi định dạng khi tải lên.
                                         File mẫu bao gồm các cột: Họ và tên, Ngày sinh, Lớp, Giới tính, Số điện thoại phụ huynh.
                                     </p>
                                     <Button
                                         onClick={handleDownloadTemplate}
                                         disabled={downloadingTemplate}
-                                        className="bg-[#6938ef] hover:bg-[#5a2dd6] text-white rounded-[10px] [font-family:'Montserrat',Helvetica] font-semibold text-sm gap-2 px-4 py-2.5 h-auto w-full"
+                                        className="bg-[#6938ef] hover:bg-[#5a2dd6] text-white rounded-[10px] font-semibold text-sm gap-2 px-4 py-2.5 h-auto w-full"
                                     >
                                         <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
                                             <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
@@ -315,7 +315,7 @@ export const ImportData = (): JSX.Element => {
 
                                 {/* Important notes card */}
                                 <div className="bg-[#F0F4FF] border border-[#B3C6FF] rounded-[10px] shadow-[0_1px_3px_rgba(0,0,0,0.08)] p-5 space-y-3">
-                                    <h3 className="[font-family:'Montserrat',Helvetica] font-bold text-black text-base">
+                                    <h3 className="font-bold text-black text-base">
                                         Lưu ý quan trọng
                                     </h3>
                                     <ul className="space-y-2.5">
@@ -332,7 +332,7 @@ export const ImportData = (): JSX.Element => {
                                                 >
                                                     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
                                                 </svg>
-                                                <span className="[font-family:'Montserrat',Helvetica] font-medium text-[#374151] text-sm leading-relaxed">
+                                                <span className="font-medium text-[#374151] text-sm leading-relaxed">
                                                     {note}
                                                 </span>
                                             </li>
@@ -344,10 +344,10 @@ export const ImportData = (): JSX.Element => {
                             {/* Right column: Upload zone */}
                             <div className="bg-white rounded-[10px] shadow-[0_1px_3px_rgba(0,0,0,0.08)] p-5 space-y-4">
                                 <div className="flex items-center justify-between">
-                                    <h3 className="[font-family:'Montserrat',Helvetica] font-bold text-black text-base">
+                                    <h3 className="font-bold text-black text-base">
                                         Tải lên dữ liệu
                                     </h3>
-                                    <span className="px-2.5 py-1 bg-[#EBF5FF] border border-[#90CAF9] rounded-[5px] [font-family:'Montserrat',Helvetica] font-semibold text-[#1565C0] text-xs">
+                                    <span className="px-2.5 py-1 bg-[#EBF5FF] border border-[#90CAF9] rounded-[5px] font-semibold text-[#1565C0] text-xs">
                                         Kỳ học mới
                                     </span>
                                 </div>
@@ -374,13 +374,13 @@ export const ImportData = (): JSX.Element => {
                                     >
                                         <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11zm-6-3.5l-4-4h2.5V10h3v2.5H16l-4 4z" />
                                     </svg>
-                                    <p className="[font-family:'Montserrat',Helvetica] font-bold text-black text-base">
+                                    <p className="font-bold text-black text-base">
                                         Kéo thả file vào đây
                                     </p>
-                                    <p className="[font-family:'Montserrat',Helvetica] font-medium text-[#4c5769] text-xs">
+                                    <p className="font-medium text-[#4c5769] text-xs">
                                         Hoặc nhấn vào để chọn file từ máy tính
                                     </p>
-                                    <p className="[font-family:'Montserrat',Helvetica] font-medium text-[#97a3b6] text-xs">
+                                    <p className="font-medium text-[#97a3b6] text-xs">
                                         Kích thước tối đa: 5MB
                                     </p>
                                     <Button
@@ -389,7 +389,7 @@ export const ImportData = (): JSX.Element => {
                                             e.stopPropagation();
                                             fileInputRef.current?.click();
                                         }}
-                                        className="bg-[#4ca2e6] hover:bg-[#3b8fd0] text-white rounded-[10px] [font-family:'Montserrat',Helvetica] font-semibold text-sm px-5 py-2 h-auto shadow-[0_2px_6px_rgba(76,162,230,0.3)]"
+                                        className="bg-[#4ca2e6] hover:bg-[#3b8fd0] text-white rounded-[10px] font-semibold text-sm px-5 py-2 h-auto shadow-[0_2px_6px_rgba(76,162,230,0.3)]"
                                     >
                                         Chọn file (.xlsx, .csv)
                                     </Button>
@@ -413,10 +413,10 @@ export const ImportData = (): JSX.Element => {
                                                 <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zM6 20V4h7v5h5v11H6z" />
                                             </svg>
                                             <div>
-                                                <p className="[font-family:'Montserrat',Helvetica] font-semibold text-black text-sm">
+                                                <p className="font-semibold text-black text-sm">
                                                     {selectedFile.name}
                                                 </p>
-                                                <p className="[font-family:'Montserrat',Helvetica] font-medium text-[#97a3b6] text-xs">
+                                                <p className="font-medium text-[#97a3b6] text-xs">
                                                     {(selectedFile.size / 1024).toFixed(1)} KB
                                                 </p>
                                             </div>
@@ -440,7 +440,7 @@ export const ImportData = (): JSX.Element => {
                                     <Button
                                         onClick={handleUpload}
                                         disabled={uploading}
-                                        className="w-full bg-[#10b981] hover:bg-[#059669] text-white rounded-[10px] [font-family:'Montserrat',Helvetica] font-bold text-base py-3 h-auto shadow-[0_2px_8px_rgba(16,185,129,0.3)]"
+                                        className="w-full bg-[#10b981] hover:bg-[#059669] text-white rounded-[10px] font-bold text-base py-3 h-auto shadow-[0_2px_8px_rgba(16,185,129,0.3)]"
                                     >
                                         {uploading ? (
                                             <span className="flex items-center gap-2">
@@ -457,7 +457,7 @@ export const ImportData = (): JSX.Element => {
 
                         {/* ── Error message ── */}
                         {error && (
-                            <div className="bg-red-50 border border-red-200 text-red-700 rounded-[10px] px-4 py-3 [font-family:'Montserrat',Helvetica] text-sm font-medium flex items-center gap-2">
+                            <div className="bg-red-50 border border-red-200 text-red-700 rounded-[10px] px-4 py-3 text-sm font-medium flex items-center gap-2">
                                 <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
                                     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
                                 </svg>
@@ -468,7 +468,7 @@ export const ImportData = (): JSX.Element => {
                         {/* ── Import result ── */}
                         {result && (
                             <div
-                                className={`rounded-[10px] px-5 py-4 [font-family:'Montserrat',Helvetica] border ${
+                                className={`rounded-[10px] px-5 py-4 border ${
                                     result.errorCount > 0
                                         ? "bg-[#FFF8E1] border-[#FFE082]"
                                         : "bg-green-50 border-green-200"
@@ -524,13 +524,13 @@ export const ImportData = (): JSX.Element => {
 
                         {/* ── Import history ── */}
                         <div className="space-y-4" ref={historySectionRef}>
-                            <h2 className="[font-family:'Montserrat',Helvetica] font-bold text-black text-xl">
+                            <h2 className="font-bold text-black text-xl">
                                 Lịch sử nhập liệu gần đây
                             </h2>
 
                             {importHistory.length === 0 ? (
-                                <div className="bg-white border border-[#cbcad7] rounded-[10px] p-8 text-center">
-                                    <p className="[font-family:'Montserrat',Helvetica] font-medium text-[#97a3b6] text-sm">
+                                <div className="nb-card-static p-8 text-center">
+                                    <p className="font-medium text-[#97a3b6] text-sm">
                                         Chưa có lịch sử nhập liệu nào.
                                     </p>
                                 </div>
@@ -542,7 +542,7 @@ export const ImportData = (): JSX.Element => {
                                             {["Tên file", "Thời gian", "Trạng thái", "Chi tiết"].map((h) => (
                                                 <span
                                                     key={h}
-                                                    className="[font-family:'Montserrat',Helvetica] font-bold text-[#4c5769] text-sm"
+                                                    className="font-bold text-[#4c5769] text-sm"
                                                 >
                                                     {h}
                                                 </span>
@@ -561,16 +561,16 @@ export const ImportData = (): JSX.Element => {
                                                     <svg className="w-6 h-6 text-[#478aea] flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
                                                         <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zM6 20V4h7v5h5v11H6z" />
                                                     </svg>
-                                                    <span className="[font-family:'Montserrat',Helvetica] font-semibold text-black text-sm">
+                                                    <span className="font-semibold text-black text-sm">
                                                         {row.fileName}
                                                     </span>
                                                 </div>
-                                                <span className="[font-family:'Montserrat',Helvetica] font-medium text-[#4c5769] text-sm">
+                                                <span className="font-medium text-[#4c5769] text-sm">
                                                     {formatDate(row.createdAt)}
                                                 </span>
                                                 <div>
                                                     <span
-                                                        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[5px] [font-family:'Montserrat',Helvetica] font-semibold text-xs ${
+                                                        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[5px] font-semibold text-xs ${
                                                             row.status === "success"
                                                                 ? "bg-green-50 text-green-700"
                                                                 : "bg-red-50 text-red-600"
@@ -584,7 +584,7 @@ export const ImportData = (): JSX.Element => {
                                                         {row.status === "success" ? "Thành công" : "Có lỗi"}
                                                     </span>
                                                 </div>
-                                                <div className="[font-family:'Montserrat',Helvetica] font-medium text-[#4c5769] text-xs">
+                                                <div className="font-medium text-[#4c5769] text-xs">
                                                     {row.successCount}/{row.totalRows} dòng
                                                     {row.skippedCount > 0 && ` (đã bỏ qua ${row.skippedCount})`}
                                                 </div>
@@ -594,7 +594,7 @@ export const ImportData = (): JSX.Element => {
 
                                     {/* Table footer */}
                                     <div className="bg-slate-50 rounded-b-[10px] border border-[#cbcad7] flex justify-center py-4">
-                                        <span className="[font-family:'Montserrat',Helvetica] font-medium text-[#97a3b6] text-sm">
+                                        <span className="font-medium text-[#97a3b6] text-sm">
                                             Hiển thị {importHistory.length} bản ghi gần nhất
                                         </span>
                                     </div>

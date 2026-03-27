@@ -20,11 +20,11 @@ const STATUS_TABS = [
     { value: "Closed", label: "Đã đóng" },
 ];
 
-const STATUS_COLORS: Record<string, string> = {
-    Open: "bg-red-100 text-red-700",
-    InProgress: "bg-yellow-100 text-yellow-700",
-    Resolved: "bg-green-100 text-green-700",
-    Closed: "bg-gray-100 text-gray-600",
+const STATUS_BADGE: Record<string, string> = {
+    Open: "nb-badge nb-badge-red",
+    InProgress: "nb-badge nb-badge-yellow",
+    Resolved: "nb-badge nb-badge-green",
+    Closed: "nb-badge bg-[#F3F4F6] text-[#6B7280]",
 };
 
 export default function AdminComplaints() {
@@ -73,63 +73,61 @@ export default function AdminComplaints() {
     const totalPages = data ? Math.ceil(data.totalCount / data.pageSize) : 1;
 
     return (
-        <div className="bg-[#f6f7f8] w-full min-h-screen flex flex-col">
+        <div className="nb-page flex flex-col">
             <div className="flex flex-1 flex-col lg:flex-row">
-                <div className={`${isCollapsed ? "lg:w-16" : "lg:w-[20rem] xl:w-[23.75rem]"} flex-shrink-0 lg:sticky lg:top-0 lg:h-screen transition-all duration-300`}>
+                <div className={`${isCollapsed ? "lg:w-16" : "lg:w-[16rem]"} flex-shrink-0 lg:sticky lg:top-0 lg:h-screen transition-all duration-300`}>
                     <DashboardSidebar {...sidebarConfig} isCollapsed={isCollapsed} onToggle={toggle} onLogout={handleLogout} />
                 </div>
                 <div className="flex-1 flex flex-col min-w-0">
-                    <div className="bg-white border-b border-[#cbcad7] px-6 lg:px-10 py-5">
+                    <div className="nb-breadcrumb-bar">
                         <Breadcrumb><BreadcrumbList>
                             <BreadcrumbItem><BreadcrumbLink href="/admin/dashboard" className="font-semibold text-[#4c5769] text-base">Trang chủ</BreadcrumbLink></BreadcrumbItem>
                             <BreadcrumbSeparator className="text-[#cbcad7]">/</BreadcrumbSeparator>
-                            <BreadcrumbItem><BreadcrumbPage className="font-semibold text-[#4c5769] text-base">Khiếu nại</BreadcrumbPage></BreadcrumbItem>
+                            <BreadcrumbItem><BreadcrumbPage className="font-bold text-[#1A1A2E] text-base">Khiếu nại</BreadcrumbPage></BreadcrumbItem>
                         </BreadcrumbList></Breadcrumb>
                     </div>
                     <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-6">
 
-                        <h1 className="font-bold text-black text-[28px]">⚠️ Khiếu nại toàn hệ thống</h1>
+                        <h1 className="font-extrabold text-[#1A1A2E] text-[28px]">⚠️ Khiếu nại toàn hệ thống</h1>
 
-                        {/* Stats */}
+                        {/* Stats — NB stat cards */}
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            <div className="bg-white border border-[#CBCAD7] rounded-2xl p-5 hover:shadow-md transition-shadow">
-                                <p className="text-xs font-semibold text-[#6B7280] uppercase">Đang mở</p>
-                                <p className="text-2xl font-bold text-red-600 mt-1">{data?.openCount ?? 0}</p>
+                            <div className="nb-stat-card nb-card-red">
+                                <p className="nb-stat-label">Đang mở</p>
+                                <p className="nb-stat-value text-[#EF4444] mt-1">{data?.openCount ?? 0}</p>
                             </div>
-                            <div className="bg-white border border-[#CBCAD7] rounded-2xl p-5 hover:shadow-md transition-shadow">
-                                <p className="text-xs font-semibold text-[#6B7280] uppercase">Đang xử lý</p>
-                                <p className="text-2xl font-bold text-yellow-600 mt-1">{data?.inProgressCount ?? 0}</p>
+                            <div className="nb-stat-card nb-card-yellow">
+                                <p className="nb-stat-label">Đang xử lý</p>
+                                <p className="nb-stat-value text-[#F59E0B] mt-1">{data?.inProgressCount ?? 0}</p>
                             </div>
-                            <div className="bg-white border border-[#CBCAD7] rounded-2xl p-5 hover:shadow-md transition-shadow">
-                                <p className="text-xs font-semibold text-[#6B7280] uppercase">Đã giải quyết</p>
-                                <p className="text-2xl font-bold text-green-600 mt-1">{data?.resolvedCount ?? 0}</p>
+                            <div className="nb-stat-card nb-card-green">
+                                <p className="nb-stat-label">Đã giải quyết</p>
+                                <p className="nb-stat-value text-[#10B981] mt-1">{data?.resolvedCount ?? 0}</p>
                             </div>
                         </div>
 
-                        {/* Status tabs */}
-                        <div className="flex gap-1 bg-white border border-[#CBCAD7] rounded-xl p-1 w-fit">
+                        {/* Status tabs — NB tabs */}
+                        <div className="nb-tabs w-fit">
                             {STATUS_TABS.map(tab => (
                                 <button key={tab.value} onClick={() => { setStatusFilter(tab.value); setPage(1); }}
-                                    className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
-                                        statusFilter === tab.value ? "bg-[#6366F1] text-white" : "text-[#6B7280] hover:bg-gray-100"
-                                    }`}>
+                                    className={`nb-tab ${statusFilter === tab.value ? "nb-tab-active" : ""}`}>
                                     {tab.label}
                                 </button>
                             ))}
                         </div>
 
-                        {/* Table */}
-                        <div className="bg-white border border-[#CBCAD7] rounded-2xl overflow-hidden">
+                        {/* Table — NB table */}
+                        <div className="nb-card-static overflow-hidden">
                             <div className="overflow-x-auto">
-                                <table className="w-full text-sm">
-                                    <thead><tr className="bg-[#F9FAFB] border-b border-[#CBCAD7]">
-                                        <th className="text-left px-5 py-3 font-semibold text-[#6B7280] text-xs uppercase">Tiêu đề</th>
-                                        <th className="text-left px-5 py-3 font-semibold text-[#6B7280] text-xs uppercase">Trường</th>
-                                        <th className="text-left px-5 py-3 font-semibold text-[#6B7280] text-xs uppercase">Nhà Cung Cấp</th>
-                                        <th className="text-left px-5 py-3 font-semibold text-[#6B7280] text-xs uppercase">Chiến dịch</th>
-                                        <th className="text-left px-5 py-3 font-semibold text-[#6B7280] text-xs uppercase">Trạng thái</th>
-                                        <th className="text-left px-5 py-3 font-semibold text-[#6B7280] text-xs uppercase">Ngày tạo</th>
-                                        <th className="text-center px-5 py-3 font-semibold text-[#6B7280] text-xs uppercase">Hành động</th>
+                                <table className="nb-table">
+                                    <thead><tr>
+                                        <th>Tiêu đề</th>
+                                        <th>Trường</th>
+                                        <th>Nhà Cung Cấp</th>
+                                        <th>Chiến dịch</th>
+                                        <th>Trạng thái</th>
+                                        <th>Ngày tạo</th>
+                                        <th className="text-center">Hành động</th>
                                     </tr></thead>
                                     <tbody>
                                         {loading ? (
@@ -137,21 +135,21 @@ export default function AdminComplaints() {
                                         ) : data?.items.length === 0 ? (
                                             <tr><td colSpan={7} className="px-5 py-8 text-center text-[#9CA3AF]">Không có khiếu nại nào</td></tr>
                                         ) : data?.items.map((c: AdminComplaintDto) => (
-                                            <tr key={c.id} className="border-b border-gray-100 hover:bg-[#F9FAFB] transition-colors">
-                                                <td className="px-5 py-3 font-semibold text-[#1A1A2E] max-w-[200px] truncate">{c.title}</td>
-                                                <td className="px-5 py-3 text-gray-600">{c.schoolName}</td>
-                                                <td className="px-5 py-3 text-gray-600">{c.providerName ?? "—"}</td>
-                                                <td className="px-5 py-3 text-gray-600 max-w-[150px] truncate">{c.campaignName ?? "—"}</td>
-                                                <td className="px-5 py-3">
-                                                    <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${STATUS_COLORS[c.status] ?? "bg-gray-100"}`}>
+                                            <tr key={c.id}>
+                                                <td className="font-bold text-[#1A1A2E] max-w-[200px] truncate">{c.title}</td>
+                                                <td>{c.schoolName}</td>
+                                                <td>{c.providerName ?? "—"}</td>
+                                                <td className="max-w-[150px] truncate">{c.campaignName ?? "—"}</td>
+                                                <td>
+                                                    <span className={STATUS_BADGE[c.status] ?? "nb-badge"}>
                                                         {c.status}
                                                     </span>
                                                 </td>
-                                                <td className="px-5 py-3 text-[#6B7280] text-xs">{new Date(c.createdAt).toLocaleDateString("vi-VN")}</td>
-                                                <td className="px-5 py-3 text-center">
+                                                <td className="text-[#6B7280] text-xs">{new Date(c.createdAt).toLocaleDateString("vi-VN")}</td>
+                                                <td className="text-center">
                                                     <button onClick={() => setSelected(c)}
-                                                        className="px-3 py-1.5 text-xs font-semibold text-[#6366F1] bg-[#6366F1]/10 rounded-lg hover:bg-[#6366F1]/20 transition-colors">
-                                                        Chi tiết
+                                                        className="nb-btn nb-btn-outline nb-btn-sm text-xs">
+                                                        👁 Chi tiết
                                                     </button>
                                                 </td>
                                             </tr>
@@ -162,13 +160,13 @@ export default function AdminComplaints() {
 
                             {/* Pagination */}
                             {totalPages > 1 && (
-                                <div className="flex items-center justify-between px-5 py-3 border-t border-gray-100">
-                                    <span className="text-sm text-[#6B7280]">Trang {page}/{totalPages} ({data?.totalCount} khiếu nại)</span>
+                                <div className="flex items-center justify-between px-5 py-3 border-t-2 border-[#1A1A2E] bg-[#F9FAFB]">
+                                    <span className="text-sm text-[#6B7280] font-semibold">Trang {page}/{totalPages} ({data?.totalCount} khiếu nại)</span>
                                     <div className="flex gap-2">
                                         <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page <= 1}
-                                            className="border border-[#CBCAD7] px-3 py-1.5 rounded-xl text-sm disabled:opacity-40 hover:bg-gray-50">Trước</button>
+                                            className="nb-btn nb-btn-outline nb-btn-sm text-sm disabled:opacity-40">Trước</button>
                                         <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page >= totalPages}
-                                            className="border border-[#CBCAD7] px-3 py-1.5 rounded-xl text-sm disabled:opacity-40 hover:bg-gray-50">Sau</button>
+                                            className="nb-btn nb-btn-outline nb-btn-sm text-sm disabled:opacity-40">Sau</button>
                                     </div>
                                 </div>
                             )}
@@ -178,31 +176,36 @@ export default function AdminComplaints() {
                 </div>
             </div>
 
-            {/* Detail / Intervene Modal */}
+            {/* Detail / Intervene Modal — NB style */}
             {selected && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setSelected(null)}>
-                    <div className="bg-white rounded-2xl w-full max-w-lg mx-4 p-6 shadow-xl" onClick={e => e.stopPropagation()}>
-                        <h3 className="text-lg font-bold text-[#1A1A2E] mb-1">{selected.title}</h3>
-                        <p className="text-sm text-[#6B7280] mb-4">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => setSelected(null)}>
+                    <div className="bg-white rounded-xl w-full max-w-lg mx-4 p-6 border-2 border-[#1A1A2E] shadow-[6px_6px_0_#1A1A2E]" onClick={e => e.stopPropagation()}>
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-lg font-extrabold text-[#1A1A2E]">{selected.title}</h3>
+                            <button onClick={() => setSelected(null)} className="w-8 h-8 flex items-center justify-center rounded-lg border-2 border-[#1A1A2E] hover:bg-[#F3F4F6] font-bold">✕</button>
+                        </div>
+                        <p className="text-sm text-[#6B7280] mb-4 font-medium">
                             {selected.schoolName} • {selected.providerName ?? "N/A"} • {new Date(selected.createdAt).toLocaleDateString("vi-VN")}
                         </p>
 
-                        <div className="bg-[#F9FAFB] rounded-xl p-4 mb-4 text-sm text-gray-700 max-h-40 overflow-y-auto">
+                        <div className="nb-card-static p-4 mb-4 text-sm text-gray-700 max-h-40 overflow-y-auto">
                             {selected.description}
                         </div>
 
                         {selected.response && (
-                            <div className="bg-blue-50 rounded-xl p-4 mb-4 text-sm text-blue-800 max-h-32 overflow-y-auto whitespace-pre-wrap">
-                                <p className="font-semibold mb-1">Phản hồi:</p>
-                                {selected.response}
+                            <div className="nb-alert nb-alert-info mb-4 text-sm max-h-32 overflow-y-auto">
+                                <div>
+                                    <p className="font-bold mb-1">Phản hồi:</p>
+                                    <p className="whitespace-pre-wrap">{selected.response}</p>
+                                </div>
                             </div>
                         )}
 
                         <div className="space-y-3">
                             <textarea value={note} onChange={e => setNote(e.target.value)} placeholder="Ghi chú của Admin..."
-                                className="w-full border border-[#CBCAD7] rounded-xl px-4 py-3 text-sm resize-none h-20 focus:outline-none focus:ring-2 focus:ring-[#6366F1]/30" />
+                                className="nb-input w-full resize-none h-20" />
                             <select value={action} onChange={e => setAction(e.target.value)}
-                                className="w-full border border-[#CBCAD7] rounded-xl px-4 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#6366F1]/30">
+                                className="nb-select w-full">
                                 <option value="">Chỉ thêm ghi chú</option>
                                 <option value="escalate">Escalate (chuyển InProgress)</option>
                                 <option value="resolve">Giải quyết</option>
@@ -210,11 +213,11 @@ export default function AdminComplaints() {
                             </select>
                             <div className="flex gap-3">
                                 <button onClick={handleIntervene} disabled={submitting || !note.trim()}
-                                    className="flex-1 bg-[#6366F1] text-white rounded-xl px-4 py-2.5 text-sm font-semibold hover:bg-[#4F46E5] disabled:opacity-50 transition-colors">
-                                    {submitting ? "Đang xử lý..." : "Gửi"}
+                                    className="nb-btn nb-btn-purple flex-1 text-sm disabled:opacity-50">
+                                    {submitting ? "Đang xử lý..." : "📤 Gửi"}
                                 </button>
                                 <button onClick={() => setSelected(null)}
-                                    className="border border-[#CBCAD7] rounded-xl px-4 py-2.5 text-sm text-[#6B7280] hover:bg-gray-50">
+                                    className="nb-btn nb-btn-outline flex-1 text-sm">
                                     Đóng
                                 </button>
                             </div>

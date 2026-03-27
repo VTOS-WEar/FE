@@ -123,7 +123,7 @@ export const SignUp = ({ roleName }: SignUpProps): JSX.Element => {
                     src="https://c.animaapp.com/mjxt3t8wNP0otU/img/vtos--1--removebg-preview-2.png"
                   />
 
-                  <p className="[font-family:'Montserrat',Helvetica] font-semibold italic text-white text-lg lg:text-2xl leading-relaxed mb-6">
+                  <p className="font-semibold italic text-white text-lg lg:text-2xl leading-relaxed mb-6">
                     {config.tagline}
                   </p>
 
@@ -141,7 +141,7 @@ export const SignUp = ({ roleName }: SignUpProps): JSX.Element => {
                   {/* Back to role select */}
                   <Link
                     to="/signup"
-                    className="inline-flex items-center gap-1.5 text-[#6938ef] [font-family:'Montserrat',Helvetica] font-medium text-sm hover:underline mb-4"
+                    className="inline-flex items-center gap-1.5 text-[#6938ef] font-medium text-sm hover:underline mb-4"
                   >
                     <ArrowLeftIcon className="w-4 h-4" />
                     Chọn loại tài khoản khác
@@ -151,7 +151,7 @@ export const SignUp = ({ roleName }: SignUpProps): JSX.Element => {
                     <h1 className="[font-family:'Baloo_2',Helvetica] font-extrabold text-[#100f14] text-3xl lg:text-4xl text-center">
                       Tạo tài khoản {config.title}
                     </h1>
-                    <p className="text-center mt-1 [font-family:'Montserrat',Helvetica] font-medium text-[#9794aa] text-sm">
+                    <p className="text-center mt-1 font-medium text-[#9794aa] text-sm">
                       {config.emoji} Bạn đang đăng ký với tư cách <span className="text-[#6938ef] font-semibold">{config.title}</span>
                     </p>
                   </div>
@@ -161,7 +161,7 @@ export const SignUp = ({ roleName }: SignUpProps): JSX.Element => {
                     variant="outline"
                     className="w-full h-auto flex items-center justify-center gap-2.5 px-5 py-3 lg:py-4 rounded-lg border border-[#cac9d6] hover:bg-gray-50"
                   >
-                    <span className="[font-family:'Montserrat',Helvetica] font-medium text-[#19181f] text-sm lg:text-base">
+                    <span className="font-medium text-[#19181f] text-sm lg:text-base">
                       Tạo tài khoản với Google
                     </span>
                     <img
@@ -173,7 +173,7 @@ export const SignUp = ({ roleName }: SignUpProps): JSX.Element => {
 
                   <div className="flex items-center gap-4 lg:gap-6 my-5">
                     <Separator className="flex-1 h-[1px] bg-[#cac9d6]" />
-                    <span className="[font-family:'Montserrat',Helvetica] font-medium text-[#676576] text-base">
+                    <span className="font-medium text-[#676576] text-base">
                       Hoặc
                     </span>
                     <Separator className="flex-1 h-[1px] bg-[#cac9d6]" />
@@ -181,7 +181,7 @@ export const SignUp = ({ roleName }: SignUpProps): JSX.Element => {
 
                   <div className="space-y-4 lg:space-y-5">
                     <div className="space-y-2">
-                      <Label className="[font-family:'Montserrat',Helvetica] font-medium text-[#9794aa] text-sm lg:text-base">
+                      <Label className="font-medium text-[#9794aa] text-sm lg:text-base">
                         Email
                       </Label>
                       <Input
@@ -189,12 +189,12 @@ export const SignUp = ({ roleName }: SignUpProps): JSX.Element => {
                         placeholder="Nhập email của bạn"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="h-11 lg:h-12 px-4 lg:px-5 rounded-md border border-[#cac9d6] [font-family:'Montserrat',Helvetica] font-medium text-sm lg:text-base"
+                        className="h-11 lg:h-12 px-4 lg:px-5 rounded-md border border-[#cac9d6] font-medium text-sm lg:text-base"
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <Label className="[font-family:'Montserrat',Helvetica] font-medium text-[#9794aa] text-sm lg:text-base">
+                      <Label className="font-medium text-[#9794aa] text-sm lg:text-base">
                         Họ tên
                       </Label>
                       <Input
@@ -202,12 +202,12 @@ export const SignUp = ({ roleName }: SignUpProps): JSX.Element => {
                         placeholder="Nhập họ tên của bạn"
                         value={fullName}
                         onChange={(e) => setFullName(e.target.value)}
-                        className="h-11 lg:h-12 px-4 lg:px-5 rounded-md border border-[#cac9d6] [font-family:'Montserrat',Helvetica] font-medium text-sm lg:text-base"
+                        className="h-11 lg:h-12 px-4 lg:px-5 rounded-md border border-[#cac9d6] font-medium text-sm lg:text-base"
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <Label className="[font-family:'Montserrat',Helvetica] font-medium text-[#9794aa] text-sm lg:text-base">
+                      <Label className="font-medium text-[#9794aa] text-sm lg:text-base">
                         Mật khẩu
                       </Label>
                       <div className="relative">
@@ -216,7 +216,7 @@ export const SignUp = ({ roleName }: SignUpProps): JSX.Element => {
                           placeholder="Tạo mật khẩu của bạn"
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
-                          className="h-11 lg:h-12 px-4 lg:px-5 pr-12 rounded-md border border-[#cac9d6] [font-family:'Montserrat',Helvetica] font-medium text-sm lg:text-base"
+                          className="h-11 lg:h-12 px-4 lg:px-5 pr-12 rounded-md border border-[#cac9d6] font-medium text-sm lg:text-base"
                           onKeyDown={(e) => {
                             if (e.key === "Enter") handleRegister();
                           }}
@@ -253,7 +253,7 @@ export const SignUp = ({ roleName }: SignUpProps): JSX.Element => {
                       <Button
                         type="button"
                         variant="link"
-                        className="[font-family:'Montserrat',Helvetica] font-semibold italic text-[#6938ef] p-0 h-auto hover:underline"
+                        className="font-semibold italic text-[#6938ef] p-0 h-auto hover:underline"
                       >
                         <Link to="/signin">Đăng Nhập</Link>
                       </Button>

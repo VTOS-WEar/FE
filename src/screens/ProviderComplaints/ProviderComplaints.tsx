@@ -1,54 +1,22 @@
 import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
 import { useState, useEffect, useCallback } from "react";
-import {
-    Breadcrumb, BreadcrumbItem, BreadcrumbLink,
-    BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator,
-} from "../../components/ui/breadcrumb";
 import { DashboardSidebar } from "../../components/layout";
+import { useProviderSidebarConfig } from "../../hooks/useProviderSidebarConfig";
 import { ChatWidget, type ChatContextInfo } from "../../components/ChatWidget/ChatWidget";
 import {
     getProviderComplaints, getProviderComplaintDetail, respondComplaint,
     type ComplaintDto, type ComplaintDetailDto,
 } from "../../lib/api/complaints";
 
-// Provider sidebar config
-import { PROVIDER_SIDEBAR_CONFIG } from "../../constants/providerDashboardConfig";
-import { useMemo } from "react";
-import { useLocation } from "react-router-dom";
-
-function useProviderSidebar() {
-    const { pathname } = useLocation();
-    return useMemo(() => ({
-        ...PROVIDER_SIDEBAR_CONFIG,
-        topNavItems: (PROVIDER_SIDEBAR_CONFIG.topNavItems || []).map(item => ({
-            ...item,
-            active: item.href ? pathname === item.href || pathname.startsWith(item.href + "/") : false,
-        })),
-        navSections: PROVIDER_SIDEBAR_CONFIG.navSections.map(section => ({
-            ...section,
-            items: section.items.map(item => ({
-                ...item,
-                active: item.href ? pathname === item.href || pathname.startsWith(item.href + "/") : false,
-            })),
-        })),
-    }), [pathname]);
-}
-
-const STATUS_COLORS: Record<string, string> = {
-    Open: "#f59e0b",
-    InProgress: "#3b82f6",
-    Resolved: "#10b981",
-    Closed: "#6b7280",
-};
-const STATUS_LABELS: Record<string, string> = {
-    Open: "Mở",
-    InProgress: "Đang xử lý",
-    Resolved: "Đã giải quyết",
-    Closed: "Đã đóng",
+const STATUS_MAP: Record<string, { label: string; badge: string }> = {
+    Open: { label: "Mở", badge: "nb-badge nb-badge-yellow" },
+    InProgress: { label: "Đang xử lý", badge: "nb-badge nb-badge-blue" },
+    Resolved: { label: "Đã giải quyết", badge: "nb-badge nb-badge-green" },
+    Closed: { label: "Đã đóng", badge: "nb-badge nb-badge-purple" },
 };
 
 export function ProviderComplaints() {
-    const sidebarConfig = useProviderSidebar();
+    const sidebarConfig = useProviderSidebarConfig();
     const [isCollapsed, toggle] = useSidebarCollapsed();
 
     const [complaints, setComplaints] = useState<ComplaintDto[]>([]);
@@ -118,8 +86,8 @@ export function ProviderComplaints() {
         setChatContext({
             icon: "📋",
             title: c.title,
-            status: STATUS_LABELS[c.status] || c.status,
-            statusColor: STATUS_COLORS[c.status] || "#888",
+            status: STATUS_MAP[c.status]?.label || c.status,
+            statusColor: "#888",
             subtitle: `Chiến dịch: ${c.campaignName || "—"}`,
         });
         setChatOpen(true);
@@ -127,210 +95,176 @@ export function ProviderComplaints() {
 
     const totalPages = Math.ceil(total / pageSize);
 
+    const filterTabs = [
+        { value: "", label: "Tất cả" },
+        { value: "Open", label: "Mở" },
+        { value: "InProgress", label: "Đang xử lý" },
+        { value: "Resolved", label: "Đã giải quyết" },
+        { value: "Closed", label: "Đã đóng" },
+    ];
+
     return (
-        <div style={{ display: "flex", minHeight: "100vh", background: "#f5f5f5" }}>
-            <div className={`${isCollapsed ? "lg:w-16" : "lg:w-[20rem] xl:w-[23.75rem]"} flex-shrink-0 lg:sticky lg:top-0 lg:h-screen transition-all duration-300`}>
-                <DashboardSidebar {...sidebarConfig} isCollapsed={isCollapsed} onToggle={toggle} />
-            </div>
-
-            <main style={{ flex: 1, padding: "32px 40px" }}>
-                {/* Breadcrumb */}
-                <div style={{ marginBottom: 8 }}>
-                    <Breadcrumb>
-                        <BreadcrumbList>
-                            <BreadcrumbItem><BreadcrumbLink href="/provider/dashboard" className="font-semibold text-[#4c5769] text-base">Trang chủ</BreadcrumbLink></BreadcrumbItem>
-                            <BreadcrumbSeparator className="text-[#cbcad7]">/</BreadcrumbSeparator>
-                            <BreadcrumbItem><BreadcrumbPage className="font-semibold text-[#4c5769] text-base">Khiếu nại</BreadcrumbPage></BreadcrumbItem>
-                        </BreadcrumbList>
-                    </Breadcrumb>
+        <div className="nb-page flex flex-col">
+            <div className="flex flex-1 flex-col lg:flex-row">
+                <div className={`${isCollapsed ? "lg:w-16" : "lg:w-[16rem]"} flex-shrink-0 lg:sticky lg:top-0 lg:h-screen transition-all duration-300`}>
+                    <DashboardSidebar {...sidebarConfig} isCollapsed={isCollapsed} onToggle={toggle} />
                 </div>
 
-                <h1 style={{ fontSize: 28, fontWeight: 700, color: "#1a1a2e", margin: "24px 0" }}>📋 Khiếu nại từ Trường học</h1>
-
-                {/* Status tabs */}
-                <div style={{ display: "flex", gap: 8, marginBottom: 24 }}>
-                    {["", "Open", "InProgress", "Resolved", "Closed"].map(s => (
-                        <button
-                            key={s}
-                            onClick={() => { setStatusFilter(s); setPage(1); }}
-                            style={{
-                                padding: "8px 20px", borderRadius: 20, border: "none", cursor: "pointer",
-                                background: statusFilter === s ? "#6366f1" : "#e8e8e8",
-                                color: statusFilter === s ? "#fff" : "#555",
-                                fontWeight: 600, fontSize: 14, transition: "all .2s",
-                            }}
-                        >
-                            {s ? STATUS_LABELS[s] || s : "Tất cả"}
-                        </button>
-                    ))}
-                </div>
-
-                {/* List */}
-                {loading ? (
-                    <div style={{ textAlign: "center", padding: 60, color: "#999" }}>Đang tải...</div>
-                ) : complaints.length === 0 ? (
-                    <div style={{ textAlign: "center", padding: 60, background: "#fff", borderRadius: 16, color: "#aaa" }}>
-                        <div style={{ fontSize: 48, marginBottom: 12 }}>📋</div>
-                        <p style={{ fontSize: 16 }}>Chưa có khiếu nại nào.</p>
+                <div className="flex-1 flex flex-col min-w-0">
+                    <div className="nb-breadcrumb-bar px-6 lg:px-10 py-5">
+                        <h1 className="font-extrabold text-[#1A1A2E] text-2xl">📋 Khiếu nại từ Trường học</h1>
+                        <p className="font-medium text-[#6B7280] text-sm mt-1">Xem và phản hồi các khiếu nại</p>
                     </div>
-                ) : (
-                    <div style={{ display: "grid", gap: 16 }}>
-                        {complaints.map(c => (
-                            <div
-                                key={c.complaintId}
-                                onClick={() => openDetail(c.complaintId)}
-                                style={{
-                                    background: "#fff", borderRadius: 16, padding: "20px 28px",
-                                    boxShadow: "0 2px 12px rgba(0,0,0,.06)", cursor: "pointer",
-                                    borderLeft: `5px solid ${STATUS_COLORS[c.status] || "#ccc"}`,
-                                    transition: "transform .15s, box-shadow .15s",
-                                }}
-                                onMouseOver={e => { (e.currentTarget as any).style.transform = "translateY(-2px)"; (e.currentTarget as any).style.boxShadow = "0 6px 20px rgba(0,0,0,.1)"; }}
-                                onMouseOut={e => { (e.currentTarget as any).style.transform = "none"; (e.currentTarget as any).style.boxShadow = "0 2px 12px rgba(0,0,0,.06)"; }}
-                            >
-                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                    <div>
-                                        <h3 style={{ margin: 0, fontSize: 18, fontWeight: 600, color: "#1a1a2e" }}>{c.title}</h3>
-                                        <p style={{ margin: "4px 0 0", color: "#888", fontSize: 14 }}>
-                                            Chiến dịch: <strong>{c.campaignName || "—"}</strong> &nbsp;·&nbsp;
-                                            {new Date(c.createdAt).toLocaleDateString("vi")}
-                                        </p>
+
+                    <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-6">
+                        {/* Status tabs */}
+                        <div className="nb-tabs">
+                            {filterTabs.map(t => (
+                                <button
+                                    key={t.value}
+                                    onClick={() => { setStatusFilter(t.value); setPage(1); }}
+                                    className={`nb-tab ${statusFilter === t.value ? "nb-tab-active" : ""}`}
+                                >
+                                    {t.label}
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* List */}
+                        {loading ? (
+                            <div className="text-center py-20">
+                                <div className="inline-block w-8 h-8 border-4 border-[#6938EF] border-t-transparent rounded-full animate-spin" />
+                            </div>
+                        ) : complaints.length === 0 ? (
+                            <div className="nb-card-static p-10 text-center">
+                                <div className="text-5xl mb-3">📋</div>
+                                <p className="font-medium text-[#9CA3AF] text-base">Chưa có khiếu nại nào.</p>
+                            </div>
+                        ) : (
+                            <div className="space-y-4">
+                                {complaints.map(c => (
+                                    <div
+                                        key={c.complaintId}
+                                        onClick={() => openDetail(c.complaintId)}
+                                        className="nb-card p-5 cursor-pointer"
+                                    >
+                                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                                            <div className="flex-1 min-w-0">
+                                                <h3 className="font-bold text-[#1A1A2E] text-base">{c.title}</h3>
+                                                <p className="font-medium text-[#9CA3AF] text-sm mt-1">
+                                                    Chiến dịch: <strong className="text-[#6B7280]">{c.campaignName || "—"}</strong> &nbsp;·&nbsp;
+                                                    {new Date(c.createdAt).toLocaleDateString("vi")}
+                                                </p>
+                                            </div>
+                                            <span className={STATUS_MAP[c.status]?.badge || "nb-badge"}>
+                                                {STATUS_MAP[c.status]?.label || c.status}
+                                            </span>
+                                        </div>
                                     </div>
-                                    <span style={{
-                                        padding: "6px 16px", borderRadius: 20, fontSize: 13, fontWeight: 600,
-                                        background: `${STATUS_COLORS[c.status]}18`,
-                                        color: STATUS_COLORS[c.status],
-                                    }}>
-                                        {STATUS_LABELS[c.status] || c.status}
-                                    </span>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* Pagination */}
+                        {totalPages > 1 && (
+                            <div className="flex justify-center gap-2 mt-4">
+                                <button disabled={page <= 1} onClick={() => setPage(p => p - 1)} className="nb-btn nb-btn-outline nb-btn-sm text-sm">← Trước</button>
+                                <span className="flex items-center text-sm text-[#6B7280] px-2 font-bold">{page}/{totalPages}</span>
+                                <button disabled={page >= totalPages} onClick={() => setPage(p => p + 1)} className="nb-btn nb-btn-outline nb-btn-sm text-sm">Sau →</button>
+                            </div>
+                        )}
+
+                        {/* Detail + Respond Modal */}
+                        {(detail || detailLoading) && (
+                            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[1000] p-4">
+                                <div className="nb-card-static p-8 w-full max-w-[640px] max-h-[85vh] overflow-auto">
+                                    {detailLoading ? (
+                                        <div className="text-center py-10">
+                                            <div className="inline-block w-8 h-8 border-4 border-[#6938EF] border-t-transparent rounded-full animate-spin" />
+                                        </div>
+                                    ) : detail && (
+                                        <>
+                                            <div className="flex items-center justify-between mb-5">
+                                                <h2 className="font-extrabold text-[#1A1A2E] text-xl">📋 Chi tiết khiếu nại</h2>
+                                                <span className={STATUS_MAP[detail.status]?.badge || "nb-badge"}>
+                                                    {STATUS_MAP[detail.status]?.label || detail.status}
+                                                </span>
+                                            </div>
+
+                                            <div className="space-y-3 mb-5">
+                                                <InfoRow label="Tiêu đề" value={detail.title} />
+                                                <InfoRow label="Mô tả" value={detail.description} />
+                                                <InfoRow label="Chiến dịch" value={detail.campaignName || "—"} />
+                                                <InfoRow label="Lô sản xuất" value={detail.batchName || "—"} />
+                                                <InfoRow label="Ngày tạo" value={new Date(detail.createdAt).toLocaleString("vi")} />
+
+                                                {detail.response && (
+                                                    <div className="nb-alert nb-alert-success mt-3">
+                                                        <p className="font-bold text-[#065F46] text-sm">✅ Phản hồi của bạn:</p>
+                                                        <p className="font-medium text-[#1A1A2E] text-sm mt-1">{detail.response}</p>
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            {/* Respond form — only show when Open or InProgress */}
+                                            {(detail.status === "Open" || detail.status === "InProgress") && (
+                                                <div className="bg-[#F8FAFC] border-2 border-[#E5E7EB] rounded-xl p-4 mt-4">
+                                                    <label className="block font-bold text-[#1A1A2E] text-sm mb-2">
+                                                        ✍️ Phản hồi khiếu nại
+                                                    </label>
+                                                    <textarea
+                                                        value={responseText}
+                                                        onChange={e => setResponseText(e.target.value)}
+                                                        placeholder="Nhập phản hồi..."
+                                                        rows={3}
+                                                        className="nb-input w-full resize-y"
+                                                    />
+                                                    <label className="flex items-center gap-2 mt-3 text-sm text-[#6B7280] font-medium cursor-pointer">
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={markResolved}
+                                                            onChange={e => setMarkResolved(e.target.checked)}
+                                                            className="w-4 h-4 accent-[#10B981]"
+                                                        />
+                                                        Đánh dấu đã giải quyết
+                                                    </label>
+                                                </div>
+                                            )}
+
+                                            <div className="flex gap-3 mt-5">
+                                                <button onClick={() => setDetail(null)} className="nb-btn nb-btn-outline flex-1">Đóng</button>
+                                                <button onClick={() => openChat(detail)} className="nb-btn nb-btn-purple flex-1">💬 Chat</button>
+                                                {(detail.status === "Open" || detail.status === "InProgress") && (
+                                                    <button onClick={handleRespond} disabled={responding || !responseText.trim()} className="nb-btn nb-btn-green flex-1">
+                                                        {responding ? "Đang gửi..." : (markResolved ? "Gửi & Giải quyết" : "Gửi phản hồi")}
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </>
+                                    )}
                                 </div>
                             </div>
-                        ))}
-                    </div>
-                )}
+                        )}
 
-                {/* Pagination */}
-                {totalPages > 1 && (
-                    <div style={{ display: "flex", justifyContent: "center", gap: 8, marginTop: 24 }}>
-                        {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
-                            <button key={p} onClick={() => setPage(p)} style={{
-                                width: 36, height: 36, borderRadius: "50%", border: "none", cursor: "pointer",
-                                background: page === p ? "#6366f1" : "#e8e8e8",
-                                color: page === p ? "#fff" : "#555", fontWeight: 600, fontSize: 14,
-                            }}>{p}</button>
-                        ))}
-                    </div>
-                )}
-
-                {/* Detail + Respond Modal */}
-                {(detail || detailLoading) && (
-                    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.5)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
-                        <div style={{ background: "#fff", borderRadius: 20, padding: 36, width: "90%", maxWidth: 640, maxHeight: "85vh", overflow: "auto" }}>
-                            {detailLoading ? (
-                                <div style={{ textAlign: "center", padding: 40, color: "#999" }}>Đang tải...</div>
-                            ) : detail && (
-                                <>
-                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-                                        <h2 style={{ margin: 0, fontSize: 22, fontWeight: 700 }}>📋 Chi tiết khiếu nại</h2>
-                                        <span style={{
-                                            padding: "6px 16px", borderRadius: 20, fontSize: 13, fontWeight: 600,
-                                            background: `${STATUS_COLORS[detail.status]}18`,
-                                            color: STATUS_COLORS[detail.status],
-                                        }}>
-                                            {STATUS_LABELS[detail.status] || detail.status}
-                                        </span>
-                                    </div>
-
-                                    <div style={{ display: "grid", gap: 12 }}>
-                                        <InfoRow label="Tiêu đề" value={detail.title} />
-                                        <InfoRow label="Mô tả" value={detail.description} />
-                                        <InfoRow label="Chiến dịch" value={detail.campaignName || "—"} />
-                                        <InfoRow label="Lô sản xuất" value={detail.batchName || "—"} />
-                                        <InfoRow label="Ngày tạo" value={new Date(detail.createdAt).toLocaleString("vi")} />
-
-                                        {detail.response && (
-                                            <div style={{ padding: "12px 16px", background: "#f0fdf4", borderRadius: 12 }}>
-                                                <p style={{ margin: 0, color: "#16a34a", fontWeight: 600, fontSize: 13 }}>✅ Phản hồi của bạn:</p>
-                                                <p style={{ margin: "4px 0 0", color: "#333", fontSize: 14 }}>{detail.response}</p>
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    {/* Respond form — only show when Open or InProgress */}
-                                    {(detail.status === "Open" || detail.status === "InProgress") && (
-                                        <div style={{ marginTop: 20, padding: "16px", background: "#f8fafc", borderRadius: 12 }}>
-                                            <label style={{ display: "block", fontWeight: 600, color: "#444", fontSize: 14, marginBottom: 8 }}>
-                                                ✍️ Phản hồi khiếu nại
-                                            </label>
-                                            <textarea
-                                                value={responseText}
-                                                onChange={e => setResponseText(e.target.value)}
-                                                placeholder="Nhập phản hồi..."
-                                                rows={3}
-                                                style={{
-                                                    width: "100%", padding: "10px 14px", borderRadius: 10,
-                                                    border: "1px solid #ddd", fontSize: 14, resize: "vertical",
-                                                    boxSizing: "border-box",
-                                                }}
-                                            />
-                                            <label style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10, fontSize: 14, color: "#555", cursor: "pointer" }}>
-                                                <input
-                                                    type="checkbox"
-                                                    checked={markResolved}
-                                                    onChange={e => setMarkResolved(e.target.checked)}
-                                                    style={{ width: 18, height: 18, accentColor: "#10b981" }}
-                                                />
-                                                Đánh dấu đã giải quyết
-                                            </label>
-                                        </div>
-                                    )}
-
-                                    <div style={{ display: "flex", gap: 12, marginTop: 24 }}>
-                                        <button onClick={() => setDetail(null)} style={{
-                                            flex: 1, padding: "12px 0", borderRadius: 12,
-                                            border: "1px solid #ddd", background: "#fff", fontWeight: 600, cursor: "pointer",
-                                        }}>Đóng</button>
-
-                                        <button onClick={() => openChat(detail)} style={{
-                                            flex: 1, padding: "12px 0", borderRadius: 12, border: "none",
-                                            background: "linear-gradient(135deg, #3b82f6, #2563eb)", color: "#fff",
-                                            fontWeight: 600, cursor: "pointer",
-                                        }}>💬 Chat</button>
-
-                                        {(detail.status === "Open" || detail.status === "InProgress") && (
-                                            <button onClick={handleRespond} disabled={responding || !responseText.trim()} style={{
-                                                flex: 1, padding: "12px 0", borderRadius: 12, border: "none",
-                                                background: responding || !responseText.trim() ? "#ccc" : "linear-gradient(135deg, #6366f1, #8b5cf6)",
-                                                color: "#fff", fontWeight: 600,
-                                                cursor: responding || !responseText.trim() ? "not-allowed" : "pointer",
-                                            }}>
-                                                {responding ? "Đang gửi..." : (markResolved ? "Gửi & Giải quyết" : "Gửi phản hồi")}
-                                            </button>
-                                        )}
-                                    </div>
-                                </>
-                            )}
-                        </div>
-                    </div>
-                )}
-
-                <ChatWidget
-                    channelType="complaint"
-                    channelId={chatId}
-                    isOpen={chatOpen}
-                    onClose={() => setChatOpen(false)}
-                    contextInfo={chatContext}
-                />
-            </main>
+                        <ChatWidget
+                            channelType="complaint"
+                            channelId={chatId}
+                            isOpen={chatOpen}
+                            onClose={() => setChatOpen(false)}
+                            contextInfo={chatContext}
+                        />
+                    </main>
+                </div>
+            </div>
         </div>
     );
 }
 
 function InfoRow({ label, value }: { label: string; value: string }) {
     return (
-        <div style={{ display: "flex", gap: 12 }}>
-            <span style={{ minWidth: 120, fontWeight: 600, color: "#666", fontSize: 14 }}>{label}:</span>
-            <span style={{ color: "#333", fontSize: 14 }}>{value}</span>
+        <div className="flex gap-3">
+            <span className="min-w-[120px] font-bold text-[#9CA3AF] text-sm">{label}:</span>
+            <span className="font-medium text-[#1A1A2E] text-sm">{value}</span>
         </div>
     );
 }

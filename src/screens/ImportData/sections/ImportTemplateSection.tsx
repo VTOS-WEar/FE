@@ -26,7 +26,7 @@ export const ImportTemplateSection = (): JSX.Element => {
     return (
         <Card className="w-full bg-[#f4f6fb] rounded-[10px] border-[#e6eaf1] shadow-[0px_0px_4px_#00000040]">
             <CardContent className="flex flex-col gap-[11px] p-0">
-                <div className="flex items-center justify-center mt-6 sm:mt-[33px] mx-auto [font-family:'Montserrat',Helvetica] font-bold text-black text-sm sm:text-[15px] tracking-[0] leading-[normal]">
+                <div className="flex items-center justify-center mt-6 sm:mt-[33px] mx-auto font-bold text-black text-sm sm:text-[15px] tracking-[0] leading-[normal]">
                     LƯU Ý QUAN TRỌNG
                 </div>
 
@@ -35,7 +35,7 @@ export const ImportTemplateSection = (): JSX.Element => {
                         <div key={index} className="flex items-start gap-[5px] w-full">
                             <CheckCircle2Icon className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 text-blue-500 mt-0.5" />
                             <div
-                                className={`flex-1 text-[#475772] text-xs [font-family:'Montserrat',Helvetica] tracking-[0] leading-[normal] ${item.className}`}
+                                className={`flex-1 text-[#475772] text-xs tracking-[0] leading-[normal] ${item.className}`}
                             >
                                 {item.text}
                             </div>

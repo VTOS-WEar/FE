@@ -131,10 +131,10 @@ export const FillInformation = (): JSX.Element => {
 
         <div className="max-w-4xl mx-auto relative z-10">
           <div className="text-center mb-12">
-            <h1 className="[font-family:'Montserrat',Helvetica] font-bold text-black text-4xl mb-4">
+            <h1 className="font-bold text-black text-4xl mb-4">
               Thông tin phụ huynh
             </h1>
-            <p className="[font-family:'Montserrat',Helvetica] font-medium text-black text-xl opacity-60 max-w-2xl mx-auto">
+            <p className="font-medium text-black text-xl opacity-60 max-w-2xl mx-auto">
               Để bắt đầu trải nghiệm mua sắm, vui lòng cập nhật số điện thoại
               liên hệ của bạn
             </p>
@@ -150,7 +150,7 @@ export const FillInformation = (): JSX.Element => {
               />
               <Button
                 variant="link"
-                className="[font-family:'Montserrat',Helvetica] font-medium text-[#7e45d9] text-base p-0 h-auto"
+                className="font-medium text-[#7e45d9] text-base p-0 h-auto"
               >
                 Tải lên ảnh đại diện
               </Button>
@@ -159,7 +159,7 @@ export const FillInformation = (): JSX.Element => {
             <div className="space-y-6">
               {/* Full Name (read-only, from registration) */}
               <div className="space-y-3">
-                <Label className="[font-family:'Montserrat',Helvetica] font-medium text-black text-xl">
+                <Label className="font-medium text-black text-xl">
                   Họ và tên phụ huynh
                   <span className="text-[#ff0000] ml-1">*</span>
                 </Label>
@@ -169,14 +169,14 @@ export const FillInformation = (): JSX.Element => {
                     type="text"
                     value={fullName}
                     disabled
-                    className="h-[3.125rem] pl-11 pr-2.5 bg-gray-50 rounded-lg border border-[#00000036] [font-family:'Montserrat',Helvetica] font-normal text-base text-black/60 cursor-not-allowed"
+                    className="h-[3.125rem] pl-11 pr-2.5 bg-gray-50 rounded-lg border border-[#00000036] font-normal text-base text-black/60 cursor-not-allowed"
                   />
                 </div>
               </div>
 
               {/* Phone input */}
               <div className="space-y-3">
-                <Label className="[font-family:'Montserrat',Helvetica] font-medium text-black text-xl">
+                <Label className="font-medium text-black text-xl">
                   Số điện thoại liên hệ
                   <span className="text-[#ff0000] ml-1">*</span>
                 </Label>
@@ -190,12 +190,12 @@ export const FillInformation = (): JSX.Element => {
                     onKeyDown={(e) => {
                       if (e.key === "Enter") void handleSubmit();
                     }}
-                    className="h-[3.125rem] pl-11 pr-2.5 bg-white rounded-lg border border-[#00000036] [font-family:'Montserrat',Helvetica] font-normal text-base focus:border-[#6938ef] focus:ring-1 focus:ring-[#6938ef] transition-colors"
+                    className="h-[3.125rem] pl-11 pr-2.5 bg-white rounded-lg border border-[#00000036] font-normal text-base focus:border-[#6938ef] focus:ring-1 focus:ring-[#6938ef] transition-colors"
                   />
                 </div>
                 <div className="flex items-center gap-1.5">
                   <AlertCircleIcon className="w-4 h-4 opacity-60 flex-shrink-0" />
-                  <p className="[font-family:'Montserrat',Helvetica] font-medium text-black text-xs opacity-60">
+                  <p className="font-medium text-black text-xs opacity-60">
                     Số điện thoại sẽ được sử dụng để liên hệ giao hàng và hỗ
                     trợ
                   </p>
@@ -212,7 +212,7 @@ export const FillInformation = (): JSX.Element => {
                 {isLoading ? (
                   <Loader2 className="w-6 h-6 animate-spin mr-2" />
                 ) : null}
-                <span className="[font-family:'Montserrat',Helvetica] font-semibold text-white text-2xl">
+                <span className="font-semibold text-white text-2xl">
                   {isLoading ? "Đang lưu..." : "Xác nhận số điện thoại"}
                 </span>
                 {!isLoading && (

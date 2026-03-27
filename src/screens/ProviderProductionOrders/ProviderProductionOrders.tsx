@@ -1,13 +1,5 @@
 import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
 import { useState, useEffect, useCallback } from "react";
-import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-} from "../../components/ui/breadcrumb";
 import { DashboardSidebar } from "../../components/layout";
 import { useProviderSidebarConfig } from "../../hooks/useProviderSidebarConfig";
 import {
@@ -25,22 +17,13 @@ import {
     type ProviderDistributionOverviewDto,
 } from "../../lib/api/productionOrders";
 
-const STATUS_COLORS: Record<string, string> = {
-    Pending: "#f59e0b",
-    Approved: "#3b82f6",
-    InProduction: "#8b5cf6",
-    Completed: "#10b981",
-    Rejected: "#ef4444",
-    Delivered: "#06b6d4",
-};
-
-const STATUS_LABELS: Record<string, string> = {
-    Pending: "Chờ xử lý",
-    Approved: "Đã duyệt",
-    InProduction: "Đang sản xuất",
-    Completed: "Hoàn thành",
-    Rejected: "Từ chối",
-    Delivered: "Đã giao",
+const STATUS_MAP: Record<string, { label: string; badge: string }> = {
+    Pending: { label: "Chờ xử lý", badge: "nb-badge nb-badge-yellow" },
+    Approved: { label: "Đã duyệt", badge: "nb-badge nb-badge-blue" },
+    InProduction: { label: "Đang sản xuất", badge: "nb-badge nb-badge-purple" },
+    Completed: { label: "Hoàn thành", badge: "nb-badge nb-badge-green" },
+    Rejected: { label: "Từ chối", badge: "nb-badge nb-badge-red" },
+    Delivered: { label: "Đã giao", badge: "nb-badge nb-badge-blue" },
 };
 
 export function ProviderProductionOrders() {
@@ -77,8 +60,6 @@ export function ProviderProductionOrders() {
     }, [statusFilter]);
 
     useEffect(() => { fetchOrders(); }, [fetchOrders]);
-
-
 
     const handleAccept = async () => {
         if (!detail) return;
@@ -142,7 +123,6 @@ export function ProviderProductionOrders() {
             setDeliverQty(0);
             setDeliverNote("");
             loadDeliveryHistory(detail.batchId);
-            // Refresh detail to get updated status
             const updated = await getProviderProductionOrderDetail(detail.batchId);
             setDetail(updated);
             fetchOrders();
@@ -171,492 +151,401 @@ export function ProviderProductionOrders() {
         } catch (e: any) { console.error("Error loading distribution overview:", e); }
     };
 
+    const filterTabs = [
+        { value: "", label: "Tất cả" },
+        { value: "Pending", label: "Chờ xử lý" },
+        { value: "Approved", label: "Đã duyệt" },
+        { value: "InProduction", label: "Đang SX" },
+        { value: "Completed", label: "Hoàn thành" },
+        { value: "Rejected", label: "Từ chối" },
+        { value: "Delivered", label: "Đã giao" },
+    ];
+
     return (
-        <div style={{ display: "flex", minHeight: "100vh", background: "#f5f5f5" }}>
-            <div className={`${isCollapsed ? "lg:w-16" : "lg:w-[20rem] xl:w-[23.75rem]"} flex-shrink-0 lg:sticky lg:top-0 lg:h-screen transition-all duration-300`}>
-                <DashboardSidebar {...sidebarConfig} isCollapsed={isCollapsed} onToggle={toggle} />
-            </div>
-
-            <main style={{ flex: 1, padding: "32px 40px" }}>
-                <div style={{ marginBottom: 8 }}>
-                    <Breadcrumb>
-                        <BreadcrumbList>
-                            <BreadcrumbItem><BreadcrumbLink href="/provider/dashboard" className="font-semibold text-[#4c5769] text-base">Trang chủ</BreadcrumbLink></BreadcrumbItem>
-                            <BreadcrumbSeparator className="text-[#cbcad7]">/</BreadcrumbSeparator>
-                            <BreadcrumbItem><BreadcrumbPage className="font-semibold text-[#4c5769] text-base">Đơn sản xuất</BreadcrumbPage></BreadcrumbItem>
-                        </BreadcrumbList>
-                    </Breadcrumb>
+        <div className="nb-page flex flex-col">
+            <div className="flex flex-1 flex-col lg:flex-row">
+                <div className={`${isCollapsed ? "lg:w-16" : "lg:w-[16rem]"} flex-shrink-0 lg:sticky lg:top-0 lg:h-screen transition-all duration-300`}>
+                    <DashboardSidebar {...sidebarConfig} isCollapsed={isCollapsed} onToggle={toggle} />
                 </div>
 
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", margin: "24px 0" }}>
-                    <h1 style={{ fontSize: 28, fontWeight: 700, color: "#1a1a2e" }}>🏭 Đơn sản xuất</h1>
-                </div>
-
-                {/* Status filter tabs */}
-                <div style={{ display: "flex", gap: 8, marginBottom: 24, flexWrap: "wrap" }}>
-                    {["", "Pending", "Approved", "InProduction", "Completed", "Rejected", "Delivered"].map(s => (
-                        <button
-                            key={s}
-                            onClick={() => setStatusFilter(s)}
-                            style={{
-                                padding: "8px 20px", borderRadius: 20, border: "none", cursor: "pointer",
-                                background: statusFilter === s ? "#6366f1" : "#e8e8e8",
-                                color: statusFilter === s ? "#fff" : "#555",
-                                fontWeight: 600, fontSize: 14, transition: "all .2s",
-                            }}
-                        >
-                            {s ? STATUS_LABELS[s] || s : "Tất cả"}
-                        </button>
-                    ))}
-                </div>
-
-                {/* Order list */}
-                {loading ? (
-                    <div style={{ textAlign: "center", padding: 60, color: "#999" }}>Đang tải...</div>
-                ) : orders.length === 0 ? (
-                    <div style={{ textAlign: "center", padding: 60, background: "#fff", borderRadius: 16, color: "#aaa" }}>
-                        <div style={{ fontSize: 48, marginBottom: 12 }}>🏭</div>
-                        <p style={{ fontSize: 16 }}>Chưa có đơn sản xuất nào được giao.</p>
+                <div className="flex-1 flex flex-col min-w-0">
+                    <div className="nb-breadcrumb-bar px-6 lg:px-10 py-5">
+                        <h1 className="font-extrabold text-[#1A1A2E] text-2xl">🏭 Đơn sản xuất</h1>
+                        <p className="font-medium text-[#6B7280] text-sm mt-1">Quản lý đơn sản xuất, giao hàng và phân phối</p>
                     </div>
-                ) : (
-                    <div style={{ display: "grid", gap: 16 }}>
-                        {orders.map(o => (
-                            <div
-                                key={o.batchId}
-                                onClick={() => openDetailWithDelivery(o.batchId)}
-                                style={{
-                                    background: "#fff", borderRadius: 16, padding: "20px 28px",
-                                    boxShadow: "0 2px 12px rgba(0,0,0,.06)", cursor: "pointer",
-                                    borderLeft: `5px solid ${STATUS_COLORS[o.status] || "#ccc"}`,
-                                    transition: "transform .15s, box-shadow .15s",
-                                }}
-                                onMouseOver={e => { (e.currentTarget as any).style.transform = "translateY(-2px)"; (e.currentTarget as any).style.boxShadow = "0 6px 20px rgba(0,0,0,.1)"; }}
-                                onMouseOut={e => { (e.currentTarget as any).style.transform = "none"; (e.currentTarget as any).style.boxShadow = "0 2px 12px rgba(0,0,0,.06)"; }}
-                            >
-                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                    <div>
-                                        <h3 style={{ margin: 0, fontSize: 18, fontWeight: 600, color: "#1a1a2e" }}>{o.batchName}</h3>
-                                        <p style={{ margin: "4px 0 0", color: "#888", fontSize: 14 }}>
-                                            Chiến dịch: <strong>{o.campaignName}</strong> &nbsp;·&nbsp;
-                                            Trường: <strong>{o.schoolName || "—"}</strong> &nbsp;·&nbsp;
-                                            SL: <strong>{o.totalQuantity}</strong> &nbsp;·&nbsp;
-                                            {new Date(o.createdDate).toLocaleDateString("vi")}
-                                        </p>
-                                        {o.deliveryDeadline && (
-                                            <p style={{ margin: "2px 0 0", color: "#666", fontSize: 13 }}>
-                                                📅 Hạn giao: <strong>{new Date(o.deliveryDeadline).toLocaleDateString("vi")}</strong>
-                                            </p>
+
+                    <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-6">
+                        {/* Status filter tabs */}
+                        <div className="nb-tabs flex-wrap">
+                            {filterTabs.map(t => (
+                                <button
+                                    key={t.value}
+                                    onClick={() => setStatusFilter(t.value)}
+                                    className={`nb-tab ${statusFilter === t.value ? "nb-tab-active" : ""}`}
+                                >
+                                    {t.label}
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* Order list */}
+                        {loading ? (
+                            <div className="text-center py-20">
+                                <div className="inline-block w-8 h-8 border-4 border-[#6938EF] border-t-transparent rounded-full animate-spin" />
+                            </div>
+                        ) : orders.length === 0 ? (
+                            <div className="nb-card-static p-10 text-center">
+                                <div className="text-5xl mb-3">🏭</div>
+                                <p className="font-medium text-[#9CA3AF] text-base">Chưa có đơn sản xuất nào được giao.</p>
+                            </div>
+                        ) : (
+                            <div className="space-y-4">
+                                {orders.map(o => (
+                                    <div
+                                        key={o.batchId}
+                                        onClick={() => openDetailWithDelivery(o.batchId)}
+                                        className="nb-card p-5 cursor-pointer"
+                                    >
+                                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                                            <div className="flex-1 min-w-0">
+                                                <h3 className="font-bold text-[#1A1A2E] text-base">{o.batchName}</h3>
+                                                <p className="font-medium text-[#9CA3AF] text-sm mt-1">
+                                                    Chiến dịch: <strong className="text-[#6B7280]">{o.campaignName}</strong> &nbsp;·&nbsp;
+                                                    Trường: <strong className="text-[#6B7280]">{o.schoolName || "—"}</strong> &nbsp;·&nbsp;
+                                                    SL: <strong className="text-[#6B7280]">{o.totalQuantity}</strong> &nbsp;·&nbsp;
+                                                    {new Date(o.createdDate).toLocaleDateString("vi")}
+                                                </p>
+                                                {o.deliveryDeadline && (
+                                                    <p className="font-medium text-[#9CA3AF] text-xs mt-1">
+                                                        📅 Hạn giao: <strong className="text-[#6B7280]">{new Date(o.deliveryDeadline).toLocaleDateString("vi")}</strong>
+                                                    </p>
+                                                )}
+                                            </div>
+                                            <span className={STATUS_MAP[o.status]?.badge || "nb-badge"}>
+                                                {STATUS_MAP[o.status]?.label || o.status}
+                                            </span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* Detail Modal */}
+                        {showDetail && detail && (
+                            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[1000] p-4">
+                                <div className="nb-card-static p-8 w-full max-w-[700px] max-h-[85vh] overflow-auto">
+                                    <div className="flex items-center justify-between mb-5">
+                                        <h2 className="font-extrabold text-[#1A1A2E] text-xl">📋 {detail.batchName}</h2>
+                                        <span className={STATUS_MAP[detail.status]?.badge || "nb-badge"}>
+                                            {STATUS_MAP[detail.status]?.label || detail.status}
+                                        </span>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-3 mb-5">
+                                        <InfoBox label="Chiến dịch" value={detail.campaignName} />
+                                        <InfoBox label="Trường học" value={detail.schoolName || "—"} />
+                                        <InfoBox label="Tổng SL" value={String(detail.totalQuantity)} />
+                                        {detail.deliveryDeadline && (
+                                            <InfoBox label="Hạn giao" value={new Date(detail.deliveryDeadline).toLocaleDateString("vi")} />
                                         )}
                                     </div>
-                                    <span style={{
-                                        padding: "6px 16px", borderRadius: 20, fontSize: 13, fontWeight: 600,
-                                        background: `${STATUS_COLORS[o.status]}18`,
-                                        color: STATUS_COLORS[o.status],
-                                    }}>
-                                        {STATUS_LABELS[o.status] || o.status}
-                                    </span>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                )}
 
-                {/* Detail Modal */}
-                {showDetail && detail && (
-                    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.5)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
-                        <div style={{ background: "#fff", borderRadius: 20, padding: 36, width: "90%", maxWidth: 700, maxHeight: "85vh", overflow: "auto" }}>
-                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-                                <h2 style={{ margin: 0, fontSize: 22, fontWeight: 700 }}>📋 {detail.batchName}</h2>
-                                <span style={{
-                                    padding: "6px 16px", borderRadius: 20, fontSize: 13, fontWeight: 600,
-                                    background: `${STATUS_COLORS[detail.status]}18`,
-                                    color: STATUS_COLORS[detail.status],
-                                }}>
-                                    {STATUS_LABELS[detail.status] || detail.status}
-                                </span>
-                            </div>
-
-                            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 20 }}>
-                                <div style={{ padding: 12, background: "#f8fafc", borderRadius: 10 }}>
-                                    <p style={{ margin: 0, color: "#888", fontSize: 13 }}>Chiến dịch</p>
-                                    <p style={{ margin: "4px 0 0", fontWeight: 600 }}>{detail.campaignName}</p>
-                                </div>
-                                <div style={{ padding: 12, background: "#f8fafc", borderRadius: 10 }}>
-                                    <p style={{ margin: 0, color: "#888", fontSize: 13 }}>Trường học</p>
-                                    <p style={{ margin: "4px 0 0", fontWeight: 600 }}>{detail.schoolName || "—"}</p>
-                                </div>
-                                <div style={{ padding: 12, background: "#f8fafc", borderRadius: 10 }}>
-                                    <p style={{ margin: 0, color: "#888", fontSize: 13 }}>Tổng SL</p>
-                                    <p style={{ margin: "4px 0 0", fontWeight: 600 }}>{detail.totalQuantity}</p>
-                                </div>
-                                {detail.deliveryDeadline && (
-                                    <div style={{ padding: 12, background: "#f8fafc", borderRadius: 10 }}>
-                                        <p style={{ margin: 0, color: "#888", fontSize: 13 }}>Hạn giao</p>
-                                        <p style={{ margin: "4px 0 0", fontWeight: 600 }}>{new Date(detail.deliveryDeadline).toLocaleDateString("vi")}</p>
-                                    </div>
-                                )}
-                            </div>
-
-                            {detail.rejectionReason && (
-                                <div style={{ padding: "10px 14px", background: "#fef2f2", borderRadius: 8, color: "#dc2626", marginBottom: 16, fontSize: 14 }}>
-                                    ❌ Lý do từ chối: {detail.rejectionReason}
-                                </div>
-                            )}
-
-                            <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 10 }}>📦 Danh sách sản phẩm</h3>
-                            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
-                                <thead>
-                                    <tr style={{ background: "#f1f5f9", textAlign: "left" }}>
-                                        <th style={{ padding: "10px 12px", borderRadius: "8px 0 0 0" }}>Đồng phục</th>
-                                        <th style={{ padding: "10px 12px" }}>Size</th>
-                                        <th style={{ padding: "10px 12px" }}>SL</th>
-                                        <th style={{ padding: "10px 12px", borderRadius: "0 8px 0 0" }}>Đơn giá</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {detail.items.map(item => (
-                                        <tr key={item.id} style={{ borderBottom: "1px solid #f0f0f0" }}>
-                                            <td style={{ padding: "10px 12px" }}>{item.outfitName}</td>
-                                            <td style={{ padding: "10px 12px" }}>{item.size}</td>
-                                            <td style={{ padding: "10px 12px", fontWeight: 600 }}>{item.quantity}</td>
-                                            <td style={{ padding: "10px 12px" }}>{item.unitPrice.toLocaleString("vi")}₫</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-
-                            {/* Phase 4/5 — Tabs for Completed/Delivered */}
-                            {(detail.status === "Completed" || detail.status === "Delivered") && (
-                                <div style={{ marginTop: 24 }}>
-                                    <div style={{ display: "flex", gap: 0, borderBottom: "2px solid #e5e7eb" }}>
-                                        {(["detail", "delivery", "distribution"] as const).map(tab => (
-                                            <button key={tab} onClick={() => {
-                                                setProviderActiveTab(tab);
-                                                if (tab === "delivery") loadDeliveryHistory(detail.batchId);
-                                                if (tab === "distribution") loadDistOverview(detail.batchId);
-                                            }} style={{
-                                                padding: "10px 24px", border: "none", cursor: "pointer", fontWeight: 600, fontSize: 14,
-                                                background: providerActiveTab === tab ? "#6366f1" : "transparent",
-                                                color: providerActiveTab === tab ? "#fff" : "#888",
-                                                borderRadius: "8px 8px 0 0", transition: "all .2s",
-                                            }}>
-                                                {tab === "detail" ? "📋 Chi tiết" : tab === "delivery" ? "🚚 Giao hàng" : "📦 Phân phối"}
-                                            </button>
-                                        ))}
-                                    </div>
-
-                                    {/* Delivery Tab */}
-                                    {providerActiveTab === "delivery" && deliveryStatus && (
-                                        <div style={{ padding: "20px 0" }}>
-                                            {/* Delivery section (existing) */}
-                                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-                                                <h3 style={{ margin: 0, fontSize: 16, fontWeight: 600 }}>🚚 Tình trạng giao hàng</h3>
-                                                {detail.status === "Completed" && (
-                                                    <button onClick={() => {
-                                                        setDeliverQty(deliveryStatus.totalQuantity - deliveryStatus.totalDelivered);
-                                                        setShowDeliver(true);
-                                                    }} style={{
-                                                        padding: "8px 20px", borderRadius: 10, border: "none",
-                                                        background: "linear-gradient(135deg, #6366f1, #4f46e5)", color: "#fff",
-                                                        fontWeight: 600, cursor: "pointer", fontSize: 14,
-                                                    }}>
-                                                        📦 Giao hàng
-                                                    </button>
-                                                )}
-                                            </div>
-
-                                            {/* Progress bar */}
-                                            <div style={{ marginBottom: 16 }}>
-                                                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14, color: "#555", marginBottom: 6 }}>
-                                                    <span>Đã giao: <strong>{deliveryStatus.totalDelivered}/{deliveryStatus.totalQuantity}</strong></span>
-                                                    <span style={{ fontWeight: 700, color: deliveryStatus.isFullyDelivered ? "#10b981" : "#6366f1" }}>
-                                                        {Math.round((deliveryStatus.totalDelivered / deliveryStatus.totalQuantity) * 100)}%
-                                                    </span>
-                                                </div>
-                                                <div style={{ height: 12, borderRadius: 6, background: "#e5e7eb", overflow: "hidden" }}>
-                                                    <div style={{
-                                                        height: "100%", borderRadius: 6,
-                                                        width: `${Math.min(100, (deliveryStatus.totalDelivered / deliveryStatus.totalQuantity) * 100)}%`,
-                                                        background: deliveryStatus.isFullyDelivered
-                                                            ? "linear-gradient(135deg, #10b981, #059669)"
-                                                            : "linear-gradient(135deg, #6366f1, #4f46e5)",
-                                                        transition: "width .5s",
-                                                    }} />
-                                                </div>
-                                                {deliveryStatus.isFullyDelivered && (
-                                                    <p style={{ margin: "6px 0 0", color: "#10b981", fontSize: 13, fontWeight: 600 }}>✅ Đã giao đủ 100%</p>
-                                                )}
-                                            </div>
-
-                                            {/* Delivery history */}
-                                            {deliveryStatus.deliveries.length === 0 ? (
-                                                <p style={{ color: "#999", textAlign: "center", padding: 16 }}>Chưa có lần giao nào.</p>
-                                            ) : (
-                                                <div style={{ display: "grid", gap: 10 }}>
-                                                    {deliveryStatus.deliveries.map((d, i) => (
-                                                        <div key={d.id} style={{
-                                                            padding: "12px 16px",
-                                                            background: d.isConfirmed ? "#f0fdf4" : "#fffbeb",
-                                                            borderRadius: 10,
-                                                            border: `1px solid ${d.isConfirmed ? "#86efac" : "#fde68a"}`,
-                                                        }}>
-                                                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                                                <div>
-                                                                    <strong style={{ fontSize: 14 }}>Lần {deliveryStatus.deliveries.length - i}: {d.quantity} sản phẩm</strong>
-                                                                    <span style={{ color: "#888", fontSize: 12, marginLeft: 8 }}>
-                                                                        {new Date(d.deliveredAt).toLocaleDateString("vi")}
-                                                                    </span>
-                                                                    {d.note && <p style={{ margin: "4px 0 0", color: "#666", fontSize: 13 }}>📝 {d.note}</p>}
-                                                                </div>
-                                                                {d.isConfirmed ? (
-                                                                    <div style={{ textAlign: "right" }}>
-                                                                        <span style={{ padding: "3px 10px", borderRadius: 20, background: "#dcfce7", color: "#16a34a", fontSize: 11, fontWeight: 600 }}>
-                                                                            ✅ Trường đã xác nhận
-                                                                        </span>
-                                                                        <p style={{ margin: "4px 0 0", fontSize: 11, color: "#888" }}>
-                                                                            OK: {d.acceptedQuantity}{d.defectiveQuantity ? ` · Lỗi: ${d.defectiveQuantity}` : ""}
-                                                                        </p>
-                                                                    </div>
-                                                                ) : (
-                                                                    <span style={{ padding: "3px 10px", borderRadius: 20, background: "#fef3c7", color: "#d97706", fontSize: 11, fontWeight: 600 }}>
-                                                                        ⏳ Chờ trường xác nhận
-                                                                    </span>
-                                                                )}
-                                                            </div>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            )}
+                                    {detail.rejectionReason && (
+                                        <div className="nb-alert nb-alert-error mb-4">
+                                            ❌ Lý do từ chối: {detail.rejectionReason}
                                         </div>
                                     )}
 
-                                    {/* Distribution Overview Tab (read-only) */}
-                                    {providerActiveTab === "distribution" && distOverview && (
-                                        <div style={{ padding: "20px 0" }}>
-                                            <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 8, marginBottom: 20 }}>
-                                                {[
-                                                    { label: "Tổng đơn", val: distOverview.totalOrders, color: "#6366f1" },
-                                                    { label: "Đã phân phối", val: distOverview.distributedCount, color: "#10b981" },
-                                                    { label: "Chờ", val: distOverview.pendingCount, color: "#f59e0b" },
-                                                    { label: "Tại trường", val: distOverview.atSchoolCount, color: "#16a34a" },
-                                                    { label: "Giao nhà", val: distOverview.atHomeCount, color: "#2563eb" },
-                                                ].map(s => (
-                                                    <div key={s.label} style={{ padding: 10, background: `${s.color}10`, borderRadius: 10, textAlign: "center" }}>
-                                                        <p style={{ margin: 0, fontSize: 20, fontWeight: 700, color: s.color }}>{s.val}</p>
-                                                        <p style={{ margin: 0, fontSize: 11, color: "#888" }}>{s.label}</p>
-                                                    </div>
+                                    <h3 className="font-extrabold text-[#1A1A2E] text-base mb-3">📦 Danh sách sản phẩm</h3>
+                                    <table className="nb-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Đồng phục</th>
+                                                <th>Size</th>
+                                                <th>SL</th>
+                                                <th>Đơn giá</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {detail.items.map(item => (
+                                                <tr key={item.id}>
+                                                    <td>{item.outfitName}</td>
+                                                    <td>{item.size}</td>
+                                                    <td className="font-bold">{item.quantity}</td>
+                                                    <td>{item.unitPrice.toLocaleString("vi")}₫</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+
+                                    {/* Phase 4/5 — Tabs for Completed/Delivered */}
+                                    {(detail.status === "Completed" || detail.status === "Delivered") && (
+                                        <div className="mt-6">
+                                            <div className="nb-tabs border-b-2 border-[#E5E7EB]">
+                                                {(["detail", "delivery", "distribution"] as const).map(tab => (
+                                                    <button key={tab} onClick={() => {
+                                                        setProviderActiveTab(tab);
+                                                        if (tab === "delivery") loadDeliveryHistory(detail.batchId);
+                                                        if (tab === "distribution") loadDistOverview(detail.batchId);
+                                                    }} className={`nb-tab ${providerActiveTab === tab ? "nb-tab-active" : ""}`}>
+                                                        {tab === "detail" ? "📋 Chi tiết" : tab === "delivery" ? "🚚 Giao hàng" : "📦 Phân phối"}
+                                                    </button>
                                                 ))}
                                             </div>
 
-                                            {/* Progress bar */}
-                                            <div style={{ marginBottom: 20 }}>
-                                                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, color: "#555", marginBottom: 6 }}>
-                                                    <span>Tiến độ phân phối</span>
-                                                    <span style={{ fontWeight: 700, color: distOverview.distributedCount === distOverview.totalOrders ? "#10b981" : "#6366f1" }}>
-                                                        {distOverview.totalOrders > 0 ? Math.round((distOverview.distributedCount / distOverview.totalOrders) * 100) : 0}%
-                                                    </span>
-                                                </div>
-                                                <div style={{ height: 10, borderRadius: 5, background: "#e5e7eb", overflow: "hidden" }}>
-                                                    <div style={{
-                                                        height: "100%", borderRadius: 5,
-                                                        width: `${distOverview.totalOrders > 0 ? Math.min(100, (distOverview.distributedCount / distOverview.totalOrders) * 100) : 0}%`,
-                                                        background: distOverview.distributedCount === distOverview.totalOrders
-                                                            ? "linear-gradient(135deg, #10b981, #059669)"
-                                                            : "linear-gradient(135deg, #6366f1, #4f46e5)",
-                                                        transition: "width .5s",
-                                                    }} />
-                                                </div>
-                                            </div>
+                                            {/* Delivery Tab */}
+                                            {providerActiveTab === "delivery" && deliveryStatus && (
+                                                <div className="py-5 space-y-4">
+                                                    <div className="flex items-center justify-between">
+                                                        <h3 className="font-extrabold text-[#1A1A2E] text-base">🚚 Tình trạng giao hàng</h3>
+                                                        {detail.status === "Completed" && (
+                                                            <button onClick={() => {
+                                                                setDeliverQty(deliveryStatus.totalQuantity - deliveryStatus.totalDelivered);
+                                                                setShowDeliver(true);
+                                                            }} className="nb-btn nb-btn-purple nb-btn-sm">
+                                                                📦 Giao hàng
+                                                            </button>
+                                                        )}
+                                                    </div>
 
-                                            {/* Schedule Timeline (read-only) */}
-                                            <h4 style={{ margin: "0 0 10px", fontSize: 15, fontWeight: 600 }}>📅 Lịch phân phối</h4>
-                                            {distOverview.schedules.length === 0 ? (
-                                                <p style={{ color: "#999", textAlign: "center", padding: 16, background: "#f9fafb", borderRadius: 10 }}>
-                                                    Trường chưa lên lịch phân phối.
-                                                </p>
-                                            ) : (
-                                                <div style={{ display: "grid", gap: 10 }}>
-                                                    {distOverview.schedules.map(s => (
-                                                        <div key={s.id} style={{
-                                                            padding: "12px 16px",
-                                                            background: s.status === "Completed" ? "#f0fdf4" : "#fefce8",
-                                                            borderRadius: 12,
-                                                            border: `1px solid ${s.status === "Completed" ? "#86efac" : "#fde68a"}`,
-                                                        }}>
-                                                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                                                <div>
-                                                                    <strong style={{ fontSize: 14 }}>
-                                                                        {new Date(s.scheduledDate).toLocaleDateString("vi")} — {s.timeSlot}
-                                                                    </strong>
-                                                                    <span style={{
-                                                                        padding: "2px 8px", borderRadius: 12, fontSize: 11, fontWeight: 600, marginLeft: 8,
-                                                                        background: s.method === "AtHome" ? "#dbeafe" : "#dcfce7",
-                                                                        color: s.method === "AtHome" ? "#2563eb" : "#16a34a",
-                                                                    }}>
-                                                                        {s.method === "AtHome" ? "🏠 Giao nhà" : "🏫 Tại trường"}
-                                                                    </span>
-                                                                    {s.note && <p style={{ margin: "4px 0 0", fontSize: 13, color: "#666" }}>📝 {s.note}</p>}
-                                                                </div>
-                                                                <span style={{
-                                                                    padding: "3px 10px", borderRadius: 20, fontSize: 11, fontWeight: 600,
-                                                                    background: s.status === "Completed" ? "#dcfce7" : "#fef3c7",
-                                                                    color: s.status === "Completed" ? "#16a34a" : "#d97706",
-                                                                }}>
-                                                                    {s.status === "Completed" ? "✅ Hoàn thành" : "📋 Kế hoạch"}
-                                                                </span>
-                                                            </div>
+                                                    {/* Progress bar */}
+                                                    <div>
+                                                        <div className="flex justify-between text-sm font-medium text-[#6B7280] mb-2">
+                                                            <span>Đã giao: <strong className="text-[#1A1A2E]">{deliveryStatus.totalDelivered}/{deliveryStatus.totalQuantity}</strong></span>
+                                                            <span className={`font-bold ${deliveryStatus.isFullyDelivered ? "text-[#10B981]" : "text-[#6938EF]"}`}>
+                                                                {Math.round((deliveryStatus.totalDelivered / deliveryStatus.totalQuantity) * 100)}%
+                                                            </span>
                                                         </div>
-                                                    ))}
+                                                        <div className="h-3 rounded-full bg-[#E5E7EB] border-2 border-[#1A1A2E] overflow-hidden">
+                                                            <div className={`h-full rounded-full transition-all duration-500 ${deliveryStatus.isFullyDelivered ? "bg-[#10B981]" : "bg-[#6938EF]"}`}
+                                                                style={{ width: `${Math.min(100, (deliveryStatus.totalDelivered / deliveryStatus.totalQuantity) * 100)}%` }}
+                                                            />
+                                                        </div>
+                                                        {deliveryStatus.isFullyDelivered && (
+                                                            <p className="font-bold text-[#10B981] text-sm mt-2">✅ Đã giao đủ 100%</p>
+                                                        )}
+                                                    </div>
+
+                                                    {/* Delivery history */}
+                                                    {deliveryStatus.deliveries.length === 0 ? (
+                                                        <p className="text-center py-4 text-[#9CA3AF] font-medium">Chưa có lần giao nào.</p>
+                                                    ) : (
+                                                        <div className="space-y-3">
+                                                            {deliveryStatus.deliveries.map((d, i) => (
+                                                                <div key={d.id} className={`rounded-xl border-2 p-4 ${d.isConfirmed ? "bg-[#F0FDF4] border-[#86EFAC]" : "bg-[#FFFBEB] border-[#FDE68A]"}`}>
+                                                                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                                                                        <div>
+                                                                            <strong className="text-sm text-[#1A1A2E]">Lần {deliveryStatus.deliveries.length - i}: {d.quantity} sản phẩm</strong>
+                                                                            <span className="text-[#9CA3AF] text-xs ml-2">
+                                                                                {new Date(d.deliveredAt).toLocaleDateString("vi")}
+                                                                            </span>
+                                                                            {d.note && <p className="text-[#6B7280] text-sm mt-1">📝 {d.note}</p>}
+                                                                        </div>
+                                                                        {d.isConfirmed ? (
+                                                                            <div className="text-right">
+                                                                                <span className="nb-badge nb-badge-green text-xs">✅ Trường đã xác nhận</span>
+                                                                                <p className="text-xs text-[#9CA3AF] mt-1">
+                                                                                    OK: {d.acceptedQuantity}{d.defectiveQuantity ? ` · Lỗi: ${d.defectiveQuantity}` : ""}
+                                                                                </p>
+                                                                            </div>
+                                                                        ) : (
+                                                                            <span className="nb-badge nb-badge-yellow text-xs">⏳ Chờ trường xác nhận</span>
+                                                                        )}
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            )}
+
+                                            {/* Distribution Overview Tab (read-only) */}
+                                            {providerActiveTab === "distribution" && distOverview && (
+                                                <div className="py-5 space-y-5">
+                                                    <div className="grid grid-cols-5 gap-2">
+                                                        {[
+                                                            { label: "Tổng đơn", val: distOverview.totalOrders, color: "#6938EF" },
+                                                            { label: "Đã phân phối", val: distOverview.distributedCount, color: "#10B981" },
+                                                            { label: "Chờ", val: distOverview.pendingCount, color: "#F59E0B" },
+                                                            { label: "Tại trường", val: distOverview.atSchoolCount, color: "#16A34A" },
+                                                            { label: "Giao nhà", val: distOverview.atHomeCount, color: "#2563EB" },
+                                                        ].map(s => (
+                                                            <div key={s.label} className="bg-white border-2 border-[#1A1A2E] rounded-lg p-3 text-center shadow-[2px_2px_0_#1A1A2E]">
+                                                                <p className="text-xl font-extrabold" style={{ color: s.color }}>{s.val}</p>
+                                                                <p className="text-xs font-medium text-[#9CA3AF]">{s.label}</p>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+
+                                                    {/* Progress bar */}
+                                                    <div>
+                                                        <div className="flex justify-between text-sm font-medium text-[#6B7280] mb-2">
+                                                            <span>Tiến độ phân phối</span>
+                                                            <span className={`font-bold ${distOverview.distributedCount === distOverview.totalOrders ? "text-[#10B981]" : "text-[#6938EF]"}`}>
+                                                                {distOverview.totalOrders > 0 ? Math.round((distOverview.distributedCount / distOverview.totalOrders) * 100) : 0}%
+                                                            </span>
+                                                        </div>
+                                                        <div className="h-3 rounded-full bg-[#E5E7EB] border-2 border-[#1A1A2E] overflow-hidden">
+                                                            <div className={`h-full rounded-full transition-all duration-500 ${distOverview.distributedCount === distOverview.totalOrders ? "bg-[#10B981]" : "bg-[#6938EF]"}`}
+                                                                style={{ width: `${distOverview.totalOrders > 0 ? Math.min(100, (distOverview.distributedCount / distOverview.totalOrders) * 100) : 0}%` }}
+                                                            />
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Schedule Timeline */}
+                                                    <h4 className="font-extrabold text-[#1A1A2E] text-sm">📅 Lịch phân phối</h4>
+                                                    {distOverview.schedules.length === 0 ? (
+                                                        <p className="text-center py-4 text-[#9CA3AF] font-medium bg-[#F9FAFB] rounded-xl border-2 border-[#E5E7EB]">
+                                                            Trường chưa lên lịch phân phối.
+                                                        </p>
+                                                    ) : (
+                                                        <div className="space-y-3">
+                                                            {distOverview.schedules.map(s => (
+                                                                <div key={s.id} className={`rounded-xl border-2 p-4 ${s.status === "Completed" ? "bg-[#F0FDF4] border-[#86EFAC]" : "bg-[#FEFCE8] border-[#FDE68A]"}`}>
+                                                                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                                                                        <div>
+                                                                            <strong className="text-sm text-[#1A1A2E]">
+                                                                                {new Date(s.scheduledDate).toLocaleDateString("vi")} — {s.timeSlot}
+                                                                            </strong>
+                                                                            <span className={`ml-2 text-xs font-bold px-2 py-0.5 rounded-full border ${s.method === "AtHome" ? "bg-[#DBEAFE] text-[#2563EB] border-[#93C5FD]" : "bg-[#DCFCE7] text-[#16A34A] border-[#86EFAC]"}`}>
+                                                                                {s.method === "AtHome" ? "🏠 Giao nhà" : "🏫 Tại trường"}
+                                                                            </span>
+                                                                            {s.note && <p className="text-[#6B7280] text-sm mt-1">📝 {s.note}</p>}
+                                                                        </div>
+                                                                        <span className={s.status === "Completed" ? "nb-badge nb-badge-green text-xs" : "nb-badge nb-badge-yellow text-xs"}>
+                                                                            {s.status === "Completed" ? "✅ Hoàn thành" : "📋 Kế hoạch"}
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    )}
                                                 </div>
                                             )}
                                         </div>
                                     )}
-                                </div>
-                            )}
 
-                            {/* Action buttons based on status */}
-                            <div style={{ display: "flex", gap: 12, marginTop: 24 }}>
-                                <button onClick={() => setShowDetail(false)} style={{
-                                    flex: 1, padding: "12px 0", borderRadius: 12, border: "1px solid #ddd",
-                                    background: "#fff", fontWeight: 600, cursor: "pointer",
-                                }}>
-                                    Đóng
-                                </button>
+                                    {/* Action buttons based on status */}
+                                    <div className="flex gap-3 mt-6">
+                                        <button onClick={() => setShowDetail(false)} className="nb-btn nb-btn-outline flex-1">
+                                            Đóng
+                                        </button>
 
-                                {detail.status === "Approved" && (
-                                    <button onClick={handleAccept} disabled={actionLoading} style={{
-                                        flex: 1, padding: "12px 0", borderRadius: 12, border: "none",
-                                        background: actionLoading ? "#ccc" : "linear-gradient(135deg, #8b5cf6, #6366f1)", color: "#fff",
-                                        fontWeight: 600, cursor: actionLoading ? "not-allowed" : "pointer",
-                                    }}>
-                                        {actionLoading ? "Đang xử lý..." : "🚀 Bắt đầu sản xuất"}
-                                    </button>
-                                )}
+                                        {detail.status === "Approved" && (
+                                            <button onClick={handleAccept} disabled={actionLoading} className="nb-btn nb-btn-purple flex-1">
+                                                {actionLoading ? "Đang xử lý..." : "🚀 Bắt đầu sản xuất"}
+                                            </button>
+                                        )}
 
-                                {detail.status === "InProduction" && (
-                                    <button onClick={handleComplete} disabled={actionLoading} style={{
-                                        flex: 1, padding: "12px 0", borderRadius: 12, border: "none",
-                                        background: actionLoading ? "#ccc" : "linear-gradient(135deg, #10b981, #059669)", color: "#fff",
-                                        fontWeight: 600, cursor: actionLoading ? "not-allowed" : "pointer",
-                                    }}>
-                                        {actionLoading ? "Đang xử lý..." : "✅ Hoàn thành sản xuất"}
-                                    </button>
-                                )}
+                                        {detail.status === "InProduction" && (
+                                            <button onClick={handleComplete} disabled={actionLoading} className="nb-btn nb-btn-green flex-1">
+                                                {actionLoading ? "Đang xử lý..." : "✅ Hoàn thành sản xuất"}
+                                            </button>
+                                        )}
 
-                                {detail.status === "Completed" && !deliveryStatus?.isFullyDelivered && (
-                                    <button onClick={() => {
-                                        if (deliveryStatus) setDeliverQty(deliveryStatus.totalQuantity - deliveryStatus.totalDelivered);
-                                        setShowDeliver(true);
-                                    }} disabled={actionLoading} style={{
-                                        flex: 1, padding: "12px 0", borderRadius: 12, border: "none",
-                                        background: actionLoading ? "#ccc" : "linear-gradient(135deg, #6366f1, #4f46e5)", color: "#fff",
-                                        fontWeight: 600, cursor: actionLoading ? "not-allowed" : "pointer",
-                                    }}>
-                                        📦 Giao hàng
-                                    </button>
-                                )}
+                                        {detail.status === "Completed" && !deliveryStatus?.isFullyDelivered && (
+                                            <button onClick={() => {
+                                                if (deliveryStatus) setDeliverQty(deliveryStatus.totalQuantity - deliveryStatus.totalDelivered);
+                                                setShowDeliver(true);
+                                            }} disabled={actionLoading} className="nb-btn nb-btn-purple flex-1">
+                                                📦 Giao hàng
+                                            </button>
+                                        )}
 
-                                {(detail.status === "Pending" || detail.status === "Approved") && (
-                                    <button onClick={() => setShowReject(true)} style={{
-                                        padding: "12px 24px", borderRadius: 12, border: "none",
-                                        background: "linear-gradient(135deg, #ef4444, #dc2626)", color: "#fff",
-                                        fontWeight: 600, cursor: "pointer",
-                                    }}>
-                                        Từ chối
-                                    </button>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {/* Reject Modal */}
-                {showReject && detail && (
-                    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.6)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1100 }}>
-                        <div style={{ background: "#fff", borderRadius: 16, padding: 28, width: "90%", maxWidth: 440 }}>
-                            <h3 style={{ margin: "0 0 16px", fontSize: 18, fontWeight: 700 }}>❌ Từ chối đơn sản xuất</h3>
-                            <textarea
-                                value={rejectReason}
-                                onChange={e => setRejectReason(e.target.value)}
-                                placeholder="Nhập lý do từ chối..."
-                                rows={3}
-                                style={{ width: "100%", padding: "10px 14px", borderRadius: 10, border: "1px solid #ddd", fontSize: 14, boxSizing: "border-box", resize: "vertical" }}
-                            />
-                            <div style={{ display: "flex", gap: 12, marginTop: 16 }}>
-                                <button onClick={() => { setShowReject(false); setRejectReason(""); }} style={{
-                                    flex: 1, padding: "10px 0", borderRadius: 10, border: "1px solid #ddd",
-                                    background: "#fff", fontWeight: 600, cursor: "pointer",
-                                }}>Hủy</button>
-                                <button onClick={handleReject} disabled={actionLoading || !rejectReason.trim()} style={{
-                                    flex: 1, padding: "10px 0", borderRadius: 10, border: "none",
-                                    background: actionLoading ? "#ccc" : "#ef4444", color: "#fff",
-                                    fontWeight: 600, cursor: actionLoading ? "not-allowed" : "pointer",
-                                }}>
-                                    {actionLoading ? "Đang xử lý..." : "Xác nhận từ chối"}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {/* Deliver Modal */}
-                {showDeliver && detail && (
-                    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.6)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1100 }}>
-                        <div style={{ background: "#fff", borderRadius: 16, padding: 28, width: "90%", maxWidth: 440 }}>
-                            <h3 style={{ margin: "0 0 16px", fontSize: 18, fontWeight: 700 }}>📦 Giao hàng</h3>
-
-                            {deliveryStatus && (
-                                <div style={{ marginBottom: 16 }}>
-                                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, color: "#555", marginBottom: 6 }}>
-                                        <span>Đã giao: {deliveryStatus.totalDelivered}/{deliveryStatus.totalQuantity}</span>
-                                        <span>Còn lại: <strong>{deliveryStatus.totalQuantity - deliveryStatus.totalDelivered}</strong></span>
-                                    </div>
-                                    <div style={{ height: 8, borderRadius: 4, background: "#e5e7eb", overflow: "hidden" }}>
-                                        <div style={{
-                                            height: "100%", borderRadius: 4, transition: "width .5s",
-                                            width: `${(deliveryStatus.totalDelivered / deliveryStatus.totalQuantity) * 100}%`,
-                                            background: "#6366f1",
-                                        }} />
+                                        {(detail.status === "Pending" || detail.status === "Approved") && (
+                                            <button onClick={() => setShowReject(true)} className="nb-btn nb-btn-red">
+                                                Từ chối
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
-                            )}
+                            </div>
+                        )}
 
-                            <div style={{ display: "grid", gap: 12 }}>
-                                <div>
-                                    <label style={{ fontSize: 13, color: "#555", fontWeight: 600 }}>Số lượng giao lần này</label>
-                                    <input type="number" min={1}
-                                        max={deliveryStatus ? deliveryStatus.totalQuantity - deliveryStatus.totalDelivered : undefined}
-                                        value={deliverQty}
-                                        onChange={e => setDeliverQty(Number(e.target.value))}
-                                        style={{ width: "100%", padding: "10px 14px", borderRadius: 10, border: "1px solid #ddd", fontSize: 16, fontWeight: 700, boxSizing: "border-box" }} />
-                                </div>
-                                <div>
-                                    <label style={{ fontSize: 13, color: "#555", fontWeight: 600 }}>Ghi chú (tùy chọn)</label>
-                                    <textarea value={deliverNote}
-                                        onChange={e => setDeliverNote(e.target.value)}
-                                        placeholder="VD: Đợt 1 gồm áo sơ mi size S-M..."
-                                        rows={2}
-                                        style={{ width: "100%", padding: "8px 12px", borderRadius: 10, border: "1px solid #ddd", fontSize: 14, boxSizing: "border-box", resize: "vertical" }} />
+                        {/* Reject Modal */}
+                        {showReject && detail && (
+                            <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[1100] p-4">
+                                <div className="nb-card-static p-7 w-full max-w-[440px]">
+                                    <h3 className="font-extrabold text-[#1A1A2E] text-lg mb-4">❌ Từ chối đơn sản xuất</h3>
+                                    <textarea
+                                        value={rejectReason}
+                                        onChange={e => setRejectReason(e.target.value)}
+                                        placeholder="Nhập lý do từ chối..."
+                                        rows={3}
+                                        className="nb-input w-full resize-y"
+                                    />
+                                    <div className="flex gap-3 mt-4">
+                                        <button onClick={() => { setShowReject(false); setRejectReason(""); }} className="nb-btn nb-btn-outline flex-1">Hủy</button>
+                                        <button onClick={handleReject} disabled={actionLoading || !rejectReason.trim()} className="nb-btn nb-btn-red flex-1">
+                                            {actionLoading ? "Đang xử lý..." : "Xác nhận từ chối"}
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
+                        )}
 
-                            <div style={{ display: "flex", gap: 12, marginTop: 16 }}>
-                                <button onClick={() => { setShowDeliver(false); setDeliverQty(0); setDeliverNote(""); }} style={{
-                                    flex: 1, padding: "10px 0", borderRadius: 10, border: "1px solid #ddd",
-                                    background: "#fff", fontWeight: 600, cursor: "pointer",
-                                }}>Hủy</button>
-                                <button onClick={handleDeliver} disabled={actionLoading || deliverQty <= 0} style={{
-                                    flex: 1, padding: "10px 0", borderRadius: 10, border: "none",
-                                    background: actionLoading || deliverQty <= 0 ? "#ccc" : "#6366f1", color: "#fff",
-                                    fontWeight: 600, cursor: actionLoading || deliverQty <= 0 ? "not-allowed" : "pointer",
-                                }}>
-                                    {actionLoading ? "Đang gửi..." : "📦 Xác nhận giao"}
-                                </button>
+                        {/* Deliver Modal */}
+                        {showDeliver && detail && (
+                            <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[1100] p-4">
+                                <div className="nb-card-static p-7 w-full max-w-[440px]">
+                                    <h3 className="font-extrabold text-[#1A1A2E] text-lg mb-4">📦 Giao hàng</h3>
+
+                                    {deliveryStatus && (
+                                        <div className="mb-4">
+                                            <div className="flex justify-between text-sm text-[#6B7280] mb-2">
+                                                <span>Đã giao: {deliveryStatus.totalDelivered}/{deliveryStatus.totalQuantity}</span>
+                                                <span>Còn lại: <strong className="text-[#1A1A2E]">{deliveryStatus.totalQuantity - deliveryStatus.totalDelivered}</strong></span>
+                                            </div>
+                                            <div className="h-2 rounded-full bg-[#E5E7EB] border border-[#1A1A2E] overflow-hidden">
+                                                <div className="h-full rounded-full bg-[#6938EF] transition-all duration-500"
+                                                    style={{ width: `${(deliveryStatus.totalDelivered / deliveryStatus.totalQuantity) * 100}%` }}
+                                                />
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    <div className="space-y-3">
+                                        <div>
+                                            <label className="block text-sm font-bold text-[#1A1A2E] mb-1">Số lượng giao lần này</label>
+                                            <input type="number" min={1}
+                                                max={deliveryStatus ? deliveryStatus.totalQuantity - deliveryStatus.totalDelivered : undefined}
+                                                value={deliverQty}
+                                                onChange={e => setDeliverQty(Number(e.target.value))}
+                                                className="nb-input w-full text-lg font-bold"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-bold text-[#1A1A2E] mb-1">Ghi chú (tùy chọn)</label>
+                                            <textarea value={deliverNote}
+                                                onChange={e => setDeliverNote(e.target.value)}
+                                                placeholder="VD: Đợt 1 gồm áo sơ mi size S-M..."
+                                                rows={2}
+                                                className="nb-input w-full resize-y"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="flex gap-3 mt-4">
+                                        <button onClick={() => { setShowDeliver(false); setDeliverQty(0); setDeliverNote(""); }} className="nb-btn nb-btn-outline flex-1">Hủy</button>
+                                        <button onClick={handleDeliver} disabled={actionLoading || deliverQty <= 0} className="nb-btn nb-btn-purple flex-1">
+                                            {actionLoading ? "Đang gửi..." : "📦 Xác nhận giao"}
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                )}
-            </main>
+                        )}
+                    </main>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function InfoBox({ label, value }: { label: string; value: string }) {
+    return (
+        <div className="bg-[#F8FAFC] border-2 border-[#E5E7EB] rounded-lg p-3">
+            <p className="text-xs font-bold text-[#9CA3AF] uppercase mb-1">{label}</p>
+            <p className="text-sm font-bold text-[#1A1A2E]">{value}</p>
         </div>
     );
 }

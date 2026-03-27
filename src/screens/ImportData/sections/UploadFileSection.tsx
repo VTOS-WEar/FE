@@ -12,7 +12,7 @@ export const UploadFileSection = (): JSX.Element => {
                 {headers.map((header, index) => (
                     <div
                         key={index}
-                        className={`${header.width} flex items-center justify-center [font-family:'Montserrat',Helvetica] font-bold text-[#4c5769] text-sm lg:text-[15px] tracking-[0] leading-normal ${header.label === "HÀNH ĐỘNG" ? "text-right" : ""
+                        className={`${header.width} flex items-center justify-center font-bold text-[#4c5769] text-sm lg:text-[15px] tracking-[0] leading-normal ${header.label === "HÀNH ĐỘNG" ? "text-right" : ""
                             }`}
                     >
                         {header.label}
@@ -20,7 +20,7 @@ export const UploadFileSection = (): JSX.Element => {
                 ))}
             </div>
             <div className="sm:hidden flex items-center px-4 py-4 gap-2">
-                <div className="flex-1 [font-family:'Montserrat',Helvetica] font-bold text-[#4c5769] text-sm">
+                <div className="flex-1 font-bold text-[#4c5769] text-sm">
                     LỊCH SỬ NHẬP LIỆU
                 </div>
             </div>

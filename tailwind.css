@@ -1,6 +1,8 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/geist";
+@import "@fontsource-variable/space-grotesk";
+@import "./src/styles/neubrutalism.css";
 @tailwind components;
 @tailwind utilities;
 
@@ -250,6 +252,12 @@
   .theme {
     --font-heading: var(--font-sans);
     --font-sans: 'Geist Variable', sans-serif;
+  }
+  .nb-page {
+    font-family: 'Space Grotesk Variable', 'Montserrat', sans-serif;
+  }
+  .nb-sidebar {
+    font-family: 'Space Grotesk Variable', 'Montserrat', sans-serif;
   }
   * {
     @apply border-border outline-ring/50;

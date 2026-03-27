@@ -149,28 +149,28 @@ export const AdminAccountRequests = (): JSX.Element => {
     const totalPages = Math.ceil(totalCount / pageSize);
 
     return (
-        <div className="bg-[#f6f7f8] w-full min-h-screen flex flex-col">
+        <div className="nb-page flex flex-col">
             <div className="flex flex-1 flex-col lg:flex-row">
-                <div className={`${isCollapsed ? "lg:w-16" : "lg:w-[20rem] xl:w-[23.75rem]"} flex-shrink-0 lg:sticky lg:top-0 lg:h-screen transition-all duration-300`}>
+                <div className={`${isCollapsed ? "lg:w-16" : "lg:w-[16rem]"} flex-shrink-0 lg:sticky lg:top-0 lg:h-screen transition-all duration-300`}>
                     <DashboardSidebar {...sidebarConfig} isCollapsed={isCollapsed} onToggle={toggle} onLogout={handleLogout} />
                 </div>
                 <div className="flex-1 flex flex-col min-w-0">
-                    <div className="bg-white border-b border-[#cbcad7] px-6 lg:px-10 py-5">
+                    <div className="nb-breadcrumb-bar px-6 lg:px-10 py-5">
                         <Breadcrumb><BreadcrumbList>
-                            <BreadcrumbItem><BreadcrumbLink href="/admin/dashboard" className="[font-family:'Montserrat',Helvetica] font-semibold text-[#4c5769] text-base">Trang chủ</BreadcrumbLink></BreadcrumbItem>
+                            <BreadcrumbItem><BreadcrumbLink href="/admin/dashboard" className="font-semibold text-[#4c5769] text-base">Trang chủ</BreadcrumbLink></BreadcrumbItem>
                             <BreadcrumbSeparator className="text-[#cbcad7]">/</BreadcrumbSeparator>
-                            <BreadcrumbItem><BreadcrumbPage className="[font-family:'Montserrat',Helvetica] font-semibold text-[#4c5769] text-base">Yêu cầu hợp tác</BreadcrumbPage></BreadcrumbItem>
+                            <BreadcrumbItem><BreadcrumbPage className="font-semibold text-[#4c5769] text-base">Yêu cầu hợp tác</BreadcrumbPage></BreadcrumbItem>
                         </BreadcrumbList></Breadcrumb>
                     </div>
                     <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-6">
-                        <h1 className="[font-family:'Montserrat',Helvetica] font-bold text-black text-[28px]">📋 Yêu cầu hợp tác</h1>
+                        <h1 className="font-bold text-black text-[28px]">📋 Yêu cầu hợp tác</h1>
 
                         {/* Filters */}
                         <div className="flex flex-wrap gap-3">
                             <select
                                 value={filterStatus ?? ""}
                                 onChange={e => { setFilterStatus(e.target.value ? Number(e.target.value) : undefined); setPage(1); }}
-                                className="border border-[#CBCAD7] rounded-xl px-4 py-2.5 text-sm [font-family:'Montserrat',Helvetica] focus:outline-none focus:ring-2 focus:ring-[#6366F1]/30"
+                                className="border border-[#CBCAD7] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#6366F1]/30"
                             >
                                 <option value="">Tất cả trạng thái</option>
                                 <option value="1">Chờ xử lý</option>
@@ -180,7 +180,7 @@ export const AdminAccountRequests = (): JSX.Element => {
                             <select
                                 value={filterType ?? ""}
                                 onChange={e => { setFilterType(e.target.value ? Number(e.target.value) : undefined); setPage(1); }}
-                                className="border border-[#CBCAD7] rounded-xl px-4 py-2.5 text-sm [font-family:'Montserrat',Helvetica] focus:outline-none focus:ring-2 focus:ring-[#6366F1]/30"
+                                className="border border-[#CBCAD7] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#6366F1]/30"
                             >
                                 <option value="">Tất cả loại</option>
                                 <option value="1">🏫 Trường học</option>
@@ -191,7 +191,7 @@ export const AdminAccountRequests = (): JSX.Element => {
                         {/* Table */}
                         <div className="bg-white border border-[#CBCAD7] rounded-2xl overflow-hidden">
                             <div className="overflow-x-auto">
-                                <table className="w-full text-sm [font-family:'Montserrat',Helvetica]">
+                                <table className="w-full text-sm ">
                                     <thead>
                                         <tr className="bg-[#F9FAFB] border-b border-[#CBCAD7]">
                                             <th className="text-left px-6 py-3 font-semibold text-[#6B7280]">Tên tổ chức</th>
@@ -229,7 +229,7 @@ export const AdminAccountRequests = (): JSX.Element => {
                                     </tbody>
                                 </table>
                             </div>
-                            <div className="px-6 py-3 bg-[#F9FAFB] border-t border-[#CBCAD7] flex justify-between items-center text-xs text-[#6B7280] [font-family:'Montserrat',Helvetica]">
+                            <div className="px-6 py-3 bg-[#F9FAFB] border-t border-[#CBCAD7] flex justify-between items-center text-xs text-[#6B7280] ">
                                 <span>Hiển thị {items.length} / {totalCount} yêu cầu</span>
                                 {totalPages > 1 && (
                                     <div className="flex gap-1">
@@ -255,10 +255,10 @@ export const AdminAccountRequests = (): JSX.Element => {
                         ) : selected && (
                             <>
                                 <div className="flex justify-between items-center">
-                                    <h2 className="[font-family:'Montserrat',Helvetica] font-bold text-lg">Chi tiết yêu cầu</h2>
+                                    <h2 className="font-bold text-lg">Chi tiết yêu cầu</h2>
                                     <button onClick={closeModal} className="text-gray-400 hover:text-gray-600 text-xl">✕</button>
                                 </div>
-                                <div className="grid grid-cols-2 gap-4 text-sm [font-family:'Montserrat',Helvetica]">
+                                <div className="grid grid-cols-2 gap-4 text-sm ">
                                     <div><p className="font-medium text-[#6B7280] text-xs uppercase mb-1">Tổ chức</p><p className="font-semibold text-[#1A1A2E]">{selected.organizationName}</p></div>
                                     <div><p className="font-medium text-[#6B7280] text-xs uppercase mb-1">Loại</p>{typeBadge(selected.type)}</div>
                                     <div><p className="font-medium text-[#6B7280] text-xs uppercase mb-1">Email</p><p className="font-semibold text-[#1A1A2E]">{selected.contactEmail}</p></div>
@@ -276,11 +276,11 @@ export const AdminAccountRequests = (): JSX.Element => {
                                 {selected.status === "Pending" && !actionMode && (
                                     <div className="flex gap-3">
                                         <button onClick={() => { setActionMode("approve"); setCreateEmail(selected.contactEmail); setCreateName(selected.organizationName); }}
-                                            className="flex-1 bg-[#10B981] text-white py-2.5 rounded-xl font-semibold text-sm hover:bg-[#059669] transition-colors [font-family:'Montserrat',Helvetica]">
+                                            className="flex-1 bg-[#10B981] text-white py-2.5 rounded-xl font-semibold text-sm hover:bg-[#059669] transition-colors ">
                                             ✅ Tạo tài khoản
                                         </button>
                                         <button onClick={() => setActionMode("reject")}
-                                            className="flex-1 bg-[#EF4444] text-white py-2.5 rounded-xl font-semibold text-sm hover:bg-[#DC2626] transition-colors [font-family:'Montserrat',Helvetica]">
+                                            className="flex-1 bg-[#EF4444] text-white py-2.5 rounded-xl font-semibold text-sm hover:bg-[#DC2626] transition-colors ">
                                             ❌ Từ chối
                                         </button>
                                     </div>
@@ -289,7 +289,7 @@ export const AdminAccountRequests = (): JSX.Element => {
                                 {/* Approve form */}
                                 {actionMode === "approve" && (
                                     <div className="bg-[#F0FDF4] p-4 rounded-xl space-y-3 border border-[#BBF7D0]">
-                                        <h3 className="font-bold text-sm text-[#065F46] [font-family:'Montserrat',Helvetica]">Tạo tài khoản mới</h3>
+                                        <h3 className="font-bold text-sm text-[#065F46] ">Tạo tài khoản mới</h3>
                                         <input value={createEmail} onChange={e => setCreateEmail(e.target.value)} placeholder="Email đăng nhập *"
                                             className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]/30" />
                                         <input value={createName} onChange={e => setCreateName(e.target.value)} placeholder="Họ tên đầy đủ *"
@@ -312,7 +312,7 @@ export const AdminAccountRequests = (): JSX.Element => {
                                 {/* Reject form */}
                                 {actionMode === "reject" && (
                                     <div className="bg-[#FEF2F2] p-4 rounded-xl space-y-3 border border-[#FECACA]">
-                                        <h3 className="font-bold text-sm text-[#991B1B] [font-family:'Montserrat',Helvetica]">Từ chối yêu cầu</h3>
+                                        <h3 className="font-bold text-sm text-[#991B1B] ">Từ chối yêu cầu</h3>
                                         <textarea value={rejectReason} onChange={e => setRejectReason(e.target.value)} placeholder="Lý do từ chối *"
                                             rows={3} className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-[#EF4444]/30 resize-none" />
                                         {actionError && <p className="text-xs text-red-600">{actionError}</p>}
@@ -328,7 +328,7 @@ export const AdminAccountRequests = (): JSX.Element => {
                                 )}
 
                                 <button onClick={closeModal}
-                                    className="w-full border border-[#CBCAD7] py-2.5 rounded-xl font-semibold hover:bg-gray-50 text-sm [font-family:'Montserrat',Helvetica]">
+                                    className="w-full border border-[#CBCAD7] py-2.5 rounded-xl font-semibold hover:bg-gray-50 text-sm ">
                                     Đóng
                                 </button>
                             </>

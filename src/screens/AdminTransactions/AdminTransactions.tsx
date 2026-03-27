@@ -9,19 +9,19 @@ import {
 } from "../../components/ui/breadcrumb";
 import { getAdminTransactions, type AdminTransactionDto, type AdminTransactionListResult } from "../../lib/api/admin";
 
-const TYPE_BADGES: Record<string, { label: string; color: string }> = {
-    OrderPayment: { label: "Thanh toán", color: "bg-emerald-100 text-emerald-700" },
-    ProviderPayment: { label: "Chi Nhà Cung Cấp", color: "bg-blue-100 text-blue-700" },
-    Refund: { label: "Hoàn tiền", color: "bg-orange-100 text-orange-700" },
+const TYPE_BADGES: Record<string, { label: string; cls: string }> = {
+    OrderPayment: { label: "Thanh toán", cls: "nb-badge nb-badge-green" },
+    ProviderPayment: { label: "Chi Nhà Cung Cấp", cls: "nb-badge nb-badge-blue" },
+    Refund: { label: "Hoàn tiền", cls: "nb-badge nb-badge-yellow" },
 };
 
-const STATUS_COLORS: Record<string, string> = {
-    Completed: "bg-green-100 text-green-700",
-    Pending: "bg-yellow-100 text-yellow-700",
-    Processing: "bg-blue-100 text-blue-700",
-    Failed: "bg-red-100 text-red-700",
-    Cancelled: "bg-gray-100 text-gray-600",
-    Refunded: "bg-purple-100 text-purple-700",
+const STATUS_BADGE: Record<string, string> = {
+    Completed: "nb-badge nb-badge-green",
+    Pending: "nb-badge nb-badge-yellow",
+    Processing: "nb-badge nb-badge-blue",
+    Failed: "nb-badge nb-badge-red",
+    Cancelled: "nb-badge bg-[#F3F4F6] text-[#6B7280]",
+    Refunded: "nb-badge nb-badge-purple",
 };
 
 const fmt = (n: number) => new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(n);
@@ -58,50 +58,50 @@ export default function AdminTransactions() {
     const totalPages = data ? Math.ceil(data.totalCount / data.pageSize) : 1;
 
     return (
-        <div className="bg-[#f6f7f8] w-full min-h-screen flex flex-col">
+        <div className="nb-page flex flex-col">
             <div className="flex flex-1 flex-col lg:flex-row">
-                <div className={`${isCollapsed ? "lg:w-16" : "lg:w-[20rem] xl:w-[23.75rem]"} flex-shrink-0 lg:sticky lg:top-0 lg:h-screen transition-all duration-300`}>
+                <div className={`${isCollapsed ? "lg:w-16" : "lg:w-[16rem]"} flex-shrink-0 lg:sticky lg:top-0 lg:h-screen transition-all duration-300`}>
                     <DashboardSidebar {...sidebarConfig} isCollapsed={isCollapsed} onToggle={toggle} onLogout={handleLogout} />
                 </div>
                 <div className="flex-1 flex flex-col min-w-0">
-                    <div className="bg-white border-b border-[#cbcad7] px-6 lg:px-10 py-5">
+                    <div className="nb-breadcrumb-bar">
                         <Breadcrumb><BreadcrumbList>
                             <BreadcrumbItem><BreadcrumbLink href="/admin/dashboard" className="font-semibold text-[#4c5769] text-base">Trang chủ</BreadcrumbLink></BreadcrumbItem>
                             <BreadcrumbSeparator className="text-[#cbcad7]">/</BreadcrumbSeparator>
-                            <BreadcrumbItem><BreadcrumbPage className="font-semibold text-[#4c5769] text-base">Giao dịch</BreadcrumbPage></BreadcrumbItem>
+                            <BreadcrumbItem><BreadcrumbPage className="font-bold text-[#1A1A2E] text-base">Giao dịch</BreadcrumbPage></BreadcrumbItem>
                         </BreadcrumbList></Breadcrumb>
                     </div>
                     <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-6">
 
-                        <h1 className="font-bold text-black text-[28px]">💳 Theo dõi giao dịch</h1>
+                        <h1 className="font-extrabold text-[#1A1A2E] text-[28px]">💳 Theo dõi giao dịch</h1>
 
-                        {/* Summary cards */}
+                        {/* Summary cards — NB stat cards */}
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            <div className="bg-white border border-[#CBCAD7] rounded-2xl p-5 hover:shadow-md transition-shadow">
-                                <p className="text-xs font-semibold text-[#6B7280] uppercase">Tổng giao dịch</p>
-                                <p className="text-2xl font-bold text-gray-900 mt-1">{data?.totalCount ?? 0}</p>
+                            <div className="nb-stat-card nb-card-purple">
+                                <p className="nb-stat-label">Tổng giao dịch</p>
+                                <p className="nb-stat-value mt-1">{data?.totalCount ?? 0}</p>
                             </div>
-                            <div className="bg-white border border-[#CBCAD7] rounded-2xl p-5 hover:shadow-md transition-shadow">
-                                <p className="text-xs font-semibold text-[#6B7280] uppercase">Tổng giá trị</p>
-                                <p className="text-2xl font-bold text-emerald-600 mt-1">{fmt(data?.totalAmountAll ?? 0)}</p>
+                            <div className="nb-stat-card nb-card-green">
+                                <p className="nb-stat-label">Tổng giá trị</p>
+                                <p className="nb-stat-value text-[#10B981] mt-1">{fmt(data?.totalAmountAll ?? 0)}</p>
                             </div>
-                            <div className="bg-white border border-[#CBCAD7] rounded-2xl p-5 hover:shadow-md transition-shadow">
-                                <p className="text-xs font-semibold text-[#6B7280] uppercase">Hôm nay</p>
-                                <p className="text-2xl font-bold text-blue-600 mt-1">{data?.todayCount ?? 0}</p>
+                            <div className="nb-stat-card nb-card-blue">
+                                <p className="nb-stat-label">Hôm nay</p>
+                                <p className="nb-stat-value text-[#3B82F6] mt-1">{data?.todayCount ?? 0}</p>
                             </div>
                         </div>
 
-                        {/* Filters */}
+                        {/* Filters — NB selects */}
                         <div className="flex items-center gap-3 flex-wrap">
                             <select value={filterType} onChange={(e) => { setFilterType(e.target.value); setPage(1); }}
-                                className="border border-[#CBCAD7] rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#6366F1]/30 bg-white">
+                                className="nb-select text-sm">
                                 <option value="">Tất cả loại</option>
                                 <option value="OrderPayment">Thanh toán</option>
                                 <option value="ProviderPayment">Chi Nhà Cung Cấp</option>
                                 <option value="Refund">Hoàn tiền</option>
                             </select>
                             <select value={filterStatus} onChange={(e) => { setFilterStatus(e.target.value); setPage(1); }}
-                                className="border border-[#CBCAD7] rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#6366F1]/30 bg-white">
+                                className="nb-select text-sm">
                                 <option value="">Tất cả trạng thái</option>
                                 <option value="Completed">Hoàn thành</option>
                                 <option value="Pending">Chờ xử lý</option>
@@ -111,18 +111,18 @@ export default function AdminTransactions() {
                             </select>
                         </div>
 
-                        {/* Table */}
-                        <div className="bg-white border border-[#CBCAD7] rounded-2xl overflow-hidden">
+                        {/* Table — NB table */}
+                        <div className="nb-card-static overflow-hidden">
                             <div className="overflow-x-auto">
-                                <table className="w-full text-sm">
-                                    <thead><tr className="bg-[#F9FAFB] border-b border-[#CBCAD7]">
-                                        <th className="text-left px-5 py-3 font-semibold text-[#6B7280] text-xs uppercase">Mã GD</th>
-                                        <th className="text-left px-5 py-3 font-semibold text-[#6B7280] text-xs uppercase">Thời gian</th>
-                                        <th className="text-left px-5 py-3 font-semibold text-[#6B7280] text-xs uppercase">Loại</th>
-                                        <th className="text-right px-5 py-3 font-semibold text-[#6B7280] text-xs uppercase">Số tiền</th>
-                                        <th className="text-left px-5 py-3 font-semibold text-[#6B7280] text-xs uppercase">Đơn hàng</th>
-                                        <th className="text-left px-5 py-3 font-semibold text-[#6B7280] text-xs uppercase">Ví</th>
-                                        <th className="text-left px-5 py-3 font-semibold text-[#6B7280] text-xs uppercase">Trạng thái</th>
+                                <table className="nb-table">
+                                    <thead><tr>
+                                        <th>Mã GD</th>
+                                        <th>Thời gian</th>
+                                        <th>Loại</th>
+                                        <th className="text-right">Số tiền</th>
+                                        <th>Đơn hàng</th>
+                                        <th>Ví</th>
+                                        <th>Trạng thái</th>
                                     </tr></thead>
                                     <tbody>
                                         {loading ? (
@@ -130,19 +130,19 @@ export default function AdminTransactions() {
                                         ) : data?.items.length === 0 ? (
                                             <tr><td colSpan={7} className="px-5 py-8 text-center text-[#9CA3AF]">Không có giao dịch nào</td></tr>
                                         ) : data?.items.map((t: AdminTransactionDto) => (
-                                            <tr key={t.id} className="border-b border-gray-100 hover:bg-[#F9FAFB] transition-colors">
-                                                <td className="px-5 py-3 font-mono text-xs text-gray-500">{t.id.substring(0, 8).toUpperCase()}</td>
-                                                <td className="px-5 py-3 text-gray-600">{new Date(t.createdAt).toLocaleString("vi-VN")}</td>
-                                                <td className="px-5 py-3">
-                                                    <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${TYPE_BADGES[t.transactionType]?.color ?? "bg-gray-100 text-gray-600"}`}>
+                                            <tr key={t.id}>
+                                                <td className="font-mono text-xs text-gray-500">{t.id.substring(0, 8).toUpperCase()}</td>
+                                                <td>{new Date(t.createdAt).toLocaleString("vi-VN")}</td>
+                                                <td>
+                                                    <span className={TYPE_BADGES[t.transactionType]?.cls ?? "nb-badge"}>
                                                         {TYPE_BADGES[t.transactionType]?.label ?? t.transactionType}
                                                     </span>
                                                 </td>
-                                                <td className="px-5 py-3 text-right font-bold text-[#1A1A2E]">{fmt(t.amount)}</td>
-                                                <td className="px-5 py-3 font-mono text-xs text-[#4338CA]">{t.orderCode ?? "—"}</td>
-                                                <td className="px-5 py-3 text-gray-600">{t.walletOwner ?? "—"}</td>
-                                                <td className="px-5 py-3">
-                                                    <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${STATUS_COLORS[t.status] ?? "bg-gray-100 text-gray-600"}`}>
+                                                <td className="text-right font-extrabold text-[#1A1A2E]">{fmt(t.amount)}</td>
+                                                <td className="font-mono text-xs text-[#4338CA]">{t.orderCode ?? "—"}</td>
+                                                <td>{t.walletOwner ?? "—"}</td>
+                                                <td>
+                                                    <span className={STATUS_BADGE[t.status] ?? "nb-badge"}>
                                                         {t.status}
                                                     </span>
                                                 </td>
@@ -154,13 +154,13 @@ export default function AdminTransactions() {
 
                             {/* Pagination */}
                             {totalPages > 1 && (
-                                <div className="flex items-center justify-between px-5 py-3 border-t border-gray-100">
-                                    <span className="text-sm text-[#6B7280]">Trang {page}/{totalPages} ({data?.totalCount} giao dịch)</span>
+                                <div className="flex items-center justify-between px-5 py-3 border-t-2 border-[#1A1A2E] bg-[#F9FAFB]">
+                                    <span className="text-sm text-[#6B7280] font-semibold">Trang {page}/{totalPages} ({data?.totalCount} giao dịch)</span>
                                     <div className="flex gap-2">
                                         <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page <= 1}
-                                            className="border border-[#CBCAD7] px-3 py-1.5 rounded-xl text-sm disabled:opacity-40 hover:bg-gray-50">Trước</button>
+                                            className="nb-btn nb-btn-outline nb-btn-sm text-sm disabled:opacity-40">Trước</button>
                                         <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page >= totalPages}
-                                            className="border border-[#CBCAD7] px-3 py-1.5 rounded-xl text-sm disabled:opacity-40 hover:bg-gray-50">Sau</button>
+                                            className="nb-btn nb-btn-outline nb-btn-sm text-sm disabled:opacity-40">Sau</button>
                                     </div>
                                 </div>
                             )}

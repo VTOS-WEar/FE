@@ -35,7 +35,7 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; 
 function StatusBadge({ status }: { status: string }) {
     const cfg = STATUS_CONFIG[status] || STATUS_CONFIG.Draft;
     return (
-        <span className={`inline-flex items-center px-3 py-1.5 rounded-full border text-sm [font-family:'Montserrat',Helvetica] font-semibold ${cfg.color} ${cfg.bg} ${cfg.border}`}>
+        <span className={`inline-flex items-center px-3 py-1.5 rounded-full border text-sm font-semibold ${cfg.color} ${cfg.bg} ${cfg.border}`}>
             {cfg.label}
         </span>
     );
@@ -136,22 +136,22 @@ export const CampaignDetail = (): JSX.Element => {
     const daysLeft = campaign && isActive ? Math.max(0, Math.ceil((new Date(campaign.endDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24))) : 0;
 
     return (
-        <div className="bg-[#f6f7f8] w-full min-h-screen flex flex-col">
+        <div className="nb-page flex flex-col">
             <div className="flex flex-1 flex-col lg:flex-row">
-                <div className={`${isCollapsed ? "lg:w-16" : "lg:w-[20rem] xl:w-[23.75rem]"} flex-shrink-0 lg:sticky lg:top-0 lg:h-screen transition-all duration-300`}>
+                <div className={`${isCollapsed ? "lg:w-16" : "lg:w-[16rem]"} flex-shrink-0 lg:sticky lg:top-0 lg:h-screen transition-all duration-300`}>
                     <DashboardSidebar {...sidebarConfig} name={schoolName} isCollapsed={isCollapsed} onToggle={toggle} onLogout={handleLogout} />
                 </div>
 
                 <div className="flex-1 flex flex-col min-w-0">
                     {/* Breadcrumb */}
-                    <div className="bg-white border-b border-[#cbcad7] px-6 lg:px-10 py-5 flex items-center justify-between">
+                    <div className="nb-breadcrumb-bar px-6 lg:px-10 py-5 flex items-center justify-between">
                         <Breadcrumb>
                             <BreadcrumbList>
-                                <BreadcrumbItem><BreadcrumbLink href="/school/dashboard" className="[font-family:'Montserrat',Helvetica] font-semibold text-[#4c5769] text-base">Trang chủ</BreadcrumbLink></BreadcrumbItem>
+                                <BreadcrumbItem><BreadcrumbLink href="/school/dashboard" className="font-semibold text-[#4c5769] text-base">Trang chủ</BreadcrumbLink></BreadcrumbItem>
                                 <BreadcrumbSeparator className="text-[#cbcad7]">/</BreadcrumbSeparator>
-                                <BreadcrumbItem><BreadcrumbLink href="/school/campaigns" className="[font-family:'Montserrat',Helvetica] font-semibold text-[#4c5769] text-base">Quản lý chiến dịch</BreadcrumbLink></BreadcrumbItem>
+                                <BreadcrumbItem><BreadcrumbLink href="/school/campaigns" className="font-semibold text-[#4c5769] text-base">Quản lý chiến dịch</BreadcrumbLink></BreadcrumbItem>
                                 <BreadcrumbSeparator className="text-[#cbcad7]">/</BreadcrumbSeparator>
-                                <BreadcrumbItem><BreadcrumbPage className="[font-family:'Montserrat',Helvetica] font-semibold text-[#4c5769] text-base">Chi tiết</BreadcrumbPage></BreadcrumbItem>
+                                <BreadcrumbItem><BreadcrumbPage className="font-semibold text-[#4c5769] text-base">Chi tiết</BreadcrumbPage></BreadcrumbItem>
                             </BreadcrumbList>
                         </Breadcrumb>
                     </div>
@@ -165,8 +165,8 @@ export const CampaignDetail = (): JSX.Element => {
                             </div>
                         ) : !campaign ? (
                             <div className="bg-white rounded-[16px] p-12 border border-[#cbcad7] text-center">
-                                <p className="[font-family:'Montserrat',Helvetica] font-semibold text-[#4C5769] text-lg">Không tìm thấy chiến dịch</p>
-                                <button onClick={() => navigate("/school/campaigns")} className="mt-4 px-5 py-2.5 rounded-[10px] bg-[#6938EF] text-white [font-family:'Montserrat',Helvetica] font-semibold text-sm">Quay lại</button>
+                                <p className="font-semibold text-[#4C5769] text-lg">Không tìm thấy chiến dịch</p>
+                                <button onClick={() => navigate("/school/campaigns")} className="mt-4 px-5 py-2.5 rounded-[10px] bg-[#6938EF] text-white font-semibold text-sm">Quay lại</button>
                             </div>
                         ) : (
                             <>
@@ -178,10 +178,10 @@ export const CampaignDetail = (): JSX.Element => {
                                         </button>
                                         <div>
                                             <div className="flex items-center gap-3 mb-1">
-                                                <h1 className="[font-family:'Montserrat',Helvetica] font-bold text-black text-[28px] lg:text-[32px] leading-[1.22]">{campaign.campaignName}</h1>
+                                                <h1 className="font-bold text-black text-[28px] lg:text-[32px] leading-[1.22]">{campaign.campaignName}</h1>
                                                 <StatusBadge status={campaign.status} />
                                             </div>
-                                            <p className="[font-family:'Montserrat',Helvetica] font-medium text-[#4c5769] text-sm">{campaign.description || "Không có mô tả"}</p>
+                                            <p className="font-medium text-[#4c5769] text-sm">{campaign.description || "Không có mô tả"}</p>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-3 flex-shrink-0">
@@ -189,7 +189,7 @@ export const CampaignDetail = (): JSX.Element => {
                                             <button
                                                 onClick={handleLock}
                                                 disabled={locking}
-                                                className="px-5 py-2.5 rounded-[10px] bg-[#EF4444] hover:bg-[#DC2626] text-white [font-family:'Montserrat',Helvetica] font-semibold text-sm transition-colors disabled:opacity-50 flex items-center gap-2"
+                                                className="px-5 py-2.5 rounded-[10px] bg-[#EF4444] hover:bg-[#DC2626] text-white font-semibold text-sm transition-colors disabled:opacity-50 flex items-center gap-2"
                                             >
                                                 <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z" /></svg>
                                                 Khóa chiến dịch
@@ -199,7 +199,7 @@ export const CampaignDetail = (): JSX.Element => {
                                             <button
                                                 onClick={openGenModal}
                                                 disabled={generating}
-                                                className="px-5 py-2.5 rounded-[10px] bg-[#6938EF] hover:bg-[#5B2ED4] text-white [font-family:'Montserrat',Helvetica] font-semibold text-sm transition-colors disabled:opacity-50 flex items-center gap-2"
+                                                className="px-5 py-2.5 rounded-[10px] bg-[#6938EF] hover:bg-[#5B2ED4] text-white font-semibold text-sm transition-colors disabled:opacity-50 flex items-center gap-2"
                                             >
                                                 <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z" /></svg>
                                                 {generating ? "Đang tạo..." : "Tạo đơn sản xuất"}
@@ -210,36 +210,36 @@ export const CampaignDetail = (): JSX.Element => {
 
                                 {/* Stats cards */}
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                                    <div className="bg-white border border-[#cbcad7] rounded-[16px] p-5">
-                                        <p className="[font-family:'Montserrat',Helvetica] font-semibold text-[#97A3B6] text-xs uppercase tracking-wider mb-1">Trạng thái</p>
+                                    <div className="nb-card-static p-5">
+                                        <p className="font-semibold text-[#97A3B6] text-xs uppercase tracking-wider mb-1">Trạng thái</p>
                                         <StatusBadge status={campaign.status} />
                                     </div>
-                                    <div className="bg-white border border-[#cbcad7] rounded-[16px] p-5">
-                                        <p className="[font-family:'Montserrat',Helvetica] font-semibold text-[#97A3B6] text-xs uppercase tracking-wider mb-1">Thời gian</p>
-                                        <p className="[font-family:'Montserrat',Helvetica] font-bold text-[#1A1A2E] text-base">{formatDate(campaign.startDate)} — {formatDate(campaign.endDate)}</p>
-                                        {isActive && daysLeft > 0 && <p className="[font-family:'Montserrat',Helvetica] font-semibold text-[#6938EF] text-xs mt-1">Còn {daysLeft} ngày</p>}
+                                    <div className="nb-card-static p-5">
+                                        <p className="font-semibold text-[#97A3B6] text-xs uppercase tracking-wider mb-1">Thời gian</p>
+                                        <p className="font-bold text-[#1A1A2E] text-base">{formatDate(campaign.startDate)} — {formatDate(campaign.endDate)}</p>
+                                        {isActive && daysLeft > 0 && <p className="font-semibold text-[#6938EF] text-xs mt-1">Còn {daysLeft} ngày</p>}
                                     </div>
-                                    <div className="bg-white border border-[#cbcad7] rounded-[16px] p-5">
-                                        <p className="[font-family:'Montserrat',Helvetica] font-semibold text-[#97A3B6] text-xs uppercase tracking-wider mb-1">Sản phẩm</p>
-                                        <p className="[font-family:'Montserrat',Helvetica] font-bold text-[#1A1A2E] text-2xl">{campaign.outfits.length}</p>
+                                    <div className="nb-card-static p-5">
+                                        <p className="font-semibold text-[#97A3B6] text-xs uppercase tracking-wider mb-1">Sản phẩm</p>
+                                        <p className="font-bold text-[#1A1A2E] text-2xl">{campaign.outfits.length}</p>
                                     </div>
-                                    <div className="bg-white border border-[#cbcad7] rounded-[16px] p-5">
-                                        <p className="[font-family:'Montserrat',Helvetica] font-semibold text-[#97A3B6] text-xs uppercase tracking-wider mb-1">Đơn hàng</p>
-                                        <p className="[font-family:'Montserrat',Helvetica] font-bold text-[#1A1A2E] text-2xl">{campaign.totalOrders}</p>
+                                    <div className="nb-card-static p-5">
+                                        <p className="font-semibold text-[#97A3B6] text-xs uppercase tracking-wider mb-1">Đơn hàng</p>
+                                        <p className="font-bold text-[#1A1A2E] text-2xl">{campaign.totalOrders}</p>
                                     </div>
                                 </div>
 
                                 {/* Outfits list */}
-                                <div className="bg-white border border-[#cbcad7] rounded-[16px] p-6">
+                                <div className="nb-card-static p-6">
                                     <div className="flex items-center gap-2 mb-5">
                                         <div className="w-6 h-6 rounded-full bg-[#FEF3C7] flex items-center justify-center">
                                             <svg className="w-3.5 h-3.5 text-[#F59E0B]" viewBox="0 0 24 24" fill="currentColor"><path d="M18 6h-2c0-2.21-1.79-4-4-4S8 3.79 8 6H6c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-6-2c1.1 0 2 .9 2 2h-4c0-1.1.9-2 2-2z" /></svg>
                                         </div>
-                                        <h2 className="[font-family:'Montserrat',Helvetica] font-bold text-[#1a1a2e] text-lg">Sản phẩm trong chiến dịch</h2>
+                                        <h2 className="font-bold text-[#1a1a2e] text-lg">Sản phẩm trong chiến dịch</h2>
                                     </div>
 
                                     {campaign.outfits.length === 0 ? (
-                                        <p className="[font-family:'Montserrat',Helvetica] font-medium text-[#97A3B6] text-sm text-center py-6">Không có sản phẩm nào</p>
+                                        <p className="font-medium text-[#97A3B6] text-sm text-center py-6">Không có sản phẩm nào</p>
                                     ) : (
                                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                                             {campaign.outfits.map((outfit) => (
@@ -254,13 +254,13 @@ export const CampaignDetail = (): JSX.Element => {
                                                         )}
                                                     </div>
                                                     <div className="flex-1 min-w-0">
-                                                        <p className="[font-family:'Montserrat',Helvetica] font-semibold text-[#1A1A2E] text-sm truncate">{outfit.outfitName}</p>
-                                                        <p className="[font-family:'Montserrat',Helvetica] font-bold text-[#6938EF] text-sm mt-0.5">{new Intl.NumberFormat("vi-VN").format(outfit.campaignPrice)} VND</p>
-                                                        {outfit.maxQuantity && <p className="[font-family:'Montserrat',Helvetica] font-medium text-[#97A3B6] text-xs mt-0.5">Tối đa: {outfit.maxQuantity}</p>}
+                                                        <p className="font-semibold text-[#1A1A2E] text-sm truncate">{outfit.outfitName}</p>
+                                                        <p className="font-bold text-[#6938EF] text-sm mt-0.5">{new Intl.NumberFormat("vi-VN").format(outfit.campaignPrice)} VND</p>
+                                                        {outfit.maxQuantity && <p className="font-medium text-[#97A3B6] text-xs mt-0.5">Tối đa: {outfit.maxQuantity}</p>}
                                                         {outfit.providerId && (() => {
                                                             const prov = providers.find(p => p.id === outfit.providerId);
                                                             return prov ? (
-                                                                <p className="[font-family:'Montserrat',Helvetica] font-medium text-[#3B82F6] text-xs mt-1 flex items-center gap-1">
+                                                                <p className="font-medium text-[#3B82F6] text-xs mt-1 flex items-center gap-1">
                                                                     <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17V9.5h2.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z" /></svg>
                                                                     {prov.providerName}
                                                                 </p>
@@ -274,21 +274,21 @@ export const CampaignDetail = (): JSX.Element => {
                                 </div>
 
                                 {/* Info */}
-                                <div className="bg-white border border-[#cbcad7] rounded-[16px] p-6">
+                                <div className="nb-card-static p-6">
                                     <div className="flex items-center gap-2 mb-4">
                                         <div className="w-6 h-6 rounded-full bg-[#E8F4FD] flex items-center justify-center">
                                             <svg className="w-3.5 h-3.5 text-[#3B82F6]" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" /></svg>
                                         </div>
-                                        <h2 className="[font-family:'Montserrat',Helvetica] font-bold text-[#1a1a2e] text-lg">Thông tin thêm</h2>
+                                        <h2 className="font-bold text-[#1a1a2e] text-lg">Thông tin thêm</h2>
                                     </div>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                                         <div>
-                                            <p className="[font-family:'Montserrat',Helvetica] font-semibold text-[#97A3B6] text-xs uppercase tracking-wider mb-1">Ngày tạo</p>
-                                            <p className="[font-family:'Montserrat',Helvetica] font-medium text-[#1A1A2E]">{formatDate(campaign.createdAt)}</p>
+                                            <p className="font-semibold text-[#97A3B6] text-xs uppercase tracking-wider mb-1">Ngày tạo</p>
+                                            <p className="font-medium text-[#1A1A2E]">{formatDate(campaign.createdAt)}</p>
                                         </div>
                                         <div>
-                                            <p className="[font-family:'Montserrat',Helvetica] font-semibold text-[#97A3B6] text-xs uppercase tracking-wider mb-1">Mã chiến dịch</p>
-                                            <p className="[font-family:'Montserrat',Helvetica] font-medium text-[#1A1A2E] font-mono text-xs">{campaign.campaignId}</p>
+                                            <p className="font-semibold text-[#97A3B6] text-xs uppercase tracking-wider mb-1">Mã chiến dịch</p>
+                                            <p className="font-medium text-[#1A1A2E] font-mono text-xs">{campaign.campaignId}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -302,28 +302,28 @@ export const CampaignDetail = (): JSX.Element => {
             {showGenModal && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
                     <div className="bg-white rounded-[20px] p-8 w-[90%] max-w-[500px] shadow-2xl">
-                        <h2 className="[font-family:'Montserrat',Helvetica] font-bold text-[#1a1a2e] text-xl mb-6 flex items-center gap-2">
+                        <h2 className="font-bold text-[#1a1a2e] text-xl mb-6 flex items-center gap-2">
                             🏭 Tạo đơn sản xuất
                         </h2>
 
                         <div className="space-y-4">
                             <div>
-                                <label className="block [font-family:'Montserrat',Helvetica] font-semibold text-[#4C5769] text-sm mb-1.5">Tên lô sản xuất *</label>
+                                <label className="block font-semibold text-[#4C5769] text-sm mb-1.5">Tên lô sản xuất *</label>
                                 <input
                                     type="text"
                                     value={genBatchName}
                                     onChange={e => setGenBatchName(e.target.value)}
-                                    className="w-full px-4 py-2.5 rounded-[10px] border border-[#CBCAD7] [font-family:'Montserrat',Helvetica] text-sm focus:outline-none focus:border-[#6938EF] transition-colors"
+                                    className="w-full px-4 py-2.5 rounded-[10px] border border-[#CBCAD7] text-sm focus:outline-none focus:border-[#6938EF] transition-colors"
                                     placeholder="VD: Đơn SX - Chiến dịch Hè 2026"
                                 />
                             </div>
 
                             <div>
-                                <label className="block [font-family:'Montserrat',Helvetica] font-semibold text-[#4C5769] text-sm mb-1.5">Nhà cung cấp *</label>
+                                <label className="block font-semibold text-[#4C5769] text-sm mb-1.5">Nhà cung cấp *</label>
                                 <select
                                     value={genProviderId}
                                     onChange={e => setGenProviderId(e.target.value)}
-                                    className="w-full px-4 py-2.5 rounded-[10px] border border-[#CBCAD7] [font-family:'Montserrat',Helvetica] text-sm focus:outline-none focus:border-[#6938EF] transition-colors bg-white"
+                                    className="w-full px-4 py-2.5 rounded-[10px] border border-[#CBCAD7] text-sm focus:outline-none focus:border-[#6938EF] transition-colors bg-white"
                                 >
                                     <option value="">-- Chọn nhà cung cấp --</option>
                                     {providers.map(p => (
@@ -333,12 +333,12 @@ export const CampaignDetail = (): JSX.Element => {
                             </div>
 
                             <div>
-                                <label className="block [font-family:'Montserrat',Helvetica] font-semibold text-[#4C5769] text-sm mb-1.5">Hạn giao hàng *</label>
+                                <label className="block font-semibold text-[#4C5769] text-sm mb-1.5">Hạn giao hàng *</label>
                                 <input
                                     type="date"
                                     value={genDeadline}
                                     onChange={e => setGenDeadline(e.target.value)}
-                                    className="w-full px-4 py-2.5 rounded-[10px] border border-[#CBCAD7] [font-family:'Montserrat',Helvetica] text-sm focus:outline-none focus:border-[#6938EF] transition-colors"
+                                    className="w-full px-4 py-2.5 rounded-[10px] border border-[#CBCAD7] text-sm focus:outline-none focus:border-[#6938EF] transition-colors"
                                 />
                             </div>
                         </div>
@@ -346,14 +346,14 @@ export const CampaignDetail = (): JSX.Element => {
                         <div className="flex gap-3 mt-6">
                             <button
                                 onClick={() => setShowGenModal(false)}
-                                className="flex-1 py-2.5 rounded-[10px] border border-[#CBCAD7] bg-white [font-family:'Montserrat',Helvetica] font-semibold text-sm text-[#4C5769] hover:bg-gray-50 transition-colors"
+                                className="flex-1 py-2.5 rounded-[10px] border border-[#CBCAD7] bg-white font-semibold text-sm text-[#4C5769] hover:bg-gray-50 transition-colors"
                             >
                                 Hủy
                             </button>
                             <button
                                 onClick={handleGenerateProductionOrder}
                                 disabled={generating || !genBatchName.trim() || !genProviderId || !genDeadline}
-                                className="flex-1 py-2.5 rounded-[10px] bg-[#6938EF] hover:bg-[#5B2ED4] text-white [font-family:'Montserrat',Helvetica] font-semibold text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="flex-1 py-2.5 rounded-[10px] bg-[#6938EF] hover:bg-[#5B2ED4] text-white font-semibold text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {generating ? "Đang tạo..." : "Tạo đơn sản xuất"}
                             </button>
@@ -370,7 +370,7 @@ export const CampaignDetail = (): JSX.Element => {
                     ) : (
                         <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" /></svg>
                     )}
-                    <span className="[font-family:'Montserrat',Helvetica] font-semibold text-sm">{toast.message}</span>
+                    <span className="font-semibold text-sm">{toast.message}</span>
                 </div>
             )}
         </div>
