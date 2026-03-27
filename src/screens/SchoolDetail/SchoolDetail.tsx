@@ -243,52 +243,52 @@ export const SchoolDetail = (): JSX.Element => {
         <motion.div custom={1} variants={fadeUp} initial="hidden" animate="visible">
           <Card className="bg-white/80 backdrop-blur-3xl rounded-[32px] border border-purple-100/30 shadow-[0_16px_48px_rgba(124,58,237,0.05)] p-6 lg:p-10 mb-12 flex flex-col md:flex-row gap-8 items-start relative overflow-hidden group hover:shadow-[0_24px_64px_rgba(124,58,237,0.1)] transition-all duration-700">
             {/* Ambient inner glow */}
-            <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-purple-400/5 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2 pointer-events-none group-hover:bg-purple-400/10 transition-colors duration-700" />
+            <div className="absolute top-0 right-0 w-[240px] h-[240px] bg-purple-400/5 rounded-full blur-[60px] -translate-y-1/2 translate-x-1/2 pointer-events-none group-hover:bg-purple-400/10 transition-colors duration-700" />
 
             {/* Logo */}
-            <div className="relative w-32 h-32 lg:w-40 lg:h-40 rounded-[28px] overflow-hidden border border-gray-100 flex-shrink-0 bg-white flex items-center justify-center shadow-lg shadow-purple-900/5 z-10 group-hover:scale-105 transition-transform duration-500">
+            <div className="relative w-24 h-24 lg:w-32 lg:h-32 rounded-[24px] overflow-hidden border border-gray-100 flex-shrink-0 bg-white flex items-center justify-center shadow-lg shadow-purple-900/5 z-10 group-hover:scale-105 transition-transform duration-500">
               {school.logoURL
                 ? <img src={school.logoURL} alt={school.schoolName} className="w-full h-full object-cover" />
-                : <GraduationCap className="w-16 h-16 text-purple-200" />}
+                : <GraduationCap className="w-12 h-12 text-purple-200" />}
             </div>
 
             {/* School Info */}
             <div className="flex-1 z-10 w-full">
               <div className="flex justify-between items-start gap-4 flex-col lg:flex-row mb-2 w-full">
                 <div className="flex-1">
-                  <h1 className="font-baloo tracking-tight font-extrabold text-3xl lg:text-4xl text-gray-900 mb-4 leading-tight">
+                  <h1 className="font-baloo tracking-tight font-extrabold text-2xl lg:text-3xl text-gray-900 mb-3 leading-tight">
                     {school.schoolName}
                   </h1>
                   
                   {/* Address */}
                   {contact.address && (
-                    <div className="flex items-start gap-3 text-gray-600 mb-5">
-                      <div className="p-2 bg-purple-50 rounded-xl text-purple-600 shrink-0 shadow-sm border border-purple-100/50">
-                        <MapPin className="w-4 h-4 shadow-sm" />
+                    <div className="flex items-start gap-2.5 text-gray-600 mb-4">
+                      <div className="p-1.5 bg-purple-50 rounded-lg text-purple-600 shrink-0 shadow-sm border border-purple-100/50">
+                        <MapPin className="w-3.5 h-3.5 shadow-sm" />
                       </div>
-                      <span className="text-[15px] font-medium leading-relaxed max-w-2xl mt-1.5">
+                      <span className="text-[14px] font-medium leading-relaxed max-w-2xl mt-1">
                         {contact.address}
                       </span>
                     </div>
                   )}
 
                   {/* Metadata Chips */}
-                  <div className="flex flex-wrap items-center gap-3">
+                  <div className="flex flex-wrap items-center gap-2.5">
                     {contact.phone && (
-                      <div className="flex items-center gap-2 bg-white px-3.5 py-2 rounded-xl border border-gray-200 shadow-sm shadow-gray-200/20 hover:border-purple-300 hover:shadow-purple-100 transition-all cursor-default">
-                        <Phone className="w-4 h-4 text-purple-500" />
+                      <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-gray-200 shadow-sm shadow-gray-200/20 hover:border-purple-300 hover:shadow-purple-100 transition-all cursor-default">
+                        <Phone className="w-3.5 h-3.5 text-purple-500" />
                         <span className="text-[13px] font-bold text-gray-700 tracking-wide">{contact.phone}</span>
                       </div>
                     )}
                     {contact.email && (
-                      <div className="flex items-center gap-2 bg-white px-3.5 py-2 rounded-xl border border-gray-200 shadow-sm shadow-gray-200/20 hover:border-purple-300 hover:shadow-purple-100 transition-all cursor-default">
-                        <Mail className="w-4 h-4 text-purple-500" />
+                      <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-gray-200 shadow-sm shadow-gray-200/20 hover:border-purple-300 hover:shadow-purple-100 transition-all cursor-default">
+                        <Mail className="w-3.5 h-3.5 text-purple-500" />
                         <span className="text-[13px] font-bold text-gray-700 tracking-wide">{contact.email}</span>
                       </div>
                     )}
                     {contact.foundedYear && (
-                      <div className="flex items-center gap-2 bg-white px-3.5 py-2 rounded-xl border border-gray-200 shadow-sm shadow-gray-200/20 hover:border-purple-300 hover:shadow-purple-100 transition-all cursor-default">
-                        <Calendar className="w-4 h-4 text-purple-500" />
+                      <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-gray-200 shadow-sm shadow-gray-200/20 hover:border-purple-300 hover:shadow-purple-100 transition-all cursor-default">
+                        <Calendar className="w-3.5 h-3.5 text-purple-500" />
                         <span className="text-[13px] font-bold text-gray-500">Thành lập: <span className="text-gray-900">{contact.foundedYear}</span></span>
                       </div>
                     )}
@@ -342,25 +342,25 @@ export const SchoolDetail = (): JSX.Element => {
                     className={`bg-white rounded-[24px] overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-gray-100/60 transition-all flex flex-col sm:flex-row ${canViewDetail ? "hover:border-purple-200 hover:shadow-[0_20px_48px_-12px_rgba(124,58,237,0.15)] cursor-pointer group" : ""}`}>
 
                     {/* Left/Top Highlight: Niên Khóa */}
-                    <div className="bg-gradient-to-br from-purple-500 to-indigo-600 p-6 flex flex-col justify-center items-center text-white shrink-0 sm:w-[150px] md:w-[170px] relative overflow-hidden">
-                      <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
-                      <Calendar className="w-7 h-7 mb-2.5 text-white/90 drop-shadow-md z-10" />
-                      <span className="text-[10px] uppercase tracking-[0.15em] font-bold text-white/80 mb-1 z-10">Niên khóa</span>
-                      <span className="font-baloo font-extrabold text-[24px] md:text-[28px] leading-none text-center drop-shadow-md z-10">
+                    <div className="bg-gradient-to-br from-purple-500 to-indigo-600 p-5 flex flex-col justify-center items-center text-white shrink-0 sm:w-[130px] md:w-[150px] relative overflow-hidden">
+                      <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full blur-xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+                      <Calendar className="w-6 h-6 mb-2 text-white/90 drop-shadow-sm z-10" />
+                      <span className="text-[10px] uppercase tracking-[0.1em] font-bold text-white/80 mb-1 z-10">Niên khóa</span>
+                      <span className="font-baloo font-extrabold text-[20px] md:text-[22px] leading-none text-center drop-shadow-sm z-10">
                         {academicYearStr}
                       </span>
                     </div>
 
                     {/* Right/Bottom Context */}
-                    <div className="flex-1 p-6 flex flex-col justify-center relative bg-white">
-                      <div className="flex items-start justify-between gap-4 mb-3">
+                    <div className="flex-1 p-5 flex flex-col justify-center relative bg-white">
+                      <div className="flex items-start justify-between gap-4 mb-2">
                         <div className="flex-1 min-w-0">
-                          <h3 className="font-bold text-lg text-gray-900 group-hover:text-purple-600 transition-colors leading-tight line-clamp-2 md:line-clamp-1">{c.campaignName}</h3>
+                          <h3 className="font-bold text-[15px] text-gray-900 group-hover:text-purple-600 transition-colors leading-tight line-clamp-2 md:line-clamp-1">{c.campaignName}</h3>
                         </div>
-                        <span className={`shrink-0 inline-flex text-[10px] uppercase tracking-wider font-extrabold px-3 py-1.5 rounded-lg shadow-sm ${s.color}`}>{s.label}</span>
+                        <span className={`shrink-0 inline-flex text-[10px] uppercase tracking-wider font-bold px-2.5 py-1 rounded-md shadow-sm ${s.color}`}>{s.label}</span>
                       </div>
 
-                      {c.description && <p className="text-[13px] font-medium text-gray-500 mb-4 line-clamp-2 leading-relaxed">{c.description}</p>}
+                      {c.description && <p className="text-[13px] font-medium text-gray-500 mb-3 line-clamp-2 leading-relaxed">{c.description}</p>}
 
                       <div className="flex items-center gap-4 mt-auto pt-2 flex-wrap">
                         <div className="flex items-center gap-1.5 font-bold text-[13px] text-gray-500 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100/50">
@@ -374,13 +374,13 @@ export const SchoolDetail = (): JSX.Element => {
                       </div>
 
                       {canViewDetail ? (
-                        <div className="absolute bottom-6 right-6 lg:opacity-0 lg:-translate-x-3 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
-                          <div className="w-9 h-9 rounded-full bg-purple-50 flex items-center justify-center text-purple-600 group-hover:bg-purple-600 group-hover:text-white transition-colors shadow-sm">
-                            <ArrowRight className="w-4 h-4" />
+                        <div className="absolute bottom-5 right-5 lg:opacity-0 lg:-translate-x-3 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
+                          <div className="w-8 h-8 rounded-full bg-purple-50 flex items-center justify-center text-purple-600 group-hover:bg-purple-600 group-hover:text-white transition-colors shadow-sm">
+                            <ArrowRight className="w-3.5 h-3.5" />
                           </div>
                         </div>
                       ) : (
-                        <div className="absolute bottom-6 right-6">
+                        <div className="absolute bottom-5 right-5">
                           <Badge variant="outline" className="text-[10px] bg-gray-50 text-gray-400 border-gray-200">Đăng nhập</Badge>
                         </div>
                       )}

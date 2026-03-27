@@ -381,7 +381,7 @@ const SchoolList = () => {
         />
       </div>
 
-      <div className="relative z-10 max-w-[1360px] mx-auto px-32 xl:px-28 py-10 min-h-screen">
+      <div className="relative z-10 max-w-[1360px] mx-auto px-32 xl:px-28 py-10">
 
         {/* ═══════════════════════════════════════════════════
             BREADCRUMB

@@ -430,12 +430,12 @@ export const OutfitDetail = (): JSX.Element => {
       {/* ── Ambient Glow Background ───────── */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
         <motion.div
-          className="absolute top-[-5%] left-[-10%] w-[600px] h-[600px] bg-gradient-to-br from-blue-100/50 to-purple-50/40 rounded-full blur-[120px]"
+          className="absolute top-[-5%] left-[-10%] w-[400px] h-[400px] bg-gradient-to-br from-blue-100/50 to-purple-50/40 rounded-full blur-[80px]"
           animate={{ scale: [1, 1.1, 1], opacity: [0.5, 0.7, 0.5] }}
           transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
         />
         <motion.div
-          className="absolute bottom-[10%] right-[-5%] w-[500px] h-[500px] bg-gradient-to-tr from-sky-50/50 to-indigo-50/30 rounded-full blur-[100px]"
+          className="absolute bottom-[10%] right-[-5%] w-[300px] h-[300px] bg-gradient-to-tr from-sky-50/50 to-indigo-50/30 rounded-full blur-[60px]"
           animate={{ scale: [1, 1.05, 1], opacity: [0.4, 0.6, 0.4] }}
           transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 2 }}
         />
@@ -466,16 +466,16 @@ export const OutfitDetail = (): JSX.Element => {
         </motion.div>
 
         {/* ───── Hero: Image + Info ───── */}
-        <div className="flex flex-col lg:flex-row gap-10 lg:gap-14 mb-16">
+        <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 mb-16">
           {/* Left: Image gallery */}
-          <motion.div custom={1} variants={fadeUp} initial="hidden" animate="visible" className="lg:w-[460px] flex-shrink-0">
-            <div className="relative bg-white rounded-3xl overflow-hidden border border-gray-100/80 shadow-[0_8px_30px_rgb(0,0,0,0.04)] aspect-[4/5] group">
+          <motion.div custom={1} variants={fadeUp} initial="hidden" animate="visible" className="lg:w-[400px] flex-shrink-0">
+            <div className="relative bg-white rounded-3xl overflow-hidden border border-gray-100/80 shadow-[0_8px_30px_rgb(0,0,0,0.04)] aspect-square group md:aspect-[4/5]">
               <img src={mainImage} alt={outfit.outfitName} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
               <button
                 onClick={() => setLiked(!liked)}
-                className="absolute top-5 left-5 w-11 h-11 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform duration-300 z-10"
+                className="absolute top-4 left-4 w-10 h-10 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform duration-300 z-10"
               >
-                <Heart className={`w-[22px] h-[22px] ${liked ? "fill-red-500 text-red-500" : "text-gray-400"}`} />
+                <Heart className={`w-[20px] h-[20px] ${liked ? "fill-red-500 text-red-500" : "text-gray-400"}`} />
               </button>
             </div>
 
@@ -505,7 +505,7 @@ export const OutfitDetail = (): JSX.Element => {
 
           {/* Right: Info */}
           <motion.div custom={2} variants={fadeUp} initial="hidden" animate="visible" className="flex-1 min-w-0 flex flex-col pt-2">
-            <h1 className="font-baloo font-extrabold text-3xl lg:text-[42px] leading-[1.2] text-gray-900 mb-3 tracking-tight">
+            <h1 className="font-baloo font-extrabold text-2xl lg:text-3xl leading-[1.2] text-gray-900 mb-3 tracking-tight">
               {outfit.outfitName}
             </h1>
 
@@ -513,10 +513,10 @@ export const OutfitDetail = (): JSX.Element => {
             <div className="flex items-center gap-2 mb-4">
               <div className="flex items-center gap-0.5">
                 {[1, 2, 3, 4, 5].map((s) => (
-                  <Star key={s} className={`w-[18px] h-[18px] ${s <= Math.round(outfit.averageRating) ? "fill-yellow-400 text-yellow-400" : "fill-gray-200 text-gray-200"}`} />
+                  <Star key={s} className={`w-[16px] h-[16px] ${s <= Math.round(outfit.averageRating) ? "fill-yellow-400 text-yellow-400" : "fill-gray-200 text-gray-200"}`} />
                 ))}
               </div>
-              <span className="font-bold text-sm text-gray-900 mt-0.5">
+              <span className="font-bold text-[13px] text-gray-900 mt-0.5">
                 {outfit.averageRating > 0 ? (
                   <span className="flex items-center gap-1">
                     {outfit.averageRating} <span className="font-medium text-gray-500">({outfit.feedbackCount} đánh giá)</span>
@@ -528,13 +528,13 @@ export const OutfitDetail = (): JSX.Element => {
             </div>
 
             {/* Price */}
-            <p className="font-baloo font-bold text-[40px] text-[#0ea5e9] mb-4 tracking-tight leading-none drop-shadow-sm">
+            <p className="font-baloo font-bold text-[28px] lg:text-[32px] text-[#0ea5e9] mb-4 tracking-tight leading-none drop-shadow-sm">
               {fmt(displayPrice)}
             </p>
 
             {/* Description */}
             {outfit.description && (
-              <p className="text-[15px] font-medium text-gray-500 leading-relaxed mb-6 line-clamp-4">
+              <p className="text-[14px] font-medium text-gray-500 leading-relaxed mb-6 line-clamp-4">
                 {outfit.description}
               </p>
             )}
@@ -586,20 +586,20 @@ export const OutfitDetail = (): JSX.Element => {
             )}
 
             {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 mt-auto">
+            <div className="flex flex-col sm:flex-row gap-3 mt-auto pt-4">
               <button
                 onClick={() => { }} // Add to cart placeholder
-                className="flex-1 min-h-[52px] flex items-center justify-center gap-2.5 bg-[#0ea5e9] text-white font-bold text-[15px] rounded-2xl shadow-[0_8px_20px_rgb(14,165,233,0.25)] hover:bg-[#0284c7] hover:shadow-[0_12px_24px_rgb(14,165,233,0.35)] transition-all hover:-translate-y-0.5 active:translate-y-0"
+                className="flex-1 min-h-[44px] flex items-center justify-center gap-2 bg-[#0ea5e9] text-white font-bold text-[14px] rounded-xl shadow-[0_4px_12px_rgb(14,165,233,0.2)] hover:bg-[#0284c7] hover:shadow-[0_8px_16px_rgb(14,165,233,0.3)] transition-all hover:-translate-y-0.5 active:translate-y-0"
               >
-                <ShoppingBag className="w-[18px] h-[18px]" />
+                <ShoppingBag className="w-[16px] h-[16px]" />
                 Thêm vào giỏ hàng
               </button>
 
               <button
                 onClick={() => setShowTryOn(true)}
-                className="flex-1 min-h-[52px] flex items-center justify-center gap-2.5 bg-white text-[#0ea5e9] font-bold text-[15px] rounded-2xl border-2 border-[#0ea5e9] hover:bg-[#f0f9ff] transition-all hover:-translate-y-0.5 active:translate-y-0"
+                className="flex-1 min-h-[44px] flex items-center justify-center gap-2 bg-white text-[#0ea5e9] font-bold text-[14px] rounded-xl border-2 border-[#0ea5e9] hover:bg-[#f0f9ff] transition-all hover:-translate-y-0.5 active:translate-y-0"
               >
-                <Box className="w-[18px] h-[18px]" />
+                <Box className="w-[16px] h-[16px]" />
                 Thử Ảo (VR)
               </button>
             </div>
