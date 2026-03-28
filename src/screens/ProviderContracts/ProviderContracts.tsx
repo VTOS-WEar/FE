@@ -26,6 +26,8 @@ export function ProviderContracts() {
     const [contracts, setContracts] = useState<ContractDto[]>([]);
     const [loading, setLoading] = useState(true);
     const [statusFilter, setStatusFilter] = useState<string>("");
+    const [page, setPage] = useState(1);
+    const pageSize = 10;
     const [selected, setSelected] = useState<ContractDto | null>(null);
     const [showDetail, setShowDetail] = useState(false);
     const [actionLoading, setActionLoading] = useState(false);
@@ -135,7 +137,7 @@ export function ProviderContracts() {
                             {filterTabs.map(t => (
                                 <button
                                     key={t.value}
-                                    onClick={() => setStatusFilter(t.value)}
+                                    onClick={() => { setStatusFilter(t.value); setPage(1); }}
                                     className={`nb-tab ${statusFilter === t.value ? "nb-tab-active" : ""}`}
                                 >
                                     {t.label}
@@ -153,40 +155,53 @@ export function ProviderContracts() {
                                 <div className="text-5xl mb-3">📋</div>
                                 <p className="font-medium text-[#9CA3AF] text-base">Chưa có hợp đồng nào được gửi đến bạn.</p>
                             </div>
-                        ) : (
-                            <div className="space-y-4">
-                                {contracts.map(c => (
-                                    <div
-                                        key={c.contractId}
-                                        onClick={() => openDetail(c.contractId)}
-                                        className="nb-card p-5 cursor-pointer"
-                                    >
-                                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                                            <div className="flex-1 min-w-0">
-                                                <h3 className="font-bold text-[#1A1A2E] text-base">{c.contractName}</h3>
-                                                <p className="font-medium text-[#9CA3AF] text-sm mt-1">
-                                                    Trường: <strong className="text-[#6B7280]">{c.schoolName || "—"}</strong> &nbsp;·&nbsp; {c.items.length} mục &nbsp;·&nbsp; {new Date(c.createdAt).toLocaleDateString("vi")}
-                                                </p>
+                        ) : (() => {
+                            const totalPages = Math.ceil(contracts.length / pageSize);
+                            const paged = contracts.slice((page - 1) * pageSize, page * pageSize);
+                            return (
+                                <>
+                                    <div className="space-y-4">
+                                        {paged.map(c => (
+                                            <div
+                                                key={c.contractId}
+                                                onClick={() => openDetail(c.contractId)}
+                                                className="nb-card p-5 cursor-pointer"
+                                            >
+                                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                                                    <div className="flex-1 min-w-0">
+                                                        <h3 className="font-bold text-[#1A1A2E] text-base">{c.contractName}</h3>
+                                                        <p className="font-medium text-[#9CA3AF] text-sm mt-1">
+                                                            Trường: <strong className="text-[#6B7280]">{c.schoolName || "—"}</strong> &nbsp;·&nbsp; {c.items.length} mục &nbsp;·&nbsp; {new Date(c.createdAt).toLocaleDateString("vi")}
+                                                        </p>
+                                                    </div>
+                                                    <div className="flex items-center gap-2">
+                                                        <span className={STATUS_MAP[c.status]?.badge || "nb-badge"}>
+                                                            {STATUS_MAP[c.status]?.label || c.status}
+                                                        </span>
+                                                        <button
+                                                            onClick={(e) => { e.stopPropagation(); openContractChat(c); }}
+                                                            className="nb-btn nb-btn-sm nb-btn-purple"
+                                                        >💬 Chat</button>
+                                                    </div>
+                                                </div>
+                                                {c.status === "Pending" && (
+                                                    <p className="font-medium text-[#F59E0B] text-sm mt-2">
+                                                        ⏳ Đang chờ bạn xem xét và duyệt
+                                                    </p>
+                                                )}
                                             </div>
-                                            <div className="flex items-center gap-2">
-                                                <span className={STATUS_MAP[c.status]?.badge || "nb-badge"}>
-                                                    {STATUS_MAP[c.status]?.label || c.status}
-                                                </span>
-                                                <button
-                                                    onClick={(e) => { e.stopPropagation(); openContractChat(c); }}
-                                                    className="nb-btn nb-btn-sm nb-btn-purple"
-                                                >💬 Chat</button>
-                                            </div>
-                                        </div>
-                                        {c.status === "Pending" && (
-                                            <p className="font-medium text-[#F59E0B] text-sm mt-2">
-                                                ⏳ Đang chờ bạn xem xét và duyệt
-                                            </p>
-                                        )}
+                                        ))}
                                     </div>
-                                ))}
-                            </div>
-                        )}
+                                    {totalPages > 1 && (
+                                        <div className="flex items-center justify-center gap-3 mt-4">
+                                            <button disabled={page <= 1} onClick={() => setPage(p => p - 1)} className="nb-btn nb-btn-outline nb-btn-sm text-sm">← Trước</button>
+                                            <span className="text-sm font-bold text-[#6B7280]">{page}/{totalPages}</span>
+                                            <button disabled={page >= totalPages} onClick={() => setPage(p => p + 1)} className="nb-btn nb-btn-outline nb-btn-sm text-sm">Sau →</button>
+                                        </div>
+                                    )}
+                                </>
+                            );
+                        })()}
 
                         {/* ── Contract Detail Modal ── */}
                         {showDetail && selected && (

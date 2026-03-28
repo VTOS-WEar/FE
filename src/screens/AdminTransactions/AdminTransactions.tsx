@@ -71,12 +71,12 @@ export default function AdminTransactions() {
                             <BreadcrumbItem><BreadcrumbPage className="font-bold text-[#1A1A2E] text-base">Giao dịch</BreadcrumbPage></BreadcrumbItem>
                         </BreadcrumbList></Breadcrumb>
                     </div>
-                    <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-6">
+                    <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-6 nb-fade-in">
 
                         <h1 className="font-extrabold text-[#1A1A2E] text-[28px]">💳 Theo dõi giao dịch</h1>
 
                         {/* Summary cards — NB stat cards */}
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 nb-stagger">
                             <div className="nb-stat-card nb-card-purple">
                                 <p className="nb-stat-label">Tổng giao dịch</p>
                                 <p className="nb-stat-value mt-1">{data?.totalCount ?? 0}</p>
@@ -114,7 +114,7 @@ export default function AdminTransactions() {
                         {/* Table — NB table */}
                         <div className="nb-card-static overflow-hidden">
                             <div className="overflow-x-auto">
-                                <table className="nb-table">
+                                <table className={`nb-table ${!loading && (data?.items.length ?? 0) > 0 ? "nb-table-animate" : ""}`}>
                                     <thead><tr>
                                         <th>Mã GD</th>
                                         <th>Thời gian</th>

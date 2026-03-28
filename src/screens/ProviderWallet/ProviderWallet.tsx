@@ -103,7 +103,7 @@ export default function ProviderWallet() {
                         <p className="font-medium text-[#6B7280] text-sm mt-1">Theo dõi số dư và lịch sử giao dịch</p>
                     </TopNavBar>
 
-                    <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-6">
+                    <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-6 nb-fade-in">
                         {loading ? (
                             <div className="text-center py-20">
                                 <div className="inline-block w-8 h-8 border-4 border-[#10B981] border-t-transparent rounded-full animate-spin" />

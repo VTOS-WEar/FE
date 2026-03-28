@@ -114,7 +114,7 @@ export const AdminDashboard = (): JSX.Element => {
  <BreadcrumbItem><BreadcrumbPage className=" font-bold text-[#1A1A2E] text-base">Tổng quan</BreadcrumbPage></BreadcrumbItem>
  </BreadcrumbList></Breadcrumb>
  </div>
- <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-8">
+ <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-8 nb-fade-in">
 
  {/* ── ANALYTICS SECTION ── */}
  <div className="space-y-4">
@@ -136,7 +136,7 @@ export const AdminDashboard = (): JSX.Element => {
  ))}
  </div>
  ) : (
- <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+ <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 nb-stagger">
  <StatCard icon="👥" label="Người dùng" value={fmt(analytics?.totalUsers)} sub={`${fmt(analytics?.totalParents)} PH · ${fmt(analytics?.totalSchools)} Trường · ${fmt(analytics?.totalProviders)} NCC`} tint="nb-card-purple" />
  <StatCard icon="📦" label="Tổng đơn hàng" value={fmt(ordersCount?.totalOrders ?? analytics?.totalOrders)} tint="nb-card-blue" />
  <StatCard icon="💰" label="Tổng doanh thu" value={`${fmt(revenueData?.totalRevenue ?? analytics?.totalRevenue)} ₫`} tint="nb-card-green" />

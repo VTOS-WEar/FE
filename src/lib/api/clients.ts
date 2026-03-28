@@ -80,6 +80,21 @@ export async function api<T>(
     });
 
     if (!res.ok) {
+        // ── Auto-logout on 401 (token expired / invalid) ──
+        if (res.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user");
+            localStorage.removeItem("expires_in");
+            sessionStorage.removeItem("access_token");
+            sessionStorage.removeItem("user");
+            sessionStorage.removeItem("expires_in");
+            // Redirect to sign-in (avoid infinite loop if already there)
+            if (!window.location.pathname.startsWith("/signin")) {
+                window.location.href = "/signin";
+            }
+            throw new ApiError("Phiên đăng nhập đã hết hạn", 401);
+        }
+
         const err = await parseError(res);
         throw new ApiError(err.message, err.status, err.details);
     }

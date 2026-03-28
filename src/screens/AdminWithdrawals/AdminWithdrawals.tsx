@@ -104,7 +104,7 @@ export function AdminWithdrawals() {
                         <p className="font-medium text-[#6B7280] text-sm mt-1">Duyệt hoặc từ chối yêu cầu rút tiền từ Trường / Nhà cung cấp</p>
                     </TopNavBar>
 
-                    <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-6">
+                    <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-6 nb-fade-in">
                         {/* Filters */}
                         <div className="flex flex-wrap items-center gap-3">
                             {["", "Pending", "Approved", "Rejected"].map(f => (
@@ -129,37 +129,29 @@ export function AdminWithdrawals() {
                             <>
                                 <div className="nb-card-static overflow-hidden">
                                     <div className="overflow-x-auto">
-                                        <table className="w-full">
+                                        <table className={`nb-table ${!loading && items.length > 0 ? "nb-table-animate" : ""}`}>
                                             <thead>
-                                                <tr className="bg-[#F8F7FF] border-b-2 border-[#1A1A2E]">
-                                                    <th className="text-left px-4 py-3 text-xs font-extrabold text-[#6938EF] uppercase">Tổ chức</th>
-                                                    <th className="text-left px-4 py-3 text-xs font-extrabold text-[#6938EF] uppercase">Số tiền</th>
-                                                    <th className="text-left px-4 py-3 text-xs font-extrabold text-[#6938EF] uppercase">Ngân hàng</th>
-                                                    <th className="text-left px-4 py-3 text-xs font-extrabold text-[#6938EF] uppercase">Ngày yêu cầu</th>
-                                                    <th className="text-left px-4 py-3 text-xs font-extrabold text-[#6938EF] uppercase">Trạng thái</th>
-                                                    <th className="text-left px-4 py-3 text-xs font-extrabold text-[#6938EF] uppercase">Hành động</th>
+                                                <tr>
+                                                    <th>Tổ chức</th>
+                                                    <th>Số tiền</th>
+                                                    <th>Ngân hàng</th>
+                                                    <th>Ngày yêu cầu</th>
+                                                    <th>Trạng thái</th>
+                                                    <th>Hành động</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 {items.map(item => (
-                                                    <tr key={item.id} className="border-b border-[#E5E7EB] hover:bg-[#F8F7FF]/50 transition-colors">
-                                                        <td className="px-4 py-3">
-                                                            <p className="font-bold text-[#1A1A2E] text-sm">{item.schoolName || "—"}</p>
+                                                    <tr key={item.id}>
+                                                        <td className="font-bold text-[#1A1A2E]">{item.schoolName || "—"}</td>
+                                                        <td className="font-extrabold text-[#EF4444]">{fmt(item.amount)}</td>
+                                                        <td>
+                                                            <p className="font-semibold text-[#1A1A2E]">{item.bankName || "—"}</p>
+                                                            <p className="text-[#9CA3AF] text-xs">{item.bankAccount || "—"}</p>
                                                         </td>
-                                                        <td className="px-4 py-3">
-                                                            <p className="font-extrabold text-[#EF4444] text-sm">{fmt(item.amount)}</p>
-                                                        </td>
-                                                        <td className="px-4 py-3">
-                                                            <p className="font-medium text-[#1A1A2E] text-sm">{item.bankName || "—"}</p>
-                                                            <p className="font-medium text-[#9CA3AF] text-xs">{item.bankAccount || "—"}</p>
-                                                        </td>
-                                                        <td className="px-4 py-3">
-                                                            <p className="font-medium text-[#6B7280] text-sm">{fmtDate(item.requestedAt)}</p>
-                                                        </td>
-                                                        <td className="px-4 py-3">
-                                                            <span className={statusBadge(item.status)}>{statusLabel(item.status)}</span>
-                                                        </td>
-                                                        <td className="px-4 py-3">
+                                                        <td className="text-[#6B7280]">{fmtDate(item.requestedAt)}</td>
+                                                        <td><span className={statusBadge(item.status)}>{statusLabel(item.status)}</span></td>
+                                                        <td>
                                                             {item.status === "Pending" ? (
                                                                 <div className="flex gap-2">
                                                                     <button className="nb-btn nb-btn-green nb-btn-sm text-xs"
@@ -199,8 +191,8 @@ export function AdminWithdrawals() {
 
             {/* Action Modal */}
             {actionItem && (
-                <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-                    <div className="nb-card-static p-6 w-full max-w-md space-y-4">
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 nb-backdrop-enter">
+                    <div className="nb-card-static p-6 w-full max-w-md space-y-4 nb-modal-enter">
                         <h3 className="font-extrabold text-[#1A1A2E] text-lg">
                             {actionType === "approve" ? "✅ Duyệt yêu cầu rút tiền" : "❌ Từ chối yêu cầu rút tiền"}
                         </h3>

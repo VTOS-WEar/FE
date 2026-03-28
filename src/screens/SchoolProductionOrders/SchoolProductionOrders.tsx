@@ -25,15 +25,19 @@ export function SchoolProductionOrders() {
     const [orders, setOrders] = useState<ProductionOrderListItemDto[]>([]);
     const [loading, setLoading] = useState(true);
     const [statusFilter, setStatusFilter] = useState<string>("");
+    const [page, setPage] = useState(1);
+    const pageSize = 10;
+    const [total, setTotal] = useState(0);
 
     const fetchOrders = useCallback(async () => {
         setLoading(true);
         try {
-            const res = await getSchoolProductionOrders(1, 50, statusFilter || undefined);
+            const res = await getSchoolProductionOrders(page, pageSize, statusFilter || undefined);
             setOrders(res.items);
+            setTotal(res.total);
         } catch (e: any) { console.error("Error fetching production orders:", e); }
         finally { setLoading(false); }
-    }, [statusFilter]);
+    }, [statusFilter, page]);
 
     useEffect(() => { fetchOrders(); }, [fetchOrders]);
 
@@ -52,7 +56,7 @@ export function SchoolProductionOrders() {
             {/* Status tabs — NB */}
             <div className="nb-tabs w-fit flex-wrap">
                 {STATUS_TABS.map(s => (
-                    <button key={s} onClick={() => setStatusFilter(s)}
+                    <button key={s} onClick={() => { setStatusFilter(s); setPage(1); }}
                         className={`nb-tab ${statusFilter === s ? "nb-tab-active" : ""}`}>
                         {s ? STATUS_LABELS[s] || s : "Tất cả"}
                     </button>
@@ -92,6 +96,18 @@ export function SchoolProductionOrders() {
                     ))}
                 </div>
             )}
+
+            {/* Pagination */}
+            {(() => {
+                const totalPages = Math.ceil(total / pageSize);
+                return !loading && totalPages > 1 ? (
+                    <div className="flex items-center justify-center gap-3 mt-4">
+                        <button disabled={page <= 1} onClick={() => setPage(p => p - 1)} className="nb-btn nb-btn-outline nb-btn-sm text-sm">← Trước</button>
+                        <span className="text-sm font-bold text-[#6B7280]">{page}/{totalPages} ({total} đơn)</span>
+                        <button disabled={page >= totalPages} onClick={() => setPage(p => p + 1)} className="nb-btn nb-btn-outline nb-btn-sm text-sm">Sau →</button>
+                    </div>
+                ) : null;
+            })()}
         </div>
     );
 }

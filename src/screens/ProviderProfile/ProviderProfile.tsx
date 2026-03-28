@@ -92,7 +92,7 @@ export const ProviderProfile = (): JSX.Element => {
                         </BreadcrumbList></Breadcrumb>
                     </TopNavBar>
 
-                    <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-6">
+                    <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-6 nb-fade-in">
                         {loading ? (
                             <div className="flex items-center justify-center py-20">
                                 <div className="animate-spin rounded-full h-10 w-10 border-[3px] border-[#6938EF] border-t-transparent" />

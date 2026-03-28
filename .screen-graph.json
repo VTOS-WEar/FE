@@ -30,8 +30,7 @@
         "/provider/profile",
         "/admin/dashboard",
         "/admin/users",
-        "/admin/verification",
-        "/admin/money",
+        "/admin/withdrawals",
         "/admin/account-requests",
         "/admin/transactions",
         "/admin/complaints",
@@ -288,15 +287,15 @@
       }
     },
     {
-      "id": "src\\screens\\TwoFactorSetup\\TwoFactorSetup.tsx:83:36-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\screens\\TwoFactorSetup\\TwoFactorSetup.tsx:108:36-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\TwoFactorSetup\\TwoFactorSetup.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/admin/dashboard",
         "trigger": {
           "element": "navigate(\"/admin/dashboard\", { replace: true })",
-          "line": 83,
-          "endLine": 83,
+          "line": 108,
+          "endLine": 108,
           "column": 36,
           "endColumn": 83,
           "sourceFile": "src\\screens\\TwoFactorSetup\\TwoFactorSetup.tsx"
@@ -304,15 +303,15 @@
       }
     },
     {
-      "id": "src\\screens\\TwoFactorSetup\\TwoFactorSetup.tsx:84:42-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\screens\\TwoFactorSetup\\TwoFactorSetup.tsx:109:42-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\TwoFactorSetup\\TwoFactorSetup.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/school/dashboard",
         "trigger": {
           "element": "navigate(\"/school/dashboard\", { replace: true })",
-          "line": 84,
-          "endLine": 84,
+          "line": 109,
+          "endLine": 109,
           "column": 42,
           "endColumn": 90,
           "sourceFile": "src\\screens\\TwoFactorSetup\\TwoFactorSetup.tsx"
@@ -320,15 +319,15 @@
       }
     },
     {
-      "id": "src\\screens\\TwoFactorSetup\\TwoFactorSetup.tsx:85:44-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\screens\\TwoFactorSetup\\TwoFactorSetup.tsx:110:44-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\TwoFactorSetup\\TwoFactorSetup.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/provider/dashboard",
         "trigger": {
           "element": "navigate(\"/provider/dashboard\", { replace: true })",
-          "line": 85,
-          "endLine": 85,
+          "line": 110,
+          "endLine": 110,
           "column": 44,
           "endColumn": 94,
           "sourceFile": "src\\screens\\TwoFactorSetup\\TwoFactorSetup.tsx"
@@ -336,15 +335,15 @@
       }
     },
     {
-      "id": "src\\screens\\TwoFactorSetup\\TwoFactorSetup.tsx:86:17-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\screens\\TwoFactorSetup\\TwoFactorSetup.tsx:111:17-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\TwoFactorSetup\\TwoFactorSetup.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/homepage",
         "trigger": {
           "element": "navigate(\"/homepage\", { replace: true })",
-          "line": 86,
-          "endLine": 86,
+          "line": 111,
+          "endLine": 111,
           "column": 17,
           "endColumn": 57,
           "sourceFile": "src\\screens\\TwoFactorSetup\\TwoFactorSetup.tsx"

@@ -32,6 +32,8 @@ export function SchoolContracts() {
     const [contracts, setContracts] = useState<ContractDto[]>([]);
     const [loading, setLoading] = useState(true);
     const [statusFilter, setStatusFilter] = useState<string>("");
+    const [page, setPage] = useState(1);
+    const pageSize = 10;
     const [showCreate, setShowCreate] = useState(false);
     const [providers, setProviders] = useState<ProviderOption[]>([]);
     const [outfits, setOutfits] = useState<OutfitOption[]>([]);
@@ -143,7 +145,7 @@ export function SchoolContracts() {
                         {/* Status tabs — NB */}
                         <div className="nb-tabs w-fit">
                             {["", "Pending", "Approved", "Rejected"].map(s => (
-                                <button key={s} onClick={() => setStatusFilter(s)}
+                                <button key={s} onClick={() => { setStatusFilter(s); setPage(1); }}
                                     className={`nb-tab ${statusFilter === s ? "nb-tab-active" : ""}`}>
                                     {s ? STATUS_LABELS[s] || s : "Tất cả"}
                                 </button>
@@ -160,31 +162,44 @@ export function SchoolContracts() {
                                 <p className="text-4xl mb-3">📋</p>
                                 <p className="font-medium text-[#9CA3AF]">Chưa có hợp đồng nào. Tạo hợp đồng mới để bắt đầu!</p>
                             </div>
-                        ) : (
-                            <div className="grid gap-4">
-                                {contracts.map(c => (
-                                    <div key={c.contractId} onClick={() => openDetail(c.contractId)}
-                                        className="nb-card p-5 cursor-pointer">
-                                        <div className="flex items-center justify-between gap-3">
-                                            <div className="flex-1 min-w-0">
-                                                <h3 className="font-bold text-[#1A1A2E] text-lg">{c.contractName}</h3>
-                                                <p className="text-sm text-[#6B7280] mt-1">
-                                                    NCC: <strong className="text-[#1A1A2E]">{c.providerName || "—"}</strong> · {c.items.length} mục · {new Date(c.createdAt).toLocaleDateString("vi")}
-                                                </p>
+                        ) : (() => {
+                            const totalPages = Math.ceil(contracts.length / pageSize);
+                            const paged = contracts.slice((page - 1) * pageSize, page * pageSize);
+                            return (
+                                <>
+                                    <div className="grid gap-4">
+                                        {paged.map(c => (
+                                            <div key={c.contractId} onClick={() => openDetail(c.contractId)}
+                                                className="nb-card p-5 cursor-pointer">
+                                                <div className="flex items-center justify-between gap-3">
+                                                    <div className="flex-1 min-w-0">
+                                                        <h3 className="font-bold text-[#1A1A2E] text-lg">{c.contractName}</h3>
+                                                        <p className="text-sm text-[#6B7280] mt-1">
+                                                            NCC: <strong className="text-[#1A1A2E]">{c.providerName || "—"}</strong> · {c.items.length} mục · {new Date(c.createdAt).toLocaleDateString("vi")}
+                                                        </p>
+                                                    </div>
+                                                    <span className={STATUS_BADGE[c.status] || "nb-badge"}>{STATUS_LABELS[c.status] || c.status}</span>
+                                                    <button onClick={(e) => { e.stopPropagation(); openContractChat(c); }}
+                                                        className="nb-btn nb-btn-sm text-xs bg-[#3B82F6] text-white border-[#1A1A2E]">💬 Chat</button>
+                                                </div>
+                                                {c.rejectionReason && (
+                                                    <div className="nb-alert nb-alert-error mt-3 text-xs">
+                                                        <span>❌</span><span>Lý do từ chối: {c.rejectionReason}</span>
+                                                    </div>
+                                                )}
                                             </div>
-                                            <span className={STATUS_BADGE[c.status] || "nb-badge"}>{STATUS_LABELS[c.status] || c.status}</span>
-                                            <button onClick={(e) => { e.stopPropagation(); openContractChat(c); }}
-                                                className="nb-btn nb-btn-sm text-xs bg-[#3B82F6] text-white border-[#1A1A2E]">💬 Chat</button>
-                                        </div>
-                                        {c.rejectionReason && (
-                                            <div className="nb-alert nb-alert-error mt-3 text-xs">
-                                                <span>❌</span><span>Lý do từ chối: {c.rejectionReason}</span>
-                                            </div>
-                                        )}
+                                        ))}
                                     </div>
-                                ))}
-                            </div>
-                        )}
+                                    {totalPages > 1 && (
+                                        <div className="flex items-center justify-center gap-3 mt-4">
+                                            <button disabled={page <= 1} onClick={() => setPage(p => p - 1)} className="nb-btn nb-btn-outline nb-btn-sm text-sm">← Trước</button>
+                                            <span className="text-sm font-bold text-[#6B7280]">{page}/{totalPages}</span>
+                                            <button disabled={page >= totalPages} onClick={() => setPage(p => p + 1)} className="nb-btn nb-btn-outline nb-btn-sm text-sm">Sau →</button>
+                                        </div>
+                                    )}
+                                </>
+                            );
+                        })()}
                     </main>
                 </div>
             </div>

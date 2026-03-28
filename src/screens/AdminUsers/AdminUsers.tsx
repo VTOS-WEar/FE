@@ -34,6 +34,8 @@ export const AdminUsers = (): JSX.Element => {
     const [selected, setSelected] = useState<UserDetailDto | null>(null);
     const [detailLoading, setDetailLoading] = useState(false);
     const [actionLoading, setActionLoading] = useState(false);
+    const [page, setPage] = useState(1);
+    const pageSize = 15;
 
     const fetchUsers = useCallback(async () => {
         setLoading(true);
@@ -48,6 +50,8 @@ export const AdminUsers = (): JSX.Element => {
         const matchStatus = !filterStatus || u.status === filterStatus;
         return matchSearch && matchRole && matchStatus;
     });
+    const totalPages = Math.ceil(filtered.length / pageSize);
+    const paginatedUsers = filtered.slice((page - 1) * pageSize, page * pageSize);
 
     const handleViewDetail = async (id: string) => {
         setDetailLoading(true);
@@ -88,21 +92,21 @@ export const AdminUsers = (): JSX.Element => {
                             <BreadcrumbItem><BreadcrumbPage className="font-bold text-[#1A1A2E] text-base">Quản lý người dùng</BreadcrumbPage></BreadcrumbItem>
                         </BreadcrumbList></Breadcrumb>
                     </div>
-                    <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-6">
+                    <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-6 nb-fade-in">
                         <h1 className="font-extrabold text-[#1A1A2E] text-[28px] leading-tight">👥 Quản lý người dùng</h1>
 
                         {/* Filters */}
                         <div className="nb-card-static p-4 flex flex-wrap gap-3">
-                            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="🔍 Tìm theo tên, email..."
+                            <input value={search} onChange={e => { setSearch(e.target.value); setPage(1); }} placeholder="🔍 Tìm theo tên, email..."
                                 className="nb-input w-64 py-2.5 text-sm" />
-                            <select value={filterRole} onChange={e => setFilterRole(e.target.value)} className="nb-select text-sm">
+                            <select value={filterRole} onChange={e => { setFilterRole(e.target.value); setPage(1); }} className="nb-select text-sm">
                                 <option value="">Tất cả vai trò</option>
                                 <option value="Parent">Phụ huynh</option>
                                 <option value="School">Quản lý trường</option>
                                 <option value="Provider">Nhà cung cấp</option>
                                 <option value="Admin">Quản trị viên</option>
                             </select>
-                            <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} className="nb-select text-sm">
+                            <select value={filterStatus} onChange={e => { setFilterStatus(e.target.value); setPage(1); }} className="nb-select text-sm">
                                 <option value="">Tất cả trạng thái</option>
                                 <option value="Active">Hoạt động</option>
                                 <option value="Pending">Chờ duyệt</option>
@@ -113,7 +117,7 @@ export const AdminUsers = (): JSX.Element => {
                         {/* Table */}
                         <div className="nb-card-static overflow-hidden">
                             <div className="overflow-x-auto">
-                                <table className="nb-table">
+                                <table className={`nb-table ${!loading && filtered.length > 0 ? "nb-table-animate" : ""}`}>
                                     <thead>
                                         <tr>
                                             <th>Họ tên</th><th>Email</th><th>Vai trò</th><th>Trạng thái</th><th>Ngày tạo</th><th className="text-center">Hành động</th>
@@ -126,7 +130,7 @@ export const AdminUsers = (): JSX.Element => {
                                             </tr>
                                         )) : filtered.length === 0 ? (
                                             <tr><td colSpan={6} className="text-center py-12 text-[#9CA3AF]">Không tìm thấy người dùng nào</td></tr>
-                                        ) : filtered.map(u => (
+                                        ) : paginatedUsers.map(u => (
                                             <tr key={u.id}>
                                                 <td className="font-semibold text-[#1A1A2E]">{u.fullName}</td>
                                                 <td className="text-[#4c5769]">{u.email}</td>
@@ -141,8 +145,15 @@ export const AdminUsers = (): JSX.Element => {
                                     </tbody>
                                 </table>
                             </div>
-                            <div className="px-6 py-3 bg-[#F9FAFB] border-t-2 border-[#1A1A2E] text-xs text-[#6B7280] font-semibold">
-                                Hiển thị {filtered.length} / {users.length} người dùng
+                            <div className="px-6 py-3 bg-[#F9FAFB] border-t-2 border-[#1A1A2E] text-xs text-[#6B7280] font-semibold flex items-center justify-between">
+                                <span>Hiển thị {(page - 1) * pageSize + 1}–{Math.min(page * pageSize, filtered.length)} / {filtered.length} người dùng</span>
+                                {totalPages > 1 && (
+                                    <div className="flex items-center gap-2">
+                                        <button disabled={page <= 1} onClick={() => setPage(p => p - 1)} className="nb-btn nb-btn-outline nb-btn-sm text-xs">← Trước</button>
+                                        <span className="font-bold px-2">{page}/{totalPages}</span>
+                                        <button disabled={page >= totalPages} onClick={() => setPage(p => p + 1)} className="nb-btn nb-btn-outline nb-btn-sm text-xs">Sau →</button>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </main>
@@ -151,8 +162,8 @@ export const AdminUsers = (): JSX.Element => {
 
             {/* Detail Modal - Neubrutalism */}
             {(selected || detailLoading) && (
-                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => !detailLoading && setSelected(null)}>
-                    <div className="bg-white rounded-xl w-full max-w-lg p-6 space-y-5 border-2 border-[#1A1A2E] shadow-[6px_6px_0_#1A1A2E]" onClick={e => e.stopPropagation()}>
+                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 nb-backdrop-enter" onClick={() => !detailLoading && setSelected(null)}>
+                    <div className="bg-white rounded-xl w-full max-w-lg p-6 space-y-5 border-2 border-[#1A1A2E] shadow-[6px_6px_0_#1A1A2E] nb-modal-enter" onClick={e => e.stopPropagation()}>
                         {detailLoading ? (
                             <div className="flex items-center justify-center py-12"><div className="animate-spin w-8 h-8 border-[3px] border-[#6938EF] border-t-transparent rounded-full" /></div>
                         ) : selected && (

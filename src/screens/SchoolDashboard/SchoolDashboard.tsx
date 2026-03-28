@@ -360,7 +360,7 @@ export const SchoolDashboard = (): JSX.Element => {
  </TopNavBar>
 
  {/* Content */}
- <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-6">
+ <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-6 nb-fade-in">
  {/* 2FA Setup Banner */}
  {localStorage.getItem("vtos_should_setup_2fa") === "true" && (
  <div className="nb-card-static border-[#F59E0B] bg-[#FEF3C7] px-5 py-4 flex items-center justify-between gap-4">
@@ -397,7 +397,7 @@ export const SchoolDashboard = (): JSX.Element => {
  ))}
  </div>
  ) : (
- <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+ <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 nb-stagger">
  <StatsCard
  label="Tổng đơn hàng"
  value={formatNumber(totalOrders)}

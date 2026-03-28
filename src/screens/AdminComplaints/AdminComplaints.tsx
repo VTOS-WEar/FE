@@ -86,12 +86,12 @@ export default function AdminComplaints() {
                             <BreadcrumbItem><BreadcrumbPage className="font-bold text-[#1A1A2E] text-base">Khiếu nại</BreadcrumbPage></BreadcrumbItem>
                         </BreadcrumbList></Breadcrumb>
                     </div>
-                    <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-6">
+                    <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-6 nb-fade-in">
 
                         <h1 className="font-extrabold text-[#1A1A2E] text-[28px]">⚠️ Khiếu nại toàn hệ thống</h1>
 
                         {/* Stats — NB stat cards */}
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 nb-stagger">
                             <div className="nb-stat-card nb-card-red">
                                 <p className="nb-stat-label">Đang mở</p>
                                 <p className="nb-stat-value text-[#EF4444] mt-1">{data?.openCount ?? 0}</p>
@@ -119,7 +119,7 @@ export default function AdminComplaints() {
                         {/* Table — NB table */}
                         <div className="nb-card-static overflow-hidden">
                             <div className="overflow-x-auto">
-                                <table className="nb-table">
+                                <table className={`nb-table ${!loading && (data?.items.length ?? 0) > 0 ? "nb-table-animate" : ""}`}>
                                     <thead><tr>
                                         <th>Tiêu đề</th>
                                         <th>Trường</th>
@@ -178,8 +178,8 @@ export default function AdminComplaints() {
 
             {/* Detail / Intervene Modal — NB style */}
             {selected && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => setSelected(null)}>
-                    <div className="bg-white rounded-xl w-full max-w-lg mx-4 p-6 border-2 border-[#1A1A2E] shadow-[6px_6px_0_#1A1A2E]" onClick={e => e.stopPropagation()}>
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 nb-backdrop-enter" onClick={() => setSelected(null)}>
+                    <div className="bg-white rounded-xl w-full max-w-lg mx-4 p-6 border-2 border-[#1A1A2E] shadow-[6px_6px_0_#1A1A2E] nb-modal-enter" onClick={e => e.stopPropagation()}>
                         <div className="flex justify-between items-center mb-4">
                             <h3 className="text-lg font-extrabold text-[#1A1A2E]">{selected.title}</h3>
                             <button onClick={() => setSelected(null)} className="w-8 h-8 flex items-center justify-center rounded-lg border-2 border-[#1A1A2E] hover:bg-[#F3F4F6] font-bold">✕</button>

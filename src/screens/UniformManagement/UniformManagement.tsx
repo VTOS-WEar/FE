@@ -389,6 +389,8 @@ export const UniformManagement = (): JSX.Element => {
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("");
     const [activeTab, setActiveTab] = useState<"all" | "available" | "unavailable">("all");
+    const [page, setPage] = useState(1);
+    const pageSize = 12;
 
     /* ── Modal state ── */
     const [showFormModal, setShowFormModal] = useState(false);
@@ -492,6 +494,9 @@ export const UniformManagement = (): JSX.Element => {
         return items;
     }, [outfits, activeTab, search]);
 
+    const totalPages = Math.ceil(filteredOutfits.length / pageSize);
+    const paginatedOutfits = filteredOutfits.slice((page - 1) * pageSize, page * pageSize);
+
     const availableCount = useMemo(() => outfits.filter((o) => o.isAvailable).length, [outfits]);
     const unavailableCount = useMemo(() => outfits.filter((o) => !o.isAvailable).length, [outfits]);
 
@@ -537,7 +542,7 @@ export const UniformManagement = (): JSX.Element => {
                         <div className="nb-card-static p-4 space-y-4">
                             <div className="flex items-center gap-2 bg-[#F8F9FB] border border-[#cbcad7] rounded-[10px] px-4 py-2.5">
                                 <svg className="w-5 h-5 text-[#97A3B6] flex-shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" /></svg>
-                                <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Tìm kiếm..." className="flex-1 bg-transparent outline-none font-medium text-sm text-[#1a1a2e] placeholder:text-[#97A3B6]" />
+                                <input type="text" value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} placeholder="Tìm kiếm..." className="flex-1 bg-transparent outline-none font-medium text-sm text-[#1a1a2e] placeholder:text-[#97A3B6]" />
                             </div>
                             <div className="flex flex-wrap items-center gap-2">
                                 <div className="flex items-center gap-1.5 px-3 py-2 nb-card-static">
@@ -548,7 +553,7 @@ export const UniformManagement = (): JSX.Element => {
                                     const isActive = activeTab === tab.key;
                                     const badge = tab.key === "available" ? availableCount : tab.key === "unavailable" ? unavailableCount : 0;
                                     return (
-                                        <button key={tab.key} onClick={() => setActiveTab(tab.key)} className={`nb-tab ${isActive ? "nb-tab-active" : ""}`}>
+                                        <button key={tab.key} onClick={() => { setActiveTab(tab.key); setPage(1); }} className={`nb-tab ${isActive ? "nb-tab-active" : ""}`}>
                                             {tab.label}
                                             {badge > 0 && <span className={`ml-1.5 min-w-[20px] h-5 flex items-center justify-center rounded-full text-xs font-bold px-1.5 ${isActive ? "bg-white/20 text-white" : "bg-[#E5E7EB] text-[#4C5769]"}`}>{badge}</span>}
                                         </button>
@@ -571,12 +576,21 @@ export const UniformManagement = (): JSX.Element => {
 
                         {/* Cards Grid */}
                         {!loading && (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-                                {filteredOutfits.map((item) => (
-                                    <UniformCard key={item.outfitId} item={item} onEdit={openEdit} onDelete={setDeletingOutfit} onManageVariants={setVariantOutfit} />
-                                ))}
-                                <UploadPlaceholderCard onClick={openCreate} />
-                            </div>
+                            <>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                                    {paginatedOutfits.map((item) => (
+                                        <UniformCard key={item.outfitId} item={item} onEdit={openEdit} onDelete={setDeletingOutfit} onManageVariants={setVariantOutfit} />
+                                    ))}
+                                    <UploadPlaceholderCard onClick={openCreate} />
+                                </div>
+                                {totalPages > 1 && (
+                                    <div className="flex items-center justify-center gap-3 mt-4">
+                                        <button disabled={page <= 1} onClick={() => setPage(p => p - 1)} className="nb-btn nb-btn-outline nb-btn-sm text-sm">← Trước</button>
+                                        <span className="text-sm font-bold text-[#6B7280]">{page}/{totalPages} ({filteredOutfits.length} mẫu)</span>
+                                        <button disabled={page >= totalPages} onClick={() => setPage(p => p + 1)} className="nb-btn nb-btn-outline nb-btn-sm text-sm">Sau →</button>
+                                    </div>
+                                )}
+                            </>
                         )}
 
                         {/* Empty state */}

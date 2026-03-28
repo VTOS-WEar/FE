@@ -105,7 +105,7 @@ export default function SchoolWallet() {
                         <p className="font-medium text-[#6B7280] text-sm mt-1">Số dư được quản lý bởi hệ thống</p>
                     </TopNavBar>
 
-                    <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-6">
+                    <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-6 nb-fade-in">
                         {loading ? (
                             <div className="text-center py-20">
                                 <div className="inline-block w-8 h-8 border-4 border-[#6938EF] border-t-transparent rounded-full animate-spin" />
