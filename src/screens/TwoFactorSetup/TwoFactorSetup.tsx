@@ -34,6 +34,7 @@ export const TwoFactorSetup = (): JSX.Element => {
             setStep("scan");
         }).catch(err => {
             if (err?.message?.includes("already enabled")) {
+                localStorage.removeItem("vtos_should_setup_2fa");
                 showToast({ title: "2FA đã được bật", message: "Bạn đã bật xác thực 2 bước.", variant: "info" });
                 navigate(-1);
             } else {

@@ -1,5 +1,4 @@
 import { EyeIcon, EyeOffIcon, Shield } from "lucide-react";
-import { Checkbox } from "../../components/ui/checkbox";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
 import { useEffect, useState, useRef } from "react";
@@ -18,8 +17,7 @@ export const SignIn = (): JSX.Element => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const [rememberMe, setRememberMe] = useState(false);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
   const [isLoading, setIsLoading] = useState(false);
   const [notify, setNotify] = useState<{ title: string; message: string; variant: "error" | "success" | "info" } | null>(null);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
@@ -88,8 +86,9 @@ export const SignIn = (): JSX.Element => {
       setIsLoading(true);
       const data = await login({ email, password });
 
-      // 2FA required → show TOTP input
+      // 2FA required → show TOTP input (2FA is already enabled, so clear the setup flag)
       if (data.requiresTwoFactor && data.twoFactorToken) {
+        localStorage.removeItem("vtos_should_setup_2fa");
         setTwoFactorToken(data.twoFactorToken);
         setShow2FA(true);
         setIsLoading(false);
@@ -104,7 +103,6 @@ export const SignIn = (): JSX.Element => {
       // Normal login → store + redirect
       completeLogin(data);
     } catch (e: any) {
-      setErrorMsg(e?.message || "Có lỗi xảy ra.");
       setNotify({ title: "Đăng nhập thất bại", message: e?.message || "Có lỗi xảy ra.", variant: "error" });
     } finally {
       setIsLoading(false);
@@ -140,6 +138,8 @@ export const SignIn = (): JSX.Element => {
     try {
       setIs2FALoading(true);
       const data = await verify2FA({ twoFactorToken, code });
+      // User already has 2FA enabled (they just verified it), so clear the setup flag
+      localStorage.removeItem("vtos_should_setup_2fa");
       completeLogin(data);
     } catch (e: any) {
       setNotify({ title: "Xác thực thất bại", message: e?.message || "Mã không hợp lệ hoặc đã hết hạn.", variant: "error" });
@@ -271,19 +271,7 @@ export const SignIn = (): JSX.Element => {
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between gap-4">
-                      <label className="flex items-center gap-2 cursor-pointer">
-                        <Checkbox
-                          id="remember"
-                          checked={rememberMe}
-                          onCheckedChange={(v) => setRememberMe(Boolean(v))}
-                          className="w-4 lg:w-5 h-4 lg:h-5 border-2 border-[#1A1A2E]"
-                        />
-                        <span className="font-semibold text-[#4C5769] text-sm">
-                          Ghi nhớ mật khẩu
-                        </span>
-                      </label>
-
+                    <div className="flex items-center justify-end">
                       <Link
                         to="/forgot-password"
                         className="font-bold text-[#1A1A2E] text-sm hover:text-[#B8A9E8] transition-colors border-b-2 border-transparent hover:border-[#B8A9E8]"

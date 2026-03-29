@@ -1,6 +1,6 @@
 import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
 import { useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import {
  Breadcrumb, BreadcrumbItem, BreadcrumbLink,
  BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator,
@@ -115,6 +115,24 @@ export const AdminDashboard = (): JSX.Element => {
  </BreadcrumbList></Breadcrumb>
  </div>
  <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-8 nb-fade-in">
+
+ {/* 2FA Setup Banner */}
+ {localStorage.getItem("vtos_should_setup_2fa") === "true" && (
+ <div className="nb-card-static border-[#F59E0B] bg-[#FEF3C7] px-5 py-4 flex items-center justify-between gap-4">
+ <div className="flex items-center gap-3">
+ <div className="w-9 h-9 rounded-lg bg-[#F59E0B] flex items-center justify-center border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E] flex-shrink-0">
+ <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z" /></svg>
+ </div>
+ <div>
+ <p className="font-bold text-[#92400E] text-sm">⚠️ Tài khoản chưa bật xác thực 2 bước (2FA)</p>
+ <p className="font-medium text-[#92400E] text-xs mt-0.5">Bật 2FA để bảo vệ tài khoản của bạn.</p>
+ </div>
+ </div>
+ <Link to="/2fa-setup" className="nb-btn nb-btn-yellow text-xs px-4 py-2 flex-shrink-0">
+ 🔐 Bật ngay
+ </Link>
+ </div>
+ )}
 
  {/* ── ANALYTICS SECTION ── */}
  <div className="space-y-4">

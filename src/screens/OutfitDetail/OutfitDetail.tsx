@@ -196,7 +196,7 @@ function TryOnModal({
                     onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
                     onDragLeave={() => setDragOver(false)}
                     onClick={() => fileRef.current?.click()}
-                    className={`border-2 border-dashed rounded-xl p-8 flex flex-col items-center justify-center cursor-pointer transition-all min-h-[280px] ${dragOver
+                    className={`border-2 border-dashed rounded-xl p-8 flex flex-col items-center justify-center cursor-pointer transition-all aspect-[3/4] ${dragOver
                         ? "border-purple-500 bg-purple-50"
                         : "border-gray-300 bg-gray-50 hover:border-purple-400 hover:bg-purple-50/50"
                       }`}
@@ -575,6 +575,7 @@ export const OutfitDetail = (): JSX.Element => {
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-3 mt-auto pt-4">
+              {isParent && (
               <button
                 onClick={() => { }} // Add to cart placeholder
                 className="flex-1 min-h-[44px] flex items-center justify-center gap-2 bg-[#0ea5e9] text-white font-bold text-[14px] rounded-xl shadow-[0_4px_12px_rgb(14,165,233,0.2)] hover:bg-[#0284c7] hover:shadow-[0_8px_16px_rgb(14,165,233,0.3)] transition-all hover:-translate-y-0.5 active:translate-y-0"
@@ -582,6 +583,7 @@ export const OutfitDetail = (): JSX.Element => {
                 <ShoppingBag className="w-[16px] h-[16px]" />
                 Thêm vào giỏ hàng
               </button>
+              )}
 
               <button
                 onClick={() => setShowTryOn(true)}
