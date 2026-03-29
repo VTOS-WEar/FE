@@ -136,7 +136,7 @@ export default function VariantManager({
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-            <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
+            <div className="absolute inset-0 bg-black/40" onClick={onClose} />
             <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-[680px] mx-4 max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-200">
                 {/* Header */}
                 <div className="flex items-center justify-between px-6 py-5 border-b border-[#f0f0f5] sticky top-0 bg-white z-10 rounded-t-2xl">
@@ -163,7 +163,7 @@ export default function VariantManager({
                     {!showForm && (
                         <button
                             onClick={openCreate}
-                            className="mb-4 flex items-center gap-2 px-4 py-2.5 rounded-[10px] bg-gradient-to-r from-[#6938EF] to-[#5B2FD6] hover:from-[#5B2FD6] hover:to-[#4F22C7] text-white font-semibold text-sm shadow-[0_2px_8px_rgba(105,56,239,0.3)] transition-colors"
+                            className="mb-4 flex items-center gap-2 nb-btn nb-btn-purple text-sm px-4 py-2.5"
                         >
                             <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
@@ -232,7 +232,7 @@ export default function VariantManager({
                                 <button
                                     type="submit"
                                     disabled={saving || !form.size.trim()}
-                                    className="px-4 py-2 rounded-[10px] bg-gradient-to-r from-[#6938EF] to-[#5B2FD6] text-white font-semibold text-sm shadow-[0_2px_8px_rgba(105,56,239,0.3)] disabled:opacity-50 transition-colors flex items-center gap-2"
+                                    className="flex items-center gap-2 nb-btn nb-btn-purple text-sm px-4 py-2 disabled:opacity-50"
                                 >
                                     {saving && (
                                         <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

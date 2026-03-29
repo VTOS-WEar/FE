@@ -40,7 +40,7 @@ const navigationItems = [
 
 export const AccountSettingsSection = (): JSX.Element => {
   return (
-    <section className="relative w-full bg-white rounded-[30px] shadow-[0px_4px_4px_#0000006b] p-6">
+    <section className="relative w-full bg-white rounded-[30px] border-2 border-[#1A1A2E] shadow-[6px_6px_0_#1A1A2E] p-6">
       <div className="flex gap-6">
         <aside className="flex flex-col w-[209px] gap-5">
           <header className="flex gap-[13px] mb-6">
@@ -91,7 +91,7 @@ export const AccountSettingsSection = (): JSX.Element => {
                 </Button>
                 <Button
                   variant="ghost"
-                  className="h-auto px-[15px] py-2.5 rounded-[10px] shadow-[2px_0px_4px_#00000040] bg-[linear-gradient(90deg,rgba(65,130,249,1)_0%,rgba(168,122,240,1)_100%)] font-semibold text-white text-base hover:opacity-90 transition-opacity"
+                  className="h-auto px-[15px] py-2.5 rounded-[10px] shadow-[3px_3px_0_#1A1A2E] border-2 border-[#1A1A2E] bg-blue-accent font-semibold text-white text-base hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all"
                 >
                   Bảo mật
                 </Button>
@@ -144,7 +144,7 @@ export const AccountSettingsSection = (): JSX.Element => {
                     </div>
                   </div>
 
-                  <Button className="h-[47px] w-[290px] gap-2.5 px-[15px] py-2.5 bg-[#3c6efd] rounded-[10px] shadow-[0px_0px_8.4px_#3c6efd] font-semibold text-white text-xl hover:bg-[#3c6efd]/90 transition-colors">
+                  <Button className="h-[47px] w-[290px] gap-2.5 px-[15px] py-2.5 bg-[#3c6efd] rounded-[10px] shadow-[3px_3px_0_#1A1A2E] border-2 border-[#1A1A2E] font-semibold text-white text-xl hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all">
                     <SaveIcon className="w-6 h-6" />
                     Lưu thay đổi
                   </Button>

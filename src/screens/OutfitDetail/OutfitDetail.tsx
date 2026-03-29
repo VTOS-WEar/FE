@@ -154,7 +154,7 @@ function TryOnModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
 
       {/* Modal */}
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-[720px] max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-200">
@@ -461,7 +461,7 @@ export const OutfitDetail = (): JSX.Element => {
               <img src={mainImage} alt={outfit.outfitName} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
               <button
                 onClick={() => setLiked(!liked)}
-                className="absolute top-4 left-4 w-10 h-10 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform duration-300 z-10"
+                className="absolute top-4 left-4 w-10 h-10 bg-white shadow-[3px_3px_0_#1A1A2E] border-2 border-[#1A1A2E] rounded-lg flex items-center justify-center hover:scale-110 transition-transform duration-300 z-10"
               >
                 <Heart className={`w-[20px] h-[20px] ${liked ? "fill-red-500 text-red-500" : "text-gray-400"}`} />
               </button>

@@ -69,7 +69,7 @@ function StudentFormModal({
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-            <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
+            <div className="absolute inset-0 bg-black/40" onClick={onClose} />
             <div className="relative bg-white border-2 border-[#1A1A2E] rounded-xl shadow-[6px_6px_0_#1A1A2E] w-full max-w-[560px] mx-4 max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-200">
                 {/* Header */}
                 <div className="flex items-center justify-between px-6 py-5 border-b-2 border-[#1A1A2E]">
@@ -144,7 +144,7 @@ function DeleteConfirmDialog({ isOpen, onClose, onConfirm, studentName, isLoadin
     if (!isOpen) return null;
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-            <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
+            <div className="absolute inset-0 bg-black/40" onClick={onClose} />
             <div className="relative bg-white border-2 border-[#1A1A2E] rounded-xl shadow-[6px_6px_0_#1A1A2E] w-full max-w-[420px] mx-4 p-6 animate-in fade-in zoom-in-95 duration-200">
                 <div className="flex flex-col items-center text-center">
                     <div className="w-14 h-14 rounded-full bg-red-50 flex items-center justify-center mb-4 border-2 border-[#1A1A2E] shadow-[3px_3px_0_#1A1A2E]">

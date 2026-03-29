@@ -11,7 +11,7 @@ export const TryOnModal = ({ isOpen, onClose, suggestedSize = "M", fitPercentage
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
       <div className="relative bg-white w-full max-w-[1350px] max-h-[90vh] mx-4 rounded-xl overflow-hidden shadow-2xl">
         {/* Close Button */}
         <button

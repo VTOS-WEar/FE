@@ -315,8 +315,7 @@ function UniformCard({ item, onEdit, onDelete, onManageVariants }: { item: Outfi
 
     return (
         <div className="nb-card overflow-hidden group">
-            {/* Image area */}
-            <div className="w-full aspect-[4/3] bg-gradient-to-br from-[#E5E7EB] to-[#D1D5DB] flex items-center justify-center relative">
+            <div className="w-full aspect-[4/3] bg-[#F3F4F6] border-b-2 border-[#1A1A2E] flex items-center justify-center relative">
                 {item.mainImageURL ? (
                     <img src={item.mainImageURL} alt={item.outfitName} className="w-full h-full object-cover" />
                 ) : (

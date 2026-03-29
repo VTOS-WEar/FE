@@ -261,7 +261,7 @@ export const CampaignDetail = (): JSX.Element => {
 
       {/* ───── Order Modal ───── */}
       {modal.open && modal.outfit && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={() => setModal({ open: false, outfit: null, variants: [], loadingVariants: false })}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setModal({ open: false, outfit: null, variants: [], loadingVariants: false })}>
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden" onClick={e => e.stopPropagation()}>
             {/* Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
