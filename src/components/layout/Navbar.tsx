@@ -1,5 +1,4 @@
-import { ChevronDownIcon, SearchIcon } from "lucide-react";
-import { Button } from "../ui/button";
+import { ChevronDownIcon, SearchIcon, LogIn } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,6 +6,7 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Input } from "../ui/input";
+import { useNavigate } from "react-router-dom";
 
 const navigationItems = [
   { label: "Trang chủ", hasDropdown: false },
@@ -16,14 +16,18 @@ const navigationItems = [
 ];
 
 export const Navbar = (): JSX.Element => {
+  const navigate = useNavigate();
+
   return (
-    <header className="flex w-full items-center justify-between gap-4 px-4 lg:px-8 py-4 bg-white border-b border-gray-100">
+    <header className="flex w-full items-center justify-between gap-4 px-4 lg:px-8 py-4 bg-[#FFF8F0] border-b-2 border-[#1A1A2E]">
       {/* Logo */}
-      <img
-        className="w-[120px] lg:w-[164px] h-auto flex-shrink-0"
-        alt="Vtos logo"
-        src="https://c.animaapp.com/mjxt3t8wNP0otU/img/vtos--1--removebg-preview-1-1.png"
-      />
+      <button type="button" onClick={() => navigate("/")} className="flex-shrink-0">
+        <img
+          className="w-[120px] lg:w-[164px] h-auto"
+          alt="Vtos logo"
+          src="https://c.animaapp.com/mjxt3t8wNP0otU/img/vtos--1--removebg-preview-1-1.png"
+        />
+      </button>
 
       {/* Navigation Menu */}
       <nav className="hidden lg:flex items-center gap-6 xl:gap-8">
@@ -31,24 +35,24 @@ export const Navbar = (): JSX.Element => {
           item.hasDropdown ? (
             <DropdownMenu key={index}>
               <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  className="h-auto p-0 hover:bg-transparent [font-family:'Baloo-Regular',Helvetica] font-normal text-black text-base"
+                <button
+                  type="button"
+                  className="flex items-center gap-1 font-bold text-[#1A1A2E] text-sm hover:text-[#1A1A2E]/70 transition-colors outline-none"
                 >
                   {item.label}
-                  <ChevronDownIcon className="w-4 h-4 ml-1" />
-                </Button>
+                  <ChevronDownIcon className="w-4 h-4" />
+                </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem>Sản phẩm 1</DropdownMenuItem>
-                <DropdownMenuItem>Sản phẩm 2</DropdownMenuItem>
-                <DropdownMenuItem>Sản phẩm 3</DropdownMenuItem>
+              <DropdownMenuContent className="rounded-xl border-2 border-[#1A1A2E] bg-white shadow-[4px_4px_0_#1A1A2E]">
+                <DropdownMenuItem className="font-medium cursor-pointer data-[highlighted]:bg-[#FFF8F0]">Sản phẩm 1</DropdownMenuItem>
+                <DropdownMenuItem className="font-medium cursor-pointer data-[highlighted]:bg-[#FFF8F0]">Sản phẩm 2</DropdownMenuItem>
+                <DropdownMenuItem className="font-medium cursor-pointer data-[highlighted]:bg-[#FFF8F0]">Sản phẩm 3</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
             <button
               key={index}
-              className="[font-family:'Baloo-Regular',Helvetica] font-normal text-black text-base hover:text-gray-600 transition-colors whitespace-nowrap"
+              className="font-bold text-[#1A1A2E] text-sm hover:text-[#1A1A2E]/70 transition-colors whitespace-nowrap"
             >
               {item.label}
             </button>
@@ -62,28 +66,26 @@ export const Navbar = (): JSX.Element => {
           <Input
             type="text"
             placeholder="Tìm kiếm..."
-            className="w-full h-10 pl-4 pr-12 rounded-full border border-gray-300 [font-family:'Roboto',Helvetica] font-light text-black text-sm placeholder:text-gray-400 focus-visible:ring-2 focus-visible:ring-[#6838ee]"
+            className="w-full h-10 pl-4 pr-12 rounded-xl border-2 border-[#1A1A2E] bg-white text-sm font-medium placeholder:text-[#9CA3AF] focus-visible:ring-0 focus-visible:border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E]"
           />
-          <Button
-            size="icon"
-            className="absolute right-0 top-0 h-10 w-10 rounded-full bg-[#6838ee] hover:bg-[#5527d9] text-white"
+          <button
+            type="button"
+            className="absolute right-0 top-0 h-10 w-10 rounded-r-xl border-l-2 border-[#1A1A2E] bg-[#1A1A2E] text-white flex items-center justify-center hover:bg-[#1A1A2E]/90 transition-colors"
           >
             <SearchIcon className="w-5 h-5" />
-          </Button>
+          </button>
         </div>
       </div>
 
       {/* Login Button */}
-      <Button className="h-auto px-4 lg:px-6 py-2 lg:py-3 bg-white border border-gray-300 rounded-full hover:bg-gray-50 transition-colors flex items-center gap-2 flex-shrink-0">
-        <img
-          className="w-6 h-6"
-          alt="Login icon"
-          src="https://c.animaapp.com/mjxt3t8wNP0otU/img/mingcute-user-4-fill.svg"
-        />
-        <span className="[font-family:'Baloo-Regular',Helvetica] font-normal text-black text-base whitespace-nowrap">
-          Đăng nhập
-        </span>
-      </Button>
+      <button
+        type="button"
+        onClick={() => navigate("/signin")}
+        className="flex items-center gap-2 h-10 px-4 lg:px-5 rounded-xl border-2 border-[#1A1A2E] bg-white text-[#1A1A2E] font-bold text-sm shadow-[3px_3px_0_#1A1A2E] transition-all duration-150 hover:-translate-y-[1px] hover:shadow-[4px_4px_0_#1A1A2E] active:shadow-none active:translate-y-0 flex-shrink-0"
+      >
+        <LogIn className="w-4 h-4" />
+        <span className="whitespace-nowrap">Đăng nhập</span>
+      </button>
     </header>
   );
 };

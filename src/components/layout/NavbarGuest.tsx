@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,7 +9,6 @@ import { Bell, ChevronDown, Clock, GraduationCap, LogIn, LogOut, Menu, Package, 
 import { useState, useEffect } from "react"
 import { useNavigate, Link, useLocation } from "react-router-dom"
 import { useCart } from "../../contexts/CartContext"
-import { motion, AnimatePresence } from "framer-motion"
 
 function getSessionUser(): { fullName: string; role: string } | null {
   const raw = localStorage.getItem("user") || sessionStorage.getItem("user")
@@ -91,8 +89,6 @@ export function NavbarGuest() {
     { label: "Đánh giá", to: "/parentprofile/reviews", icon: Star },
     { label: "Cài đặt", to: "/parentprofile/settings", icon: Settings },
   ] as const
-  const desktopNavClass = "flex h-10 items-center rounded-full px-3 lg:px-4 text-sm font-bold transition-colors"
-  const activeNavClass = "bg-purple-50 text-purple-600"
 
   const isAnchorActive = (href?: string) => {
     if (!href) return false
@@ -109,8 +105,14 @@ export function NavbarGuest() {
   const isProductsActive = location.pathname === "/schools" || location.pathname === "/products"
   const isContactActive = isAnchorActive("#contact")
 
+  /* ── NB style tokens ── */
+  const nbNavLink = "flex h-10 items-center rounded-lg px-3 lg:px-4 text-sm font-bold transition-all duration-150"
+  const nbNavLinkActive = "bg-[#1A1A2E] text-white shadow-[2px_2px_0_#1A1A2E]"
+  const nbNavLinkIdle = "text-[#1A1A2E] hover:bg-[#1A1A2E]/5"
+  const nbIconBtn = "relative flex h-10 w-10 items-center justify-center rounded-lg border-2 border-[#1A1A2E] bg-white shadow-[2px_2px_0_#1A1A2E] transition-all duration-150 hover:shadow-[3px_3px_0_#1A1A2E] hover:-translate-y-[1px] active:shadow-none active:translate-y-0"
+
   return (
-    <nav className="sticky top-0 z-50 border-none bg-transparent py-2">
+    <nav className="sticky top-0 z-50 bg-[#FFF8F0] py-2">
       <div className="mx-auto w-full max-w-[1240px] px-3 sm:px-4 lg:px-6">
         <div className="flex h-16 items-center justify-between gap-2 sm:gap-3 lg:gap-5">
           <div className="flex items-center gap-4">
@@ -118,9 +120,9 @@ export function NavbarGuest() {
             <button
               type="button"
               onClick={() => setIsMenuOpen(true)}
-              className="flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-md lg:hidden"
+              className={`${nbIconBtn} lg:hidden`}
             >
-              <Menu size={20} className="text-gray-700" />
+              <Menu size={20} className="text-[#1A1A2E]" />
             </button>
 
             <button
@@ -137,7 +139,8 @@ export function NavbarGuest() {
             </button>
           </div>
 
-          <div className="hidden w-full max-w-[760px] items-center rounded-full border border-purple-200 bg-white px-2 py-1 shadow-md transition-all duration-200 hover:-translate-y-[1px] hover:shadow-lg lg:flex">
+          {/* ── Desktop Nav Bar ── */}
+          <div className="hidden w-full max-w-[760px] items-center rounded-xl border-2 border-[#1A1A2E] bg-white px-2 py-1 shadow-[4px_4px_0_#1A1A2E] lg:flex">
             <div className="flex items-center gap-1">
               {navItems.map((item) => {
                 if (item.type === "route") {
@@ -152,7 +155,7 @@ export function NavbarGuest() {
                       onClick={() => {
                         if (isHome) window.scrollTo({ top: 0, behavior: "smooth" })
                       }}
-                      className={`${desktopNavClass} ${isActive ? activeNavClass : "text-gray-700"}`}
+                      className={`${nbNavLink} ${isActive ? nbNavLinkActive : nbNavLinkIdle}`}
                     >
                       {item.label}
                     </Link>
@@ -164,7 +167,7 @@ export function NavbarGuest() {
                     key={item.label} 
                     href={item.href} 
                     onClick={(e) => handleAnchorClick(e, item.href)}
-                    className={`${desktopNavClass} ${isActive ? activeNavClass : "text-gray-700"} font-bold`}
+                    className={`${nbNavLink} ${isActive ? nbNavLinkActive : nbNavLinkIdle}`}
                   >
                     {item.label}
                   </a>
@@ -173,124 +176,120 @@ export function NavbarGuest() {
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button type="button" className={`flex h-10 items-center rounded-full border-none px-3 text-sm font-bold outline-none focus:border-none focus:outline-none focus:ring-0 lg:px-4 active:outline-none ${isProductsActive ? activeNavClass : "text-gray-700"}`}>
+                  <button type="button" className={`${nbNavLink} outline-none focus:outline-none focus:ring-0 ${isProductsActive ? nbNavLinkActive : nbNavLinkIdle}`}>
                     Sản phẩm <ChevronDown size={14} className="ml-1" />
                   </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="z-[70] w-72 border border-purple-100 bg-white/95 p-1.5 shadow-xl backdrop-blur">
-                  <div className="mb-1 rounded-lg bg-gradient-to-r from-purple-50 to-pink-50 px-3 py-2">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-purple-700">Khám phá sản phẩm</p>
+                <DropdownMenuContent align="start" className="z-[70] w-72 rounded-xl border-2 border-[#1A1A2E] bg-white p-1.5 shadow-[4px_4px_0_#1A1A2E]">
+                  <div className="mb-1 rounded-lg bg-[#EDE9FE] px-3 py-2 border border-[#1A1A2E]/10">
+                    <p className="text-xs font-bold uppercase tracking-wide text-[#1A1A2E]">Khám phá sản phẩm</p>
                   </div>
-                  <DropdownMenuItem asChild className="group m-0 cursor-pointer rounded-lg px-2 py-2 transition-all duration-200 data-[highlighted]:-translate-y-0.5 data-[highlighted]:bg-gray-100">
+                  <DropdownMenuItem asChild className="group m-0 cursor-pointer rounded-lg px-2 py-2 transition-all duration-150 data-[highlighted]:bg-[#FFF8F0]">
                     <Link to="/schools" className="flex w-full items-center gap-3">
-                      <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-purple-100 text-purple-700">
-                        <GraduationCap size={16} />
+                      <div className="flex h-9 w-9 items-center justify-center rounded-lg border-2 border-[#1A1A2E] bg-[#C8E44D] shadow-[2px_2px_0_#1A1A2E]">
+                        <GraduationCap size={16} className="text-[#1A1A2E]" />
                       </div>
                       <div className="min-w-0">
-                        <p className="text-sm font-semibold text-gray-800">Tìm trường</p>
-                        <p className="text-xs text-gray-500">Danh sách trường và đối tác đồng phục</p>
+                        <p className="text-sm font-bold text-[#1A1A2E]">Tìm trường</p>
+                        <p className="text-xs text-[#6B7280]">Danh sách trường và đối tác đồng phục</p>
                       </div>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="group m-0 cursor-pointer rounded-lg px-2 py-2 transition-all duration-200 data-[highlighted]:-translate-y-0.5 data-[highlighted]:bg-gray-100">
+                  <DropdownMenuItem asChild className="group m-0 cursor-pointer rounded-lg px-2 py-2 transition-all duration-150 data-[highlighted]:bg-[#FFF8F0]">
                     <Link to="/products" className="flex w-full items-center gap-3">
-                      <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-purple-100 text-purple-700">
-                        <Package size={16} />
+                      <div className="flex h-9 w-9 items-center justify-center rounded-lg border-2 border-[#1A1A2E] bg-[#EDE9FE] shadow-[2px_2px_0_#1A1A2E]">
+                        <Package size={16} className="text-[#1A1A2E]" />
                       </div>
                       <div className="min-w-0">
-                        <p className="text-sm font-semibold text-gray-800">Kho đồng phục</p>
-                        <p className="text-xs text-gray-500">Mẫu sản phẩm sẵn có để đặt nhanh</p>
+                        <p className="text-sm font-bold text-[#1A1A2E]">Kho đồng phục</p>
+                        <p className="text-xs text-[#6B7280]">Mẫu sản phẩm sẵn có để đặt nhanh</p>
                       </div>
                     </Link>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              <a href="#contact" className={`${desktopNavClass} ${isContactActive ? activeNavClass : "text-gray-700"} font-bold`}>
+              <a href="#contact" className={`${nbNavLink} ${isContactActive ? nbNavLinkActive : nbNavLinkIdle}`}>
                 Liên hệ
               </a>
             </div>
 
-            <div className="mx-2 h-6 w-px bg-purple-200" />
+            <div className="mx-2 h-6 w-px bg-[#1A1A2E]/15" />
 
             <div className="flex min-w-0 flex-1 items-center gap-2">
-              <Input placeholder="Tìm kiếm..." className="h-9 border-none bg-transparent text-sm shadow-none focus-visible:ring-0 placeholder:text-gray-400" />
-              <Button size="icon" className="h-9 w-9 rounded-full bg-gradient-to-br from-purple-600 to-purple-500 hover:opacity-90">
-                <Search size={16} className="text-white" />
-              </Button>
+              <Input placeholder="Tìm kiếm..." className="h-9 border-none bg-transparent text-sm font-medium shadow-none focus-visible:ring-0 placeholder:text-[#9CA3AF]" />
+              <button type="button" className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg border-2 border-[#1A1A2E] bg-[#1A1A2E] text-white shadow-[2px_2px_0_#6B7280] transition-all duration-150 hover:shadow-[3px_3px_0_#6B7280] hover:-translate-y-[1px] active:shadow-none active:translate-y-0">
+                <Search size={16} />
+              </button>
             </div>
           </div>
 
-          <div className="flex items-center justify-end gap-1 sm:gap-2">
-            <Button
+          {/* ── Right Actions ── */}
+          <div className="flex items-center justify-end gap-2">
+            <button
+              type="button"
               onClick={() => navigate("/cart")}
-              variant="ghost"
-              size="icon"
-              className="relative h-10 w-10 rounded-full shadow-md hover:shadow-lg transition hover:-translate-y-[1px] bg-white hover:bg-gray-50"
+              className={nbIconBtn}
             >
-              <ShoppingCart size={18} />
+              <ShoppingCart size={18} className="text-[#1A1A2E]" />
               {cartCount > 0 && (
-                <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-purple-600 text-[10px] font-bold text-white">
+                <span className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-md border-2 border-[#1A1A2E] bg-[#C8E44D] text-[10px] font-black text-[#1A1A2E]">
                   {cartCount > 99 ? "99+" : cartCount}
                 </span>
               )}
-            </Button>
+            </button>
 
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-10 w-10 rounded-full shadow-md hover:shadow-lg transition hover:-translate-y-[1px] bg-white hover:bg-gray-50"
-            >
-              <Bell size={18} />
-            </Button>
+            <button type="button" className={nbIconBtn}>
+              <Bell size={18} className="text-[#1A1A2E]" />
+            </button>
 
             {loggedIn ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button
                     type="button"
-                    className="hidden h-12 items-center gap-2 rounded-full bg-white px-3 shadow-md transition-all duration-200 hover:-translate-y-[1px] hover:bg-gray-50 hover:shadow-lg lg:flex !outline-none"
+                    className="hidden h-11 items-center gap-2 rounded-xl border-2 border-[#1A1A2E] bg-white px-3 shadow-[3px_3px_0_#1A1A2E] transition-all duration-150 hover:-translate-y-[1px] hover:shadow-[4px_4px_0_#1A1A2E] active:shadow-none active:translate-y-0 lg:flex !outline-none"
                   >
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-purple-100">
-                      <User size={16} className="text-purple-600" />
+                    <div className="flex h-7 w-7 items-center justify-center rounded-lg border-2 border-[#1A1A2E] bg-[#EDE9FE]">
+                      <User size={14} className="text-[#1A1A2E]" />
                     </div>
-                    <span className="max-w-[120px] truncate text-sm font-semibold">{userName}</span>
-                    <ChevronDown size={14} className="text-gray-400" />
+                    <span className="max-w-[120px] truncate text-sm font-bold text-[#1A1A2E]">{userName}</span>
+                    <ChevronDown size={14} className="text-[#1A1A2E]/50" />
                   </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="z-[70] w-56 bg-white border-none shadow-lg p-0">
+                <DropdownMenuContent align="end" className="z-[70] w-56 rounded-xl border-2 border-[#1A1A2E] bg-white p-0 shadow-[4px_4px_0_#1A1A2E]">
                   {userRole === "Parent" && (
                     <>
-                      <div className="border-b border-gray-200">
-                        <DropdownMenuItem asChild className="cursor-pointer transition-transform duration-150 data-[highlighted]:bg-gray-100 data-[highlighted]: m-0 rounded-none px-3 py-2">
+                      <div className="border-b-2 border-[#1A1A2E]/10">
+                        <DropdownMenuItem asChild className="cursor-pointer transition-colors duration-150 data-[highlighted]:bg-[#FFF8F0] m-0 rounded-none px-3 py-2.5">
                           <Link to="/parentprofile/account" className="flex w-full items-center gap-3">
-                            <User size={16} className="text-purple-600 flex-shrink-0" />
-                            <span className="text-sm">Tài khoản</span>
+                            <User size={16} className="text-[#1A1A2E] flex-shrink-0" />
+                            <span className="text-sm font-bold text-[#1A1A2E]">Tài khoản</span>
                           </Link>
                         </DropdownMenuItem>
                       </div>
-                      <div className="border-b border-gray-200">
+                      <div className="border-b-2 border-[#1A1A2E]/10">
                         {parentProfileItems.slice(1, 5).map((item) => {
                           const IconComp = item.icon
                           return (
-                            <DropdownMenuItem key={item.to} asChild className="cursor-pointer transition-transform duration-150 data-[highlighted]:bg-gray-100 data-[highlighted]: m-0 rounded-none px-3 py-2">
+                            <DropdownMenuItem key={item.to} asChild className="cursor-pointer transition-colors duration-150 data-[highlighted]:bg-[#FFF8F0] m-0 rounded-none px-3 py-2.5">
                               <Link to={item.to} className="flex w-full items-center gap-3">
-                                <IconComp size={16} className="text-purple-600 flex-shrink-0" />
-                                <span className="text-sm">{item.label}</span>
+                                <IconComp size={16} className="text-[#1A1A2E] flex-shrink-0" />
+                                <span className="text-sm font-medium text-[#1A1A2E]">{item.label}</span>
                               </Link>
                             </DropdownMenuItem>
                           )
                         })}
                       </div>
                       <div>
-                        <DropdownMenuItem asChild className="cursor-pointer transition-transform duration-150 data-[highlighted]:bg-gray-100 data-[highlighted]: m-0 rounded-none px-3 py-2">
+                        <DropdownMenuItem asChild className="cursor-pointer transition-colors duration-150 data-[highlighted]:bg-[#FFF8F0] m-0 rounded-none px-3 py-2.5">
                           <Link to="/parentprofile/settings" className="flex w-full items-center gap-3">
-                            <Settings size={16} className="text-purple-600 flex-shrink-0" />
-                            <span className="text-sm">Cài đặt</span>
+                            <Settings size={16} className="text-[#1A1A2E] flex-shrink-0" />
+                            <span className="text-sm font-medium text-[#1A1A2E]">Cài đặt</span>
                           </Link>
                         </DropdownMenuItem>
-                        <div className="border-t border-gray-200 px-3 py-2">
-                          <button type="button" onClick={handleLogout} className="flex w-full items-center gap-3 text-sm font-medium text-red-600 hover:text-red-700">
+                        <div className="border-t-2 border-[#1A1A2E]/10 px-3 py-2.5">
+                          <button type="button" onClick={handleLogout} className="flex w-full items-center gap-3 text-sm font-bold text-red-600 hover:text-red-700 transition-colors">
                             <LogOut size={16} />
                             <span>Đăng xuất</span>
                           </button>
@@ -301,100 +300,110 @@ export function NavbarGuest() {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Button onClick={() => navigate("/signin")} variant="outline" className="hidden h-9 items-center gap-2 rounded-full px-3 shadow-md hover:shadow-lg transition lg:flex">
+              <button
+                type="button"
+                onClick={() => navigate("/signin")}
+                className="hidden h-10 items-center gap-2 rounded-xl border-2 border-[#1A1A2E] bg-white px-4 font-bold text-sm text-[#1A1A2E] shadow-[3px_3px_0_#1A1A2E] transition-all duration-150 hover:-translate-y-[1px] hover:shadow-[4px_4px_0_#1A1A2E] active:shadow-none active:translate-y-0 lg:flex"
+              >
                 <LogIn size={14} />
-                <span className="text-sm font-semibold">Đăng nhập</span>
-              </Button>
+                <span>Đăng nhập</span>
+              </button>
             )}
           </div>
         </div>
       </div>
 
-      {/* Mobile Menu Overlay */}
-      <AnimatePresence>
-        {isMenuOpen && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsMenuOpen(false)}
-              className="fixed inset-0 z-[100] bg-black/40 backdrop-blur-sm"
-            />
-            <motion.div
-              initial={{ x: "-100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "-100%" }}
-              transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed inset-y-0 left-0 z-[101] w-[280px] bg-white p-6 shadow-2xl"
-            >
-              <div className="flex items-center justify-between mb-8">
-                <img src="https://api.builder.io/api/v1/image/assets/TEMP/b5b02bd27ae25e8fcc3a61694891ffa491402bfb?width=328" alt="VTOS Logo" className="h-8 w-auto" />
-                <button onClick={() => setIsMenuOpen(false)} className="p-2 rounded-full bg-gray-100 text-gray-500">
-                  <X size={20} />
-                </button>
-              </div>
+      {/* ── Mobile Menu Overlay (CSS-only, no Framer Motion) ── */}
+      {isMenuOpen && (
+        <>
+          <div
+            onClick={() => setIsMenuOpen(false)}
+            className="fixed inset-0 z-[100] bg-[#1A1A2E]/40"
+          />
+          <div
+            className="fixed inset-y-0 left-0 z-[101] w-[280px] border-r-2 border-[#1A1A2E] bg-[#FFF8F0] p-6 shadow-[6px_0_0_#1A1A2E] animate-in slide-in-from-left duration-300"
+          >
+            <div className="flex items-center justify-between mb-8">
+              <img src="https://api.builder.io/api/v1/image/assets/TEMP/b5b02bd27ae25e8fcc3a61694891ffa491402bfb?width=328" alt="VTOS Logo" className="h-8 w-auto" />
+              <button onClick={() => setIsMenuOpen(false)} className={nbIconBtn}>
+                <X size={18} />
+              </button>
+            </div>
 
-              <div className="space-y-2">
-                {navItems.map((item) => {
-                  if (item.type === "route") {
-                    return (
-                      <Link
-                        key={item.label}
-                        to={item.to}
-                        className="flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors"
-                      >
-                        {item.label}
-                      </Link>
-                    )
-                  }
+            <div className="space-y-1">
+              {navItems.map((item) => {
+                if (item.type === "route") {
+                  const isHome = item.to === "/homepage"
+                  const isActive = isHome
+                    ? location.pathname === "/homepage" && !location.hash
+                    : location.pathname === item.to
                   return (
-                    <a
+                    <Link
                       key={item.label}
-                      href={item.href}
-                      onClick={(e) => handleAnchorClick(e, item.href)}
-                      className="flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors"
+                      to={item.to}
+                      className={`flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold transition-all duration-150 ${isActive ? "bg-[#1A1A2E] text-white shadow-[3px_3px_0_#6B7280]" : "text-[#1A1A2E] hover:bg-white border border-transparent hover:border-[#1A1A2E]/10"}`}
                     >
                       {item.label}
-                    </a>
+                    </Link>
                   )
-                })}
+                }
+                const isActive = isAnchorActive(item.href)
+                return (
+                  <a
+                    key={item.label}
+                    href={item.href}
+                    onClick={(e) => handleAnchorClick(e, item.href)}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold transition-all duration-150 ${isActive ? "bg-[#1A1A2E] text-white shadow-[3px_3px_0_#6B7280]" : "text-[#1A1A2E] hover:bg-white border border-transparent hover:border-[#1A1A2E]/10"}`}
+                  >
+                    {item.label}
+                  </a>
+                )
+              })}
 
-                <div className="pt-4 mt-4 border-t border-gray-100">
-                  <p className="px-4 mb-2 text-xs font-semibold uppercase tracking-wider text-gray-400">Sản phẩm</p>
-                  <Link to="/schools" className="flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors">
-                    <GraduationCap size={18} className="text-purple-600" /> Tìm trường
-                  </Link>
-                  <Link to="/products" className="flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors">
-                    <Package size={18} className="text-purple-600" /> Kho đồng phục
-                  </Link>
-                </div>
-
-                <a 
-                  href="#contact" 
-                  onClick={(e) => {
-                    e.preventDefault();
-                    const element = document.querySelector("#contact");
-                    if (element) element.scrollIntoView({ behavior: "smooth" });
-                    setIsMenuOpen(false);
-                  }}
-                  className="flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors"
-                >
-                  Liên hệ
-                </a>
-
-                <div className="pt-8 space-y-3">
-                  {!loggedIn && (
-                    <Button onClick={() => navigate("/signin")} className="w-full h-12 rounded-full bg-purple-600 hover:bg-purple-700 shadow-lg text-white font-bold">
-                      Đăng nhập
-                    </Button>
-                  )}
-                </div>
+              <div className="pt-4 mt-4 border-t-2 border-[#1A1A2E]/10">
+                <p className="px-4 mb-2 text-xs font-black uppercase tracking-wider text-[#1A1A2E]/40">Sản phẩm</p>
+                <Link to="/schools" className="flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold text-[#1A1A2E] hover:bg-white transition-colors">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg border-2 border-[#1A1A2E] bg-[#C8E44D] shadow-[2px_2px_0_#1A1A2E]">
+                    <GraduationCap size={14} />
+                  </div>
+                  Tìm trường
+                </Link>
+                <Link to="/products" className="flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold text-[#1A1A2E] hover:bg-white transition-colors">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg border-2 border-[#1A1A2E] bg-[#EDE9FE] shadow-[2px_2px_0_#1A1A2E]">
+                    <Package size={14} />
+                  </div>
+                  Kho đồng phục
+                </Link>
               </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+
+              <a 
+                href="#contact" 
+                onClick={(e) => {
+                  e.preventDefault();
+                  const element = document.querySelector("#contact");
+                  if (element) element.scrollIntoView({ behavior: "smooth" });
+                  setIsMenuOpen(false);
+                }}
+                className="flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold text-[#1A1A2E] hover:bg-white transition-colors"
+              >
+                Liên hệ
+              </a>
+
+              <div className="pt-8 space-y-3">
+                {!loggedIn && (
+                  <button
+                    type="button"
+                    onClick={() => { navigate("/signin"); setIsMenuOpen(false); }}
+                    className="w-full h-12 rounded-xl border-2 border-[#1A1A2E] bg-[#1A1A2E] text-white font-bold shadow-[4px_4px_0_#6B7280] transition-all duration-150 hover:shadow-[5px_5px_0_#6B7280] active:shadow-none active:translate-y-[2px]"
+                  >
+                    Đăng nhập ✦
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </nav>
   )
 }

@@ -110,24 +110,9 @@ export const FillInformation = (): JSX.Element => {
   };
 
   return (
-    <GuestLayout bgColor="#f4f2ff">
-      <main className="flex-1 bg-[#f4f2ff] py-8 lg:py-12 px-4 relative overflow-hidden">
-        {/* Decorative background vectors */}
-        <img
-          className="absolute top-[15rem] right-[45rem] w-[42rem] h-[42rem] opacity-50"
-          alt="Vector"
-          src="https://c.animaapp.com/mjxt3t8wNP0otU/img/vector-23.svg"
-        />
-        <img
-          className="absolute top-[25rem] right-[56rem] w-[45rem] h-[51rem] opacity-50"
-          alt="Vector"
-          src="https://c.animaapp.com/mjxt3t8wNP0otU/img/vector-20.svg"
-        />
-        <img
-          className="absolute top-[-5rem] right-[51rem] w-[51rem] h-[42rem] opacity-50"
-          alt="Vector"
-          src="https://c.animaapp.com/mjxt3t8wNP0otU/img/vector-21.svg"
-        />
+    <GuestLayout bgColor="#FFF8F0">
+      <main className="flex-1 bg-[#FFF8F0] py-8 lg:py-12 px-4 relative overflow-hidden">
+        {/* NB decorative shapes */}
 
         <div className="max-w-4xl mx-auto relative z-10">
           <div className="text-center mb-12">
@@ -140,7 +125,7 @@ export const FillInformation = (): JSX.Element => {
             </p>
           </div>
 
-          <div className="bg-white rounded-[1.875rem] shadow-lg p-6 lg:p-10 max-w-[32rem] mx-auto">
+          <div className="bg-white rounded-2xl border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E] p-6 lg:p-10 max-w-[32rem] mx-auto">
             {/* Avatar section */}
             <div className="flex flex-col items-center mb-8">
               <img
@@ -207,7 +192,7 @@ export const FillInformation = (): JSX.Element => {
                 type="button"
                 onClick={() => void handleSubmit()}
                 disabled={isLoading}
-                className="w-full h-16 bg-[#4e46dd] rounded-lg shadow-[0px_0px_0.525rem_#4e46dd] hover:bg-[#4e46dd]/90 mt-8 transition-all"
+                className="w-full h-16 nb-btn nb-btn-purple mt-8"
               >
                 {isLoading ? (
                   <Loader2 className="w-6 h-6 animate-spin mr-2" />

@@ -1,78 +1,60 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
 import { GuestLayout } from "../../components/layout/GuestLayout";
 import { HeroSection } from "./sections/HeroSection/HeroSection";
+import { StatsSection } from "./sections/StatsSection";
 import { FeaturesHighlightSection } from "./sections/FeaturesHighlightSection";
 import { ProductShowcaseSection } from "./sections/ProductShowcaseSection";
-import { CustomUniformOptionsSection } from "./sections/CustomUniformOptionsSection";
 import { CallToActionSection } from "./sections/CallToActionSection";
 import { JoinedSchoolsSection } from "./sections/JoinedSchoolsSection";
 import { Notify } from "@/components/ui/notify";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 
+/**
+ * Homepage — Disciplined Neubrutalism
+ *
+ * Section rhythm (loud/quiet):
+ *   Hero          (LOUD)  — biggest type, strongest CTA
+ *   Stats         (calm)  — proof numbers, white bg
+ *   How It Works  (LOUD)  — purple accent band
+ *   Product       (calm)  — before/after showcase, white bg
+ *   CTA           (LOUD)  — purple accent band, operational CTA
+ *   Schools       (calm)  — social proof, white bg
+ */
 export const Homepage = (): JSX.Element => {
   const [showToast, setShowToast] = useState(false);
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.15,
-      },
-    },
-  };
-
-  const sectionVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
-  };
+  useScrollReveal();
 
   return (
-    <GuestLayout bgColor="#faf9ff">
-      {/* ── Ambient Glow Background ───────── */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-        <motion.div
-          className="absolute top-[-5%] left-[-10%] w-[600px] h-[600px] bg-gradient-to-br from-purple-100/40 to-indigo-50/30 rounded-full blur-[120px]"
-          animate={{ scale: [1, 1.1, 1], opacity: [0.4, 0.6, 0.4] }}
-          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div
-          className="absolute bottom-[20%] right-[-5%] w-[500px] h-[500px] bg-gradient-to-tr from-sky-50/40 to-fuchsia-50/20 rounded-full blur-[100px]"
-          animate={{ scale: [1, 1.05, 1], opacity: [0.3, 0.5, 0.3] }}
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 3 }}
-        />
-      </div>
+    <GuestLayout bgColor="#FFF8F0">
+      <div className="nb-fade-in">
+        {/* LOUD: Hero */}
+        <HeroSection />
 
-      <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        className="relative z-10"
-      >
-        <motion.div variants={sectionVariants}>
-          <HeroSection />
-        </motion.div>
+        {/* calm: Proof stats */}
+        <div className="nb-reveal">
+          <StatsSection />
+        </div>
 
-        <motion.div variants={sectionVariants}>
+        {/* LOUD: How it works (purple band) */}
+        <div className="nb-reveal">
           <FeaturesHighlightSection />
-        </motion.div>
+        </div>
 
-        <motion.div variants={sectionVariants}>
+        {/* calm: Before/After showcase */}
+        <div className="nb-reveal">
           <ProductShowcaseSection />
-        </motion.div>
+        </div>
 
-        <motion.div variants={sectionVariants}>
-          <CustomUniformOptionsSection />
-        </motion.div>
-
-        <motion.div variants={sectionVariants} onClick={() => setShowToast(true)}>
+        {/* LOUD: CTA banner (purple band) */}
+        <div className="nb-reveal" onClick={() => setShowToast(true)}>
           <CallToActionSection />
-        </motion.div>
+        </div>
 
-        <motion.div variants={sectionVariants}>
+        {/* calm: Social proof — schools */}
+        <div className="nb-reveal">
           <JoinedSchoolsSection />
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
 
       <Notify
         open={showToast}

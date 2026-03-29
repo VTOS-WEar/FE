@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
 import { ShoppingBag, CreditCard, Clock, CheckCircle, XCircle, ChevronDown } from "lucide-react";
-import { Button } from "../../../components/ui/button";
 import {
     payOrder,
     getParentPaymentHistory,
@@ -17,14 +16,14 @@ function fmtDate(iso: string) {
 
 function statusBadge(status: string) {
     switch (status.toLowerCase()) {
-        case "pending": return { label: "Chờ thanh toán", bg: "bg-[#FEF3C7]", text: "text-[#92400E]", icon: <Clock className="w-3.5 h-3.5" /> };
-        case "paid": case "completed": case "success": return { label: "Đã thanh toán", bg: "bg-[#D1FAE5]", text: "text-[#065F46]", icon: <CheckCircle className="w-3.5 h-3.5" /> };
-        case "cancelled": case "failed": return { label: "Đã hủy", bg: "bg-[#FEE2E2]", text: "text-[#991B1B]", icon: <XCircle className="w-3.5 h-3.5" /> };
-        default: return { label: status, bg: "bg-[#F3F4F6]", text: "text-[#6B7280]", icon: null };
+        case "pending": return { label: "Chờ thanh toán", bg: "bg-[#FEF3C7]", text: "text-[#92400E]", border: "border-[#F5E642]", icon: <Clock className="w-3.5 h-3.5" /> };
+        case "paid": case "completed": case "success": return { label: "Đã thanh toán", bg: "bg-[#D1FAE5]", text: "text-[#065F46]", border: "border-[#C8E44D]", icon: <CheckCircle className="w-3.5 h-3.5" /> };
+        case "cancelled": case "failed": return { label: "Đã hủy", bg: "bg-[#FEE2E2]", text: "text-[#991B1B]", border: "border-[#FCA5A5]", icon: <XCircle className="w-3.5 h-3.5" /> };
+        default: return { label: status, bg: "bg-[#F3F4F6]", text: "text-[#6B7280]", border: "border-[#D1D5DB]", icon: null };
     }
 }
 
-/* ── Order Status Stepper ── */
+/* ── Order Status Stepper — NB Style ── */
 const ORDER_STEPS = [
     { key: "Paid", label: "Đã thanh toán", icon: "💳" },
     { key: "Confirmed", label: "Đã xác nhận", icon: "✅" },
@@ -43,15 +42,12 @@ function OrderStatusStepper({ orderStatus }: { orderStatus: string }) {
     const isCancelled = orderStatus === "Cancelled" || orderStatus === "Refunded";
 
     if (isCancelled) {
-        const cancelledAt = STATUS_ORDER[orderStatus] === -1 ? "Cancelled" : "Refunded";
         return (
-            <div className="mt-4 px-4 py-3 bg-red-50 rounded-xl border border-red-100">
-                <div className="flex items-center gap-2">
-                    <XCircle className="w-5 h-5 text-red-500" />
-                    <span className="font-semibold text-red-700 text-sm">
-                        {cancelledAt === "Cancelled" ? "Đơn hàng đã bị hủy" : "Đơn hàng đã hoàn tiền"}
-                    </span>
-                </div>
+            <div className="mt-4 nb-alert nb-alert-error">
+                <XCircle className="w-5 h-5 flex-shrink-0" />
+                <span className="font-bold text-sm">
+                    {orderStatus === "Cancelled" ? "Đơn hàng đã bị hủy" : "Đơn hàng đã hoàn tiền"}
+                </span>
             </div>
         );
     }
@@ -59,12 +55,12 @@ function OrderStatusStepper({ orderStatus }: { orderStatus: string }) {
     return (
         <div className="mt-4 px-2">
             <div className="flex items-center justify-between relative">
-                {/* Background line: spans from center of first node to center of last node */}
-                <div className="absolute top-[18px] h-[3px] bg-gray-200 rounded-full" style={{ left: `${100 / (ORDER_STEPS.length * 2)}%`, right: `${100 / (ORDER_STEPS.length * 2)}%` }} />
-                {/* Progress line: spans from center of first node to center of current node */}
+                {/* Background line */}
+                <div className="absolute top-[18px] h-[3px] bg-[#E5E7EB] rounded-full" style={{ left: `${100 / (ORDER_STEPS.length * 2)}%`, right: `${100 / (ORDER_STEPS.length * 2)}%` }} />
+                {/* Progress line */}
                 {currentIdx >= 2 && (
                     <div
-                        className="absolute top-[18px] h-[3px] bg-gradient-to-r from-emerald-400 to-emerald-500 rounded-full transition-all duration-500"
+                        className="absolute top-[18px] h-[3px] bg-[#C8E44D] rounded-full transition-all duration-500"
                         style={{
                             left: `${100 / (ORDER_STEPS.length * 2)}%`,
                             width: `${((Math.min(currentIdx, ORDER_STEPS.length) - 1) / (ORDER_STEPS.length - 1)) * (100 - 100 / ORDER_STEPS.length)}%`,
@@ -76,18 +72,16 @@ function OrderStatusStepper({ orderStatus }: { orderStatus: string }) {
                     const stepNum = idx + 1;
                     const isCompleted = currentIdx > stepNum;
                     const isCurrent = currentIdx === stepNum;
-                    const isPending = currentIdx < stepNum;
 
                     return (
                         <div key={step.key} className="flex flex-col items-center relative z-10" style={{ flex: 1 }}>
-                            {/* Circle */}
                             <div
-                                className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300 ${
+                                className={`w-9 h-9 rounded-lg flex items-center justify-center text-sm font-bold transition-all duration-300 border-2 border-[#1A1A2E] ${
                                     isCompleted
-                                        ? "bg-emerald-500 text-white shadow-[0_0_0_4px_rgba(16,185,129,0.15)]"
+                                        ? "bg-[#C8E44D] shadow-[2px_2px_0_#1A1A2E]"
                                         : isCurrent
-                                            ? "bg-blue-500 text-white shadow-[0_0_0_4px_rgba(59,130,246,0.2)] animate-pulse"
-                                            : "bg-gray-200 text-gray-400"
+                                            ? "bg-[#B8A9E8] shadow-[2px_2px_0_#1A1A2E] animate-pulse"
+                                            : "bg-[#F3F4F6] border-[#D1D5DB]"
                                 }`}
                             >
                                 {isCompleted ? (
@@ -96,9 +90,8 @@ function OrderStatusStepper({ orderStatus }: { orderStatus: string }) {
                                     <span className="text-xs">{step.icon}</span>
                                 )}
                             </div>
-                            {/* Label */}
-                            <span className={`mt-2 text-[11px] font-semibold text-center leading-tight ${
-                                isCompleted ? "text-emerald-700" : isCurrent ? "text-blue-600" : "text-gray-400"
+                            <span className={`mt-2 text-[11px] font-bold text-center leading-tight ${
+                                isCompleted ? "text-[#065F46]" : isCurrent ? "text-[#1A1A2E]" : "text-[#9CA3AF]"
                             }`}>
                                 {step.label}
                             </span>
@@ -148,7 +141,7 @@ export const OrdersTab = (): JSX.Element => {
     if (loading) {
         return (
             <div className="flex items-center justify-center py-16">
-                <div className="w-8 h-8 border-4 border-[#6938ef] border-t-transparent rounded-full animate-spin" />
+                <div className="w-8 h-8 border-4 border-[#E5E7EB] border-t-[#B8A9E8] rounded-full animate-spin" />
             </div>
         );
     }
@@ -156,10 +149,10 @@ export const OrdersTab = (): JSX.Element => {
     if (payments.length === 0) {
         return (
             <div className="flex flex-col items-center justify-center py-16 gap-4">
-                <div className="w-16 h-16 bg-[#f4f2ff] rounded-full flex items-center justify-center">
-                    <ShoppingBag className="w-8 h-8 text-[#6938ef] opacity-50" />
+                <div className="w-16 h-16 bg-[#EDE9FE] rounded-xl flex items-center justify-center border-2 border-[#1A1A2E] shadow-[3px_3px_0_#1A1A2E]">
+                    <ShoppingBag className="w-8 h-8 text-[#1A1A2E]" />
                 </div>
-                <p className="font-medium text-[#1a1a2e]/50 text-sm text-center">
+                <p className="font-medium text-[#6B7280] text-sm text-center">
                     Bạn chưa có đơn hàng nào.
                 </p>
             </div>
@@ -175,18 +168,18 @@ export const OrdersTab = (): JSX.Element => {
                 const showStepper = p.orderStatus && p.orderStatus !== "Pending";
 
                 return (
-                    <div key={p.paymentId} className="bg-white rounded-[12px] border border-[#E5E7EB] overflow-hidden hover:shadow-sm transition-shadow">
+                    <div key={p.paymentId} className="nb-card overflow-hidden">
                         {/* Top row */}
                         <div
                             className={`p-5 flex items-center justify-between ${showStepper ? "cursor-pointer" : ""}`}
                             onClick={() => showStepper && setExpandedId(isExpanded ? null : p.paymentId)}
                         >
                             <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 bg-[#EDE9FE] rounded-[10px] flex items-center justify-center">
-                                    <CreditCard className="w-6 h-6 text-[#6938EF]" />
+                                <div className="w-12 h-12 bg-[#EDE9FE] rounded-xl flex items-center justify-center border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E]">
+                                    <CreditCard className="w-6 h-6 text-[#1A1A2E]" />
                                 </div>
                                 <div>
-                                    <p className="font-semibold text-[#1A1A2E] text-sm">
+                                    <p className="font-bold text-[#1A1A2E] text-sm">
                                         Đơn #{p.orderId.slice(0, 8)}
                                     </p>
                                     <p className="font-medium text-[#9CA3AF] text-xs mt-0.5">
@@ -195,32 +188,32 @@ export const OrdersTab = (): JSX.Element => {
                                 </div>
                             </div>
                             <div className="flex items-center gap-4">
-                                <p className="font-bold text-[#1A1A2E] text-base">
+                                <p className="font-extrabold text-[#1A1A2E] text-base">
                                     {fmt(p.amount)}
                                 </p>
-                                <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold ${badge.bg} ${badge.text}`}>
+                                <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold border-2 ${badge.bg} ${badge.text} ${badge.border}`}>
                                     {badge.icon}
                                     {badge.label}
                                 </span>
                                 {isPending && (
-                                    <Button
+                                    <button
                                         onClick={(e) => { e.stopPropagation(); handlePay(p.orderId); }}
                                         disabled={payingId === p.orderId}
-                                        className="bg-[#6938EF] hover:bg-[#5B2FD6] text-white rounded-[8px] text-sm font-semibold px-4 py-1.5 h-auto"
+                                        className="nb-btn nb-btn-purple text-sm disabled:opacity-50"
                                     >
                                         {payingId === p.orderId ? "Đang xử lý..." : "Thanh toán"}
-                                    </Button>
+                                    </button>
                                 )}
                                 {showStepper && (
-                                    <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`} />
+                                    <ChevronDown className={`w-5 h-5 text-[#6B7280] transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`} />
                                 )}
                             </div>
                         </div>
 
                         {/* Expanded stepper */}
                         {isExpanded && showStepper && (
-                            <div className="px-5 pb-5 border-t border-[#F3F4F6]">
-                                <p className="font-semibold text-[#6B7280] text-xs mt-3 mb-1">
+                            <div className="px-5 pb-5 border-t-2 border-[#1A1A2E]/10">
+                                <p className="font-bold text-[#6B7280] text-xs mt-3 mb-1">
                                     📍 Trạng thái đơn hàng
                                 </p>
                                 <OrderStatusStepper orderStatus={p.orderStatus} />
@@ -232,9 +225,9 @@ export const OrdersTab = (): JSX.Element => {
 
             {totalPages > 1 && (
                 <div className="flex justify-center gap-2 mt-4">
-                    <Button variant="outline" disabled={page <= 1} onClick={() => setPage(p => p - 1)} className="text-sm rounded-[8px]">← Trước</Button>
-                    <span className="flex items-center text-sm text-[#6B7280] px-2">{page}/{totalPages}</span>
-                    <Button variant="outline" disabled={page >= totalPages} onClick={() => setPage(p => p + 1)} className="text-sm rounded-[8px]">Sau →</Button>
+                    <button disabled={page <= 1} onClick={() => setPage(p => p - 1)} className="nb-btn nb-btn-outline text-sm disabled:opacity-50">← Trước</button>
+                    <span className="flex items-center text-sm text-[#6B7280] px-2 font-bold">{page}/{totalPages}</span>
+                    <button disabled={page >= totalPages} onClick={() => setPage(p => p + 1)} className="nb-btn nb-btn-outline text-sm disabled:opacity-50">Sau →</button>
                 </div>
             )}
         </div>

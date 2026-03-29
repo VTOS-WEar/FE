@@ -1,8 +1,5 @@
-import { NavbarGuest, Footer } from "../../components/layout";
-import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
-import { Separator } from "../../components/ui/separator";
 import { Notify } from "../../components/ui/notify";
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -40,7 +37,6 @@ export const ForgotPasswordSent = (): JSX.Element => {
 
     useEffect(() => {
         // Nếu user vào trực tiếp /sent mà không có email, vẫn cho nhập
-        // Không bắt buộc redirect
     }, []);
 
     const handleResend = async () => {
@@ -77,34 +73,35 @@ export const ForgotPasswordSent = (): JSX.Element => {
     };
 
     return (
-        <GuestLayout bgColor="#f4f2ff">
-
-            <main className="flex-1 bg-[#F4F6FF] px-4 py-10 lg:py-14">
+        <GuestLayout bgColor="#FFF8F0">
+            <main className="nb-page flex-1 px-4 py-10 lg:py-14 nb-fade-in">
                 <div className="mx-auto w-full max-w-6xl">
-                    <div className="overflow-hidden rounded-[2rem] bg-white shadow-[0_20px_60px_rgba(16,15,20,0.12)] ring-1 ring-black/5">
+                    <div className="nb-card-static overflow-hidden rounded-2xl">
                         <div className="flex flex-col lg:flex-row">
-                            {/* LEFT */}
-                            <div className="lg:w-[52%] flex items-center justify-center p-6 lg:p-12">
+                            {/* LEFT — Form */}
+                            <div className="lg:w-[52%] flex items-center justify-center p-6 lg:p-12 bg-white">
                                 <div className="w-full max-w-[26rem]">
-                                    <h1 className="[font-family:'Baloo_2',Helvetica] font-extrabold text-[#100f14] text-3xl lg:text-4xl text-center mb-6 lg:mb-8">
-                                        Kiểm tra email
+                                    <h1 className="font-extrabold text-[#1A1A2E] text-3xl lg:text-4xl text-center mb-6 lg:mb-8">
+                                        Kiểm tra email ✦
                                     </h1>
 
                                     <div className="flex items-center gap-4 lg:gap-6 my-5 lg:my-6">
-                                        <Separator className="flex-1 h-[1px] bg-[#cac9d6]" />
-                                        <span className="font-medium text-[#676576] text-base">
+                                        <div className="flex-1 h-[2px] bg-[#1A1A2E]/10" />
+                                        <span className="font-bold text-[#6B7280] text-sm uppercase tracking-wider">
                                             Link đặt lại đã được gửi
                                         </span>
-                                        <Separator className="flex-1 h-[1px] bg-[#cac9d6]" />
+                                        <div className="flex-1 h-[2px] bg-[#1A1A2E]/10" />
                                     </div>
 
                                     <div className="space-y-4 lg:space-y-5">
-                                        <p className="font-medium text-[#19181f] text-sm lg:text-base leading-relaxed">
-                                            {serverMessage}
-                                        </p>
+                                        <div className="nb-alert nb-alert-success">
+                                            <p className="font-medium text-[#1A1A2E] text-sm leading-relaxed">
+                                                {serverMessage}
+                                            </p>
+                                        </div>
 
                                         <div className="space-y-2">
-                                            <Label className="font-medium text-[#9794aa] text-sm lg:text-base">
+                                            <Label className="font-bold text-[#1A1A2E] text-sm">
                                                 Email (để gửi lại nếu cần)
                                             </Label>
                                             <Input
@@ -112,71 +109,50 @@ export const ForgotPasswordSent = (): JSX.Element => {
                                                 placeholder="Nhập email của bạn"
                                                 value={email}
                                                 onChange={(e) => setEmail(e.target.value)}
-                                                className="h-11 lg:h-12 px-4 lg:px-5 rounded-md border border-[#cac9d6] font-medium text-sm lg:text-base"
+                                                className="nb-input w-full h-11 lg:h-12"
                                                 onKeyDown={(e) => {
                                                     if (e.key === "Enter") handleResend();
                                                 }}
                                             />
-                                            <p className="text-xs lg:text-sm text-[#676576] italic">
+                                            <p className="text-xs lg:text-sm text-[#6B7280] font-medium">
                                                 Không thấy email? Hãy kiểm tra mục Spam/Quảng cáo.
                                             </p>
                                         </div>
 
-                                        <Button
+                                        <button
                                             type="button"
                                             onClick={handleResend}
                                             disabled={isLoading}
-                                            className="w-full h-14 lg:h-16 bg-[#6838ee] rounded-[2.5rem] hover:bg-[#5527d9] mt-3 lg:mt-5"
+                                            className="nb-btn nb-btn-purple w-full h-14 lg:h-16 text-lg lg:text-xl mt-3 lg:mt-5 disabled:opacity-50 disabled:cursor-not-allowed"
                                         >
-                                            <span className="[font-family:'Baloo_2',Helvetica] font-extrabold text-white text-lg lg:text-xl">
-                                                {isLoading ? "Đang gửi lại..." : "Gửi lại link"}
-                                            </span>
-                                        </Button>
+                                            {isLoading ? "Đang gửi lại..." : "Gửi lại link ✦"}
+                                        </button>
 
                                         <div className="flex items-center justify-center gap-3">
-                                            <Button
+                                            <button
                                                 type="button"
-                                                variant="outline"
-                                                className="rounded-[2.5rem] px-6"
                                                 onClick={() => navigate("/forgot-password", { replace: true })}
+                                                className="nb-btn nb-btn-outline text-sm"
                                             >
-                                                <span className="font-semibold italic text-[#19181f]">
-                                                    Đổi email khác
-                                                </span>
-                                            </Button>
+                                                Đổi email khác
+                                            </button>
 
-                                            <Button asChild variant="link" className="p-0 h-auto hover:underline">
-                                                <Link
-                                                    to="/signin"
-                                                    className="font-semibold italic text-[#6938ef]"
-                                                >
-                                                    Quay lại đăng nhập
-                                                </Link>
-                                            </Button>
+                                            <Link
+                                                to="/signin"
+                                                className="font-bold text-[#1A1A2E] text-sm hover:text-[#B8A9E8] border-b-2 border-[#B8A9E8] transition-colors"
+                                            >
+                                                Quay lại đăng nhập
+                                            </Link>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            {/* RIGHT */}
-                            <div className="lg:w-[48%] relative overflow-hidden bg-gradient-to-br from-[#94bfff] to-[#c68cf4] p-8 lg:p-12 flex items-center justify-center">
-                                <div className="absolute inset-0 opacity-20 pointer-events-none">
-                                    <img
-                                        className="absolute -top-24 -left-24 w-[36rem] h-[36rem]"
-                                        alt="Vector"
-                                        src="https://c.animaapp.com/mjxt3t8wNP0otU/img/vector-29.svg"
-                                    />
-                                    <img
-                                        className="absolute top-28 -right-40 w-[42rem] h-[48rem]"
-                                        alt="Vector"
-                                        src="https://c.animaapp.com/mjxt3t8wNP0otU/img/vector-28.svg"
-                                    />
-                                    <img
-                                        className="absolute -top-40 right-0 w-[44rem] h-[36rem]"
-                                        alt="Vector"
-                                        src="https://c.animaapp.com/mjxt3t8wNP0otU/img/vector-24.svg"
-                                    />
-                                </div>
+                            {/* RIGHT — Hero with NB */}
+                            <div className="lg:w-[48%] relative overflow-hidden bg-[#C8E44D] p-8 lg:p-12 flex items-center justify-center border-l-0 lg:border-l-2 border-t-2 lg:border-t-0 border-[#1A1A2E]">
+                                <div className="absolute top-6 right-8 w-14 h-14 bg-[#F5C6C2] border-2 border-[#1A1A2E] rounded-lg shadow-[3px_3px_0_#1A1A2E] rotate-12 opacity-60" />
+                                <div className="absolute bottom-14 right-6 w-10 h-10 bg-[#B8A9E8] border-2 border-[#1A1A2E] rounded-full shadow-[3px_3px_0_#1A1A2E] opacity-50" />
+                                <div className="absolute top-[30%] left-8 w-12 h-12 bg-[#F5E642] border-2 border-[#1A1A2E] rounded-lg shadow-[2px_2px_0_#1A1A2E] -rotate-6 opacity-60" />
 
                                 <div className="relative z-10 w-full max-w-md text-right">
                                     <img
@@ -184,13 +160,11 @@ export const ForgotPasswordSent = (): JSX.Element => {
                                         alt="Vtos logo"
                                         src="https://c.animaapp.com/mjxt3t8wNP0otU/img/vtos--1--removebg-preview-2-1.png"
                                     />
-
-                                    <p className="font-semibold italic text-white text-xl lg:text-3xl leading-relaxed mb-6">
-                                        Đừng quên kiểm tra Spam
+                                    <p className="font-extrabold text-[#1A1A2E] text-xl lg:text-3xl leading-relaxed mb-6">
+                                        Đừng quên kiểm tra Spam ✦
                                     </p>
-
                                     <img
-                                        className="w-full max-w-[22rem] lg:max-w-[26rem] h-auto ml-auto"
+                                        className="w-full max-w-[22rem] lg:max-w-[26rem] h-auto ml-auto drop-shadow-[4px_4px_0_rgba(26,26,46,0.3)]"
                                         alt="Students"
                                         src="https://c.animaapp.com/mjxt3t8wNP0otU/img/vtos--3--removebg-preview-1.png"
                                     />

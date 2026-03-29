@@ -1,7 +1,5 @@
-import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
-import { Separator } from "../../components/ui/separator";
 import { EyeIcon, EyeOffIcon, ArrowLeftIcon } from "lucide-react";
 import { useState } from "react";
 import { register } from "../../lib/api/auth";
@@ -18,19 +16,19 @@ const ROLE_CONFIG = {
   Parent: {
     emoji: "👨‍👩‍👧",
     title: "Phụ huynh",
-    gradient: "from-[#94bfff] to-[#c68cf4]",
+    bg: "bg-[#B8A9E8]",
     tagline: "AI Try-On đồng phục: xem bạn mặc thế nào chỉ trong vài giây",
   },
   School: {
     emoji: "🏫",
     title: "Quản lý trường",
-    gradient: "from-[#38bdf8] to-[#0ea5e9]",
+    bg: "bg-[#A8D4E6]",
     tagline: "Quản lý chiến dịch đồng phục, học sinh và đơn hàng một cách dễ dàng",
   },
   Provider: {
     emoji: "🏭",
     title: "Nhà cung cấp",
-    gradient: "from-[#fbbf24] to-[#f59e0b]",
+    bg: "bg-[#F5E642]",
     tagline: "Tiếp nhận đơn sản xuất, quản lý giao hàng và hợp đồng hiệu quả",
   },
 };
@@ -67,7 +65,6 @@ export const SignUp = ({ roleName }: SignUpProps): JSX.Element => {
 
       const data = await register({ email, password, fullName, roleName });
 
-      // Use global toast so it persists across navigation
       showToast({
         title: "Tạo tài khoản thành công",
         message: data?.message || "Vui lòng kiểm tra email để lấy mã OTP.",
@@ -89,32 +86,17 @@ export const SignUp = ({ roleName }: SignUpProps): JSX.Element => {
   };
 
   return (
-    <GuestLayout bgColor="#f4f2ff">
-
-      <main className="flex-1 bg-[#F4F6FF] px-4 py-10 lg:py-14">
+    <GuestLayout bgColor="#FFF8F0">
+      <main className="nb-page flex-1 px-4 py-10 lg:py-14 nb-fade-in">
         <div className="mx-auto w-full max-w-6xl">
-          {/* Card */}
-          <div className="overflow-hidden rounded-[2rem] bg-white shadow-[0_20px_60px_rgba(16,15,20,0.12)] ring-1 ring-black/5">
+          <div className="nb-card-static overflow-hidden rounded-2xl">
             <div className="flex flex-col lg:flex-row">
-              {/* Left panel */}
-              <div className={`relative lg:w-[42%] bg-gradient-to-br ${config.gradient} p-8 lg:p-10 flex items-center justify-center overflow-hidden`}>
-                <div className="absolute inset-0 opacity-20 pointer-events-none">
-                  <img
-                    className="absolute -top-20 -left-24 w-[36rem] h-[36rem]"
-                    alt="Vector"
-                    src="https://c.animaapp.com/mjxt3t8wNP0otU/img/vector.svg"
-                  />
-                  <img
-                    className="absolute top-32 -left-10 w-[40rem] h-[46rem]"
-                    alt="Vector"
-                    src="https://c.animaapp.com/mjxt3t8wNP0otU/img/vector-3.svg"
-                  />
-                  <img
-                    className="absolute -bottom-28 -left-16 w-[44rem] h-[36rem]"
-                    alt="Vector"
-                    src="https://c.animaapp.com/mjxt3t8wNP0otU/img/vector-1.svg"
-                  />
-                </div>
+              {/* Left panel — NB Hero */}
+              <div className={`relative lg:w-[42%] ${config.bg} p-8 lg:p-10 flex items-center justify-center overflow-hidden border-r-0 lg:border-r-2 border-b-2 lg:border-b-0 border-[#1A1A2E]`}>
+                {/* Decorative NB shapes */}
+                <div className="absolute top-6 right-6 w-14 h-14 bg-[#C8E44D] border-2 border-[#1A1A2E] rounded-lg shadow-[3px_3px_0_#1A1A2E] rotate-12 opacity-60" />
+                <div className="absolute bottom-10 left-8 w-10 h-10 bg-[#F5C6C2] border-2 border-[#1A1A2E] rounded-full shadow-[3px_3px_0_#1A1A2E] opacity-50" />
+                <div className="absolute top-[45%] left-6 w-12 h-12 bg-[#F5E642] border-2 border-[#1A1A2E] rounded-lg shadow-[2px_2px_0_#1A1A2E] -rotate-6 opacity-60" />
 
                 <div className="relative z-10 w-full max-w-sm">
                   <img
@@ -123,65 +105,64 @@ export const SignUp = ({ roleName }: SignUpProps): JSX.Element => {
                     src="https://c.animaapp.com/mjxt3t8wNP0otU/img/vtos--1--removebg-preview-2.png"
                   />
 
-                  <p className="font-semibold italic text-white text-lg lg:text-2xl leading-relaxed mb-6">
-                    {config.tagline}
+                  <p className="font-extrabold text-[#1A1A2E] text-lg lg:text-2xl leading-relaxed mb-6">
+                    {config.tagline} ✦
                   </p>
 
                   <img
-                    className="w-full h-auto"
+                    className="w-full h-auto drop-shadow-[4px_4px_0_rgba(26,26,46,0.3)]"
                     alt="Illustration"
                     src="https://c.animaapp.com/mjxt3t8wNP0otU/img/7850dea647994b6db38f4ccd875eaf37-removebg-preview-1.png"
                   />
                 </div>
               </div>
 
-              {/* Right panel */}
-              <div className="lg:w-[58%] flex items-center justify-center p-6 lg:p-10">
+              {/* Right panel — Form */}
+              <div className="lg:w-[58%] flex items-center justify-center p-6 lg:p-10 bg-white">
                 <div className="w-full max-w-[30rem]">
                   {/* Back to role select */}
                   <Link
                     to="/signup"
-                    className="inline-flex items-center gap-1.5 text-[#6938ef] font-medium text-sm hover:underline mb-4"
+                    className="nb-btn nb-btn-outline text-sm mb-4 inline-flex"
                   >
                     <ArrowLeftIcon className="w-4 h-4" />
                     Chọn loại tài khoản khác
                   </Link>
 
                   <div className="mb-6">
-                    <h1 className="[font-family:'Baloo_2',Helvetica] font-extrabold text-[#100f14] text-3xl lg:text-4xl text-center">
-                      Tạo tài khoản {config.title}
+                    <h1 className="font-extrabold text-[#1A1A2E] text-3xl lg:text-4xl text-center">
+                      Tạo tài khoản {config.title} ✦
                     </h1>
-                    <p className="text-center mt-1 font-medium text-[#9794aa] text-sm">
-                      {config.emoji} Bạn đang đăng ký với tư cách <span className="text-[#6938ef] font-semibold">{config.title}</span>
+                    <p className="text-center mt-2 font-bold text-[#6B7280] text-sm">
+                      {config.emoji} Bạn đang đăng ký với tư cách <span className="text-[#1A1A2E]">{config.title}</span>
                     </p>
                   </div>
 
-                  <Button
+                  <button
                     type="button"
-                    variant="outline"
-                    className="w-full h-auto flex items-center justify-center gap-2.5 px-5 py-3 lg:py-4 rounded-lg border border-[#cac9d6] hover:bg-gray-50"
+                    className="nb-btn nb-btn-outline w-full h-auto py-3 lg:py-4 text-sm lg:text-base"
                   >
-                    <span className="font-medium text-[#19181f] text-sm lg:text-base">
-                      Tạo tài khoản với Google
-                    </span>
                     <img
                       className="w-6 lg:w-7 h-6 lg:h-7"
                       alt="Google"
                       src="https://c.animaapp.com/mjxt3t8wNP0otU/img/flat-color-icons-google.svg"
                     />
-                  </Button>
+                    <span className="font-bold text-[#1A1A2E]">
+                      Tạo tài khoản với Google
+                    </span>
+                  </button>
 
                   <div className="flex items-center gap-4 lg:gap-6 my-5">
-                    <Separator className="flex-1 h-[1px] bg-[#cac9d6]" />
-                    <span className="font-medium text-[#676576] text-base">
+                    <div className="flex-1 h-[2px] bg-[#1A1A2E]/10" />
+                    <span className="font-bold text-[#6B7280] text-sm uppercase tracking-wider">
                       Hoặc
                     </span>
-                    <Separator className="flex-1 h-[1px] bg-[#cac9d6]" />
+                    <div className="flex-1 h-[2px] bg-[#1A1A2E]/10" />
                   </div>
 
                   <div className="space-y-4 lg:space-y-5">
                     <div className="space-y-2">
-                      <Label className="font-medium text-[#9794aa] text-sm lg:text-base">
+                      <Label className="font-bold text-[#1A1A2E] text-sm">
                         Email
                       </Label>
                       <Input
@@ -189,12 +170,12 @@ export const SignUp = ({ roleName }: SignUpProps): JSX.Element => {
                         placeholder="Nhập email của bạn"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="h-11 lg:h-12 px-4 lg:px-5 rounded-md border border-[#cac9d6] font-medium text-sm lg:text-base"
+                        className="nb-input w-full h-11 lg:h-12"
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <Label className="font-medium text-[#9794aa] text-sm lg:text-base">
+                      <Label className="font-bold text-[#1A1A2E] text-sm">
                         Họ tên
                       </Label>
                       <Input
@@ -202,12 +183,12 @@ export const SignUp = ({ roleName }: SignUpProps): JSX.Element => {
                         placeholder="Nhập họ tên của bạn"
                         value={fullName}
                         onChange={(e) => setFullName(e.target.value)}
-                        className="h-11 lg:h-12 px-4 lg:px-5 rounded-md border border-[#cac9d6] font-medium text-sm lg:text-base"
+                        className="nb-input w-full h-11 lg:h-12"
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <Label className="font-medium text-[#9794aa] text-sm lg:text-base">
+                      <Label className="font-bold text-[#1A1A2E] text-sm">
                         Mật khẩu
                       </Label>
                       <div className="relative">
@@ -216,47 +197,42 @@ export const SignUp = ({ roleName }: SignUpProps): JSX.Element => {
                           placeholder="Tạo mật khẩu của bạn"
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
-                          className="h-11 lg:h-12 px-4 lg:px-5 pr-12 rounded-md border border-[#cac9d6] font-medium text-sm lg:text-base"
+                          className="nb-input w-full h-11 lg:h-12 pr-12"
                           onKeyDown={(e) => {
                             if (e.key === "Enter") handleRegister();
                           }}
                         />
-                        <Button
+                        <button
                           type="button"
                           onClick={() => setShowPassword((prev) => !prev)}
-                          variant="ghost"
-                          size="icon"
-                          className="absolute right-3 top-1/2 -translate-y-1/2 h-auto w-auto p-0 hover:bg-transparent"
+                          className="absolute right-4 top-1/2 -translate-y-1/2 text-[#4C5769] hover:text-[#1A1A2E] transition-colors"
                         >
                           {showPassword ? (
-                            <EyeIcon className="w-5 h-5 text-[#676576]" />
+                            <EyeIcon className="w-5 h-5" />
                           ) : (
-                            <EyeOffIcon className="w-5 h-5 text-[#676576]" />
+                            <EyeOffIcon className="w-5 h-5" />
                           )}
-                        </Button>
+                        </button>
                       </div>
                     </div>
 
-                    <Button
+                    <button
                       type="button"
                       disabled={isLoading}
                       onClick={handleRegister}
-                      className="w-full h-14 lg:h-16 bg-[#6838ee] rounded-[2.5rem] hover:bg-[#5730c9] mt-3"
+                      className="nb-btn nb-btn-purple w-full h-14 lg:h-16 text-lg lg:text-xl mt-3 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      <span className="[font-family:'Baloo_2',Helvetica] font-extrabold text-white text-lg lg:text-xl">
-                        {isLoading ? "Đang tạo..." : "Tạo tài khoản"}
-                      </span>
-                    </Button>
+                      {isLoading ? "Đang tạo..." : "Tạo tài khoản ✦"}
+                    </button>
 
-                    <p className="text-center [font-family:'Poppins',Helvetica] font-normal text-sm lg:text-base">
-                      <span className="text-[#494759]">Bạn đã có tài khoản? </span>
-                      <Button
-                        type="button"
-                        variant="link"
-                        className="font-semibold italic text-[#6938ef] p-0 h-auto hover:underline"
+                    <p className="text-center font-medium text-sm lg:text-base">
+                      <span className="text-[#4C5769]">Bạn đã có tài khoản? </span>
+                      <Link
+                        to="/signin"
+                        className="font-bold text-[#1A1A2E] hover:text-[#B8A9E8] border-b-2 border-[#B8A9E8] transition-colors"
                       >
-                        <Link to="/signin">Đăng Nhập</Link>
-                      </Button>
+                        Đăng Nhập
+                      </Link>
                     </p>
                   </div>
                 </div>
@@ -266,7 +242,6 @@ export const SignUp = ({ roleName }: SignUpProps): JSX.Element => {
         </div>
       </main>
 
-      {/* Notify top-right + progress */}
       <Notify
         open={!!notify}
         title={notify?.title || ""}
@@ -275,7 +250,6 @@ export const SignUp = ({ roleName }: SignUpProps): JSX.Element => {
         durationMs={3500}
         onClose={() => setNotify(null)}
       />
-
     </GuestLayout>
   );
 };

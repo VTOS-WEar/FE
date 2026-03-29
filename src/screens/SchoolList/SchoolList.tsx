@@ -358,28 +358,11 @@ const SchoolList = () => {
   }, [schools, activeFilters, provinces, districts]);
 
   return (
-    <GuestLayout bgColor="#faf9ff">
+    <GuestLayout bgColor="#FFF8F0">
       {/* ── Toast Notification ───────────────────────────────── */}
       <Toast message={toast.message} show={toast.show} onHide={() => setToast(t => ({ ...t, show: false }))} />
 
-      {/* ── Ambient Glow Background (breathing, alive) ───────── */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-        <motion.div
-          className="absolute top-[-8%] right-[-8%] w-[600px] h-[600px] bg-gradient-to-br from-purple-100/60 to-violet-50/40 rounded-full blur-[120px]"
-          animate={{ scale: [1, 1.08, 1], opacity: [0.5, 0.7, 0.5] }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div
-          className="absolute bottom-[5%] left-[-5%] w-[500px] h-[500px] bg-gradient-to-tr from-blue-50/50 to-indigo-50/30 rounded-full blur-[100px]"
-          animate={{ scale: [1, 1.05, 1], opacity: [0.4, 0.6, 0.4] }}
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-        />
-        <motion.div
-          className="absolute top-[40%] left-[30%] w-[300px] h-[300px] bg-purple-50/20 rounded-full blur-[80px]"
-          animate={{ x: [0, 40, 0], y: [0, -30, 0] }}
-          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-        />
-      </div>
+      {/* NB decorative shapes */}
 
       <div className="relative z-10 max-w-[1360px] mx-auto px-32 xl:px-28 py-10">
 
@@ -446,7 +429,7 @@ const SchoolList = () => {
             SINGLE-ROW FILTER BAR — page load fade-up
            ═══════════════════════════════════════════════════ */}
         <motion.div custom={3} variants={fadeUp} initial="hidden" animate="visible" className="-mx-8 px-8 mb-4 relative z-20">
-          <div className="bg-white/80 backdrop-blur-2xl rounded-2xl p-5 border border-purple-100/30 shadow-[0_8px_32px_rgba(124,58,237,0.06),0_1px_2px_rgba(0,0,0,0.04)] hover:shadow-[0_16px_48px_rgba(124,58,237,0.1),0_4px_12px_rgba(0,0,0,0.03)] hover:border-purple-200/50 transition-all duration-500 overflow-visible">
+          <div className="bg-white rounded-2xl p-5 border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E] overflow-visible">
             <div className="flex items-end gap-4">
               {/* Search */}
               <div className="flex-1 min-w-0 space-y-1">

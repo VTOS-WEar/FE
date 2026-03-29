@@ -56,7 +56,7 @@ export default function ProductList() {
   });
 
   return (
-    <div className="bg-vtos-gray-light">
+    <div className="bg-[#FFF8F0]">
       {/* Breadcrumb */}
       <div className="max-w-[1440px] mx-auto px-6 lg:px-12 pt-8 pb-6">
         <div className="flex items-center gap-2.5 text-base">

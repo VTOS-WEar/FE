@@ -394,7 +394,7 @@ export const OutfitDetail = (): JSX.Element => {
   /* ── Loading / Error states ── */
   if (loading)
     return (
-      <GuestLayout bgColor="#faf9ff">
+      <GuestLayout bgColor="#FFF8F0">
         <div className="max-w-[1200px] mx-auto px-6 lg:px-12 py-10 min-h-screen">
           <div className="h-4 w-64 bg-gray-200 rounded animate-pulse mb-8" />
           <div className="flex flex-col lg:flex-row gap-10">
@@ -412,7 +412,7 @@ export const OutfitDetail = (): JSX.Element => {
 
   if (error || !outfit)
     return (
-      <GuestLayout bgColor="#faf9ff">
+      <GuestLayout bgColor="#FFF8F0">
         <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
           <p className="font-montserrat font-medium text-gray-500">{error || "Không tìm thấy đồng phục."}</p>
           <button onClick={() => navigate("/schools")} className="text-purple-600 hover:text-purple-700 font-montserrat font-bold">
@@ -426,20 +426,8 @@ export const OutfitDetail = (): JSX.Element => {
   const mainImage = (selectedVariant?.variantImageURL || outfit.mainImageURL) ?? "https://placehold.co/500x600?text=No+Image";
 
   return (
-    <GuestLayout bgColor="#faf9ff">
-      {/* ── Ambient Glow Background ───────── */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-        <motion.div
-          className="absolute top-[-5%] left-[-10%] w-[400px] h-[400px] bg-gradient-to-br from-blue-100/50 to-purple-50/40 rounded-full blur-[80px]"
-          animate={{ scale: [1, 1.1, 1], opacity: [0.5, 0.7, 0.5] }}
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div
-          className="absolute bottom-[10%] right-[-5%] w-[300px] h-[300px] bg-gradient-to-tr from-sky-50/50 to-indigo-50/30 rounded-full blur-[60px]"
-          animate={{ scale: [1, 1.05, 1], opacity: [0.4, 0.6, 0.4] }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-        />
-      </div>
+    <GuestLayout bgColor="#FFF8F0">
+      {/* NB decorative shapes */}
 
       <div className="relative z-10 max-w-[1200px] mx-auto px-4 lg:px-8 py-8 xl:py-12">
         {/* ───── Breadcrumb ───── */}
@@ -469,7 +457,7 @@ export const OutfitDetail = (): JSX.Element => {
         <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 mb-16">
           {/* Left: Image gallery */}
           <motion.div custom={1} variants={fadeUp} initial="hidden" animate="visible" className="lg:w-[400px] flex-shrink-0">
-            <div className="relative bg-white rounded-3xl overflow-hidden border border-gray-100/80 shadow-[0_8px_30px_rgb(0,0,0,0.04)] aspect-square group md:aspect-[4/5]">
+            <div className="relative bg-white rounded-2xl overflow-hidden border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E] aspect-square group md:aspect-[4/5]">
               <img src={mainImage} alt={outfit.outfitName} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
               <button
                 onClick={() => setLiked(!liked)}

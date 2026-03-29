@@ -155,7 +155,7 @@ export const SchoolDetail = (): JSX.Element => {
 
   /* ───── Loading Skeleton ───── */
   if (loading) return (
-    <GuestLayout bgColor="#faf9ff">
+    <GuestLayout bgColor="#FFF8F0">
       <div className="relative z-10 max-w-[1360px] mx-auto px-6 xl:px-28 py-10 min-h-screen">
         <div className="mb-6"><div className="h-4 w-64 bg-gray-200 rounded animate-pulse" /></div>
         <div className="w-full h-[240px] bg-gradient-to-r from-gray-100/60 via-gray-50/80 to-gray-100/60 rounded-[32px] mb-8 animate-pulse" />
@@ -170,7 +170,7 @@ export const SchoolDetail = (): JSX.Element => {
 
   /* ───── Error State ───── */
   if (error || !school) return (
-    <GuestLayout bgColor="#faf9ff">
+    <GuestLayout bgColor="#FFF8F0">
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
         <motion.div
           className="w-20 h-20 mx-auto mb-2 bg-purple-50 rounded-full flex items-center justify-center"
@@ -193,22 +193,10 @@ export const SchoolDetail = (): JSX.Element => {
   const otherCampaigns = allCampaigns.filter(c => c.status !== "Active");
 
   return (
-    <GuestLayout bgColor="#faf9ff">
+    <GuestLayout bgColor="#FFF8F0">
       <Toast message={toast.message} show={toast.show} onHide={() => setToast(t => ({ ...t, show: false }))} />
 
-      {/* ── Ambient Glow Background ───────── */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-        <motion.div
-          className="absolute top-[-8%] right-[-8%] w-[600px] h-[600px] bg-gradient-to-br from-purple-100/60 to-violet-50/40 rounded-full blur-[120px]"
-          animate={{ scale: [1, 1.08, 1], opacity: [0.5, 0.7, 0.5] }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div
-          className="absolute bottom-[20%] left-[-5%] w-[500px] h-[500px] bg-gradient-to-tr from-blue-50/50 to-indigo-50/30 rounded-full blur-[100px]"
-          animate={{ scale: [1, 1.05, 1], opacity: [0.4, 0.6, 0.4] }}
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-        />
-      </div>
+      {/* NB decorative shapes */}
 
       <div className="relative z-10 max-w-[1360px] mx-auto px-6 lg:px-12 xl:px-28 py-10 min-h-screen">
 
@@ -241,9 +229,9 @@ export const SchoolDetail = (): JSX.Element => {
             HERO CARD SECTION
            ═══════════════════════════════════════════════════ */}
         <motion.div custom={1} variants={fadeUp} initial="hidden" animate="visible">
-          <Card className="bg-white/80 backdrop-blur-3xl rounded-[32px] border border-purple-100/30 shadow-[0_16px_48px_rgba(124,58,237,0.05)] p-6 lg:p-10 mb-12 flex flex-col md:flex-row gap-8 items-start relative overflow-hidden group hover:shadow-[0_24px_64px_rgba(124,58,237,0.1)] transition-all duration-700">
-            {/* Ambient inner glow */}
-            <div className="absolute top-0 right-0 w-[240px] h-[240px] bg-purple-400/5 rounded-full blur-[60px] -translate-y-1/2 translate-x-1/2 pointer-events-none group-hover:bg-purple-400/10 transition-colors duration-700" />
+          <Card className="bg-white rounded-2xl border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E] p-6 lg:p-10 mb-12 flex flex-col md:flex-row gap-8 items-start relative overflow-hidden">
+            {/* NB decorative shape */}
+            <div className="absolute -top-4 -right-4 w-16 h-16 bg-[#C8E44D] border-2 border-[#1A1A2E] rounded-xl rotate-12 opacity-30 pointer-events-none" />
 
             {/* Logo */}
             <div className="relative w-24 h-24 lg:w-32 lg:h-32 rounded-[24px] overflow-hidden border border-gray-100 flex-shrink-0 bg-white flex items-center justify-center shadow-lg shadow-purple-900/5 z-10 group-hover:scale-105 transition-transform duration-500">
