@@ -92,15 +92,15 @@ export default function AdminComplaints() {
 
                         {/* Stats — NB stat cards */}
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 nb-stagger">
-                            <div className="nb-stat-card nb-card-red">
+                            <div className="nb-stat-card">
                                 <p className="nb-stat-label">Đang mở</p>
                                 <p className="nb-stat-value text-[#EF4444] mt-1">{data?.openCount ?? 0}</p>
                             </div>
-                            <div className="nb-stat-card nb-card-yellow">
+                            <div className="nb-stat-card">
                                 <p className="nb-stat-label">Đang xử lý</p>
                                 <p className="nb-stat-value text-[#F59E0B] mt-1">{data?.inProgressCount ?? 0}</p>
                             </div>
-                            <div className="nb-stat-card nb-card-green">
+                            <div className="nb-stat-card">
                                 <p className="nb-stat-label">Đã giải quyết</p>
                                 <p className="nb-stat-value text-[#10B981] mt-1">{data?.resolvedCount ?? 0}</p>
                             </div>
@@ -179,7 +179,7 @@ export default function AdminComplaints() {
             {/* Detail / Intervene Modal — NB style */}
             {selected && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 nb-backdrop-enter" onClick={() => setSelected(null)}>
-                    <div className="bg-white rounded-xl w-full max-w-lg mx-4 p-6 border-2 border-[#1A1A2E] shadow-[6px_6px_0_#1A1A2E] nb-modal-enter" onClick={e => e.stopPropagation()}>
+                    <div className="bg-white rounded-md w-full max-w-lg mx-4 p-6 border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E] nb-modal-enter" onClick={e => e.stopPropagation()}>
                         <div className="flex justify-between items-center mb-4">
                             <h3 className="text-lg font-extrabold text-[#1A1A2E]">{selected.title}</h3>
                             <button onClick={() => setSelected(null)} className="w-8 h-8 flex items-center justify-center rounded-lg border-2 border-[#1A1A2E] hover:bg-[#F3F4F6] font-bold">✕</button>

@@ -80,19 +80,19 @@ export default function ProviderRevenue() {
                             <>
                                 {/* Stats Cards — NB stat cards */}
                                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-                                    <div className="bg-gradient-to-br from-[#10B981] to-[#059669] rounded-xl p-6 text-white border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E]">
-                                        <p className="text-white/80 text-sm font-bold">Tổng doanh thu</p>
-                                        <p className="font-extrabold text-3xl mt-2">{fmt(revenue?.totalRevenue ?? 0)}</p>
+                                    <div className="nb-stat-card nb-stat-primary">
+                                        <p className="nb-stat-label">Tổng doanh thu</p>
+                                        <p className="nb-stat-value mt-2">{fmt(revenue?.totalRevenue ?? 0)}</p>
                                     </div>
-                                    <div className="nb-stat-card nb-card-purple">
+                                    <div className="nb-stat-card">
                                         <p className="nb-stat-label">Đơn đã thanh toán</p>
                                         <p className="nb-stat-value mt-2">{revenue?.totalPaidOrders ?? 0}</p>
                                     </div>
-                                    <div className="nb-stat-card nb-card-yellow">
+                                    <div className="nb-stat-card">
                                         <p className="nb-stat-label">Đơn chờ thanh toán</p>
                                         <p className="nb-stat-value text-[#F59E0B] mt-2">{revenue?.totalPendingOrders ?? 0}</p>
                                     </div>
-                                    <div className="nb-stat-card nb-card-red">
+                                    <div className="nb-stat-card">
                                         <p className="nb-stat-label">Số tiền chờ</p>
                                         <p className="nb-stat-value text-[#EF4444] mt-2">{fmt(revenue?.pendingAmount ?? 0)}</p>
                                     </div>

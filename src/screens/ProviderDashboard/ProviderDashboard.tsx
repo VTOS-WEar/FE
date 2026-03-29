@@ -21,17 +21,17 @@ function StatsCard({
  label,
  value,
  subtext,
- tint,
+ primary,
 }: {
  icon: React.ReactNode;
  iconBg: string;
  label: string;
  value: string;
  subtext?: string;
- tint?: string;
+ primary?: boolean;
 }) {
  return (
- <div className={`nb-stat-card ${tint || ""}`}>
+ <div className={`nb-stat-card ${primary ? "nb-stat-primary" : ""}`}>
  <div className="flex items-start justify-between mb-3">
  <p className="nb-stat-label">{label}</p>
  <div className={`nb-stat-icon ${iconBg}`}>
@@ -178,7 +178,7 @@ export const ProviderDashboard = (): JSX.Element => {
  label="Hợp đồng"
  value="0"
  subtext="Chưa có hợp đồng"
- tint="nb-card-yellow"
+ primary
  icon={<svg className="w-5 h-5 text-[#F59E0B]" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm4 18H6V4h7v5h5v11z" /></svg>}
  iconBg="bg-[#FEF3C7]"
  />
@@ -186,7 +186,6 @@ export const ProviderDashboard = (): JSX.Element => {
  label="Đơn sản xuất"
  value="0"
  subtext="Chưa có đơn mới"
- tint="nb-card-blue"
  icon={<svg className="w-5 h-5 text-[#3B82F6]" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l4.59-4.58L18 11l-6 6z" /></svg>}
  iconBg="bg-[#DBEAFE]"
  />
@@ -194,7 +193,6 @@ export const ProviderDashboard = (): JSX.Element => {
  label="Đang sản xuất"
  value="0"
  subtext="Không có đơn đang xử lý"
- tint="nb-card-green"
  icon={<svg className="w-5 h-5 text-[#10B981]" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" /></svg>}
  iconBg="bg-[#D1FAE5]"
  />
@@ -202,7 +200,6 @@ export const ProviderDashboard = (): JSX.Element => {
  label="Khiếu nại"
  value="0"
  subtext="Không có khiếu nại"
- tint="nb-card-red"
  icon={<svg className="w-5 h-5 text-[#EF4444]" viewBox="0 0 24 24" fill="currentColor"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z" /></svg>}
  iconBg="bg-[#FEE2E2]"
  />

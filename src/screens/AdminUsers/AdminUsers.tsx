@@ -163,7 +163,7 @@ export const AdminUsers = (): JSX.Element => {
             {/* Detail Modal - Neubrutalism */}
             {(selected || detailLoading) && (
                 <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 nb-backdrop-enter" onClick={() => !detailLoading && setSelected(null)}>
-                    <div className="bg-white rounded-xl w-full max-w-lg p-6 space-y-5 border-2 border-[#1A1A2E] shadow-[6px_6px_0_#1A1A2E] nb-modal-enter" onClick={e => e.stopPropagation()}>
+                    <div className="bg-white rounded-md w-full max-w-lg p-6 space-y-5 border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E] nb-modal-enter" onClick={e => e.stopPropagation()}>
                         {detailLoading ? (
                             <div className="flex items-center justify-center py-12"><div className="animate-spin w-8 h-8 border-[3px] border-[#6938EF] border-t-transparent rounded-full" /></div>
                         ) : selected && (
@@ -185,7 +185,7 @@ export const AdminUsers = (): JSX.Element => {
                                 </div>
                                 {selected.role !== "Admin" && (
                                     <button onClick={handleToggleBan} disabled={actionLoading}
-                                        className={`w-full py-2.5 rounded-xl font-bold text-sm border-2 border-[#1A1A2E] shadow-[3px_3px_0_#1A1A2E] active:shadow-none active:translate-x-[2px] active:translate-y-[2px] transition-all disabled:opacity-50 ${
+                                        className={`w-full py-2.5 rounded-md font-bold text-sm border-2 border-[#1A1A2E] shadow-[3px_3px_0_#1A1A2E] active:shadow-none active:translate-x-[2px] active:translate-y-[2px] transition-all disabled:opacity-50 ${
                                             isBanned ? "bg-[#10B981] text-white" : "bg-[#EF4444] text-white"
                                         }`}>
                                         {actionLoading ? "Đang xử lý..." : isBanned ? "🔓 Mở khoá tài khoản" : "🔒 Khoá tài khoản"}

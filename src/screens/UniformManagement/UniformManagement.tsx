@@ -139,7 +139,7 @@ function OutfitFormModal({
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
             <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-            <div className="relative bg-white rounded-xl w-full max-w-[560px] mx-4 max-h-[90vh] overflow-y-auto border-2 border-[#1A1A2E] shadow-[6px_6px_0_#1A1A2E]">
+            <div className="relative bg-white rounded-md w-full max-w-[560px] mx-4 max-h-[90vh] overflow-y-auto border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E]">
                 {/* Header */}
                 <div className="flex items-center justify-between px-6 py-5 border-b-2 border-[#E5E7EB]">
                     <h2 className="font-extrabold text-[#1a1a2e] text-xl">
@@ -287,9 +287,9 @@ function DeleteConfirmDialog({
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
             <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-            <div className="relative bg-white rounded-xl w-full max-w-[420px] mx-4 border-2 border-[#1A1A2E] shadow-[6px_6px_0_#1A1A2E]">
+            <div className="relative bg-white rounded-md w-full max-w-[420px] mx-4 border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E]">
                 <div className="px-6 py-6 text-center">
-                    <div className="w-14 h-14 rounded-full bg-[#FEE2E2] flex items-center justify-center mx-auto mb-4 border-2 border-[#1A1A2E] shadow-[3px_3px_0_#1A1A2E]">
+                    <div className="w-14 h-14 rounded-full bg-[#FEE2E2] flex items-center justify-center mx-auto mb-4 border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E]">
                         <svg className="w-7 h-7 text-[#EF4444]" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" /></svg>
                     </div>
                     <h3 className="font-extrabold text-[#1a1a2e] text-lg mb-2">Xóa đồng phục?</h3>
@@ -358,7 +358,7 @@ function UniformCard({ item, onEdit, onDelete, onManageVariants }: { item: Outfi
 /* ────────────────────────────────────────────────────────────────────── */
 function UploadPlaceholderCard({ onClick }: { onClick: () => void }) {
     return (
-        <div onClick={onClick} className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-[#1A1A2E] bg-[#FAFBFC] hover:border-[#6938EF] hover:bg-[#F5F3FF] cursor-pointer transition-all duration-200 min-h-[320px] group hover:shadow-[4px_4px_0_#6938EF]">
+        <div onClick={onClick} className="flex flex-col items-center justify-center rounded-md border-2 border-dashed border-[#1A1A2E] bg-[#FAFBFC] hover:border-[#6938EF] hover:bg-[#F5F3FF] cursor-pointer transition-all duration-200 min-h-[320px] group hover:shadow-[4px_4px_0_#6938EF]">
             <div className="w-14 h-14 rounded-full border-2 border-dashed border-[#1A1A2E] group-hover:border-[#6938EF] flex items-center justify-center mb-3 transition-colors">
                 <svg className="w-8 h-8 text-[#9CA3AF] group-hover:text-[#6938EF] transition-colors" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" /></svg>
             </div>
@@ -623,7 +623,7 @@ export const UniformManagement = (): JSX.Element => {
 
             {/* Toast */}
             {toast && (
-                <div className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-3.5 rounded-xl border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E] animate-in slide-in-from-bottom-4 duration-300 font-bold text-sm ${toast.type === "success" ? "bg-[#10b981] text-white" : "bg-[#ef4444] text-white"}`}>
+                <div className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-3.5 rounded-md border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E] animate-in slide-in-from-bottom-4 duration-300 font-bold text-sm ${toast.type === "success" ? "bg-[#10b981] text-white" : "bg-[#ef4444] text-white"}`}>
                     {toast.type === "success" ? "✅" : "❌"}
                     <span>{toast.message}</span>
                 </div>

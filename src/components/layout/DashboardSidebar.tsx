@@ -57,32 +57,32 @@ export const DashboardSidebar = ({
     });
 
     const renderIcon = (Icon: React.ComponentType<{ className?: string; strokeWidth?: number }>, active: boolean) => (
-        <Icon className={`w-[18px] h-[18px] flex-shrink-0 ${active ? "text-[#6938ef]" : "text-[#6b7280]"}`} strokeWidth={1.75} />
+        <Icon className={`w-[18px] h-[18px] flex-shrink-0 ${active ? "text-white" : "text-[#9CA3AF]"}`} strokeWidth={1.75} />
     );
 
     const IconComponent = iconType === "provider" ? Building2 : School;
-    const iconBg = iconType === "provider" ? "bg-[#DBEAFE]" : "bg-[#EDE9FE]";
-    const iconColor = iconType === "provider" ? "text-[#3B82F6]" : "text-[#6938EF]";
+    const iconBg = iconType === "provider" ? "bg-[#3B82F6]" : "bg-[#6938EF]";
+    const iconColor = "text-white";
 
     return (
         <aside className="nb-sidebar w-full h-full">
             {/* Logo + Name header */}
-            <div className={`flex ${isCollapsed ? "flex-col items-center gap-2 px-2 py-3" : "items-center gap-3 px-4 py-4"} border-b-2 border-[#E5E7EB]`}>
-                <div className={`${isCollapsed ? "w-8 h-8" : "w-9 h-9"} rounded-full border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E] ${iconBg} flex items-center justify-center flex-shrink-0`}>
+            <div className={`flex ${isCollapsed ? "flex-col items-center gap-2 px-2 py-3" : "items-center gap-3 px-4 py-4"} border-b border-white/10`}>
+                <div className={`${isCollapsed ? "w-8 h-8" : "w-9 h-9"} rounded-md border-2 border-white/20 ${iconBg} flex items-center justify-center flex-shrink-0`}>
                     <IconComponent className={`${isCollapsed ? "w-4 h-4" : "w-5 h-5"} ${iconColor}`} strokeWidth={1.75} />
                 </div>
                 {!isCollapsed && (
                     <div className="flex-1 min-w-0">
-                        <p className="font-bold text-[#1A1A2E] text-sm leading-tight">{displayName}</p>
+                        <p className="font-bold text-white text-sm leading-tight">{displayName}</p>
                         {displayName !== personName && personName && (
                             <p className="font-medium text-[#9CA3AF] text-xs">{personName}</p>
                         )}
                     </div>
                 )}
                 <button onClick={onToggle}
-                    className="h-7 w-7 rounded-full border-2 border-[#1A1A2E] bg-white hover:bg-[#FFF5EB] flex items-center justify-center flex-shrink-0 shadow-[2px_2px_0_#1A1A2E] active:shadow-none active:translate-x-[1px] active:translate-y-[1px] transition-all"
+                    className="h-7 w-7 rounded-md border-2 border-white/20 bg-white/10 hover:bg-white/20 flex items-center justify-center flex-shrink-0 transition-all"
                 >
-                    {isCollapsed ? <ChevronRightIcon className="w-3.5 h-3.5 text-[#1A1A2E]" /> : <ChevronLeftIcon className="w-3.5 h-3.5 text-[#1A1A2E]" />}
+                    {isCollapsed ? <ChevronRightIcon className="w-3.5 h-3.5 text-white" /> : <ChevronLeftIcon className="w-3.5 h-3.5 text-white" />}
                 </button>
             </div>
 
@@ -92,10 +92,10 @@ export const DashboardSidebar = ({
                 {topNavItems.map((item, index) => (
                     <div key={index} className="relative group mb-1">
                         <button onClick={() => item.href && navigate(item.href)}
-                            className={`w-full flex items-center ${isCollapsed ? "justify-center px-0" : "gap-2.5 px-3"} py-2 rounded-lg text-[13px] font-semibold transition-all duration-150
+                            className={`w-full flex items-center ${isCollapsed ? "justify-center px-0" : "gap-2.5 px-3"} py-2 rounded-md text-[13px] font-semibold transition-all duration-150
                                 ${item.active
-                                    ? "bg-[#6938EF] text-white border-2 border-[#1A1A2E] shadow-[3px_3px_0_#1A1A2E]"
-                                    : "text-[#4C5769] border-2 border-transparent hover:bg-[#F3F4F6] hover:border-[#E5E7EB]"
+                                    ? "bg-white/12 text-white border-l-4 border-[#B8A9E8]"
+                                    : "text-[#D1D5DB] hover:bg-white/8 hover:text-white"
                                 } ${item.href ? "cursor-pointer" : ""}`}
                         >
                             {item.active ? (
@@ -111,30 +111,17 @@ export const DashboardSidebar = ({
                 {navSections.map((section, sIdx) => (
                     <div key={sIdx} className="mt-3">
                         {!isCollapsed && (
-                            <h2 className="px-3 font-bold text-[10px] uppercase tracking-[0.08em] text-[#9CA3AF] mb-1.5">{section.title}</h2>
+                            <h2 className="px-3 font-bold text-[10px] uppercase tracking-[0.08em] text-[#6B7280] mb-1.5">{section.title}</h2>
                         )}
-                        {isCollapsed && <div className="my-1.5 border-t-2 border-[#E5E7EB]" />}
+                        {isCollapsed && <div className="my-1.5 border-t border-white/10" />}
                         <div className="flex flex-col gap-[2px]">
                             {section.items.map((item, iIdx) => (
                                 <div key={iIdx} className="relative group flex items-stretch">
-                                    {/* Connector line (QuizLM style) */}
-                                    {!isCollapsed && (
-                                        <div className="flex flex-col items-center w-5 flex-shrink-0 ml-1">
-                                            {iIdx < section.items.length - 1 ? (
-                                                <div className="w-[2px] h-full bg-[#E5E7EB]" />
-                                            ) : (
-                                                <div className="flex flex-col items-center h-full">
-                                                    <div className="w-[2px] h-1/2 bg-[#E5E7EB]" />
-                                                    <div className="w-[2px] h-1/2" />
-                                                </div>
-                                            )}
-                                        </div>
-                                    )}
                                     <button onClick={() => item.href && navigate(item.href)}
-                                        className={`flex-1 flex items-center ${isCollapsed ? "justify-center px-0" : "gap-2.5 px-2.5"} py-[7px] rounded-lg text-[13px] transition-all duration-150
+                                        className={`w-full flex items-center ${isCollapsed ? "justify-center px-0" : "gap-2.5 px-2.5"} py-[7px] rounded-md text-[13px] transition-all duration-150
                                             ${item.active
-                                                ? "bg-[#EDE9FE] text-[#6938EF] font-bold border-2 border-[#6938EF] shadow-[2px_2px_0_#6938EF]"
-                                                : "text-[#4C5769] font-medium border-2 border-transparent hover:bg-[#F9FAFB] hover:border-[#E5E7EB]"
+                                                ? "bg-white/12 text-white font-bold border-l-4 border-[#B8A9E8]"
+                                                : "text-[#D1D5DB] font-medium hover:bg-white/8 hover:text-white"
                                             } ${item.href ? "cursor-pointer" : ""}`}
                                     >
                                         <div className="relative flex-shrink-0">
@@ -167,7 +154,7 @@ export const DashboardSidebar = ({
             <div className={`${isCollapsed ? "px-1.5" : "px-2.5"} pb-3 mt-2`}>
                 <div className="relative group">
                     <button onClick={handleLogout}
-                        className={`w-full flex items-center ${isCollapsed ? "justify-center" : "justify-center gap-2"} py-2 rounded-lg text-[13px] font-bold text-white bg-[#EF4444] border-2 border-[#1A1A2E] shadow-[3px_3px_0_#1A1A2E] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_#1A1A2E] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all`}
+                        className={`w-full flex items-center ${isCollapsed ? "justify-center" : "justify-center gap-2"} py-2 rounded-md text-[13px] font-bold text-white bg-[#EF4444] border-2 border-[#EF4444] hover:bg-[#DC2626] active:bg-[#B91C1C] transition-all`}
                     >
                         <LogOut className="w-4 h-4 text-white" strokeWidth={1.75} />
                         {!isCollapsed && <span>Đăng Xuất</span>}

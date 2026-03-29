@@ -70,7 +70,7 @@ function StudentFormModal({
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
             <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-            <div className="relative bg-white border-2 border-[#1A1A2E] rounded-xl shadow-[6px_6px_0_#1A1A2E] w-full max-w-[560px] mx-4 max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-200">
+            <div className="relative bg-white border-2 border-[#1A1A2E] rounded-md shadow-[4px_4px_0_#1A1A2E] w-full max-w-[560px] mx-4 max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-200">
                 {/* Header */}
                 <div className="flex items-center justify-between px-6 py-5 border-b-2 border-[#1A1A2E]">
                     <h2 className="font-bold text-[#1a1a2e] text-xl">
@@ -145,9 +145,9 @@ function DeleteConfirmDialog({ isOpen, onClose, onConfirm, studentName, isLoadin
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
             <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-            <div className="relative bg-white border-2 border-[#1A1A2E] rounded-xl shadow-[6px_6px_0_#1A1A2E] w-full max-w-[420px] mx-4 p-6 animate-in fade-in zoom-in-95 duration-200">
+            <div className="relative bg-white border-2 border-[#1A1A2E] rounded-md shadow-[4px_4px_0_#1A1A2E] w-full max-w-[420px] mx-4 p-6 animate-in fade-in zoom-in-95 duration-200">
                 <div className="flex flex-col items-center text-center">
-                    <div className="w-14 h-14 rounded-full bg-red-50 flex items-center justify-center mb-4 border-2 border-[#1A1A2E] shadow-[3px_3px_0_#1A1A2E]">
+                    <div className="w-14 h-14 rounded-full bg-red-50 flex items-center justify-center mb-4 border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E]">
                         <svg className="w-7 h-7 text-red-500" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" /></svg>
                     </div>
                     <h3 className="font-bold text-[#1a1a2e] text-lg mb-2">Xóa học sinh?</h3>
@@ -454,7 +454,7 @@ export const StudentListV2 = (): JSX.Element => {
 
             {/* Toast */}
             {toast && (
-                <div className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-3.5 border-2 border-[#1A1A2E] rounded-xl shadow-[4px_4px_0_#1A1A2E] animate-in slide-in-from-bottom-4 duration-300 ${toast.type === "success" ? "bg-[#10b981] text-white" : "bg-[#ef4444] text-white"}`}>
+                <div className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-3.5 border-2 border-[#1A1A2E] rounded-md shadow-[4px_4px_0_#1A1A2E] animate-in slide-in-from-bottom-4 duration-300 ${toast.type === "success" ? "bg-[#10b981] text-white" : "bg-[#ef4444] text-white"}`}>
                     {toast.type === "success" ? (
                         <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" /></svg>
                     ) : (

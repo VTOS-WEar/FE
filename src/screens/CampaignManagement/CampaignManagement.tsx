@@ -520,7 +520,7 @@ export const CampaignManagement = (): JSX.Element => {
             {showPreview && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center">
                     <div className="absolute inset-0 bg-black/50" onClick={() => setShowPreview(false)} />
-                    <div className="relative bg-white rounded-xl w-full max-w-[600px] mx-4 max-h-[85vh] overflow-y-auto border-2 border-[#1A1A2E] shadow-[6px_6px_0_#1A1A2E]">
+                    <div className="relative bg-white rounded-md w-full max-w-[600px] mx-4 max-h-[85vh] overflow-y-auto border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E]">
                         <div className="flex items-center justify-between px-6 py-5 border-b-2 border-[#1A1A2E]">
                             <h2 className="font-extrabold text-[#1a1a2e] text-xl">Xem trước chiến dịch</h2>
                             <button onClick={() => setShowPreview(false)} className="w-8 h-8 flex items-center justify-center rounded-lg border-2 border-[#1A1A2E] hover:bg-[#F3F4F6] font-bold">✕</button>
@@ -596,7 +596,7 @@ export const CampaignManagement = (): JSX.Element => {
 
             {/* Toast — NB style */}
             {toast && (
-                <div className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-3.5 rounded-xl border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E] font-bold text-sm animate-in slide-in-from-bottom-4 duration-300 ${toast.type === "success" ? "bg-[#D1FAE5] text-[#065F46]" : "bg-[#FEE2E2] text-[#991B1B]"}`}>
+                <div className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-3.5 rounded-md border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E] font-bold text-sm animate-in slide-in-from-bottom-4 duration-300 ${toast.type === "success" ? "bg-[#D1FAE5] text-[#065F46]" : "bg-[#FEE2E2] text-[#991B1B]"}`}>
                     {toast.type === "success" ? "✅" : "❌"}
                     <span>{toast.message}</span>
                 </div>

@@ -111,14 +111,14 @@ export default function ProviderWallet() {
                         ) : (
                             <>
                                 {/* Balance Card — NB style with gradient */}
-                                <div className="bg-gradient-to-br from-[#10B981] to-[#059669] rounded-xl p-8 text-white border-2 border-[#1A1A2E] shadow-[6px_6px_0_#1A1A2E]">
-                                    <p className="font-bold text-white/80 text-sm">Số dư hiện tại</p>
-                                    <p className="font-extrabold text-4xl mt-2">{fmt(wallet?.balance ?? 0)}</p>
+                                <div className="nb-stat-card nb-stat-primary p-8">
+                                    <p className="nb-stat-label">Số dư hiện tại</p>
+                                    <p className="nb-stat-value text-4xl mt-2">{fmt(wallet?.balance ?? 0)}</p>
                                     <div className="flex items-center gap-4 mt-4">
-                                        <p className="font-medium text-white/50 text-xs">
+                                        <p className="font-medium text-[#6B7280] text-xs">
                                             Mã ví: {wallet?.walletId?.slice(0, 8) ?? "—"}
                                         </p>
-                                        <p className="font-medium text-white/50 text-xs">
+                                        <p className="font-medium text-[#6B7280] text-xs">
                                             Cập nhật: {wallet?.updatedAt ? fmtDate(wallet.updatedAt) : "—"}
                                         </p>
                                     </div>

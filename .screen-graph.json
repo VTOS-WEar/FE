@@ -287,6 +287,22 @@
       }
     },
     {
+      "id": "src\\components\\layout\\Footer.tsx:16:14-to-src\\components\\guards\\RoleGuard.tsx",
+      "source": "src\\screens\\FillInformation\\FillInformation.tsx",
+      "target": "src\\components\\guards\\RoleGuard.tsx",
+      "data": {
+        "viaRoute": "/schools",
+        "trigger": {
+          "element": "<a href=\"/schools\" className=\"nb-btn nb-btn-purple text-base px-8 py-3\">\n                <span className=\"tracking-wide uppercase\">Thử ngay</span>\n                <span>→</span>\n              </a>",
+          "line": 16,
+          "endLine": 19,
+          "column": 14,
+          "endColumn": 18,
+          "sourceFile": "src\\components\\layout\\Footer.tsx"
+        }
+      }
+    },
+    {
       "id": "src\\screens\\TwoFactorSetup\\TwoFactorSetup.tsx:108:36-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\TwoFactorSetup\\TwoFactorSetup.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
@@ -479,6 +495,38 @@
       }
     },
     {
+      "id": "src\\components\\layout\\Footer.tsx:16:14-to-src\\components\\guards\\RoleGuard.tsx",
+      "source": "src\\screens\\FillInformation\\FillInformation.tsx",
+      "target": "src\\components\\guards\\RoleGuard.tsx",
+      "data": {
+        "viaRoute": "/schools",
+        "trigger": {
+          "element": "<a href=\"/schools\" className=\"nb-btn nb-btn-purple text-base px-8 py-3\">\n                <span className=\"tracking-wide uppercase\">Thử ngay</span>\n                <span>→</span>\n              </a>",
+          "line": 16,
+          "endLine": 19,
+          "column": 14,
+          "endColumn": 18,
+          "sourceFile": "src\\components\\layout\\Footer.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\DashboardSidebar.tsx:56:8-to-src\\components\\guards\\RoleGuard.tsx",
+      "source": "src\\screens\\AccountSetting\\AccountSetting.tsx",
+      "target": "src\\components\\guards\\RoleGuard.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\", { replace: true })",
+          "line": 56,
+          "endLine": 56,
+          "column": 8,
+          "endColumn": 46,
+          "sourceFile": "src\\components\\layout\\DashboardSidebar.tsx"
+        }
+      }
+    },
+    {
       "id": "src\\components\\layout\\DashboardSidebar.tsx:56:8-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\AccountSetting\\AccountSetting.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
@@ -619,6 +667,22 @@
           "column": 37,
           "endColumn": 56,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\Footer.tsx:16:14-to-src\\components\\guards\\RoleGuard.tsx",
+      "source": "src\\screens\\FillInformation\\FillInformation.tsx",
+      "target": "src\\components\\guards\\RoleGuard.tsx",
+      "data": {
+        "viaRoute": "/schools",
+        "trigger": {
+          "element": "<a href=\"/schools\" className=\"nb-btn nb-btn-purple text-base px-8 py-3\">\n                <span className=\"tracking-wide uppercase\">Thử ngay</span>\n                <span>→</span>\n              </a>",
+          "line": 16,
+          "endLine": 19,
+          "column": 14,
+          "endColumn": 18,
+          "sourceFile": "src\\components\\layout\\Footer.tsx"
         }
       }
     }

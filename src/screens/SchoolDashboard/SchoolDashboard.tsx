@@ -149,7 +149,7 @@ function StatsCard({
  progressValue,
  progressMax,
  onClick,
- tint,
+ primary,
 }: {
  icon: React.ReactNode;
  iconBg: string;
@@ -160,7 +160,7 @@ function StatsCard({
  progressValue?: number;
  progressMax?: number;
  onClick?: () => void;
- tint?: string;
+ primary?: boolean;
 }) {
  const indicatorColor =
  indicatorType === "positive" ? "text-[#10B981]"
@@ -169,7 +169,7 @@ function StatsCard({
 
  return (
  <div
- className={`nb-stat-card ${tint || ""}`}
+ className={`nb-stat-card ${primary ? "nb-stat-primary" : ""}`}
  style={{ cursor: onClick ? "pointer" : undefined }}
  onClick={onClick}
  >
@@ -401,7 +401,7 @@ export const SchoolDashboard = (): JSX.Element => {
  <StatsCard
  label="Tổng đơn hàng"
  value={formatNumber(totalOrders)}
- tint="nb-card-purple"
+ primary
  icon={<svg className="w-5 h-5 text-[#6938EF]" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm4 18H6V4h7v5h5v11z" /></svg>}
  iconBg="bg-[#EDE9FE]"
  onClick={() => navigate("/school/orders")}
@@ -409,7 +409,6 @@ export const SchoolDashboard = (): JSX.Element => {
  <StatsCard
  label="Học sinh tham gia"
  value={totalChildProfiles > 0 ? `${totalStudents}/${totalChildProfiles}` : String(totalStudents)}
- tint="nb-card-blue"
  icon={<svg className="w-5 h-5 text-[#3B82F6]" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" /></svg>}
  iconBg="bg-[#DBEAFE]"
  progressValue={totalStudents}
@@ -418,7 +417,7 @@ export const SchoolDashboard = (): JSX.Element => {
  <StatsCard
  label="Doanh thu dự kiến"
  value={expectedRevenue > 0 ? formatNumber(expectedRevenue) : "0 ₫"}
- tint="nb-card-green"
+ primary
  icon={<svg className="w-5 h-5 text-[#10B981]" viewBox="0 0 24 24" fill="currentColor"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z" /></svg>}
  iconBg="bg-[#D1FAE5]"
  onClick={() => navigate("/school/wallet")}
@@ -426,7 +425,6 @@ export const SchoolDashboard = (): JSX.Element => {
  <StatsCard
  label="Đơn chờ duyệt"
  value={String(pendingOrders)}
- tint="nb-card-red"
  icon={<svg className="w-5 h-5 text-[#EF4444]" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l4.59-4.58L18 11l-6 6z" /></svg>}
  iconBg="bg-[#FEE2E2]"
  indicator={pendingOrders > 0 ? "Cần xử lý" : undefined}

@@ -111,25 +111,25 @@ export const OrderManagement = (): JSX.Element => {
 
                         {/* Stats — NB stat cards */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-                            <div className="nb-stat-card nb-card-purple">
+                            <div className="nb-stat-card nb-stat-primary">
                                 <div className="flex items-center gap-3">
                                     <div className="nb-stat-icon bg-[#EDE9FE]"><span className="text-lg">📦</span></div>
                                     <div><p className="nb-stat-label">Tổng đơn hàng</p><p className="nb-stat-value mt-1">{globalStats.total}</p></div>
                                 </div>
                             </div>
-                            <div className="nb-stat-card nb-card-blue">
+                            <div className="nb-stat-card">
                                 <div className="flex items-center gap-3">
                                     <div className="nb-stat-icon bg-[#DBEAFE]"><span className="text-lg">⏳</span></div>
                                     <div><p className="nb-stat-label">Đang xử lý</p><p className="nb-stat-value text-[#3B82F6] mt-1">{globalStats.processing}</p></div>
                                 </div>
                             </div>
-                            <div className="nb-stat-card nb-card-green">
+                            <div className="nb-stat-card">
                                 <div className="flex items-center gap-3">
                                     <div className="nb-stat-icon bg-[#D1FAE5]"><span className="text-lg">✅</span></div>
                                     <div><p className="nb-stat-label">Hoàn thành</p><p className="nb-stat-value text-[#10B981] mt-1">{globalStats.completed}</p></div>
                                 </div>
                             </div>
-                            <div className="nb-stat-card nb-card-red">
+                            <div className="nb-stat-card">
                                 <div className="flex items-center gap-3">
                                     <div className="nb-stat-icon bg-[#FEE2E2]"><span className="text-lg">❌</span></div>
                                     <div><p className="nb-stat-label">Đã huỷ</p><p className="nb-stat-value text-[#EF4444] mt-1">{globalStats.cancelled}</p></div>
@@ -206,7 +206,7 @@ export const OrderManagement = (): JSX.Element => {
             {/* Detail Modal — NB style */}
             {detail && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => setDetail(null)}>
-                    <div className="bg-white rounded-xl w-full max-w-md mx-4 p-6 border-2 border-[#1A1A2E] shadow-[6px_6px_0_#1A1A2E]" onClick={e => e.stopPropagation()}>
+                    <div className="bg-white rounded-md w-full max-w-md mx-4 p-6 border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E]" onClick={e => e.stopPropagation()}>
                         <div className="flex justify-between items-center mb-5">
                             <h2 className="font-extrabold text-xl text-[#1A1A2E]">📦 Chi tiết đơn hàng</h2>
                             <span className={STATUS_BADGE[detail.orderStatus] || "nb-badge"}>{STATUS_LABELS[detail.orderStatus] || detail.orderStatus}</span>

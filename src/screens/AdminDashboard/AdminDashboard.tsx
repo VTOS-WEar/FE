@@ -14,9 +14,9 @@ import {
 } from "../../lib/api/admin";
 
 /* ── Analytics Card (Neubrutalism) ── */
-function StatCard({ icon, label, value, sub, tint }: { icon: string; label: string; value: string; sub?: string; tint: string }) {
+function StatCard({ icon, label, value, sub, primary }: { icon: string; label: string; value: string; sub?: string; primary?: boolean }) {
  return (
- <div className={`nb-stat-card ${tint}`}>
+ <div className={`nb-stat-card ${primary ? "nb-stat-primary" : ""}`}>
  <div className="flex items-center gap-2 mb-2">
  <span className="text-2xl">{icon}</span>
  <span className="nb-stat-label">{label}</span>
@@ -137,12 +137,12 @@ export const AdminDashboard = (): JSX.Element => {
  </div>
  ) : (
  <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 nb-stagger">
- <StatCard icon="👥" label="Người dùng" value={fmt(analytics?.totalUsers)} sub={`${fmt(analytics?.totalParents)} PH · ${fmt(analytics?.totalSchools)} Trường · ${fmt(analytics?.totalProviders)} NCC`} tint="nb-card-purple" />
- <StatCard icon="📦" label="Tổng đơn hàng" value={fmt(ordersCount?.totalOrders ?? analytics?.totalOrders)} tint="nb-card-blue" />
- <StatCard icon="💰" label="Tổng doanh thu" value={`${fmt(revenueData?.totalRevenue ?? analytics?.totalRevenue)} ₫`} tint="nb-card-green" />
- <StatCard icon="💳" label="Tỷ lệ thanh toán" value={`${paymentRate?.completionRate ?? "—"}%`} sub="Đã thanh toán / Tổng đơn" tint="nb-card-yellow" />
- <StatCard icon="⏳" label="Chờ duyệt" value={fmt(analytics?.pendingApprovals)} sub="Tài khoản cần xác minh" tint="nb-card-orange" />
- <StatCard icon="🏦" label="Chờ rút tiền" value={fmt(analytics?.pendingWithdrawals)} sub="Yêu cầu chưa xử lý" tint="nb-card-red" />
+ <StatCard icon="👥" label="Người dùng" value={fmt(analytics?.totalUsers)} sub={`${fmt(analytics?.totalParents)} PH · ${fmt(analytics?.totalSchools)} Trường · ${fmt(analytics?.totalProviders)} NCC`} primary />
+ <StatCard icon="📦" label="Tổng đơn hàng" value={fmt(ordersCount?.totalOrders ?? analytics?.totalOrders)} />
+ <StatCard icon="💰" label="Tổng doanh thu" value={`${fmt(revenueData?.totalRevenue ?? analytics?.totalRevenue)} ₫`} primary />
+ <StatCard icon="💳" label="Tỷ lệ thanh toán" value={`${paymentRate?.completionRate ?? "—"}%`} sub="Đã thanh toán / Tổng đơn" />
+ <StatCard icon="⏳" label="Chờ duyệt" value={fmt(analytics?.pendingApprovals)} sub="Tài khoản cần xác minh" />
+ <StatCard icon="🏦" label="Chờ rút tiền" value={fmt(analytics?.pendingWithdrawals)} sub="Yêu cầu chưa xử lý" />
  </div>
  )}
  </div>

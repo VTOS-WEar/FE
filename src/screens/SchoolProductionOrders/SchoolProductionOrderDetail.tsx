@@ -531,7 +531,7 @@ export default function SchoolProductionOrderDetail() {
             {/* Reject modal */}
             {showReject && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => { setShowReject(false); setRejectReason(""); }}>
-                    <div className="bg-white rounded-xl w-full max-w-md mx-4 p-6 border-2 border-[#1A1A2E] shadow-[6px_6px_0_#1A1A2E]" onClick={e => e.stopPropagation()}>
+                    <div className="bg-white rounded-md w-full max-w-md mx-4 p-6 border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E]" onClick={e => e.stopPropagation()}>
                         <h3 className="font-extrabold text-lg text-[#1A1A2E] mb-4">❌ Từ chối đơn sản xuất</h3>
                         <textarea value={rejectReason} onChange={e => setRejectReason(e.target.value)}
                             placeholder="Nhập lý do từ chối..." rows={3} className="nb-input w-full resize-y mb-4" />
@@ -548,7 +548,7 @@ export default function SchoolProductionOrderDetail() {
             {/* Schedule creation modal */}
             {showScheduleModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => { setShowScheduleModal(false); setScheduleForm({ scheduledDate: "", method: "AtSchool", timeSlot: "", note: "" }); }}>
-                    <div className="bg-white rounded-xl w-full max-w-md mx-4 p-6 border-2 border-[#1A1A2E] shadow-[6px_6px_0_#1A1A2E]" onClick={e => e.stopPropagation()}>
+                    <div className="bg-white rounded-md w-full max-w-md mx-4 p-6 border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E]" onClick={e => e.stopPropagation()}>
                         <h3 className="font-extrabold text-lg text-[#1A1A2E] mb-4">📅 Tạo lịch phân phối</h3>
                         <div className="space-y-3">
                             <div>

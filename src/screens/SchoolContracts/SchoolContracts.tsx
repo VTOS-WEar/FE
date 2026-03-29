@@ -207,7 +207,7 @@ export function SchoolContracts() {
             {/* Detail Modal — NB style */}
             {showDetail && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => { setShowDetail(false); setSelected(null); }}>
-                    <div className="bg-white rounded-xl w-full max-w-lg mx-4 p-6 max-h-[85vh] overflow-auto border-2 border-[#1A1A2E] shadow-[6px_6px_0_#1A1A2E]" onClick={e => e.stopPropagation()}>
+                    <div className="bg-white rounded-md w-full max-w-lg mx-4 p-6 max-h-[85vh] overflow-auto border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E]" onClick={e => e.stopPropagation()}>
                         {detailLoading ? (
                             <div className="text-center py-10 text-[#9CA3AF]">Đang tải...</div>
                         ) : selected && (
@@ -253,7 +253,7 @@ export function SchoolContracts() {
             {/* Create Contract Modal — NB style */}
             {showCreate && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => setShowCreate(false)}>
-                    <div className="bg-white rounded-xl w-full max-w-lg mx-4 p-6 max-h-[85vh] overflow-auto border-2 border-[#1A1A2E] shadow-[6px_6px_0_#1A1A2E]" onClick={e => e.stopPropagation()}>
+                    <div className="bg-white rounded-md w-full max-w-lg mx-4 p-6 max-h-[85vh] overflow-auto border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E]" onClick={e => e.stopPropagation()}>
                         <h2 className="font-extrabold text-xl text-[#1A1A2E] mb-5">📝 Tạo hợp đồng mới</h2>
                         {error && <div className="nb-alert nb-alert-error text-sm mb-4"><span>⚠️</span><span>{error}</span></div>}
 

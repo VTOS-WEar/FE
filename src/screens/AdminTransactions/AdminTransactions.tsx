@@ -77,15 +77,15 @@ export default function AdminTransactions() {
 
                         {/* Summary cards — NB stat cards */}
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 nb-stagger">
-                            <div className="nb-stat-card nb-card-purple">
+                            <div className="nb-stat-card nb-stat-primary">
                                 <p className="nb-stat-label">Tổng giao dịch</p>
                                 <p className="nb-stat-value mt-1">{data?.totalCount ?? 0}</p>
                             </div>
-                            <div className="nb-stat-card nb-card-green">
+                            <div className="nb-stat-card">
                                 <p className="nb-stat-label">Tổng giá trị</p>
                                 <p className="nb-stat-value text-[#10B981] mt-1">{fmt(data?.totalAmountAll ?? 0)}</p>
                             </div>
-                            <div className="nb-stat-card nb-card-blue">
+                            <div className="nb-stat-card">
                                 <p className="nb-stat-label">Hôm nay</p>
                                 <p className="nb-stat-value text-[#3B82F6] mt-1">{data?.todayCount ?? 0}</p>
                             </div>
