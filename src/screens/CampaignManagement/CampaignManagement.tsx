@@ -16,13 +16,16 @@ import {
     getSchoolProfile,
     getSchoolOutfits,
     publishCampaign,
-    getProviders,
     type OutfitDto,
     type CampaignOutfitInput,
-    type ProviderDto,
 } from "../../lib/api/schools";
+import {
+    getContractedProvidersForOutfits,
+    type ContractedProviderDto,
+} from "../../lib/api/contracts";
 
-
+/* ── OUTFIT_TYPE labels ── */
+const OUTFIT_TYPE_LABELS: Record<number, string> = { 1: "Đồng phục", 2: "Đồ thể thao", 3: "Phụ kiện", 4: "Khác" };
 
 /* ── Selected outfit item with campaign price ── */
 type SelectedOutfit = {
@@ -32,7 +35,28 @@ type SelectedOutfit = {
 };
 
 /* ────────────────────────────────────────────────────────────────────── */
-/* Outfit Selection Card                                                  */
+/* Brutal Design Sub-components                                          */
+/* ────────────────────────────────────────────────────────────────────── */
+const SECTION_ICONS_TONE: Record<string, string> = {
+    info: "bg-[#DCEBFF]",
+    warning: "bg-[#FFF1BF]",
+    success: "bg-[#D9F8E8]",
+    primary: "bg-[#E9E1FF]",
+    blue: "bg-[#DBEAFE]",
+};
+
+function SectionIcon({ children, tone = "info" }: { children: React.ReactNode; tone?: string }) {
+    return (
+        <div className={`flex h-11 w-11 items-center justify-center rounded-[10px] border-[3px] border-[#19182B] shadow-[3px_3px_0_#19182B] ${SECTION_ICONS_TONE[tone] || SECTION_ICONS_TONE.info}`}>
+            <span className="text-[18px]">{children}</span>
+        </div>
+    );
+}
+
+const brutalInputClass = "w-full rounded-[10px] border-[2px] border-[#19182B] bg-white px-4 py-3 text-[15px] font-semibold text-[#19182B] shadow-[3px_3px_0_#19182B] outline-none transition-all placeholder:text-[#9A95A8] focus:translate-x-[1px] focus:translate-y-[1px] focus:shadow-[2px_2px_0_#19182B]";
+
+/* ────────────────────────────────────────────────────────────────────── */
+/* Outfit Selection Card — Brutal Concept                                */
 /* ────────────────────────────────────────────────────────────────────── */
 function OutfitSelectCard({
     item,
@@ -44,49 +68,62 @@ function OutfitSelectCard({
     onToggle: (item: OutfitDto) => void;
 }) {
     const formattedPrice = new Intl.NumberFormat("vi-VN").format(item.price) + " VND";
+    const hasVariants = true; // simplified
+    const typeLabel = OUTFIT_TYPE_LABELS[item.outfitType] || "Khác";
 
     return (
-        <div
+        <button
             onClick={() => onToggle(item)}
-            className={`relative flex items-center gap-3 p-3 rounded-[10px] cursor-pointer transition-all duration-200 border-2 ${
+            className={`group w-full rounded-[14px] border-[3px] border-[#19182B] p-4 text-left transition-all ${
                 isSelected
-                    ? "border-[#6938EF] bg-[#F5F3FF] shadow-[3px_3px_0_#6938EF]"
-                    : "border-[#1A1A2E] bg-white hover:shadow-[3px_3px_0_#1A1A2E]"
+                    ? "bg-[#F2ECFF] shadow-[5px_5px_0_#19182B]"
+                    : "bg-white shadow-[3px_3px_0_#19182B] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B]"
             }`}
         >
-            {/* Image */}
-            <div className="w-12 h-12 rounded-lg bg-[#E5E7EB] flex-shrink-0 overflow-hidden border-2 border-[#1A1A2E]">
-                {item.mainImageURL ? (
-                    <img src={item.mainImageURL} alt={item.outfitName} className="w-full h-full object-cover" />
-                ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                        <svg className="w-6 h-6 text-[#9CA3AF]" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M21 16V7.99C21 6.89 20.1 6 19 6H5C3.9 6 3 6.89 3 7.99V16C3 17.1 3.9 18 5 18H19C20.1 18 21 17.1 21 16Z" />
-                        </svg>
+            <div className="flex items-start gap-4">
+                {/* Outfit image */}
+                <div className={`flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-[12px] border-[2px] border-[#19182B] shadow-[2px_2px_0_#19182B] ${
+                    isSelected ? "ring-2 ring-[#8B6BFF] ring-offset-1" : ""
+                } ${item.mainImageURL ? "bg-white" : isSelected ? "bg-[#8B6BFF] text-white" : "bg-[#ECEAF2] text-[#7A7489]"}`}>
+                    {item.mainImageURL ? (
+                        <img src={item.mainImageURL} alt={item.outfitName} className="h-full w-full object-cover" />
+                    ) : (
+                        <span className="text-[24px]">👕</span>
+                    )}
+                </div>
+
+                <div className="min-w-0 flex-1">
+                    <div className="flex items-start justify-between gap-3">
+                        <div>
+                            <h3 className="text-[16px] font-black leading-tight text-[#19182B]">{item.outfitName}</h3>
+                            <p className="mt-1 text-[13px] font-bold text-[#6F6A7D]">Mã: {item.outfitId.slice(0, 8)}</p>
+                        </div>
+                        <div className="shrink-0 rounded-[10px] border-[2px] border-[#19182B] bg-white px-3 py-2 text-[14px] font-black text-[#7C56FF] shadow-[2px_2px_0_#19182B]">
+                            {formattedPrice}
+                        </div>
                     </div>
-                )}
-            </div>
 
-            {/* Info */}
-            <div className="flex-1 min-w-0">
-                <p className="font-bold text-[#1A1A2E] text-sm truncate">{item.outfitName}</p>
-                <p className="font-medium text-xs text-[#97A3B6] truncate">Mã: {item.outfitId.slice(0, 8)}</p>
-            </div>
+                    <div className="mt-3 flex items-center justify-between gap-3">
+                        <div className="flex flex-wrap gap-2">
+                            <span className="rounded-full border-[2px] border-[#19182B] bg-white px-3 py-1 text-[12px] font-extrabold shadow-[2px_2px_0_#19182B]">
+                                {typeLabel}
+                            </span>
+                            {hasVariants && (
+                                <span className="rounded-full border-[2px] border-[#19182B] bg-white px-3 py-1 text-[12px] font-extrabold shadow-[2px_2px_0_#19182B]">
+                                    Có sẵn size
+                                </span>
+                            )}
+                        </div>
 
-            {/* Price */}
-            <span className="font-bold text-[#6938EF] text-sm whitespace-nowrap">{formattedPrice}</span>
-
-            {/* Check indicator */}
-            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
-                isSelected ? "border-[#6938EF] bg-[#6938EF]" : "border-[#1A1A2E] bg-white"
-            }`}>
-                {isSelected && (
-                    <svg className="w-3 h-3 text-white" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
-                    </svg>
-                )}
+                        <div className={`flex h-8 w-8 items-center justify-center rounded-full border-[3px] border-[#19182B] shadow-[2px_2px_0_#19182B] ${
+                            isSelected ? "bg-[#8B6BFF] text-white" : "bg-white text-transparent"
+                        }`}>
+                            ✓
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
+        </button>
     );
 }
 
@@ -115,9 +152,8 @@ export const CampaignManagement = (): JSX.Element => {
     const [outfitSearch, setOutfitSearch] = useState("");
     const [showAllOutfits, setShowAllOutfits] = useState(false);
 
-    /* ── Providers state ── */
-    const [providers, setProviders] = useState<ProviderDto[]>([]);
-    const [providersLoading, setProvidersLoading] = useState(true);
+    /* ── Contracted providers state ── */
+    const [contractedProviders, setContractedProviders] = useState<Record<string, ContractedProviderDto[]>>({});
 
     /* ── Submission ── */
     const [submitting, setSubmitting] = useState(false);
@@ -143,11 +179,10 @@ export const CampaignManagement = (): JSX.Element => {
             .catch(() => setOutfits([]))
             .finally(() => setOutfitsLoading(false));
 
-        setProvidersLoading(true);
-        getProviders()
-            .then(setProviders)
-            .catch(() => setProviders([]))
-            .finally(() => setProvidersLoading(false));
+        // Load contracted providers per outfit
+        getContractedProvidersForOutfits()
+            .then((res) => setContractedProviders(res.outfitProviders || {}))
+            .catch(() => setContractedProviders({}));
     }, []);
 
     /* ── Toggle outfit selection ── */
@@ -157,7 +192,10 @@ export const CampaignManagement = (): JSX.Element => {
             if (next.has(item.outfitId)) {
                 next.delete(item.outfitId);
             } else {
-                next.set(item.outfitId, { outfit: item, campaignPrice: item.price });
+                // Auto-assign provider if exactly 1 contracted provider exists
+                const providers = contractedProviders[item.outfitId] || [];
+                const autoProviderId = providers.length === 1 ? providers[0].providerId : null;
+                next.set(item.outfitId, { outfit: item, campaignPrice: item.price, providerId: autoProviderId });
             }
             return next;
         });
@@ -235,25 +273,24 @@ export const CampaignManagement = (): JSX.Element => {
                     <TopNavBar>
                         <Breadcrumb>
                             <BreadcrumbList>
-                                <BreadcrumbItem><BreadcrumbLink href="/school/dashboard" className="font-semibold text-[#4c5769] text-base">Trang chủ</BreadcrumbLink></BreadcrumbItem>
-                                <BreadcrumbSeparator className="text-[#cbcad7]">/</BreadcrumbSeparator>
-                                <BreadcrumbItem><BreadcrumbPage className="font-bold text-[#1A1A2E] text-base">Tạo đơn đặt trước</BreadcrumbPage></BreadcrumbItem>
+                                <BreadcrumbItem><BreadcrumbLink href="/school/dashboard" className="font-bold text-[#6F6A7D] text-sm">Trang chủ</BreadcrumbLink></BreadcrumbItem>
+                                <BreadcrumbSeparator className="text-[#6F6A7D] font-black">/</BreadcrumbSeparator>
+                                <BreadcrumbItem><BreadcrumbPage className="font-black text-[#19182B] text-sm">Tạo đơn đặt trước</BreadcrumbPage></BreadcrumbItem>
                             </BreadcrumbList>
                         </Breadcrumb>
                     </TopNavBar>
 
                     <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8">
-                        {/* Header + Actions */}
-                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">
-                            <div>
-                                <h1 className="font-extrabold text-[#1A1A2E] text-[28px] lg:text-[32px] leading-[1.22]">Tạo đợt đặt hàng mới</h1>
-                                <p className="mt-1 font-medium text-[#4c5769] text-sm lg:text-base">Thiết lập thông tin, thời gian và sản phẩm cho chiến dịch đồng phục.</p>
+                        {/* ── Header + Actions ── */}
+                        <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between mb-8">
+                            <div className="max-w-3xl">
+                                <h1 className="text-[32px] font-black leading-none text-[#19182B] lg:text-[38px]">Tạo đợt đặt hàng mới</h1>
                             </div>
-                            <div className="flex items-center gap-3 flex-shrink-0">
+                            <div className="flex flex-wrap gap-3 flex-shrink-0">
                                 <button
                                     type="button"
                                     onClick={() => setShowPreview(true)}
-                                    className="nb-btn nb-btn-outline text-sm"
+                                    className="rounded-[10px] border-[3px] border-[#19182B] bg-white px-5 py-3 text-[14px] font-extrabold text-[#19182B] shadow-[4px_4px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
                                 >
                                     👁 Xem trước
                                 </button>
@@ -261,7 +298,7 @@ export const CampaignManagement = (): JSX.Element => {
                                     type="button"
                                     onClick={() => handleSubmit(false)}
                                     disabled={submitting}
-                                    className="nb-btn nb-btn-purple text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="flex items-center gap-2 rounded-[10px] border-[3px] border-[#19182B] bg-[#8B6BFF] px-5 py-3 text-[14px] font-extrabold text-white shadow-[4px_4px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     {submitting && (
                                         <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" strokeOpacity="0.25" /><path d="M4 12a8 8 0 018-8" strokeLinecap="round" /></svg>
@@ -271,306 +308,376 @@ export const CampaignManagement = (): JSX.Element => {
                             </div>
                         </div>
 
-                        {/* Two-column layout */}
-                        <div className="flex flex-col lg:flex-row gap-6">
-                            {/* ── Left column: Main form ── */}
-                            <div className="flex-1 space-y-6">
-                                {/* Thông tin chung */}
-                                <div className="nb-card-static p-6">
-                                    <div className="flex items-center gap-2 mb-5">
-                                        <div className="nb-stat-icon bg-[#DBEAFE]">
-                                            <svg className="w-4 h-4 text-[#3B82F6]" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" /></svg>
-                                        </div>
-                                        <h2 className="font-extrabold text-[#1a1a2e] text-lg">Thông tin chung</h2>
-                                    </div>
+                        {/* ── Two-column layout ── */}
+                        <div className="grid gap-6 xl:grid-cols-[1.6fr_0.8fr]">
+                            {/* ── Left column: Main panels ── */}
+                            <div className="flex flex-col gap-6">
 
-                                    <div className="space-y-4">
-                                        <div>
-                                            <label className="font-bold text-[#1a1a2e] text-sm mb-1.5 block">Tên đợt đặt hàng <span className="text-red-500">*</span></label>
-                                            <input
-                                                type="text"
-                                                value={campaignName}
-                                                onChange={(e) => setCampaignName(e.target.value)}
-                                                placeholder="Đồng phục Hè 2026"
-                                                className="nb-input w-full"
-                                                required
-                                            />
-                                        </div>
-
-                                        <div>
-                                            <label className="font-bold text-[#1a1a2e] text-sm mb-1.5 block">Mô tả ngắn</label>
-                                            <textarea
-                                                value={description}
-                                                onChange={(e) => setDescription(e.target.value)}
-                                                placeholder="Thông tin hiển thị cho phụ huynh và học sinh..."
-                                                rows={3}
-                                                className="nb-input w-full resize-none"
-                                            />
-                                            <p className="font-medium text-[#97A3B6] text-xs mt-1.5">
-                                                Sẽ hiển thị trên trang đặt hàng trực tiếp trong ứng dụng phụ huynh.
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Sản phẩm áp dụng */}
-                                <div className="nb-card-static p-6">
-                                    <div className="flex items-center justify-between mb-5">
-                                        <div className="flex items-center gap-2">
-                                            <div className="nb-stat-icon bg-[#FEF3C7]">
-                                                <svg className="w-4 h-4 text-[#F59E0B]" viewBox="0 0 24 24" fill="currentColor"><path d="M18 6h-2c0-2.21-1.79-4-4-4S8 3.79 8 6H6c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-6-2c1.1 0 2 .9 2 2h-4c0-1.1.9-2 2-2zm6 16H6V8h2v2c0 .55.45 1 1 1s1-.45 1-1V8h4v2c0 .55.45 1 1 1s1-.45 1-1V8h2v12z" /></svg>
+                                {/* ═══ Thông tin chung — MainPanel ═══ */}
+                                <section className="rounded-[18px] border-[3px] border-[#19182B] bg-white shadow-[6px_6px_0_#19182B]">
+                                    <div className="p-6 md:p-7">
+                                        <div className="flex items-center gap-4">
+                                            <SectionIcon tone="info">ℹ️</SectionIcon>
+                                            <div>
+                                                <h2 className="text-[24px] font-black leading-none text-[#19182B]">Thông tin chung</h2>
                                             </div>
-                                            <h2 className="font-extrabold text-[#1a1a2e] text-lg">Sản phẩm áp dụng</h2>
                                         </div>
-                                        <span className="nb-badge nb-badge-purple">
-                                            Đã chọn: {selectedOutfits.size}
-                                        </span>
+
+                                        <div className="mt-6 grid gap-5">
+                                            <div>
+                                                <label className="block">
+                                                    <div className="mb-2 text-[14px] font-extrabold text-[#19182B]">
+                                                        Tên đợt đặt hàng <span className="ml-1 text-[#FF6B57]">*</span>
+                                                    </div>
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={campaignName}
+                                                    onChange={(e) => setCampaignName(e.target.value)}
+                                                    placeholder="Đồng phục Hè 2026"
+                                                    className={brutalInputClass}
+                                                    required
+                                                />
+                                            </div>
+
+                                            <div>
+                                                <label className="block">
+                                                    <div className="mb-2 text-[14px] font-extrabold text-[#19182B]">Mô tả ngắn</div>
+                                                    <p className="mb-2 text-[12px] font-bold text-[#8D879B]">Sẽ hiển thị trên trang đặt hàng trực tiếp trong ứng dụng phụ huynh.</p>
+                                                </label>
+                                                <textarea
+                                                    value={description}
+                                                    onChange={(e) => setDescription(e.target.value)}
+                                                    placeholder="Thông tin hiển thị cho phụ huynh và học sinh, nêu rõ thời gian nhận đơn và cách thanh toán."
+                                                    rows={4}
+                                                    className={`min-h-[112px] resize-none ${brutalInputClass}`}
+                                                />
+                                            </div>
+                                        </div>
                                     </div>
+                                </section>
 
-                                    {/* Search */}
-                                    <input
-                                        type="text"
-                                        value={outfitSearch}
-                                        onChange={(e) => setOutfitSearch(e.target.value)}
-                                        placeholder="🔍 Tìm kiếm sản phẩm..."
-                                        className="nb-input w-full mb-4"
-                                    />
+                                {/* ═══ Sản phẩm áp dụng — MainPanel ═══ */}
+                                <section className="rounded-[18px] border-[3px] border-[#19182B] bg-white shadow-[6px_6px_0_#19182B]">
+                                    <div className="p-6 md:p-7">
+                                        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                                            <div className="flex items-center gap-4">
+                                                <SectionIcon tone="warning">🛍️</SectionIcon>
+                                                <div>
+                                                    <h2 className="text-[24px] font-black leading-none text-[#19182B]">Sản phẩm áp dụng</h2>
+                                                    <p className="mt-2 text-[14px] font-semibold text-[#6F6A7D]">
+                                                        Chọn những sản phẩm sẽ xuất hiện trong đợt đặt hàng.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div className="inline-flex w-fit items-center gap-2 rounded-full border-[3px] border-[#19182B] bg-[#E9E1FF] px-4 py-2 text-[13px] font-black text-[#5E3FE0] shadow-[3px_3px_0_#19182B]">
+                                                Đã chọn: {selectedOutfits.size}
+                                            </div>
+                                        </div>
 
-                                    {/* Outfits grid */}
-                                    {outfitsLoading ? (
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                            {[1, 2, 3, 4].map((i) => (
-                                                <div key={i} className="h-[72px] nb-skeleton rounded-[10px]" />
-                                            ))}
-                                        </div>
-                                    ) : filteredOutfits.length === 0 ? (
-                                        <div className="text-center py-8">
-                                            <p className="font-medium text-[#97A3B6] text-sm">Chưa có đồng phục nào. Hãy thêm đồng phục trước.</p>
-                                        </div>
-                                    ) : (
-                                        <>
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                                {displayedOutfits.map((item) => (
-                                                    <OutfitSelectCard
-                                                        key={item.outfitId}
-                                                        item={item}
-                                                        isSelected={selectedOutfits.has(item.outfitId)}
-                                                        onToggle={toggleOutfit}
-                                                    />
+                                        {/* Search + Filters */}
+                                        <div className="mt-6 rounded-[14px] border-[2px] border-[#19182B] bg-[#FFFDF9] p-4 shadow-[3px_3px_0_#19182B]">
+                                            {/* Search input */}
+                                            <div className="relative">
+                                                <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[16px] text-[#6F6A7D]">🔎</span>
+                                                <input
+                                                    type="text"
+                                                    value={outfitSearch}
+                                                    onChange={(e) => setOutfitSearch(e.target.value)}
+                                                    placeholder="Tìm kiếm sản phẩm..."
+                                                    className="w-full rounded-[10px] border-[2px] border-[#19182B] bg-white py-3 pl-12 pr-4 text-[15px] font-semibold text-[#19182B] shadow-[3px_3px_0_#19182B] outline-none transition-all placeholder:text-[#9A95A8] focus:translate-x-[1px] focus:translate-y-[1px] focus:shadow-[2px_2px_0_#19182B]"
+                                                />
+                                            </div>
+
+                                            {/* Filter chips */}
+                                            <div className="mt-4 flex flex-wrap gap-2">
+                                                <button
+                                                    onClick={() => setOutfitSearch("")}
+                                                    className={`rounded-full border-[2px] border-[#19182B] px-3 py-1 text-[12px] font-extrabold shadow-[2px_2px_0_#19182B] transition-all ${
+                                                        !outfitSearch.trim() ? "bg-[#8B6BFF] text-white" : "bg-white text-[#19182B] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#19182B]"
+                                                    }`}
+                                                >
+                                                    Tất cả
+                                                </button>
+                                                {["Đồng phục", "Đồ thể thao", "Phụ kiện"].map((label) => (
+                                                    <button
+                                                        key={label}
+                                                        onClick={() => setOutfitSearch(label)}
+                                                        className={`rounded-full border-[2px] border-[#19182B] px-3 py-1 text-[12px] font-extrabold shadow-[2px_2px_0_#19182B] transition-all ${
+                                                            outfitSearch === label ? "bg-[#8B6BFF] text-white" : "bg-white text-[#19182B] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#19182B]"
+                                                        }`}
+                                                    >
+                                                        {label}
+                                                    </button>
                                                 ))}
                                             </div>
-                                            {!showAllOutfits && remainingCount > 0 && (
-                                                <button
-                                                    onClick={() => setShowAllOutfits(true)}
-                                                    className="mt-4 w-full text-center font-bold text-[#6938EF] text-sm hover:underline"
-                                                >
-                                                    Xem thêm {remainingCount} sản phẩm khác
-                                                </button>
-                                            )}
-                                            {showAllOutfits && filteredOutfits.length > 4 && (
-                                                <button
-                                                    onClick={() => setShowAllOutfits(false)}
-                                                    className="mt-4 w-full text-center font-bold text-[#6938EF] text-sm hover:underline"
-                                                >
-                                                    Thu gọn
-                                                </button>
-                                            )}
-                                        </>
-                                    )}
-                                </div>
+                                        </div>
+
+                                        {/* Outfits grid */}
+                                        {outfitsLoading ? (
+                                            <div className="mt-4 grid grid-cols-1 xl:grid-cols-2 gap-4">
+                                                {[1, 2, 3, 4].map((i) => (
+                                                    <div key={i} className="h-[100px] rounded-[14px] border-[3px] border-[#19182B]/10 bg-[#F2ECFF] animate-pulse" />
+                                                ))}
+                                            </div>
+                                        ) : filteredOutfits.length === 0 ? (
+                                            <div className="mt-6 rounded-[14px] border-[2px] border-dashed border-[#8B6BFF] bg-[#F2ECFF]/50 py-10 text-center">
+                                                <p className="text-[15px] font-extrabold text-[#19182B]">Chưa có đồng phục nào</p>
+                                                <p className="mt-1 text-[13px] font-bold text-[#6F6A7D]">Hãy thêm đồng phục trước.</p>
+                                            </div>
+                                        ) : (
+                                            <>
+                                                <div className="mt-4 grid gap-4 xl:grid-cols-2">
+                                                    {displayedOutfits.map((item) => (
+                                                        <OutfitSelectCard
+                                                            key={item.outfitId}
+                                                            item={item}
+                                                            isSelected={selectedOutfits.has(item.outfitId)}
+                                                            onToggle={toggleOutfit}
+                                                        />
+                                                    ))}
+                                                </div>
+                                                {!showAllOutfits && remainingCount > 0 && (
+                                                    <button
+                                                        onClick={() => setShowAllOutfits(true)}
+                                                        className="mt-4 w-full rounded-[10px] border-[2px] border-[#19182B] bg-white py-2.5 text-center text-[14px] font-extrabold text-[#8B6BFF] shadow-[3px_3px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B]"
+                                                    >
+                                                        Xem thêm {remainingCount} sản phẩm khác
+                                                    </button>
+                                                )}
+                                                {showAllOutfits && filteredOutfits.length > 4 && (
+                                                    <button
+                                                        onClick={() => setShowAllOutfits(false)}
+                                                        className="mt-4 w-full rounded-[10px] border-[2px] border-[#19182B] bg-white py-2.5 text-center text-[14px] font-extrabold text-[#8B6BFF] shadow-[3px_3px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B]"
+                                                    >
+                                                        Thu gọn
+                                                    </button>
+                                                )}
+                                            </>
+                                        )}
+                                    </div>
+                                </section>
                             </div>
 
-                            {/* ── Right column: Time + Rules ── */}
-                            <div className="lg:w-[320px] xl:w-[340px] flex-shrink-0 space-y-6">
-                                {/* Thời gian */}
-                                <div className="nb-card-static p-6">
-                                    <div className="flex items-center gap-2 mb-5">
-                                        <div className="nb-stat-icon bg-[#EDE9FE]">
-                                            <svg className="w-4 h-4 text-[#6938EF]" viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z" /></svg>
-                                        </div>
-                                        <h2 className="font-extrabold text-[#1a1a2e] text-lg">Thời gian</h2>
-                                    </div>
+                            {/* ── Right column: Side panels ── */}
+                            <div className="flex flex-col gap-6">
 
-                                    <div className="space-y-4">
-                                        <div className="grid grid-cols-2 gap-3">
+                                {/* ═══ Thời gian — SidePanel ═══ */}
+                                <section className="rounded-[18px] border-[3px] border-[#19182B] bg-white shadow-[4px_4px_0_#19182B]">
+                                    <div className="p-6">
+                                        <div className="flex items-center gap-4">
+                                            <SectionIcon tone="primary">⏰</SectionIcon>
                                             <div>
-                                                <label className="font-bold text-[#6938EF] text-[10px] uppercase tracking-wider mb-1.5 block">Mở đơn</label>
-                                                <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="nb-input w-full text-xs" />
-                                            </div>
-                                            <div>
-                                                <label className="font-bold text-[#EF4444] text-[10px] uppercase tracking-wider mb-1.5 block">Đóng đơn</label>
-                                                <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="nb-input w-full text-xs" />
+                                                <h2 className="text-[22px] font-black leading-none text-[#19182B]">Thời gian</h2>
                                             </div>
                                         </div>
 
-                                        <div>
-                                            <label className="font-bold text-[#1a1a2e] text-sm mb-1.5 block">Ngày dự kiến trả hàng</label>
-                                            <input type="date" value={deliveryDate} onChange={(e) => setDeliveryDate(e.target.value)} className="nb-input w-full text-xs" />
+                                        <div className="mt-6 grid gap-4">
+                                            <div>
+                                                <label className="mb-2 block text-[14px] font-extrabold text-[#19182B]">Mở đơn</label>
+                                                <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className={brutalInputClass} />
+                                            </div>
+                                            <div>
+                                                <label className="mb-2 block text-[14px] font-extrabold text-[#19182B]">Đóng đơn</label>
+                                                <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className={brutalInputClass} />
+                                            </div>
+                                            <div>
+                                                <label className="mb-2 block text-[14px] font-extrabold text-[#19182B]">Ngày dự kiến trả hàng</label>
+                                                <input type="date" value={deliveryDate} onChange={(e) => setDeliveryDate(e.target.value)} className={brutalInputClass} />
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                </section>
 
-                                {/* Quy định */}
-                                <div className="nb-card-static p-6">
-                                    <div className="flex items-center gap-2 mb-5">
-                                        <div className="nb-stat-icon bg-[#D1FAE5]">
-                                            <svg className="w-4 h-4 text-[#10B981]" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z" /></svg>
+                                {/* ═══ Quy định — SidePanel ═══ */}
+                                <section className="rounded-[18px] border-[3px] border-[#19182B] bg-white shadow-[4px_4px_0_#19182B]">
+                                    <div className="p-6">
+                                        <div className="flex items-center gap-4">
+                                            <SectionIcon tone="success">🛡️</SectionIcon>
+                                            <div>
+                                                <h2 className="text-[22px] font-black leading-none text-[#19182B]">Quy định</h2>
+                                            </div>
                                         </div>
-                                        <h2 className="font-extrabold text-[#1a1a2e] text-lg">Quy định</h2>
+
+                                        <div className="mt-6 grid gap-3">
+                                            {/* Thanh toán ngay */}
+                                            <label className="flex items-start gap-3 rounded-[12px] border-[2px] border-[#19182B] bg-white p-3 shadow-[2px_2px_0_#19182B] cursor-pointer">
+                                                <div className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-[6px] border-[2px] border-[#19182B] text-[12px] font-black shadow-[2px_2px_0_#19182B] ${
+                                                    requirePayment ? "bg-[#8B6BFF] text-white" : "bg-[#F6F1E8] text-transparent"
+                                                }`}>
+                                                    ✓
+                                                </div>
+                                                <input type="checkbox" checked={requirePayment} onChange={(e) => setRequirePayment(e.target.checked)} className="hidden" />
+                                                <div>
+                                                    <div className="text-[15px] font-black text-[#19182B]">Thanh toán ngay</div>
+                                                    <p className="mt-1 text-[13px] font-bold leading-5 text-[#8D879B]">Yêu cầu phụ huynh thanh toán khi đặt đơn để giảm đơn ảo.</p>
+                                                </div>
+                                            </label>
+
+                                            {/* Cho phép đổi size */}
+                                            <label className="flex items-start gap-3 rounded-[12px] border-[2px] border-[#19182B] bg-white p-3 shadow-[2px_2px_0_#19182B] cursor-pointer">
+                                                <div className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-[6px] border-[2px] border-[#19182B] text-[12px] font-black shadow-[2px_2px_0_#19182B] ${
+                                                    allowSizeExchange ? "bg-[#8B6BFF] text-white" : "bg-[#F6F1E8] text-transparent"
+                                                }`}>
+                                                    ✓
+                                                </div>
+                                                <input type="checkbox" checked={allowSizeExchange} onChange={(e) => setAllowSizeExchange(e.target.checked)} className="hidden" />
+                                                <div>
+                                                    <div className="text-[15px] font-black text-[#19182B]">Cho phép đổi size</div>
+                                                    <p className="mt-1 text-[13px] font-bold leading-5 text-[#8D879B]">Được phép đổi size trong vòng 7 ngày sau khi nhận hàng.</p>
+                                                </div>
+                                            </label>
+                                        </div>
                                     </div>
+                                </section>
 
-                                    <div className="space-y-4">
-                                        {/* Thanh toán ngay */}
-                                        <label className="flex items-start gap-3 cursor-pointer group">
-                                            <div className={`w-5 h-5 rounded mt-0.5 border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
-                                                requirePayment ? "border-[#6938EF] bg-[#6938EF]" : "border-[#1A1A2E] bg-white group-hover:border-[#6938EF]"
-                                            }`}>
-                                                {requirePayment && (
-                                                    <svg className="w-3 h-3 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" /></svg>
-                                                )}
+                                {/* Nhà cung cấp (Contract-based) */}
+                                {selectedOutfits.size > 0 && (
+                                    <section className="rounded-[18px] border-[3px] border-[#19182B] bg-white shadow-[4px_4px_0_#19182B]">
+                                        <div className="p-6">
+                                            <div className="flex items-center gap-4">
+                                                <SectionIcon tone="blue">🚚</SectionIcon>
+                                                <div>
+                                                    <h2 className="text-[22px] font-black leading-none text-[#19182B]">Nhà cung cấp</h2>
+                                                    <p className="mt-2 text-[13px] font-bold text-[#6F6A7D]">Tự động gán từ hợp đồng đã duyệt.</p>
+                                                </div>
                                             </div>
-                                            <input type="checkbox" checked={requirePayment} onChange={(e) => setRequirePayment(e.target.checked)} className="hidden" />
-                                            <div>
-                                                <p className="font-bold text-[#1A1A2E] text-sm">Thanh toán ngay</p>
-                                                <p className="font-medium text-[#97A3B6] text-xs mt-0.5">Yêu cầu phụ huynh thanh toán khi đặt đơn.</p>
+                                            <div className="mt-6 space-y-4">
+                                                {Array.from(selectedOutfits.values()).map((s) => {
+                                                    const providers = contractedProviders[s.outfit.outfitId] || [];
+                                                    return (
+                                                        <div key={s.outfit.outfitId} className="space-y-2">
+                                                            <p className="text-[14px] font-black text-[#19182B] truncate">{s.outfit.outfitName}</p>
+                                                            {providers.length === 0 ? (
+                                                                <div className="flex items-center gap-2 rounded-[8px] border-[2px] border-dashed border-[#D1C9E0] bg-[#FAFAFA] px-3 py-2">
+                                                                    <span className="text-[13px]">⚠️</span>
+                                                                    <span className="text-[13px] font-bold text-[#8D879B]">Chưa có hợp đồng — sẽ gán NCC sau</span>
+                                                                </div>
+                                                            ) : providers.length === 1 ? (
+                                                                <div className="flex items-center gap-2 rounded-[10px] border-[2px] border-[#19182B] bg-[#D9F8E8] px-3 py-2 shadow-[2px_2px_0_#19182B]">
+                                                                    <span className="text-[13px]">✅</span>
+                                                                    <span className="text-[13px] font-black text-[#19182B]">{providers[0].providerName}</span>
+                                                                    <span className="ml-auto text-[12px] font-bold text-[#6F6A7D]">
+                                                                        SX: {providers[0].pricePerUnit.toLocaleString("vi-VN")}đ
+                                                                    </span>
+                                                                </div>
+                                                            ) : (
+                                                                <select
+                                                                    value={s.providerId || ""}
+                                                                    onChange={(e) => {
+                                                                        const val = e.target.value || null;
+                                                                        setSelectedOutfits((prev) => {
+                                                                            const next = new Map(prev);
+                                                                            const existing = next.get(s.outfit.outfitId);
+                                                                            if (existing) {
+                                                                                next.set(s.outfit.outfitId, { ...existing, providerId: val });
+                                                                            }
+                                                                            return next;
+                                                                        });
+                                                                    }}
+                                                                    className={brutalInputClass}
+                                                                >
+                                                                    <option value="">-- Chọn nhà cung cấp --</option>
+                                                                    {providers.map((p) => (
+                                                                        <option key={p.providerId} value={p.providerId}>
+                                                                            {p.providerName} — SX: {p.pricePerUnit.toLocaleString("vi-VN")}đ
+                                                                        </option>
+                                                                    ))}
+                                                                </select>
+                                                            )}
+                                                        </div>
+                                                    );
+                                                })}
                                             </div>
-                                        </label>
+                                        </div>
+                                    </section>
+                                )}
 
-                                        {/* Cho phép đổi size */}
-                                        <label className="flex items-start gap-3 cursor-pointer group">
-                                            <div className={`w-5 h-5 rounded mt-0.5 border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
-                                                allowSizeExchange ? "border-[#6938EF] bg-[#6938EF]" : "border-[#1A1A2E] bg-white group-hover:border-[#6938EF]"
-                                            }`}>
-                                                {allowSizeExchange && (
-                                                    <svg className="w-3 h-3 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" /></svg>
-                                                )}
-                                            </div>
-                                            <input type="checkbox" checked={allowSizeExchange} onChange={(e) => setAllowSizeExchange(e.target.checked)} className="hidden" />
-                                            <div>
-                                                <p className="font-bold text-[#1A1A2E] text-sm">Cho phép đổi size</p>
-                                                <p className="font-medium text-[#97A3B6] text-xs mt-0.5">Được phép đổi size trong vòng 7 ngày sau khi nhận.</p>
-                                            </div>
-                                        </label>
-                                    </div>
-                                </div>
-
-                                {/* Lưu bản nháp button */}
+                                {/* Save Draft */}
                                 <button
                                     type="button"
                                     onClick={() => handleSubmit(true)}
                                     disabled={submitting}
-                                    className="nb-btn nb-btn-outline w-full py-3 text-sm disabled:opacity-50"
+                                    className="w-full rounded-[10px] border-[3px] border-[#19182B] bg-white px-5 py-3 text-[14px] font-extrabold text-[#19182B] shadow-[4px_4px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     {submitting && (
-                                        <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" strokeOpacity="0.25" /><path d="M4 12a8 8 0 018-8" strokeLinecap="round" /></svg>
+                                        <svg className="w-4 h-4 animate-spin inline mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" strokeOpacity="0.25" /><path d="M4 12a8 8 0 018-8" strokeLinecap="round" /></svg>
                                     )}
-                                    💾 Lưu bản nháp
+                                    📝 Lưu bản nháp
                                 </button>
 
-                                {/* Nhà cung cấp */}
-                                {selectedOutfits.size > 0 && (
-                                    <div className="nb-card-static p-6">
-                                        <div className="flex items-center gap-2 mb-5">
-                                            <div className="nb-stat-icon bg-[#DBEAFE]">
-                                                <svg className="w-4 h-4 text-[#3B82F6]" viewBox="0 0 24 24" fill="currentColor"><path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17V9.5h2.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z" /></svg>
-                                            </div>
-                                            <h2 className="font-extrabold text-[#1a1a2e] text-lg">Nhà cung cấp</h2>
-                                        </div>
-                                        <p className="font-medium text-[#97A3B6] text-xs mb-4">Chọn nhà cung cấp cho từng sản phẩm (không bắt buộc, có thể chọn sau).</p>
-                                        <div className="space-y-3">
-                                            {Array.from(selectedOutfits.values()).map((s) => (
-                                                <div key={s.outfit.outfitId} className="space-y-1.5">
-                                                    <p className="font-bold text-[#1A1A2E] text-xs truncate">{s.outfit.outfitName}</p>
-                                                    <select
-                                                        value={s.providerId || ""}
-                                                        onChange={(e) => {
-                                                            const val = e.target.value || null;
-                                                            setSelectedOutfits((prev) => {
-                                                                const next = new Map(prev);
-                                                                const existing = next.get(s.outfit.outfitId);
-                                                                if (existing) {
-                                                                    next.set(s.outfit.outfitId, { ...existing, providerId: val });
-                                                                }
-                                                                return next;
-                                                            });
-                                                        }}
-                                                        className="nb-select w-full text-xs"
-                                                    >
-                                                        <option value="">-- Chưa chọn --</option>
-                                                        {providersLoading ? (
-                                                            <option disabled>Đang tải...</option>
-                                                        ) : (
-                                                            providers.map((p) => (
-                                                                <option key={p.id} value={p.id}>{p.providerName}</option>
-                                                            ))
-                                                        )}
-                                                    </select>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
+
                             </div>
                         </div>
                     </main>
                 </div>
             </div>
 
-            {/* Preview Modal — NB style */}
+            {/* ── Preview Modal — NB Concept ── */}
             {showPreview && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center">
                     <div className="absolute inset-0 bg-black/50" onClick={() => setShowPreview(false)} />
-                    <div className="relative bg-white rounded-md w-full max-w-[600px] mx-4 max-h-[85vh] overflow-y-auto border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E]">
-                        <div className="flex items-center justify-between px-6 py-5 border-b-2 border-[#1A1A2E]">
-                            <h2 className="font-extrabold text-[#1a1a2e] text-xl">Xem trước chiến dịch</h2>
-                            <button onClick={() => setShowPreview(false)} className="w-8 h-8 flex items-center justify-center rounded-lg border-2 border-[#1A1A2E] hover:bg-[#F3F4F6] font-bold">✕</button>
+                    <div className="relative w-full max-w-[640px] mx-4 max-h-[85vh] overflow-y-auto rounded-[18px] border-[3px] border-[#19182B] bg-white shadow-[6px_6px_0_#19182B]">
+                        {/* Header */}
+                        <div className="flex items-start justify-between gap-4 border-b-[3px] border-[#19182B] bg-[#F2ECFF] px-6 py-5 sticky top-0 z-10">
+                            <div>
+                                <div className="mb-2 inline-flex items-center gap-2 rounded-[8px] border-[2px] border-[#19182B] bg-[#FFD978] px-3 py-1 text-[12px] font-black shadow-[2px_2px_0_#19182B]">
+                                    👁 XEM TRƯỚC
+                                </div>
+                                <h2 className="text-[24px] font-black leading-none text-[#19182B]">Xem trước chiến dịch</h2>
+                            </div>
+                            <button
+                                onClick={() => setShowPreview(false)}
+                                className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-[10px] border-[3px] border-[#19182B] bg-white text-[22px] font-black shadow-[4px_4px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B]"
+                            >
+                                ×
+                            </button>
                         </div>
-                        <div className="px-6 py-5 space-y-5">
+                        <div className="px-6 py-6 space-y-5">
                             {/* Name */}
                             <div>
-                                <p className="font-bold text-[#9CA3AF] text-xs uppercase tracking-wider mb-1">Tên chiến dịch</p>
-                                <p className="font-extrabold text-[#1A1A2E] text-lg">{campaignName || "(Chưa nhập)"}</p>
+                                <p className="text-[12px] font-black text-[#6F6A7D] uppercase tracking-wider mb-1">Tên chiến dịch</p>
+                                <p className="text-[18px] font-black text-[#19182B]">{campaignName || "(Chưa nhập)"}</p>
                             </div>
-                            {/* Description */}
                             {description && (
                                 <div>
-                                    <p className="font-bold text-[#9CA3AF] text-xs uppercase tracking-wider mb-1">Mô tả</p>
-                                    <p className="font-medium text-[#4C5769] text-sm">{description}</p>
+                                    <p className="text-[12px] font-black text-[#6F6A7D] uppercase tracking-wider mb-1">Mô tả</p>
+                                    <p className="text-[15px] font-semibold text-[#6F6A7D]">{description}</p>
                                 </div>
                             )}
                             {/* Dates */}
                             <div className="grid grid-cols-3 gap-4">
-                                <div>
-                                    <p className="font-bold text-[#9CA3AF] text-xs uppercase tracking-wider mb-1">Mở đơn</p>
-                                    <p className="font-bold text-[#1A1A2E] text-sm">{startDate ? new Date(startDate).toLocaleDateString("vi-VN") : "—"}</p>
+                                <div className="rounded-[10px] border-[2px] border-[#19182B] bg-[#FFFDF9] p-3 shadow-[2px_2px_0_#19182B]">
+                                    <p className="text-[11px] font-black text-[#6F6A7D] uppercase mb-1">Mở đơn</p>
+                                    <p className="text-[14px] font-black text-[#19182B]">{startDate ? new Date(startDate).toLocaleDateString("vi-VN") : "—"}</p>
                                 </div>
-                                <div>
-                                    <p className="font-bold text-[#9CA3AF] text-xs uppercase tracking-wider mb-1">Đóng đơn</p>
-                                    <p className="font-bold text-[#1A1A2E] text-sm">{endDate ? new Date(endDate).toLocaleDateString("vi-VN") : "—"}</p>
+                                <div className="rounded-[10px] border-[2px] border-[#19182B] bg-[#FFFDF9] p-3 shadow-[2px_2px_0_#19182B]">
+                                    <p className="text-[11px] font-black text-[#6F6A7D] uppercase mb-1">Đóng đơn</p>
+                                    <p className="text-[14px] font-black text-[#19182B]">{endDate ? new Date(endDate).toLocaleDateString("vi-VN") : "—"}</p>
                                 </div>
-                                <div>
-                                    <p className="font-bold text-[#9CA3AF] text-xs uppercase tracking-wider mb-1">Trả hàng</p>
-                                    <p className="font-bold text-[#1A1A2E] text-sm">{deliveryDate ? new Date(deliveryDate).toLocaleDateString("vi-VN") : "—"}</p>
+                                <div className="rounded-[10px] border-[2px] border-[#19182B] bg-[#FFFDF9] p-3 shadow-[2px_2px_0_#19182B]">
+                                    <p className="text-[11px] font-black text-[#6F6A7D] uppercase mb-1">Trả hàng</p>
+                                    <p className="text-[14px] font-black text-[#19182B]">{deliveryDate ? new Date(deliveryDate).toLocaleDateString("vi-VN") : "—"}</p>
                                 </div>
                             </div>
                             {/* Products */}
                             <div>
-                                <p className="font-bold text-[#9CA3AF] text-xs uppercase tracking-wider mb-2">Sản phẩm ({selectedOutfits.size})</p>
+                                <p className="text-[12px] font-black text-[#6F6A7D] uppercase tracking-wider mb-2">Sản phẩm ({selectedOutfits.size})</p>
                                 {selectedOutfits.size === 0 ? (
-                                    <p className="font-medium text-[#97A3B6] text-sm italic">Chưa chọn sản phẩm nào</p>
+                                    <p className="text-[14px] font-bold text-[#8D879B] italic">Chưa chọn sản phẩm nào</p>
                                 ) : (
                                     <div className="space-y-2">
                                         {Array.from(selectedOutfits.values()).map((s) => (
-                                            <div key={s.outfit.outfitId} className="flex items-center gap-3 p-2.5 rounded-lg border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E]">
-                                                <div className="w-10 h-10 rounded-lg bg-[#E5E7EB] overflow-hidden flex-shrink-0 border border-[#1A1A2E]">
+                                            <div key={s.outfit.outfitId} className="flex items-center gap-3 rounded-[10px] border-[2px] border-[#19182B] bg-white p-3 shadow-[2px_2px_0_#19182B]">
+                                                <div className="w-10 h-10 rounded-[8px] bg-[#ECEAF2] overflow-hidden flex-shrink-0 border-[2px] border-[#19182B]">
                                                     {s.outfit.mainImageURL ? (
                                                         <img src={s.outfit.mainImageURL} alt="" className="w-full h-full object-cover" />
                                                     ) : (
-                                                        <div className="w-full h-full flex items-center justify-center"><svg className="w-5 h-5 text-[#9CA3AF]" viewBox="0 0 24 24" fill="currentColor"><path d="M21 16V7.99C21 6.89 20.1 6 19 6H5C3.9 6 3 6.89 3 7.99V16C3 17.1 3.9 18 5 18H19C20.1 18 21 17.1 21 16Z" /></svg></div>
+                                                        <div className="w-full h-full flex items-center justify-center text-sm">👕</div>
                                                     )}
                                                 </div>
-                                                <span className="font-bold text-[#1A1A2E] text-sm flex-1">{s.outfit.outfitName}</span>
-                                                <span className="font-extrabold text-[#6938EF] text-sm">{new Intl.NumberFormat("vi-VN").format(s.campaignPrice)}đ</span>
+                                                <span className="flex-1 text-[14px] font-black text-[#19182B]">{s.outfit.outfitName}</span>
+                                                <span className="text-[14px] font-black text-[#7C56FF]">{new Intl.NumberFormat("vi-VN").format(s.campaignPrice)}đ</span>
                                             </div>
                                         ))}
                                     </div>
@@ -578,27 +685,28 @@ export const CampaignManagement = (): JSX.Element => {
                             </div>
                             {/* Rules */}
                             <div className="flex items-center gap-3">
-                                <span className={`nb-badge ${requirePayment ? "nb-badge-green" : "bg-[#F3F4F6] text-[#6B7280]"}`}>
+                                <span className={`rounded-full border-[2px] border-[#19182B] px-3 py-1 text-[12px] font-extrabold shadow-[2px_2px_0_#19182B] ${requirePayment ? "bg-[#D9F8E8] text-[#065F46]" : "bg-[#F6F1E8] text-[#6F6A7D]"}`}>
                                     {requirePayment ? "✓" : "✗"} Thanh toán ngay
                                 </span>
-                                <span className={`nb-badge ${allowSizeExchange ? "nb-badge-green" : "bg-[#F3F4F6] text-[#6B7280]"}`}>
+                                <span className={`rounded-full border-[2px] border-[#19182B] px-3 py-1 text-[12px] font-extrabold shadow-[2px_2px_0_#19182B] ${allowSizeExchange ? "bg-[#D9F8E8] text-[#065F46]" : "bg-[#F6F1E8] text-[#6F6A7D]"}`}>
                                     {allowSizeExchange ? "✓" : "✗"} Cho phép đổi size
                                 </span>
                             </div>
                         </div>
-                        <div className="px-6 py-4 border-t-2 border-[#1A1A2E] flex justify-end gap-3">
-                            <button onClick={() => setShowPreview(false)} className="nb-btn nb-btn-outline text-sm">Đóng</button>
-                            <button onClick={() => { setShowPreview(false); handleSubmit(false); }} disabled={submitting} className="nb-btn nb-btn-purple text-sm disabled:opacity-50">🚀 Xuất bản ngay</button>
+                        {/* Footer */}
+                        <div className="flex flex-col-reverse gap-3 border-t-[3px] border-[#19182B] bg-[#FFFDF9] px-6 py-5 sm:flex-row sm:justify-end">
+                            <button onClick={() => setShowPreview(false)} className="rounded-[8px] border-[3px] border-[#19182B] bg-white px-5 py-3 text-[15px] font-extrabold text-[#19182B] shadow-[4px_4px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none">Đóng</button>
+                            <button onClick={() => { setShowPreview(false); handleSubmit(false); }} disabled={submitting} className="flex items-center justify-center gap-2 rounded-[8px] border-[3px] border-[#19182B] bg-[#8B6BFF] px-5 py-3 text-[15px] font-extrabold text-white shadow-[4px_4px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:opacity-50">🚀 Xuất bản ngay</button>
                         </div>
                     </div>
                 </div>
             )}
 
-            {/* Toast — NB style */}
+            {/* ── Toast — NB Concept ── */}
             {toast && (
-                <div className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-3.5 rounded-md border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E] font-bold text-sm animate-in slide-in-from-bottom-4 duration-300 ${toast.type === "success" ? "bg-[#D1FAE5] text-[#065F46]" : "bg-[#FEE2E2] text-[#991B1B]"}`}>
+                <div className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-3.5 rounded-[10px] border-[3px] border-[#19182B] shadow-[4px_4px_0_#19182B] animate-in slide-in-from-bottom-4 duration-300 ${toast.type === "success" ? "bg-[#10b981] text-white" : "bg-[#FF6B57] text-white"}`}>
                     {toast.type === "success" ? "✅" : "❌"}
-                    <span>{toast.message}</span>
+                    <span className="font-extrabold text-[15px]">{toast.message}</span>
                 </div>
             )}
         </div>

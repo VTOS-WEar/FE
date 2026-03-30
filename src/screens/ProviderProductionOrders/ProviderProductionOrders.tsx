@@ -250,7 +250,7 @@ export function ProviderProductionOrders() {
                         {/* Detail Modal */}
                         {showDetail && detail && (
                             <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[1000] p-4">
-                                <div className="nb-card-static p-8 w-full max-w-[700px] max-h-[85vh] overflow-auto">
+                                <div className="bg-white rounded-md border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E] p-8 w-full max-w-[700px] max-h-[85vh] overflow-auto">
                                     <div className="flex items-center justify-between mb-5">
                                         <h2 className="font-extrabold text-[#1A1A2E] text-xl">📋 {detail.batchName}</h2>
                                         <span className={STATUS_MAP[detail.status]?.badge || "nb-badge"}>
@@ -481,8 +481,8 @@ export function ProviderProductionOrders() {
 
                         {/* Reject Modal */}
                         {showReject && detail && (
-                            <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[1100] p-4">
-                                <div className="nb-card-static p-7 w-full max-w-[440px]">
+                            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[1100] p-4">
+                                <div className="bg-white rounded-md border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E] p-7 w-full max-w-[440px]">
                                     <h3 className="font-extrabold text-[#1A1A2E] text-lg mb-4">❌ Từ chối đơn sản xuất</h3>
                                     <textarea
                                         value={rejectReason}
@@ -503,8 +503,8 @@ export function ProviderProductionOrders() {
 
                         {/* Deliver Modal */}
                         {showDeliver && detail && (
-                            <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[1100] p-4">
-                                <div className="nb-card-static p-7 w-full max-w-[440px]">
+                            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[1100] p-4">
+                                <div className="bg-white rounded-md border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E] p-7 w-full max-w-[440px]">
                                     <h3 className="font-extrabold text-[#1A1A2E] text-lg mb-4">📦 Giao hàng</h3>
 
                                     {deliveryStatus && (

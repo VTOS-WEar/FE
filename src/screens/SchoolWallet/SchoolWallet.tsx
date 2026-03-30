@@ -229,8 +229,8 @@ export default function SchoolWallet() {
 
             {/* Withdraw Modal */}
             {showWithdraw && (
-                <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-                    <div className="nb-card-static p-6 w-full max-w-md space-y-4">
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-md border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E] p-6 w-full max-w-md space-y-4">
                         <h3 className="font-extrabold text-[#1A1A2E] text-lg">💸 Yêu cầu rút tiền</h3>
                         <p className="text-sm text-[#6B7280]">Số dư hiện tại: <span className="font-extrabold text-[#6938EF]">{fmt(wallet?.balance ?? 0)}</span></p>
                         <div>

@@ -302,8 +302,8 @@ export const CampaignDetail = (): JSX.Element => {
             {/* Generate Production Order Modal */}
             {showGenModal && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-[20px] p-8 w-[90%] max-w-[500px] shadow-2xl">
-                        <h2 className="font-bold text-[#1a1a2e] text-xl mb-6 flex items-center gap-2">
+                    <div className="bg-white rounded-md border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E] p-8 w-[90%] max-w-[500px]">
+                        <h2 className="font-extrabold text-[#1a1a2e] text-xl mb-6 flex items-center gap-2">
                             🏭 Tạo đơn sản xuất
                         </h2>
 
@@ -314,7 +314,7 @@ export const CampaignDetail = (): JSX.Element => {
                                     type="text"
                                     value={genBatchName}
                                     onChange={e => setGenBatchName(e.target.value)}
-                                    className="w-full px-4 py-2.5 rounded-[10px] border border-[#CBCAD7] text-sm focus:outline-none focus:border-[#6938EF] transition-colors"
+                                    className="nb-input w-full"
                                     placeholder="VD: Đơn SX - Chiến dịch Hè 2026"
                                 />
                             </div>
@@ -324,7 +324,7 @@ export const CampaignDetail = (): JSX.Element => {
                                 <select
                                     value={genProviderId}
                                     onChange={e => setGenProviderId(e.target.value)}
-                                    className="w-full px-4 py-2.5 rounded-[10px] border border-[#CBCAD7] text-sm focus:outline-none focus:border-[#6938EF] transition-colors bg-white"
+                                    className="nb-select w-full"
                                 >
                                     <option value="">-- Chọn nhà cung cấp --</option>
                                     {providers.map(p => (
@@ -339,7 +339,7 @@ export const CampaignDetail = (): JSX.Element => {
                                     type="date"
                                     value={genDeadline}
                                     onChange={e => setGenDeadline(e.target.value)}
-                                    className="w-full px-4 py-2.5 rounded-[10px] border border-[#CBCAD7] text-sm focus:outline-none focus:border-[#6938EF] transition-colors"
+                                    className="nb-input w-full"
                                 />
                             </div>
                         </div>
@@ -347,14 +347,14 @@ export const CampaignDetail = (): JSX.Element => {
                         <div className="flex gap-3 mt-6">
                             <button
                                 onClick={() => setShowGenModal(false)}
-                                className="flex-1 py-2.5 rounded-[10px] border border-[#CBCAD7] bg-white font-semibold text-sm text-[#4C5769] hover:bg-gray-50 transition-colors"
+                                className="flex-1 nb-btn nb-btn-outline text-sm"
                             >
                                 Hủy
                             </button>
                             <button
                                 onClick={handleGenerateProductionOrder}
                                 disabled={generating || !genBatchName.trim() || !genProviderId || !genDeadline}
-                                className="flex-1 py-2.5 rounded-[10px] bg-[#6938EF] hover:bg-[#5B2ED4] text-white font-semibold text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="flex-1 nb-btn nb-btn-purple text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {generating ? "Đang tạo..." : "Tạo đơn sản xuất"}
                             </button>
@@ -365,13 +365,13 @@ export const CampaignDetail = (): JSX.Element => {
 
             {/* Toast */}
             {toast && (
-                <div className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-3.5 rounded-xl shadow-2xl animate-in slide-in-from-bottom-4 duration-300 ${toast.type === "success" ? "bg-[#10b981] text-white" : "bg-[#ef4444] text-white"}`}>
+                <div className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-3.5 rounded-md border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E] animate-in slide-in-from-bottom-4 duration-300 ${toast.type === "success" ? "bg-[#10b981] text-white" : "bg-[#ef4444] text-white"}`}>
                     {toast.type === "success" ? (
                         <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" /></svg>
                     ) : (
                         <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" /></svg>
                     )}
-                    <span className="font-semibold text-sm">{toast.message}</span>
+                    <span className="font-bold text-sm">{toast.message}</span>
                 </div>
             )}
         </div>

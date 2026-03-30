@@ -59,7 +59,7 @@ const EMPTY_FORM: OutfitFormData = {
 };
 
 /* ────────────────────────────────────────────────────────────────────── */
-/* Create / Edit Outfit Modal                                             */
+/* Create / Edit Outfit Modal  — Neubrutalism Concept                     */
 /* ────────────────────────────────────────────────────────────────────── */
 function OutfitFormModal({
     isOpen,
@@ -133,124 +133,152 @@ function OutfitFormModal({
         );
     };
 
-    const inputClass = "nb-input py-2.5 text-sm";
-    const labelClass = "font-bold text-[#1a1a2e] text-sm mb-1.5 block";
+    /* Brutal input class */
+    const brutalInputClass = "w-full rounded-[8px] border-[2px] border-[#19182B] bg-white px-4 py-3 text-[15px] font-semibold text-[#19182B] shadow-[3px_3px_0_#19182B] outline-none transition-all placeholder:text-[#8B859A] focus:translate-x-[1px] focus:translate-y-[1px] focus:shadow-[2px_2px_0_#19182B]";
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
             <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-            <div className="relative bg-white rounded-md w-full max-w-[560px] mx-4 max-h-[90vh] overflow-y-auto border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E]">
-                {/* Header */}
-                <div className="flex items-center justify-between px-6 py-5 border-b-2 border-[#E5E7EB]">
-                    <h2 className="font-extrabold text-[#1a1a2e] text-xl">
-                        {isEditing ? "✏️ Chỉnh sửa đồng phục" : "➕ Thêm đồng phục mới"}
-                    </h2>
-                    <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-lg border-2 border-[#1A1A2E] hover:bg-[#F3F4F6] font-bold">✕</button>
+            <div className="relative w-full max-w-[640px] mx-4 max-h-[90vh] overflow-y-auto rounded-[18px] border-[3px] border-[#19182B] bg-white shadow-[6px_6px_0_#19182B]">
+
+                {/* ── Header ── */}
+                <div className="flex items-start justify-between gap-4 border-b-[3px] border-[#19182B] bg-[#F2ECFF] px-6 py-5 sticky top-0 z-10">
+                    <div>
+                        <div className="mb-2 inline-flex items-center gap-2 rounded-[8px] border-[2px] border-[#19182B] bg-[#FFD978] px-3 py-1 text-[12px] font-black shadow-[2px_2px_0_#19182B]">
+                            {isEditing ? "✏️ CHỈNH SỬA SẢN PHẨM" : "➕ THÊM MỚI"}
+                        </div>
+                        <h2 className="text-[24px] font-black leading-none text-[#19182B] md:text-[28px]">
+                            {isEditing ? "Chỉnh sửa đồng phục" : "Thêm đồng phục mới"}
+                        </h2>
+                        <p className="mt-2 text-[14px] font-semibold text-[#6F6A7D]">
+                            {isEditing ? "Cập nhật ảnh, thông tin mô tả và giá bán." : "Điền thông tin để tạo đồng phục mới."}
+                        </p>
+                    </div>
+                    <button
+                        onClick={onClose}
+                        className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-[10px] border-[3px] border-[#19182B] bg-white text-[22px] font-black shadow-[4px_4px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+                    >
+                        ×
+                    </button>
                 </div>
 
-                {/* Form */}
-                <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
-                    {/* Image Upload */}
-                    <div>
-                        <label className={labelClass}>Hình ảnh đồng phục</label>
-                        <div
-                            className={`relative border-2 border-dashed rounded-[10px] transition-colors cursor-pointer ${
-                                imagePreview ? "border-[#6938EF] bg-[#F5F3FF]" : "border-[#cbcad7] bg-[#f8f9fb] hover:border-[#6938EF] hover:bg-[#F5F3FF]"
-                            }`}
-                            onClick={() => fileInputRef.current?.click()}
-                            onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                            onDrop={(e) => {
-                                e.preventDefault(); e.stopPropagation();
-                                const f = e.dataTransfer.files?.[0];
-                                if (f) handleFileChange(f);
-                            }}
-                        >
-                            <input
-                                ref={fileInputRef}
-                                type="file"
-                                accept="image/jpeg,image/png,image/webp"
-                                className="hidden"
-                                onChange={(e) => handleFileChange(e.target.files?.[0] || null)}
-                            />
+                {/* ── Form Body ── */}
+                <form onSubmit={handleSubmit} className="space-y-6 px-6 py-6 md:px-8 md:py-8">
 
-                            {imagePreview ? (
-                                <div className="relative p-3">
-                                    <img src={imagePreview} alt="Preview" className="w-full h-48 object-contain rounded-lg" />
-                                    <button
-                                        type="button"
-                                        onClick={(e) => { e.stopPropagation(); setImageFile(null); setImagePreview(null); setForm((f) => ({ ...f, mainImageURL: "" })); }}
-                                        className="absolute top-4 right-4 w-7 h-7 flex items-center justify-center rounded-full bg-white/90 hover:bg-red-50 text-[#97A3B6] hover:text-red-500 shadow transition-colors"
-                                    >
-                                        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-                                            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
-                                        </svg>
-                                    </button>
-                                </div>
-                            ) : (
-                                <div className="flex flex-col items-center justify-center py-8">
-                                    <svg className="w-10 h-10 text-[#97A3B6] mb-2" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z" />
-                                    </svg>
-                                    <p className="font-semibold text-[#4C5769] text-sm">
-                                        Kéo thả hoặc nhấn để chọn ảnh
-                                    </p>
-                                    <p className="font-medium text-[#97A3B6] text-xs mt-1">
-                                        JPEG, PNG, WebP • Tối đa 5MB
-                                    </p>
-                                </div>
-                            )}
+                    {/* Image Upload Card */}
+                    <section>
+                        <label className="mb-2 block text-[14px] font-extrabold text-[#19182B]">
+                            Hình ảnh đồng phục
+                        </label>
+                        <div className="rounded-[14px] border-[3px] border-[#19182B] bg-[#F2ECFF] p-3 shadow-[4px_4px_0_#19182B]">
+                            <div
+                                className="relative flex min-h-[200px] items-center justify-center rounded-[10px] border-[2px] border-dashed border-[#8B6BFF] bg-white/70 px-4 py-6 cursor-pointer"
+                                onClick={() => fileInputRef.current?.click()}
+                                onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                                onDrop={(e) => {
+                                    e.preventDefault(); e.stopPropagation();
+                                    const f = e.dataTransfer.files?.[0];
+                                    if (f) handleFileChange(f);
+                                }}
+                            >
+                                <input
+                                    ref={fileInputRef}
+                                    type="file"
+                                    accept="image/jpeg,image/png,image/webp"
+                                    className="hidden"
+                                    onChange={(e) => handleFileChange(e.target.files?.[0] || null)}
+                                />
+
+                                {imagePreview ? (
+                                    <>
+                                        <button
+                                            type="button"
+                                            onClick={(e) => { e.stopPropagation(); setImageFile(null); setImagePreview(null); setForm((f) => ({ ...f, mainImageURL: "" })); }}
+                                            className="absolute right-3 top-3 flex h-10 w-10 items-center justify-center rounded-full border-[2px] border-[#19182B] bg-white text-[#6F6A7D] shadow-[2px_2px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#19182B] hover:text-[#FF6B57] z-10"
+                                        >
+                                            ×
+                                        </button>
+                                        <img src={imagePreview} alt="Preview" className="h-[180px] w-[180px] rounded-[10px] border-[2px] border-[#19182B] object-cover shadow-[3px_3px_0_#19182B]" />
+                                    </>
+                                ) : (
+                                    <div className="flex flex-col items-center gap-3 text-center">
+                                        <div className="flex h-12 w-12 items-center justify-center rounded-[10px] border-[2px] border-[#19182B] bg-white shadow-[3px_3px_0_#19182B]">
+                                            <svg className="w-6 h-6 text-[#8B6BFF]" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z" />
+                                            </svg>
+                                        </div>
+                                        <p className="text-[14px] font-extrabold text-[#19182B]">
+                                            Kéo thả hoặc nhấn để chọn ảnh
+                                        </p>
+                                        <p className="text-[13px] font-bold text-[#6F6A7D]">
+                                            JPG, PNG tối đa 5MB. Ảnh sản phẩm nên có nền sáng, rõ mặt trước
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                         {uploadError && (
-                            <p className="font-medium text-red-500 text-xs mt-1.5">{uploadError}</p>
+                            <p className="mt-2 text-[13px] font-bold text-[#FF6B57]">{uploadError}</p>
                         )}
-                    </div>
+                    </section>
 
-                    {/* Name */}
-                    <div>
-                        <label className={labelClass}>Tên đồng phục <span className="text-red-500">*</span></label>
-                        <input
-                            type="text"
-                            value={form.outfitName}
-                            onChange={(e) => setForm((f) => ({ ...f, outfitName: e.target.value }))}
-                            placeholder="VD: Áo sơ mi Nam"
-                            className={inputClass}
-                            required
-                        />
-                    </div>
+                    {/* Fields Grid */}
+                    <section className="grid gap-5 md:grid-cols-2">
+                        {/* Name — full width */}
+                        <div className="md:col-span-2">
+                            <label className="mb-2 block text-[14px] font-extrabold text-[#19182B]">
+                                Tên đồng phục <span className="ml-1 text-[#FF6B57]">*</span>
+                            </label>
+                            <input
+                                type="text"
+                                value={form.outfitName}
+                                onChange={(e) => setForm((f) => ({ ...f, outfitName: e.target.value }))}
+                                placeholder="VD: Áo sơ mi Nam"
+                                className={brutalInputClass}
+                                required
+                            />
+                        </div>
 
-                    {/* Description */}
-                    <div>
-                        <label className={labelClass}>Mô tả</label>
-                        <textarea
-                            value={form.description}
-                            onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-                            placeholder="VD: Vải cotton thoáng mát, form dáng chuẩn"
-                            rows={3}
-                            className={inputClass + " resize-none"}
-                        />
-                    </div>
+                        {/* Description — full width */}
+                        <div className="md:col-span-2">
+                            <label className="mb-2 block text-[14px] font-extrabold text-[#19182B]">
+                                Mô tả
+                            </label>
+                            <textarea
+                                value={form.description}
+                                onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
+                                placeholder="VD: Vải cotton thoáng mát, form dáng chuẩn"
+                                rows={3}
+                                className={`min-h-[96px] resize-none ${brutalInputClass}`}
+                            />
+                        </div>
 
-                    {/* Price + Type */}
-                    <div className="grid grid-cols-2 gap-4">
+                        {/* Price */}
                         <div>
-                            <label className={labelClass}>Giá (VND) <span className="text-red-500">*</span></label>
+                            <label className="mb-2 block text-[14px] font-extrabold text-[#19182B]">
+                                Giá (VND) <span className="ml-1 text-[#FF6B57]">*</span>
+                            </label>
                             <input
                                 type="number"
                                 value={form.price}
                                 onChange={(e) => setForm((f) => ({ ...f, price: e.target.value }))}
                                 placeholder="VD: 250000"
-                                className={inputClass}
+                                className={brutalInputClass}
                                 min="0"
                                 step="1000"
                                 required
                             />
                         </div>
+
+                        {/* Type */}
                         <div>
-                            <label className={labelClass}>Loại</label>
+                            <label className="mb-2 block text-[14px] font-extrabold text-[#19182B]">
+                                Loại
+                            </label>
                             <select
                                 value={form.outfitType}
                                 onChange={(e) => setForm((f) => ({ ...f, outfitType: parseInt(e.target.value) }))}
-                                className={inputClass}
+                                className={brutalInputClass}
                             >
                                 {OUTFIT_TYPE_OPTIONS.map((opt) => (
                                     <option key={opt.value} value={opt.value}>
@@ -259,24 +287,39 @@ function OutfitFormModal({
                                 ))}
                             </select>
                         </div>
-                    </div>
-
-                    {/* Actions */}
-                    <div className="flex justify-end gap-3 pt-3 border-t-2 border-[#E5E7EB]">
-                        <button type="button" onClick={onClose} className="nb-btn-outline px-5 py-2.5 text-sm">Hủy</button>
-                        <button type="submit" disabled={isLoading || !form.outfitName.trim()} className="nb-btn nb-btn-purple px-5 py-2.5 text-sm disabled:opacity-50">
-                            {isLoading && <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" strokeOpacity="0.25" /><path d="M4 12a8 8 0 018-8" strokeLinecap="round" /></svg>}
-                            {isEditing ? "Lưu thay đổi" : "Tạo đồng phục"}
-                        </button>
-                    </div>
+                    </section>
                 </form>
+
+                {/* ── Footer ── */}
+                <div className="flex flex-col-reverse gap-3 border-t-[3px] border-[#19182B] bg-[#FFFDF9] px-6 py-5 sm:flex-row sm:justify-end">
+                    <button
+                        type="button"
+                        onClick={onClose}
+                        className="rounded-[8px] border-[3px] border-[#19182B] bg-white px-5 py-3 text-[15px] font-extrabold text-[#19182B] shadow-[4px_4px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+                    >
+                        Huỷ
+                    </button>
+                    <button
+                        onClick={handleSubmit}
+                        disabled={isLoading || !form.outfitName.trim()}
+                        className="flex items-center justify-center gap-2 rounded-[8px] border-[3px] border-[#19182B] bg-[#8B6BFF] px-5 py-3 text-[15px] font-extrabold text-white shadow-[4px_4px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        {isLoading && (
+                            <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <circle cx="12" cy="12" r="10" strokeOpacity="0.25" />
+                                <path d="M4 12a8 8 0 018-8" strokeLinecap="round" />
+                            </svg>
+                        )}
+                        {isEditing ? "Lưu thay đổi" : "Tạo đồng phục"}
+                    </button>
+                </div>
             </div>
         </div>
     );
 }
 
 /* ────────────────────────────────────────────────────────────────────── */
-/* Delete Confirm Dialog                                                  */
+/* Delete Confirm Dialog — Neubrutalism Concept                           */
 /* ────────────────────────────────────────────────────────────────────── */
 function DeleteConfirmDialog({
     isOpen, onClose, onConfirm, outfitName, isLoading,
@@ -287,17 +330,38 @@ function DeleteConfirmDialog({
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
             <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-            <div className="relative bg-white rounded-md w-full max-w-[420px] mx-4 border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E]">
-                <div className="px-6 py-6 text-center">
-                    <div className="w-14 h-14 rounded-full bg-[#FEE2E2] flex items-center justify-center mx-auto mb-4 border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E]">
-                        <svg className="w-7 h-7 text-[#EF4444]" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" /></svg>
+            <div className="relative w-full max-w-[420px] mx-4 rounded-[18px] border-[3px] border-[#19182B] bg-white shadow-[6px_6px_0_#19182B] overflow-hidden">
+                {/* Delete header */}
+                <div className="border-b-[3px] border-[#19182B] bg-[#FEE2E2] px-6 py-4">
+                    <div className="flex items-center gap-3">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-[8px] border-[2px] border-[#19182B] bg-white shadow-[2px_2px_0_#19182B] text-lg">
+                            🗑️
+                        </div>
+                        <h3 className="text-[18px] font-black text-[#19182B]">Xóa đồng phục?</h3>
                     </div>
-                    <h3 className="font-extrabold text-[#1a1a2e] text-lg mb-2">Xóa đồng phục?</h3>
-                    <p className="font-medium text-[#4c5769] text-sm mb-6">Bạn có chắc muốn xóa <strong>"{outfitName}"</strong>? Hành động này không thể hoàn tác.</p>
-                    <div className="flex justify-center gap-3">
-                        <button onClick={onClose} className="nb-btn-outline px-5 py-2.5 text-sm">Hủy</button>
-                        <button onClick={onConfirm} disabled={isLoading} className="nb-btn nb-btn-red px-5 py-2.5 text-sm disabled:opacity-50">
-                            {isLoading && <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" strokeOpacity="0.25" /><path d="M4 12a8 8 0 018-8" strokeLinecap="round" /></svg>}
+                </div>
+                <div className="px-6 py-5">
+                    <p className="font-semibold text-[#6F6A7D] text-[15px] mb-5">
+                        Bạn có chắc muốn xóa <strong className="text-[#19182B]">"{outfitName}"</strong>? Hành động này không thể hoàn tác.
+                    </p>
+                    <div className="flex justify-end gap-3">
+                        <button
+                            onClick={onClose}
+                            className="rounded-[8px] border-[3px] border-[#19182B] bg-white px-5 py-3 text-[15px] font-extrabold text-[#19182B] shadow-[4px_4px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+                        >
+                            Hủy
+                        </button>
+                        <button
+                            onClick={onConfirm}
+                            disabled={isLoading}
+                            className="flex items-center gap-2 rounded-[8px] border-[3px] border-[#19182B] bg-[#FF6B57] px-5 py-3 text-[15px] font-extrabold text-white shadow-[4px_4px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            {isLoading && (
+                                <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <circle cx="12" cy="12" r="10" strokeOpacity="0.25" />
+                                    <path d="M4 12a8 8 0 018-8" strokeLinecap="round" />
+                                </svg>
+                            )}
                             Xóa
                         </button>
                     </div>
@@ -623,9 +687,9 @@ export const UniformManagement = (): JSX.Element => {
 
             {/* Toast */}
             {toast && (
-                <div className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-3.5 rounded-md border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E] animate-in slide-in-from-bottom-4 duration-300 font-bold text-sm ${toast.type === "success" ? "bg-[#10b981] text-white" : "bg-[#ef4444] text-white"}`}>
+                <div className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-3.5 rounded-[10px] border-[3px] border-[#19182B] shadow-[4px_4px_0_#19182B] animate-in slide-in-from-bottom-4 duration-300 ${toast.type === "success" ? "bg-[#10b981] text-white" : "bg-[#FF6B57] text-white"}`}>
                     {toast.type === "success" ? "✅" : "❌"}
-                    <span>{toast.message}</span>
+                    <span className="font-extrabold text-[15px]">{toast.message}</span>
                 </div>
             )}
 
