@@ -12,14 +12,15 @@ import {
 import { DashboardSidebar } from "../../components/layout";
 import { TopNavBar } from "../../components/layout/TopNavBar";
 import { useSidebarConfig } from "../../hooks/useSidebarConfig";
-import { Button } from "../../components/ui/button";
 import {
     downloadImportTemplate,
     importStudents,
     getSchoolProfile,
     getImportHistory,
+    getImportStatus,
     type ImportStudentResult,
     type ImportBatchDto,
+    type ImportStatusDto,
 } from "../../lib/api/schools";
 import { ApiError } from "../../lib/api/clients";
 import { useEffect } from "react";
@@ -55,7 +56,10 @@ export const ImportData = (): JSX.Element => {
     const [importHistory, setImportHistory] = useState<ImportBatchDto[]>([]);
     const historySectionRef = useRef<HTMLDivElement>(null);
 
-    /* ── Load school name + import history ── */
+    /* ── Import status state (dynamic banner) ── */
+    const [importStatus, setImportStatus] = useState<ImportStatusDto | null>(null);
+
+    /* ── Load school name + import history + import status ── */
     const fetchHistory = useCallback(async () => {
         try {
             const data = await getImportHistory(10);
@@ -68,6 +72,9 @@ export const ImportData = (): JSX.Element => {
             .then((p) => setSchoolName(p.schoolName || ""))
             .catch(() => {});
         fetchHistory();
+        getImportStatus()
+            .then(setImportStatus)
+            .catch(() => {});
     }, [fetchHistory]);
 
     /* ── Handlers ── */
@@ -94,12 +101,12 @@ export const ImportData = (): JSX.Element => {
 
     const handleFileSelect = useCallback((file: File) => {
         const ext = file.name.split(".").pop()?.toLowerCase();
-        if (ext !== "xlsx" && ext !== "csv") {
-            setError("Chỉ hỗ trợ file .xlsx hoặc .csv.");
+        if (ext !== "xlsx") {
+            setError("Chỉ hỗ trợ file .xlsx (Excel).");
             return;
         }
-        if (file.size > 5 * 1024 * 1024) {
-            setError("File quá lớn. Kích thước tối đa là 5MB.");
+        if (file.size > 20 * 1024 * 1024) {
+            setError("File quá lớn. Kích thước tối đa là 20MB.");
             return;
         }
         setSelectedFile(file);
@@ -127,8 +134,9 @@ export const ImportData = (): JSX.Element => {
             setResult(res);
             setSelectedFile(null);
             if (fileInputRef.current) fileInputRef.current.value = "";
-            // Refresh import history after successful import
+            // Refresh import history + status after successful import
             fetchHistory();
+            getImportStatus().then(setImportStatus).catch(() => {});
         } catch (err) {
             if (err instanceof ApiError) {
                 setError(err.message);
@@ -139,6 +147,13 @@ export const ImportData = (): JSX.Element => {
             setUploading(false);
         }
     };
+
+    /* ── NB step data ── */
+    const steps = [
+        { step: 1, title: "Tải mẫu chuẩn", desc: "Tải file mẫu Excel (.xlsx) chuẩn định dạng của hệ thống để tránh lỗi cột dữ liệu.", bg: "#E9E1FF", shadow: "3px_3px_0_#19182B" },
+        { step: 2, title: "Điền thông tin", desc: "Nhập dữ liệu học sinh vào file mẫu. Không thay đổi tiêu đề cột hoặc cấu trúc có sẵn.", bg: "#DCEBFF", shadow: "3px_3px_0_#19182B" },
+        { step: 3, title: "Tải lên hệ thống", desc: "Kéo thả file đã điền đầy đủ thông tin để bắt đầu nhập dữ liệu vào hệ thống.", bg: "#D9F8E8", shadow: "5px_5px_0_#19182B" },
+    ];
 
     /* ── Render ── */
     return (
@@ -192,92 +207,76 @@ export const ImportData = (): JSX.Element => {
                         {/* ── Page header ── */}
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                             <div>
-                                <h1 className="font-bold text-black text-[28px] lg:text-[32px] leading-[1.22]">
+                                <h1 className="font-black text-[#19182B] text-[28px] lg:text-[32px] leading-[1.22]">
                                     Nhập dữ liệu học sinh
                                 </h1>
-                                <p className="mt-1 font-medium text-[#4c5769] text-sm lg:text-base">
+                                <p className="mt-1.5 font-semibold text-[#6F6A7D] text-sm lg:text-[15px]">
                                     Cập nhật danh sách học sinh đầu kỳ để kích hoạt tính năng thử đồ ảo và đặt mua đồng phục.
                                 </p>
                             </div>
-                            <Button
-                                variant="outline"
-                                className="bg-white shadow-[0_1px_3px_rgba(0,0,0,0.08)] border-[#cbcad7] rounded-[10px] font-semibold text-black text-sm gap-2 px-4 py-2.5 h-auto whitespace-nowrap"
+                            <button
+                                type="button"
                                 onClick={() => historySectionRef.current?.scrollIntoView({ behavior: "smooth" })}
+                                className="flex items-center gap-2 rounded-[10px] border-[2px] border-[#19182B] bg-white px-4 py-2.5 text-[13px] font-extrabold text-[#19182B] shadow-[3px_3px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] whitespace-nowrap"
                             >
                                 <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
                                     <path d="M13 3a9 9 0 0 0-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42A8.954 8.954 0 0 0 13 21a9 9 0 0 0 0-18zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z" />
                                 </svg>
                                 Lịch sử tải lên
-                            </Button>
+                            </button>
                         </div>
 
-                        {/* ── Announcement card ── */}
-                        <div className="bg-[#FFF8E1] border border-[#FFE082] rounded-[10px] p-5 flex gap-4">
-                            <div className="flex-shrink-0 w-10 h-10 bg-[#FFD54F] rounded-[10px] flex items-center justify-center">
-                                <svg className="w-6 h-6 text-[#E65100]" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M18 11v2h4v-2h-4zm-2 6.61c.96.71 2.21 1.65 3.2 2.39.4-.53.8-1.07 1.2-1.6-.99-.74-2.24-1.68-3.2-2.4-.4.54-.8 1.07-1.2 1.61zM20.4 5.6c-.4-.53-.8-1.07-1.2-1.6-.99.74-2.24 1.68-3.2 2.4.4.53.8 1.07 1.2 1.6.96-.72 2.21-1.65 3.2-2.4zM4 9c-1.1 0-2 .9-2 2v2c0 1.1.9 2 2 2h1l5 3V6L5 9H4zm5.03-1.71L8 8.15V9h-.17L5.03 7.29zm0 9.42L5.86 15H5v-.85l-1.97-1.15V15l4 2.71zM11.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
-                                </svg>
-                            </div>
-                            <div className="flex-1">
-                                <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                                    <h3 className="font-bold text-black text-base">
-                                        Cần cập nhật: Dữ liệu Học kỳ 1 (2026-2027)
-                                    </h3>
-                                    <span className="px-2.5 py-0.5 bg-[#FFF3E0] border border-[#FFB74D] rounded-[5px] font-semibold text-[#E65100] text-xs">
-                                        Chưa nhập liệu
-                                    </span>
-                                </div>
-                                <p className="font-medium text-[#5D4037] text-sm leading-relaxed mb-2">
-                                    Hệ thống chưa ghi nhận danh sách học sinh cho học kỳ mới. Nhà trường vui lòng cập nhật sớm để
-                                    đảm bảo học sinh có thể truy cập Phòng thử ảo và đặt mua đồng phục đúng hạn.
-                                </p>
-                                <div className="flex items-center gap-2 bg-[#FFECB3] rounded-[10px] px-3 py-1.5 w-fit">
-                                    <svg className="w-5 h-5 text-[#E65100]" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm4-7h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z" />
+                        {/* ── Announcement card (dynamic) ── */}
+                        {importStatus?.needsUpdate && (
+                            <div className="rounded-[14px] border-[2px] border-[#19182B] bg-[#FFF1BF] p-5 shadow-[4px_4px_0_#19182B] flex gap-4">
+                                <div className="flex-shrink-0 w-11 h-11 rounded-[10px] border-[3px] border-[#19182B] bg-[#FFE082] shadow-[3px_3px_0_#19182B] flex items-center justify-center">
+                                    <svg className="w-6 h-6 text-[#E65100]" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M18 11v2h4v-2h-4zm-2 6.61c.96.71 2.21 1.65 3.2 2.39.4-.53.8-1.07 1.2-1.6-.99-.74-2.24-1.68-3.2-2.4-.4.54-.8 1.07-1.2 1.61zM20.4 5.6c-.4-.53-.8-1.07-1.2-1.6-.99.74-2.24 1.68-3.2 2.4.4.53.8 1.07 1.2 1.6.96-.72 2.21-1.65 3.2-2.4zM4 9c-1.1 0-2 .9-2 2v2c0 1.1.9 2 2 2h1l5 3V6L5 9H4zm5.03-1.71L8 8.15V9h-.17L5.03 7.29zm0 9.42L5.86 15H5v-.85l-1.97-1.15V15l4 2.71zM11.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
                                     </svg>
-                                    <span className="font-semibold text-[#BF360C] text-sm">
-                                        Hạn chót đề xuất: 30/08/2026
+                                </div>
+                                <div className="flex-1">
+                                    <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                                        <h3 className="font-black text-[#19182B] text-base">
+                                            Cần cập nhật: Dữ liệu {importStatus.currentSemester}
+                                        </h3>
+                                        <span className="rounded-full border-[2px] border-[#19182B] bg-[#FFECEA] px-2.5 py-0.5 text-[11px] font-extrabold text-[#D32F2F] shadow-[2px_2px_0_#19182B]">
+                                            Chưa nhập liệu
+                                        </span>
+                                    </div>
+                                    <p className="font-semibold text-[#5D4037] text-sm leading-relaxed mb-2.5">
+                                        Hệ thống chưa ghi nhận danh sách học sinh cho học kỳ mới. Nhà trường vui lòng cập nhật sớm để
+                                        đảm bảo học sinh có thể truy cập Phòng thử ảo và đặt mua đồng phục đúng hạn.
+                                    </p>
+                                    <span className="inline-flex items-center gap-2 rounded-full border-[2px] border-[#19182B] bg-[#FFECB3] px-3 py-1 shadow-[2px_2px_0_#19182B]">
+                                        <svg className="w-4 h-4 text-[#E65100]" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm4-7h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z" />
+                                        </svg>
+                                        <span className="font-extrabold text-[#BF360C] text-[12px]">
+                                            Hạn chót đề xuất: {importStatus.suggestedDeadline}
+                                        </span>
                                     </span>
                                 </div>
                             </div>
-                        </div>
+                        )}
 
                         {/* ── 3-Step instructions ── */}
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            {[
-                                {
-                                    step: 1,
-                                    title: "Tải mẫu chuẩn",
-                                    desc: "Tải file mẫu Excel (.xlsx) chuẩn định dạng của hệ thống.",
-                                    color: "#6938ef",
-                                },
-                                {
-                                    step: 2,
-                                    title: "Điền thông tin",
-                                    desc: "Nhập dữ liệu vào file mẫu. Không thay đổi tiêu đề cột.",
-                                    color: "#478aea",
-                                },
-                                {
-                                    step: 3,
-                                    title: "Tải lên hệ thống",
-                                    desc: "Kéo thả file đã điền đầy đủ thông tin để nhập liệu.",
-                                    color: "#10b981",
-                                },
-                            ].map(({ step, title, desc, color }) => (
+                            {steps.map(({ step, title, desc, bg, shadow }) => (
                                 <div
                                     key={step}
-                                    className="bg-white rounded-[10px] shadow-[0_1px_3px_rgba(0,0,0,0.08)] p-5 flex flex-col items-start gap-3"
+                                    className={`rounded-[14px] border-[2px] border-[#19182B] p-5 flex flex-col items-start gap-3 transition-all ${step === 3 ? "bg-[#D9F8E8]/30 border-[3px] ring-2 ring-[#10b981]/20" : "bg-white"}`}
+                                    style={{ boxShadow: `${shadow.replace(/_/g, ' ')}` }}
                                 >
                                     <div
-                                        className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-lg"
-                                        style={{ backgroundColor: color }}
+                                        className={`w-10 h-10 rounded-full border-[3px] border-[#19182B] flex items-center justify-center font-black text-[#19182B] text-lg shadow-[2px_2px_0_#19182B] ${step === 3 ? "scale-110" : ""}`}
+                                        style={{ backgroundColor: bg }}
                                     >
                                         {step}
                                     </div>
-                                    <h3 className="font-bold text-black text-base">
+                                    <h3 className="font-black text-[#19182B] text-base">
                                         {title}
                                     </h3>
-                                    <p className="font-medium text-[#4c5769] text-sm leading-relaxed">
+                                    <p className="font-semibold text-[#6F6A7D] text-sm leading-relaxed">
                                         {desc}
                                     </p>
                                 </div>
@@ -289,41 +288,51 @@ export const ImportData = (): JSX.Element => {
                             {/* Left column */}
                             <div className="space-y-6">
                                 {/* Template download card */}
-                                <div className="bg-white rounded-[10px] shadow-[0_1px_3px_rgba(0,0,0,0.08)] p-5 space-y-3">
+                                <div className="rounded-[14px] border-[2px] border-[#19182B] bg-white p-5 shadow-[4px_4px_0_#19182B] space-y-3">
                                     <div className="flex items-center gap-3">
-                                        <svg className="w-8 h-8 text-[#478aea]" viewBox="0 0 24 24" fill="currentColor">
-                                            <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zM6 20V4h7v5h5v11H6z" />
-                                        </svg>
-                                        <h3 className="font-bold text-black text-base">
+                                        <div className="flex h-10 w-10 items-center justify-center rounded-[10px] border-[3px] border-[#19182B] bg-[#DCEBFF] shadow-[3px_3px_0_#19182B]">
+                                            <svg className="w-5 h-5 text-[#478aea]" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zM6 20V4h7v5h5v11H6z" />
+                                            </svg>
+                                        </div>
+                                        <h3 className="font-black text-[#19182B] text-base">
                                             File mẫu nhập liệu
                                         </h3>
                                     </div>
-                                    <p className="font-medium text-[#4c5769] text-sm leading-relaxed">
+                                    <p className="font-semibold text-[#6F6A7D] text-sm leading-relaxed">
                                         Vui lòng sử dụng file mẫu mới nhất để tránh lỗi định dạng khi tải lên.
                                         File mẫu bao gồm các cột: Họ và tên, Ngày sinh, Lớp, Giới tính, Số điện thoại phụ huynh.
                                     </p>
-                                    <Button
+                                    <button
+                                        type="button"
                                         onClick={handleDownloadTemplate}
                                         disabled={downloadingTemplate}
-                                        className="bg-[#6938ef] hover:bg-[#5a2dd6] text-white rounded-[10px] font-semibold text-sm gap-2 px-4 py-2.5 h-auto w-full"
+                                        className="w-full flex items-center justify-center gap-2 rounded-[10px] border-[2px] border-[#19182B] bg-white px-4 py-3 text-[14px] font-extrabold text-[#19182B] shadow-[2px_2px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#19182B] disabled:opacity-60 disabled:cursor-not-allowed"
                                     >
                                         <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
                                             <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
                                         </svg>
                                         {downloadingTemplate ? "Đang tải..." : "Tải xuống mẫu Excel chuẩn"}
-                                    </Button>
+                                    </button>
                                 </div>
 
                                 {/* Important notes card */}
-                                <div className="bg-[#F0F4FF] border border-[#B3C6FF] rounded-[10px] shadow-[0_1px_3px_rgba(0,0,0,0.08)] p-5 space-y-3">
-                                    <h3 className="font-bold text-black text-base">
-                                        Lưu ý quan trọng
-                                    </h3>
+                                <div className="rounded-[14px] border-[2px] border-[#19182B] bg-[#DCEBFF] p-5 shadow-[3px_3px_0_#19182B] space-y-3">
+                                    <div className="flex items-center gap-3">
+                                        <div className="flex h-9 w-9 items-center justify-center rounded-[10px] border-[2px] border-[#19182B] bg-[#D9F8E8] shadow-[2px_2px_0_#19182B]">
+                                            <svg className="w-5 h-5 text-[#10b981]" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+                                            </svg>
+                                        </div>
+                                        <h3 className="font-black text-[#19182B] text-base">
+                                            Lưu ý quan trọng
+                                        </h3>
+                                    </div>
                                     <ul className="space-y-2.5">
                                         {[
                                             "Mã học sinh phải là duy nhất trong toàn trường.",
-                                            "Định dạng ngày sinh phải là dd/mm/yyyy (Ví dụ: 15/05/2008).",
-                                            "Tên Lớp phải trùng khớp với danh sách lớp đã tạo trên hệ thống.",
+                                            "Định dạng ngày sinh phải là dd/mm/yyyy, ví dụ: 15/05/2008.",
+                                            "Tên lớp phải trùng khớp với danh sách lớp đã tạo trên hệ thống.",
                                         ].map((note, i) => (
                                             <li key={i} className="flex items-start gap-2.5">
                                                 <svg
@@ -333,7 +342,7 @@ export const ImportData = (): JSX.Element => {
                                                 >
                                                     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
                                                 </svg>
-                                                <span className="font-medium text-[#374151] text-sm leading-relaxed">
+                                                <span className="font-semibold text-[#19182B] text-sm leading-relaxed">
                                                     {note}
                                                 </span>
                                             </li>
@@ -343,17 +352,17 @@ export const ImportData = (): JSX.Element => {
                             </div>
 
                             {/* Right column: Upload zone */}
-                            <div className="bg-white rounded-[10px] shadow-[0_1px_3px_rgba(0,0,0,0.08)] p-5 space-y-4">
+                            <div className="rounded-[14px] border-[3px] border-[#19182B] bg-white p-5 shadow-[5px_5px_0_#19182B] space-y-4">
                                 <div className="flex items-center justify-between">
-                                    <h3 className="font-bold text-black text-base">
+                                    <h3 className="font-black text-[#19182B] text-lg">
                                         Tải lên dữ liệu
                                     </h3>
-                                    <span className="px-2.5 py-1 bg-[#EBF5FF] border border-[#90CAF9] rounded-[5px] font-semibold text-[#1565C0] text-xs">
+                                    <span className="rounded-full border-[2px] border-[#19182B] bg-[#DCEBFF] px-2.5 py-0.5 text-[11px] font-extrabold text-[#19182B] shadow-[2px_2px_0_#19182B]">
                                         Kỳ học mới
                                     </span>
                                 </div>
 
-                                {/* Drag-drop zone */}
+                                {/* Drag-drop zone — SOLID border, strong shadow */}
                                 <div
                                     onDragOver={(e) => {
                                         e.preventDefault();
@@ -362,42 +371,46 @@ export const ImportData = (): JSX.Element => {
                                     onDragLeave={() => setDragover(false)}
                                     onDrop={handleDrop}
                                     onClick={() => fileInputRef.current?.click()}
-                                    className={`border-2 border-dashed rounded-[10px] px-6 py-10 flex flex-col items-center justify-center gap-3 cursor-pointer transition-colors ${
+                                    className={`rounded-[14px] border-[3px] border-solid px-6 py-12 flex flex-col items-center justify-center gap-4 cursor-pointer transition-all ${
                                         dragover
-                                            ? "border-[#6938ef] bg-[#f5f0ff]"
-                                            : "border-[#cbcad7] hover:border-[#478aea] hover:bg-[#f8faff]"
+                                            ? "border-[#8B6BFF] bg-[#F2ECFF] shadow-[4px_4px_0_#8B6BFF]"
+                                            : "border-[#19182B] bg-white shadow-[5px_5px_0_#19182B] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[3px_3px_0_#19182B]"
                                     }`}
                                 >
-                                    <svg
-                                        className={`w-12 h-12 ${dragover ? "text-[#6938ef]" : "text-[#97a3b6]"}`}
-                                        viewBox="0 0 24 24"
-                                        fill="currentColor"
-                                    >
-                                        <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11zm-6-3.5l-4-4h2.5V10h3v2.5H16l-4 4z" />
-                                    </svg>
-                                    <p className="font-bold text-black text-base">
+                                    {/* Upload icon — bigger 40px */}
+                                    <div className="flex h-[72px] w-[72px] items-center justify-center rounded-[14px] border-[3px] border-[#19182B] bg-[#E9E1FF] shadow-[4px_4px_0_#19182B]">
+                                        <svg
+                                            className={`w-10 h-10 ${dragover ? "text-[#8B6BFF]" : "text-[#7C3AED]"}`}
+                                            viewBox="0 0 24 24"
+                                            fill="currentColor"
+                                        >
+                                            <path d="M9 16h6v-6h4l-7-7-7 7h4v6zm-4 2h14v2H5v-2z" />
+                                        </svg>
+                                    </div>
+                                    <p className="font-black text-[#19182B] text-[17px]">
                                         Kéo thả file vào đây
                                     </p>
-                                    <p className="font-medium text-[#4c5769] text-xs">
-                                        Hoặc nhấn vào để chọn file từ máy tính
+                                    <p className="font-semibold text-[#6F6A7D] text-[13px] text-center max-w-sm">
+                                        Hoặc nhấn nút bên dưới để chọn file từ máy tính
                                     </p>
-                                    <p className="font-medium text-[#97a3b6] text-xs">
-                                        Kích thước tối đa: 5MB
-                                    </p>
-                                    <Button
+                                    {/* CTA: purple primary */}
+                                    <button
                                         type="button"
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             fileInputRef.current?.click();
                                         }}
-                                        className="bg-[#4ca2e6] hover:bg-[#3b8fd0] text-white rounded-[10px] font-semibold text-sm px-5 py-2 h-auto shadow-[0_2px_6px_rgba(76,162,230,0.3)]"
+                                        className="rounded-[10px] border-[3px] border-[#19182B] bg-[#8B6BFF] px-6 py-3 text-[14px] font-extrabold text-white shadow-[4px_4px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B]"
                                     >
-                                        Chọn file (.xlsx, .csv)
-                                    </Button>
+                                        Chọn file Excel (.xlsx)
+                                    </button>
+                                    <span className="rounded-[8px] border-[2px] border-[#19182B]/30 bg-[#F6F1E8] px-3 py-1.5 text-[11px] font-bold text-[#8D879B]">
+                                        Định dạng Excel (.xlsx) — tối đa 20MB
+                                    </span>
                                     <input
                                         ref={fileInputRef}
                                         type="file"
-                                        accept=".xlsx,.csv"
+                                        accept=".xlsx"
                                         className="hidden"
                                         onChange={(e) => {
                                             const f = e.target.files?.[0];
@@ -408,16 +421,18 @@ export const ImportData = (): JSX.Element => {
 
                                 {/* Selected file display */}
                                 {selectedFile && (
-                                    <div className="flex items-center justify-between bg-[#f8faff] border border-[#cbcad7] rounded-[10px] px-4 py-3">
+                                    <div className="flex items-center justify-between rounded-[10px] border-[2px] border-[#19182B] bg-[#F6F1E8] px-4 py-3 shadow-[2px_2px_0_#19182B]">
                                         <div className="flex items-center gap-3">
-                                            <svg className="w-8 h-8 text-[#478aea]" viewBox="0 0 24 24" fill="currentColor">
-                                                <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zM6 20V4h7v5h5v11H6z" />
-                                            </svg>
+                                            <div className="flex h-9 w-9 items-center justify-center rounded-[8px] border-[2px] border-[#19182B] bg-[#DCEBFF] shadow-[2px_2px_0_#19182B]">
+                                                <svg className="w-5 h-5 text-[#478aea]" viewBox="0 0 24 24" fill="currentColor">
+                                                    <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zM6 20V4h7v5h5v11H6z" />
+                                                </svg>
+                                            </div>
                                             <div>
-                                                <p className="font-semibold text-black text-sm">
+                                                <p className="font-extrabold text-[#19182B] text-sm">
                                                     {selectedFile.name}
                                                 </p>
-                                                <p className="font-medium text-[#97a3b6] text-xs">
+                                                <p className="font-semibold text-[#8D879B] text-xs">
                                                     {(selectedFile.size / 1024).toFixed(1)} KB
                                                 </p>
                                             </div>
@@ -427,9 +442,9 @@ export const ImportData = (): JSX.Element => {
                                                 setSelectedFile(null);
                                                 if (fileInputRef.current) fileInputRef.current.value = "";
                                             }}
-                                            className="text-[#97a3b6] hover:text-red-500 transition-colors"
+                                            className="flex h-8 w-8 items-center justify-center rounded-[8px] border-[2px] border-[#19182B] bg-white shadow-[2px_2px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#19182B]"
                                         >
-                                            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                                            <svg className="w-4 h-4 text-[#19182B]" viewBox="0 0 24 24" fill="currentColor">
                                                 <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z" />
                                             </svg>
                                         </button>
@@ -438,10 +453,11 @@ export const ImportData = (): JSX.Element => {
 
                                 {/* Upload button */}
                                 {selectedFile && (
-                                    <Button
+                                    <button
+                                        type="button"
                                         onClick={handleUpload}
                                         disabled={uploading}
-                                        className="w-full bg-[#10b981] hover:bg-[#059669] text-white rounded-[10px] font-bold text-base py-3 h-auto shadow-[0_2px_8px_rgba(16,185,129,0.3)]"
+                                        className="w-full flex items-center justify-center gap-2 rounded-[10px] border-[3px] border-[#19182B] bg-[#10b981] px-4 py-3 text-[14px] font-extrabold text-white shadow-[4px_4px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] disabled:opacity-60 disabled:cursor-not-allowed"
                                     >
                                         {uploading ? (
                                             <span className="flex items-center gap-2">
@@ -451,54 +467,47 @@ export const ImportData = (): JSX.Element => {
                                         ) : (
                                             "Tải lên và nhập liệu"
                                         )}
-                                    </Button>
+                                    </button>
                                 )}
                             </div>
                         </div>
 
                         {/* ── Error message ── */}
                         {error && (
-                            <div className="bg-red-50 border border-red-200 text-red-700 rounded-[10px] px-4 py-3 text-sm font-medium flex items-center gap-2">
-                                <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                            <div className="rounded-[10px] border-[2px] border-[#19182B] bg-[#FFECEA] p-3.5 shadow-[3px_3px_0_#19182B] flex items-center gap-2">
+                                <svg className="w-5 h-5 flex-shrink-0 text-[#D32F2F]" viewBox="0 0 24 24" fill="currentColor">
                                     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
                                 </svg>
-                                {error}
+                                <p className="font-bold text-[13px] text-[#D32F2F]">{error}</p>
                             </div>
                         )}
 
                         {/* ── Import result ── */}
                         {result && (
                             <div
-                                className={`rounded-[10px] px-5 py-4 border ${
-                                    result.errorCount > 0
-                                        ? "bg-[#FFF8E1] border-[#FFE082]"
-                                        : "bg-green-50 border-green-200"
+                                className={`rounded-[14px] border-[2px] border-[#19182B] p-5 shadow-[4px_4px_0_#19182B] ${
+                                    result.errorCount > 0 ? "bg-[#FFF1BF]" : "bg-[#D9F8E8]"
                                 }`}
                             >
-                                <h3 className="font-bold text-black text-base mb-3">
+                                <h3 className="font-black text-[#19182B] text-base mb-3">
                                     📊 Kết quả nhập liệu
                                 </h3>
                                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-3">
-                                    <div className="bg-white rounded-lg px-3 py-2 text-center">
-                                        <p className="font-bold text-[#478aea] text-xl">{result.totalRows}</p>
-                                        <p className="font-medium text-[#4c5769] text-xs">Tổng dòng</p>
-                                    </div>
-                                    <div className="bg-white rounded-lg px-3 py-2 text-center">
-                                        <p className="font-bold text-[#10b981] text-xl">{result.successCount}</p>
-                                        <p className="font-medium text-[#4c5769] text-xs">Thành công</p>
-                                    </div>
-                                    <div className="bg-white rounded-lg px-3 py-2 text-center">
-                                        <p className="font-bold text-[#f59e0b] text-xl">{result.skippedCount}</p>
-                                        <p className="font-medium text-[#4c5769] text-xs">Bỏ qua</p>
-                                    </div>
-                                    <div className="bg-white rounded-lg px-3 py-2 text-center">
-                                        <p className="font-bold text-red-500 text-xl">{result.errorCount}</p>
-                                        <p className="font-medium text-[#4c5769] text-xs">Lỗi</p>
-                                    </div>
+                                    {[
+                                        { label: "Tổng dòng", value: result.totalRows, color: "#478aea" },
+                                        { label: "Thành công", value: result.successCount, color: "#10b981" },
+                                        { label: "Bỏ qua", value: result.skippedCount, color: "#f59e0b" },
+                                        { label: "Lỗi", value: result.errorCount, color: "#D32F2F" },
+                                    ].map(({ label, value, color }) => (
+                                        <div key={label} className="rounded-[10px] border-[2px] border-[#19182B] bg-white px-3 py-2.5 text-center shadow-[2px_2px_0_#19182B]">
+                                            <p className="font-black text-xl" style={{ color }}>{value}</p>
+                                            <p className="font-semibold text-[#6F6A7D] text-xs">{label}</p>
+                                        </div>
+                                    ))}
                                 </div>
                                 {result.errors.length > 0 && (
-                                    <div className="bg-white rounded-lg border border-red-100 overflow-hidden">
-                                        <div className="grid grid-cols-[60px_1fr_2fr] px-4 py-2 bg-red-50 text-xs font-bold text-red-700">
+                                    <div className="rounded-[10px] border-[2px] border-[#19182B] bg-white overflow-hidden shadow-[2px_2px_0_#19182B]">
+                                        <div className="grid grid-cols-[60px_1fr_2fr] px-4 py-2 bg-[#FFECEA] text-xs font-black text-[#D32F2F] border-b-[2px] border-[#19182B]">
                                             <span>Dòng</span>
                                             <span>Tên HS</span>
                                             <span>Lỗi</span>
@@ -506,15 +515,15 @@ export const ImportData = (): JSX.Element => {
                                         {result.errors.slice(0, 10).map((e, i) => (
                                             <div
                                                 key={i}
-                                                className="grid grid-cols-[60px_1fr_2fr] px-4 py-2 text-sm border-t border-red-50"
+                                                className="grid grid-cols-[60px_1fr_2fr] px-4 py-2 text-sm border-b border-[#19182B]/10"
                                             >
-                                                <span className="font-semibold text-red-600">{e.rowNumber}</span>
-                                                <span className="text-[#4c5769]">{e.studentName || "—"}</span>
-                                                <span className="text-red-600">{e.errorMessage}</span>
+                                                <span className="font-extrabold text-[#D32F2F]">{e.rowNumber}</span>
+                                                <span className="font-semibold text-[#19182B]">{e.studentName || "—"}</span>
+                                                <span className="font-semibold text-[#D32F2F]">{e.errorMessage}</span>
                                             </div>
                                         ))}
                                         {result.errors.length > 10 && (
-                                            <p className="text-center text-xs text-[#97a3b6] py-2">
+                                            <p className="text-center text-xs font-semibold text-[#8D879B] py-2">
                                                 ... và {result.errors.length - 10} lỗi khác
                                             </p>
                                         )}
@@ -525,67 +534,75 @@ export const ImportData = (): JSX.Element => {
 
                         {/* ── Import history ── */}
                         <div className="space-y-4" ref={historySectionRef}>
-                            <h2 className="font-bold text-black text-xl">
+                            <h2 className="font-black text-[#19182B] text-xl">
                                 Lịch sử nhập liệu gần đây
                             </h2>
 
                             {importHistory.length === 0 ? (
-                                <div className="nb-card-static p-8 text-center">
-                                    <p className="font-medium text-[#97a3b6] text-sm">
-                                        Chưa có lịch sử nhập liệu nào.
+                                <div className="rounded-[14px] border-[2px] border-[#19182B] bg-white p-10 shadow-[3px_3px_0_#19182B] flex flex-col items-center gap-3">
+                                    <div className="flex h-16 w-16 items-center justify-center rounded-[14px] border-[3px] border-[#19182B] bg-[#F6F1E8] shadow-[3px_3px_0_#19182B]">
+                                        <svg className="w-8 h-8 text-[#CBCAD7]" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" />
+                                        </svg>
+                                    </div>
+                                    <p className="font-black text-[#19182B] text-base">
+                                        Chưa có lịch sử nhập liệu
                                     </p>
+                                    <p className="font-semibold text-[#8D879B] text-sm text-center max-w-xs">
+                                        Sau khi tải file thành công, bản ghi gần nhất sẽ xuất hiện tại đây.
+                                    </p>
+                                    <span className="rounded-[8px] border-[2px] border-[#19182B]/20 bg-[#F6F1E8] px-3 py-1 text-[11px] font-bold text-[#8D879B]">
+                                        💡 Bắt đầu bằng cách tải lên file mẫu đã điền thông tin
+                                    </span>
                                 </div>
                             ) : (
-                                <>
+                                <div className="rounded-[14px] border-[2px] border-[#19182B] bg-white overflow-hidden shadow-[4px_4px_0_#19182B]">
                                     {/* Table header */}
-                                    <div className="bg-slate-50 rounded-t-[10px] border border-[#cbcad7] overflow-hidden">
-                                        <div className="hidden sm:grid grid-cols-[3fr_2fr_2fr_1.5fr] px-6 lg:px-8 py-4">
-                                            {["Tên file", "Thời gian", "Trạng thái", "Chi tiết"].map((h) => (
-                                                <span
-                                                    key={h}
-                                                    className="font-bold text-[#4c5769] text-sm"
-                                                >
-                                                    {h}
-                                                </span>
-                                            ))}
-                                        </div>
+                                    <div className="hidden sm:grid grid-cols-[3fr_2fr_2fr_1.5fr] px-6 lg:px-8 py-4 bg-[#F6F1E8] border-b-[2px] border-[#19182B]">
+                                        {["Tên file", "Thời gian", "Trạng thái", "Chi tiết"].map((h) => (
+                                            <span key={h} className="font-black text-[#19182B] text-sm">
+                                                {h}
+                                            </span>
+                                        ))}
                                     </div>
 
                                     {/* Table rows */}
-                                    <div className="bg-white border-x border-[#cbcad7] divide-y divide-[#f0f0f5]">
+                                    <div className="divide-y divide-[#19182B]/10">
                                         {importHistory.map((row) => (
                                             <div
                                                 key={row.id}
                                                 className="grid grid-cols-1 sm:grid-cols-[3fr_2fr_2fr_1.5fr] px-6 lg:px-8 py-4 gap-2 sm:gap-0 items-center"
                                             >
                                                 <div className="flex items-center gap-2.5">
-                                                    <svg className="w-6 h-6 text-[#478aea] flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
-                                                        <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zM6 20V4h7v5h5v11H6z" />
-                                                    </svg>
-                                                    <span className="font-semibold text-black text-sm">
+                                                    <div className="flex h-8 w-8 items-center justify-center rounded-[8px] border-[2px] border-[#19182B] bg-[#DCEBFF] shadow-[2px_2px_0_#19182B] flex-shrink-0">
+                                                        <svg className="w-4 h-4 text-[#478aea]" viewBox="0 0 24 24" fill="currentColor">
+                                                            <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zM6 20V4h7v5h5v11H6z" />
+                                                        </svg>
+                                                    </div>
+                                                    <span className="font-extrabold text-[#19182B] text-sm">
                                                         {row.fileName}
                                                     </span>
                                                 </div>
-                                                <span className="font-medium text-[#4c5769] text-sm">
+                                                <span className="font-semibold text-[#6F6A7D] text-sm">
                                                     {formatDate(row.createdAt)}
                                                 </span>
                                                 <div>
                                                     <span
-                                                        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[5px] font-semibold text-xs ${
+                                                        className={`inline-flex items-center gap-1.5 rounded-full border-[2px] border-[#19182B] px-2.5 py-0.5 text-[11px] font-extrabold shadow-[2px_2px_0_#19182B] ${
                                                             row.status === "success"
-                                                                ? "bg-green-50 text-green-700"
-                                                                : "bg-red-50 text-red-600"
+                                                                ? "bg-[#D9F8E8] text-[#19182B]"
+                                                                : "bg-[#FFECEA] text-[#D32F2F]"
                                                         }`}
                                                     >
                                                         <span
                                                             className={`w-2 h-2 rounded-full ${
-                                                                row.status === "success" ? "bg-green-500" : "bg-red-500"
+                                                                row.status === "success" ? "bg-[#10b981]" : "bg-[#D32F2F]"
                                                             }`}
                                                         />
                                                         {row.status === "success" ? "Thành công" : "Có lỗi"}
                                                     </span>
                                                 </div>
-                                                <div className="font-medium text-[#4c5769] text-xs">
+                                                <div className="font-semibold text-[#6F6A7D] text-xs">
                                                     {row.successCount}/{row.totalRows} dòng
                                                     {row.skippedCount > 0 && ` (đã bỏ qua ${row.skippedCount})`}
                                                 </div>
@@ -594,12 +611,12 @@ export const ImportData = (): JSX.Element => {
                                     </div>
 
                                     {/* Table footer */}
-                                    <div className="bg-slate-50 rounded-b-[10px] border border-[#cbcad7] flex justify-center py-4">
-                                        <span className="font-medium text-[#97a3b6] text-sm">
+                                    <div className="border-t-[2px] border-[#19182B] bg-[#F6F1E8] flex justify-center py-3">
+                                        <span className="font-semibold text-[#8D879B] text-sm">
                                             Hiển thị {importHistory.length} bản ghi gần nhất
                                         </span>
                                     </div>
-                                </>
+                                </div>
                             )}
                         </div>
                     </main>

@@ -196,6 +196,22 @@ export async function getImportHistory(limit = 10): Promise<ImportBatchDto[]> {
         auth: true,
     });
 }
+
+export type ImportStatusDto = {
+    needsUpdate: boolean;
+    currentSemester: string;
+    lastImportDate: string | null;
+    suggestedDeadline: string;
+    studentCount: number;
+};
+
+/** Get import status for current semester (banner visibility) */
+export async function getImportStatus(): Promise<ImportStatusDto> {
+    return api<ImportStatusDto>(endpoints.schools.importStatus, {
+        method: "GET",
+        auth: true,
+    });
+}
 //#endregion
 
 export type StudentListItem = {

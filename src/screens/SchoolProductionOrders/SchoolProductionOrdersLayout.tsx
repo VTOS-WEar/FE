@@ -19,7 +19,9 @@ export default function SchoolProductionOrdersLayout() {
                     <DashboardSidebar {...sidebarConfig} isCollapsed={isCollapsed} onToggle={toggle} />
                 </div>
                 <div className="flex-1 flex flex-col min-w-0">
-                    <Outlet />
+                    <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8">
+                        <Outlet />
+                    </main>
                 </div>
             </div>
         </div>

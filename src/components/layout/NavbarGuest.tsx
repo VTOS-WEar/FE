@@ -103,7 +103,7 @@ export function NavbarGuest() {
   }
 
   const isProductsActive = location.pathname === "/schools" || location.pathname === "/products"
-  const isContactActive = isAnchorActive("#contact")
+  const isContactActive = location.pathname === "/contact-partnership"
 
   /* ── NB style tokens ── */
   const nbNavLink = "flex h-10 items-center rounded-lg px-3 lg:px-4 text-sm font-bold transition-all duration-150"
@@ -209,9 +209,9 @@ export function NavbarGuest() {
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              <a href="#contact" className={`${nbNavLink} ${isContactActive ? nbNavLinkActive : nbNavLinkIdle}`}>
+              <Link to="/contact-partnership" className={`${nbNavLink} ${isContactActive ? nbNavLinkActive : nbNavLinkIdle}`}>
                 Liên hệ
-              </a>
+              </Link>
             </div>
 
             <div className="mx-2 h-6 w-px bg-[#1A1A2E]/15" />
@@ -376,18 +376,12 @@ export function NavbarGuest() {
                 </Link>
               </div>
 
-              <a 
-                href="#contact" 
-                onClick={(e) => {
-                  e.preventDefault();
-                  const element = document.querySelector("#contact");
-                  if (element) element.scrollIntoView({ behavior: "smooth" });
-                  setIsMenuOpen(false);
-                }}
-                className="flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold text-[#1A1A2E] hover:bg-white transition-colors"
+              <Link 
+                to="/contact-partnership"
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold transition-all duration-150 ${isContactActive ? "bg-[#1A1A2E] text-white shadow-[3px_3px_0_#6B7280]" : "text-[#1A1A2E] hover:bg-white border border-transparent hover:border-[#1A1A2E]/10"}`}
               >
                 Liên hệ
-              </a>
+              </Link>
 
               <div className="pt-8 space-y-3">
                 {!loggedIn && (

@@ -35,6 +35,7 @@ export const endpoints = {
         importTemplate: "/api/schools/me/students/import/template",
         importStudents: "/api/schools/me/students/import",
         importHistory: "/api/schools/me/students/import/history",
+        importStatus: "/api/schools/me/students/import/status",
         grades: "/api/schools/me/students/grades",
         outfits: "/api/schools/me/outfits",
         outfitImageUpload: "/api/schools/me/outfits/upload-image",

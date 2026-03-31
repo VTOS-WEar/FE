@@ -278,7 +278,7 @@ export function SchoolContracts() {
                                 {items.map((item, idx) => (
                                     <div key={idx} className="nb-card-static p-4 mb-2 relative">
                                         {items.length > 1 && (
-                                            <button onClick={() => removeItem(idx)} className="absolute top-2 right-3 text-[#EF4444] font-bold text-lg hover:text-[#DC2626]">×</button>
+                                            <button onClick={() => removeItem(idx)} className="absolute -top-3 -right-3 w-7 h-7 flex items-center justify-center rounded-full bg-[#EF4444] text-white text-sm font-bold border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E] hover:bg-[#DC2626] hover:shadow-none transition-all" title="Xóa mục">✕</button>
                                         )}
                                         <select value={item.outfitId} onChange={e => updateItem(idx, "outfitId", e.target.value)} className="nb-select w-full text-sm mb-2">
                                             <option value="">-- Chọn đồng phục --</option>

@@ -60,7 +60,7 @@ type RelatedOutfit = {
   outfitType: string;
 };
 
-/* ── TryOn Modal ── */
+/* ── TryOn Modal (Neubrutalism) ── */
 function TryOnModal({
   isOpen,
   onClose,
@@ -153,31 +153,31 @@ function TryOnModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
+      {/* Backdrop — no blur, NB style */}
+      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
 
-      {/* Modal */}
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-[720px] max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-200">
+      {/* Modal — NB panel */}
+      <div className="relative bg-[#FFFDF9] rounded-[18px] border-[3px] border-[#19182B] shadow-[6px_6px_0_#19182B] w-full max-w-[760px] max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">
+        <div className="flex items-center justify-between px-6 py-5 border-b-[2px] border-[#19182B]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
-              <Sparkles className="w-5 h-5 text-white" />
+            <div className="flex h-11 w-11 items-center justify-center rounded-[10px] border-[3px] border-[#19182B] bg-[#E9E1FF] shadow-[3px_3px_0_#19182B]">
+              <Sparkles className="w-5 h-5 text-[#7C56FF]" />
             </div>
             <div>
-              <h2 className="font-montserrat font-bold text-[#1a1a2e] text-lg">
+              <h2 className="font-extrabold text-[20px] text-[#19182B] leading-tight">
                 Thử đồ ảo (VR)
               </h2>
-              <p className="font-montserrat text-xs text-gray-400">
+              <p className="font-bold text-[12px] text-[#8D879B] mt-0.5 line-clamp-1 max-w-[280px]">
                 {outfitName}
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
+            className="flex h-9 w-9 items-center justify-center rounded-[8px] border-[2px] border-[#19182B] bg-white shadow-[2px_2px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#19182B]"
           >
-            <X className="w-5 h-5 text-gray-400" />
+            <X className="w-4 h-4 text-[#19182B]" />
           </button>
         </div>
 
@@ -187,33 +187,48 @@ function TryOnModal({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Left: Upload */}
               <div>
-                <p className="font-montserrat font-semibold text-sm text-gray-700 mb-3">
-                  📸 Ảnh của bạn
-                </p>
+                <div className="flex items-center justify-between mb-3">
+                  <p className="font-extrabold text-[14px] text-[#19182B]">
+                    Ảnh của bạn
+                  </p>
+                  {photoPreview && (
+                    <span className="rounded-full border-[2px] border-[#19182B] bg-[#D9F8E8] px-2.5 py-0.5 text-[11px] font-extrabold text-[#19182B] shadow-[2px_2px_0_#19182B]">
+                      AI READY
+                    </span>
+                  )}
+                </div>
                 {!photoPreview ? (
                   <div
                     onDrop={handleDrop}
                     onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
                     onDragLeave={() => setDragOver(false)}
                     onClick={() => fileRef.current?.click()}
-                    className={`border-2 border-dashed rounded-xl p-8 flex flex-col items-center justify-center cursor-pointer transition-all aspect-[3/4] ${dragOver
-                        ? "border-purple-500 bg-purple-50"
-                        : "border-gray-300 bg-gray-50 hover:border-purple-400 hover:bg-purple-50/50"
+                    className={`rounded-[14px] border-[2px] border-dashed p-6 flex flex-col items-center justify-center cursor-pointer transition-all aspect-[3/4] ${dragOver
+                        ? "border-[#8B6BFF] bg-[#F2ECFF]"
+                        : "border-[#19182B] bg-[#F6F1E8] hover:border-[#8B6BFF] hover:bg-[#F2ECFF]"
                       }`}
                   >
-                    <Camera className="w-10 h-10 text-purple-300 mb-3" />
-                    <p className="font-montserrat font-semibold text-sm text-gray-600 text-center">
-                      Kéo thả ảnh vào đây
+                    <div className="flex h-16 w-16 items-center justify-center rounded-[12px] border-[2px] border-[#19182B] bg-white shadow-[3px_3px_0_#19182B] mb-4">
+                      <Camera className="w-7 h-7 text-[#8D879B]" />
+                    </div>
+                    <p className="font-black text-[15px] text-[#19182B] text-center">
+                      Tải ảnh của bạn lên
                     </p>
-                    <p className="font-montserrat text-xs text-gray-400 mt-1">
-                      hoặc nhấp để chọn file
+                    <p className="font-semibold text-[13px] text-[#6F6A7D] mt-1.5 text-center leading-relaxed">
+                      Chụp ảnh toàn thân, nền sáng và đứng thẳng để AI thử đồ cho kết quả chính xác hơn.
                     </p>
-                    <p className="font-montserrat text-[10px] text-gray-300 mt-3">
-                      JPG, PNG, WEBP • Tối đa 10MB
-                    </p>
+                    <span className="mt-4 rounded-[8px] border-[2px] border-[#19182B] bg-white px-3 py-1.5 text-[12px] font-extrabold text-[#19182B] shadow-[2px_2px_0_#19182B]">
+                      JPG, PNG, WEBP · tối đa 10MB
+                    </span>
+                    <button
+                      type="button"
+                      className="mt-3 rounded-[10px] border-[2px] border-[#19182B] bg-white px-4 py-2 text-[13px] font-extrabold text-[#19182B] shadow-[3px_3px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B]"
+                    >
+                      Chọn ảnh từ máy của bạn
+                    </button>
                   </div>
                 ) : (
-                  <div className="relative rounded-xl overflow-hidden border border-gray-200">
+                  <div className="relative rounded-[14px] overflow-hidden border-[2px] border-[#19182B] shadow-[3px_3px_0_#19182B]">
                     <img
                       src={photoPreview}
                       alt="Your photo"
@@ -221,9 +236,9 @@ function TryOnModal({
                     />
                     <button
                       onClick={handleReset}
-                      className="absolute top-2 right-2 w-7 h-7 bg-black/50 hover:bg-black/70 rounded-full flex items-center justify-center transition-colors"
+                      className="absolute top-2.5 right-2.5 flex h-8 w-8 items-center justify-center rounded-[8px] border-[2px] border-[#19182B] bg-white shadow-[2px_2px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#19182B]"
                     >
-                      <X className="w-4 h-4 text-white" />
+                      <X className="w-4 h-4 text-[#19182B]" />
                     </button>
                   </div>
                 )}
@@ -241,10 +256,15 @@ function TryOnModal({
 
               {/* Right: Outfit preview */}
               <div>
-                <p className="font-montserrat font-semibold text-sm text-gray-700 mb-3">
-                  👗 Đồng phục
-                </p>
-                <div className="rounded-xl overflow-hidden border border-gray-200">
+                <div className="flex items-center justify-between mb-3">
+                  <p className="font-extrabold text-[14px] text-[#19182B]">
+                    Đồng phục xem trước
+                  </p>
+                  <span className="rounded-full border-[2px] border-[#19182B] bg-[#DCEBFF] px-2.5 py-0.5 text-[11px] font-extrabold text-[#19182B] shadow-[2px_2px_0_#19182B]">
+                    PREVIEW
+                  </span>
+                </div>
+                <div className="rounded-[14px] overflow-hidden border-[2px] border-[#19182B] shadow-[3px_3px_0_#19182B] bg-[#F6F1E8]">
                   <img
                     src={outfitImage}
                     alt={outfitName}
@@ -254,75 +274,88 @@ function TryOnModal({
               </div>
             </div>
           ) : (
-            /* Result view */
+            /* Result view — NB style */
             <div className="flex flex-col items-center">
-              <p className="font-montserrat font-bold text-lg text-[#1a1a2e] mb-4">
-                ✨ Kết quả thử đồ
-              </p>
-              <div className="rounded-2xl overflow-hidden border-2 border-purple-200 shadow-lg max-w-[400px] w-full">
+              <div className="flex items-center gap-3 mb-5">
+                <div className="flex h-10 w-10 items-center justify-center rounded-[10px] border-[3px] border-[#19182B] bg-[#D9F8E8] shadow-[3px_3px_0_#19182B]">
+                  <span className="text-[18px]">✨</span>
+                </div>
+                <h3 className="font-black text-[22px] text-[#19182B]">
+                  Kết quả thử đồ
+                </h3>
+              </div>
+              <div className="rounded-[14px] overflow-hidden border-[3px] border-[#19182B] shadow-[5px_5px_0_#19182B] max-w-[400px] w-full">
                 <img
                   src={result.resultPhotoUrl}
                   alt="Try-on result"
                   className="w-full aspect-[3/4] object-cover"
                 />
               </div>
-              <div className="flex items-center gap-3 mt-5">
+              <div className="flex items-center gap-3 mt-6">
                 <button
                   onClick={handleDownload}
-                  className="flex items-center gap-2 px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-montserrat font-semibold text-sm rounded-xl transition-colors shadow-md"
+                  className="flex items-center gap-2 rounded-[10px] border-[3px] border-[#19182B] bg-[#8B6BFF] px-5 py-3 text-[14px] font-extrabold text-white shadow-[4px_4px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B]"
                 >
                   <Download className="w-4 h-4" />
                   Tải ảnh
                 </button>
                 <button
                   onClick={handleReset}
-                  className="flex items-center gap-2 px-5 py-2.5 bg-white border-2 border-gray-200 text-gray-700 font-montserrat font-semibold text-sm rounded-xl hover:bg-gray-50 transition-colors"
+                  className="flex items-center gap-2 rounded-[10px] border-[3px] border-[#19182B] bg-white px-5 py-3 text-[14px] font-extrabold text-[#19182B] shadow-[4px_4px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B]"
                 >
                   Thử lại
                 </button>
               </div>
               {result.remainingTries >= 0 && (
-                <p className="font-montserrat text-xs text-gray-400 mt-3">
+                <span className="mt-4 rounded-full border-[2px] border-[#19182B] bg-[#FFF1BF] px-3 py-1 text-[12px] font-extrabold text-[#19182B] shadow-[2px_2px_0_#19182B]">
                   Còn {result.remainingTries} lượt thử hôm nay
-                </p>
+                </span>
               )}
             </div>
           )}
 
-          {/* Error */}
+          {/* Error — NB style */}
           {error && (
-            <div className="mt-4 p-3 bg-red-50 border border-red-100 rounded-xl">
-              <p className="font-montserrat font-medium text-sm text-red-600">{error}</p>
+            <div className="mt-4 rounded-[10px] border-[2px] border-[#19182B] bg-[#FFECEA] p-3.5 shadow-[3px_3px_0_#19182B]">
+              <p className="font-bold text-[13px] text-[#D32F2F]">{error}</p>
             </div>
           )}
         </div>
 
         {/* Footer */}
         {!result && (
-          <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-between">
-            <p className="font-montserrat text-xs text-gray-400">
-              Tính năng thử đồ ảo sử dụng AI
+          <div className="px-6 py-4 border-t-[2px] border-[#19182B] bg-[#F6F1E8] rounded-b-[15px] flex items-center justify-between">
+            <p className="font-bold text-[12px] text-[#8D879B]">
+              Tính năng thử đồ sử dụng AI
             </p>
-            <button
-              onClick={handleTryOn}
-              disabled={!photo || processing}
-              className={`flex items-center gap-2 px-6 py-3 font-montserrat font-bold text-sm rounded-xl transition-all shadow-md ${!photo || processing
-                  ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                  : "bg-gradient-to-r from-purple-600 to-pink-500 text-white hover:shadow-lg hover:scale-[1.02]"
-                }`}
-            >
-              {processing ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Đang xử lý...
-                </>
-              ) : (
-                <>
-                  <Sparkles className="w-4 h-4" />
-                  Thử đồ ngay
-                </>
-              )}
-            </button>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={onClose}
+                className="rounded-[10px] border-[3px] border-[#19182B] bg-white px-4 py-2.5 text-[13px] font-extrabold text-[#19182B] shadow-[4px_4px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B]"
+              >
+                Chọn mẫu khác
+              </button>
+              <button
+                onClick={handleTryOn}
+                disabled={!photo || processing}
+                className={`flex items-center gap-2 rounded-[10px] border-[3px] border-[#19182B] px-5 py-2.5 text-[13px] font-extrabold transition-all ${!photo || processing
+                    ? "bg-[#ECEAF2] text-[#9A95A8] shadow-[2px_2px_0_#19182B] cursor-not-allowed"
+                    : "bg-[#8B6BFF] text-white shadow-[4px_4px_0_#19182B] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B]"
+                  }`}
+              >
+                {processing ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Đang xử lý...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-4 h-4" />
+                    Thử đồ ngay
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         )}
       </div>

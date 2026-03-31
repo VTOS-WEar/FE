@@ -24,19 +24,20 @@ import { generateProductionOrder } from "../../lib/api/productionOrders";
 
 
 
-const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; border: string }> = {
-    Draft:     { label: "Bản nháp",    color: "text-[#6B7280]", bg: "bg-[#F3F4F6]", border: "border-[#E5E7EB]" },
-    Active:    { label: "Đang mở",     color: "text-[#059669]", bg: "bg-[#D1FAE5]", border: "border-[#A7F3D0]" },
-    Paused:    { label: "Tạm dừng",    color: "text-[#D97706]", bg: "bg-[#FEF3C7]", border: "border-[#FDE68A]" },
-    Completed: { label: "Hoàn thành",  color: "text-[#2563EB]", bg: "bg-[#DBEAFE]", border: "border-[#BFDBFE]" },
-    Cancelled: { label: "Đã hủy",     color: "text-[#DC2626]", bg: "bg-[#FEE2E2]", border: "border-[#FECACA]" },
-    Locked:    { label: "Đã khóa",    color: "text-[#7C3AED]", bg: "bg-[#EDE9FE]", border: "border-[#DDD6FE]" },
+const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
+    Draft:     { label: "BẢN NHÁP",    color: "text-[#6B7280]", bg: "bg-[#F3F4F6]" },
+    Active:    { label: "ĐANG MỞ",     color: "text-[#059669]", bg: "bg-[#D9F8E8]" },
+    Paused:    { label: "TẠM DỪNG",    color: "text-[#D97706]", bg: "bg-[#FFF1BF]" },
+    Completed: { label: "HOÀN THÀNH",  color: "text-[#2563EB]", bg: "bg-[#DCEBFF]" },
+    Cancelled: { label: "ĐÃ HỦY",     color: "text-[#DC2626]", bg: "bg-[#FFECEA]" },
+    Locked:    { label: "ĐÃ KHÓA",    color: "text-[#7C3AED]", bg: "bg-[#E9E1FF]" },
 };
 
 function StatusBadge({ status }: { status: string }) {
     const cfg = STATUS_CONFIG[status] || STATUS_CONFIG.Draft;
     return (
-        <span className={`inline-flex items-center px-3 py-1.5 rounded-full border text-sm font-semibold ${cfg.color} ${cfg.bg} ${cfg.border}`}>
+        <span className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-[8px] border-[2px] border-[#19182B] text-[12px] font-extrabold tracking-wider shadow-[2px_2px_0_#19182B] ${cfg.color} ${cfg.bg}`}>
+            <span className={`w-2 h-2 rounded-full ${status === 'Active' ? 'bg-[#10b981]' : status === 'Locked' ? 'bg-[#7C3AED]' : status === 'Cancelled' ? 'bg-[#DC2626]' : 'bg-current'}`} />
             {cfg.label}
         </span>
     );
@@ -159,109 +160,115 @@ export const CampaignDetail = (): JSX.Element => {
 
                     <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-6">
                         {loading ? (
-                            <div className="bg-white rounded-[16px] p-8 border border-[#cbcad7] animate-pulse space-y-4">
-                                <div className="h-8 bg-gray-200 rounded w-1/3" />
-                                <div className="h-5 bg-gray-200 rounded w-1/2" />
-                                <div className="h-20 bg-gray-200 rounded w-full" />
+                            <div className="rounded-[14px] border-[2px] border-[#19182B] bg-white p-8 shadow-[4px_4px_0_#19182B] animate-pulse space-y-4">
+                                <div className="h-8 bg-[#F6F1E8] rounded-[8px] w-1/3" />
+                                <div className="h-5 bg-[#F6F1E8] rounded-[8px] w-1/2" />
+                                <div className="h-20 bg-[#F6F1E8] rounded-[8px] w-full" />
                             </div>
                         ) : !campaign ? (
-                            <div className="bg-white rounded-[16px] p-12 border border-[#cbcad7] text-center">
-                                <p className="font-semibold text-[#4C5769] text-lg">Không tìm thấy chiến dịch</p>
-                                <button onClick={() => navigate("/school/campaigns")} className="mt-4 px-5 py-2.5 rounded-[10px] bg-[#6938EF] text-white font-semibold text-sm">Quay lại</button>
+                            <div className="rounded-[14px] border-[2px] border-[#19182B] bg-white p-12 shadow-[4px_4px_0_#19182B] text-center">
+                                <p className="font-black text-[#19182B] text-lg">Không tìm thấy chiến dịch</p>
+                                <button onClick={() => navigate("/school/campaigns")} className="mt-4 rounded-[10px] border-[2px] border-[#19182B] bg-[#8B6BFF] px-5 py-2.5 text-white font-extrabold text-sm shadow-[3px_3px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B]">Quay lại</button>
                             </div>
                         ) : (
                             <>
-                                {/* Header */}
-                                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-                                    <div className="flex items-start gap-4">
-                                        <button onClick={() => navigate("/school/campaigns")} className="mt-1 w-10 h-10 flex items-center justify-center rounded-full hover:bg-white border border-[#cbcad7] bg-[#F8F9FB] transition-colors flex-shrink-0">
-                                            <svg className="w-5 h-5 text-[#4C5769]" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" /></svg>
-                                        </button>
-                                        <div>
-                                            <div className="flex items-center gap-3 mb-1">
-                                                <h1 className="font-bold text-black text-[28px] lg:text-[32px] leading-[1.22]">{campaign.campaignName}</h1>
-                                                <StatusBadge status={campaign.status} />
+                                {/* Header — shadow 6px (main section) */}
+                                <div className="rounded-[14px] border-[2px] border-[#19182B] bg-white p-6 shadow-[6px_6px_0_#19182B]">
+                                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                                        <div className="flex items-start gap-4">
+                                            <button onClick={() => navigate("/school/campaigns")} className="mt-1 w-10 h-10 flex items-center justify-center rounded-[8px] border-[2px] border-[#19182B] bg-[#F6F1E8] shadow-[2px_2px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#19182B] flex-shrink-0">
+                                                <svg className="w-5 h-5 text-[#19182B]" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" /></svg>
+                                            </button>
+                                            <div>
+                                                <div className="flex flex-wrap items-center gap-3 mb-1.5">
+                                                    <h1 className="font-black text-[#19182B] text-[28px] lg:text-[32px] leading-[1.22]">{campaign.campaignName}</h1>
+                                                    <StatusBadge status={campaign.status} />
+                                                </div>
+                                                <p className="font-semibold text-[#6F6A7D] text-sm">{campaign.description || "Không có mô tả"}</p>
                                             </div>
-                                            <p className="font-medium text-[#4c5769] text-sm">{campaign.description || "Không có mô tả"}</p>
                                         </div>
-                                    </div>
-                                    <div className="flex items-center gap-3 flex-shrink-0">
-                                        {isActive && (
-                                            <button
-                                                onClick={handleLock}
-                                                disabled={locking}
-                                                className="px-5 py-2.5 rounded-[10px] bg-[#EF4444] hover:bg-[#DC2626] text-white font-semibold text-sm transition-colors disabled:opacity-50 flex items-center gap-2"
-                                            >
-                                                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z" /></svg>
-                                                Khóa chiến dịch
-                                            </button>
-                                        )}
-                                        {campaign?.status === "Locked" && (
-                                            <button
-                                                onClick={openGenModal}
-                                                disabled={generating}
-                                                className="px-5 py-2.5 rounded-[10px] bg-[#6938EF] hover:bg-[#5B2ED4] text-white font-semibold text-sm transition-colors disabled:opacity-50 flex items-center gap-2"
-                                            >
-                                                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z" /></svg>
-                                                {generating ? "Đang tạo..." : "Tạo đơn sản xuất"}
-                                            </button>
-                                        )}
+                                        <div className="flex items-center gap-3 flex-shrink-0">
+                                            {isActive && (
+                                                <button
+                                                    onClick={handleLock}
+                                                    disabled={locking}
+                                                    className="flex items-center gap-2 rounded-[10px] border-[2px] border-[#19182B] bg-[#FFECEA] px-5 py-2.5 text-sm font-extrabold text-[#D32F2F] shadow-[3px_3px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] disabled:opacity-50 disabled:cursor-not-allowed"
+                                                >
+                                                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z" /></svg>
+                                                    {locking ? "Đang khóa..." : "Khóa chiến dịch"}
+                                                </button>
+                                            )}
+                                            {campaign?.status === "Locked" && (
+                                                <button
+                                                    onClick={openGenModal}
+                                                    disabled={generating}
+                                                    className="flex items-center gap-2.5 rounded-[10px] border-[3px] border-[#19182B] bg-[#8B6BFF] px-6 py-3 text-[15px] font-extrabold text-white shadow-[5px_5px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[3px_3px_0_#19182B] disabled:opacity-50 disabled:cursor-not-allowed"
+                                                >
+                                                    🚀
+                                                    {generating ? "Đang tạo..." : "Tạo đơn sản xuất"}
+                                                </button>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
 
-                                {/* Stats cards */}
+                                {/* KPI cards — shadow 5px */}
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                                    <div className="nb-card-static p-5">
-                                        <p className="font-semibold text-[#97A3B6] text-xs uppercase tracking-wider mb-1">Trạng thái</p>
+                                    <div className="rounded-[14px] border-[2px] border-[#19182B] bg-[#E9E1FF] p-5 shadow-[5px_5px_0_#19182B]">
+                                        <p className="font-extrabold text-[#19182B] text-xs uppercase tracking-wider mb-2">Trạng thái</p>
                                         <StatusBadge status={campaign.status} />
                                     </div>
-                                    <div className="nb-card-static p-5">
-                                        <p className="font-semibold text-[#97A3B6] text-xs uppercase tracking-wider mb-1">Thời gian</p>
-                                        <p className="font-bold text-[#1A1A2E] text-base">{formatDate(campaign.startDate)} — {formatDate(campaign.endDate)}</p>
-                                        {isActive && daysLeft > 0 && <p className="font-semibold text-[#6938EF] text-xs mt-1">Còn {daysLeft} ngày</p>}
+                                    <div className="rounded-[14px] border-[2px] border-[#19182B] bg-[#DCEBFF] p-5 shadow-[5px_5px_0_#19182B]">
+                                        <p className="font-extrabold text-[#19182B] text-xs uppercase tracking-wider mb-2">Thời gian</p>
+                                        <p className="font-black text-[#19182B] text-base">{formatDate(campaign.startDate)} — {formatDate(campaign.endDate)}</p>
+                                        {isActive && daysLeft > 0 && (
+                                            <span className="inline-block mt-2 rounded-full border-[2px] border-[#19182B] bg-white px-2.5 py-0.5 text-[11px] font-extrabold text-[#7C3AED] shadow-[2px_2px_0_#19182B]">
+                                                ⏳ Còn {daysLeft} ngày
+                                            </span>
+                                        )}
                                     </div>
-                                    <div className="nb-card-static p-5">
-                                        <p className="font-semibold text-[#97A3B6] text-xs uppercase tracking-wider mb-1">Sản phẩm</p>
-                                        <p className="font-bold text-[#1A1A2E] text-2xl">{campaign.outfits.length}</p>
+                                    <div className="rounded-[14px] border-[2px] border-[#19182B] bg-[#D9F8E8] p-5 shadow-[5px_5px_0_#19182B]">
+                                        <p className="font-extrabold text-[#19182B] text-xs uppercase tracking-wider mb-2">Sản phẩm</p>
+                                        <p className="font-black text-[#19182B] text-3xl">{campaign.outfits.length}</p>
                                     </div>
-                                    <div className="nb-card-static p-5">
-                                        <p className="font-semibold text-[#97A3B6] text-xs uppercase tracking-wider mb-1">Đơn hàng</p>
-                                        <p className="font-bold text-[#1A1A2E] text-2xl">{campaign.totalOrders}</p>
+                                    <div className="rounded-[14px] border-[2px] border-[#19182B] bg-[#FFF1BF] p-5 shadow-[5px_5px_0_#19182B]">
+                                        <p className="font-extrabold text-[#19182B] text-xs uppercase tracking-wider mb-2">Đơn hàng</p>
+                                        <p className="font-black text-[#19182B] text-3xl">{campaign.totalOrders}</p>
                                     </div>
                                 </div>
 
-                                {/* Outfits list */}
-                                <div className="nb-card-static p-6">
-                                    <div className="flex items-center gap-2 mb-5">
-                                        <div className="w-6 h-6 rounded-full bg-[#FEF3C7] flex items-center justify-center">
-                                            <svg className="w-3.5 h-3.5 text-[#F59E0B]" viewBox="0 0 24 24" fill="currentColor"><path d="M18 6h-2c0-2.21-1.79-4-4-4S8 3.79 8 6H6c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-6-2c1.1 0 2 .9 2 2h-4c0-1.1.9-2 2-2z" /></svg>
+                                {/* Outfits list — content card shadow 4px */}
+                                <div className="rounded-[14px] border-[2px] border-[#19182B] bg-white p-6 shadow-[4px_4px_0_#19182B]">
+                                    <div className="flex items-center gap-3 mb-6">
+                                        <div className="w-10 h-10 rounded-[10px] border-[3px] border-[#19182B] bg-[#FFF1BF] shadow-[3px_3px_0_#19182B] flex items-center justify-center">
+                                            <svg className="w-5 h-5 text-[#F59E0B]" viewBox="0 0 24 24" fill="currentColor"><path d="M18 6h-2c0-2.21-1.79-4-4-4S8 3.79 8 6H6c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-6-2c1.1 0 2 .9 2 2h-4c0-1.1.9-2 2-2z" /></svg>
                                         </div>
-                                        <h2 className="font-bold text-[#1a1a2e] text-lg">Sản phẩm trong chiến dịch</h2>
+                                        <h2 className="font-black text-[#19182B] text-xl">Sản phẩm trong chiến dịch</h2>
                                     </div>
 
                                     {campaign.outfits.length === 0 ? (
-                                        <p className="font-medium text-[#97A3B6] text-sm text-center py-6">Không có sản phẩm nào</p>
+                                        <p className="font-semibold text-[#8D879B] text-sm text-center py-6">Không có sản phẩm nào</p>
                                     ) : (
                                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                                             {campaign.outfits.map((outfit) => (
-                                                <div key={outfit.campaignOutfitId} className="flex items-center gap-3 p-4 rounded-[10px] border border-[#CBCAD7] bg-[#FAFBFC]">
-                                                    <div className="w-14 h-14 rounded-lg bg-[#E5E7EB] overflow-hidden flex-shrink-0">
+                                                <div key={outfit.campaignOutfitId} className="flex items-center gap-3 p-4 rounded-[12px] border-[3px] border-[#19182B] bg-white shadow-[5px_5px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[3px_3px_0_#19182B]">
+                                                    <div className="w-14 h-14 rounded-[8px] border-[2px] border-[#19182B] bg-[#F6F1E8] overflow-hidden flex-shrink-0 shadow-[2px_2px_0_#19182B]">
                                                         {outfit.mainImageUrl ? (
                                                             <img src={outfit.mainImageUrl} alt={outfit.outfitName} className="w-full h-full object-cover" />
                                                         ) : (
                                                             <div className="w-full h-full flex items-center justify-center">
-                                                                <svg className="w-7 h-7 text-[#9CA3AF]" viewBox="0 0 24 24" fill="currentColor"><path d="M21 16V7.99C21 6.89 20.1 6 19 6H5C3.9 6 3 6.89 3 7.99V16C3 17.1 3.9 18 5 18H19C20.1 18 21 17.1 21 16Z" /></svg>
+                                                                <svg className="w-7 h-7 text-[#CBCAD7]" viewBox="0 0 24 24" fill="currentColor"><path d="M21 16V7.99C21 6.89 20.1 6 19 6H5C3.9 6 3 6.89 3 7.99V16C3 17.1 3.9 18 5 18H19C20.1 18 21 17.1 21 16Z" /></svg>
                                                             </div>
                                                         )}
                                                     </div>
                                                     <div className="flex-1 min-w-0">
-                                                        <p className="font-semibold text-[#1A1A2E] text-sm truncate">{outfit.outfitName}</p>
-                                                        <p className="font-bold text-[#6938EF] text-sm mt-0.5">{new Intl.NumberFormat("vi-VN").format(outfit.campaignPrice)} VND</p>
-                                                        {outfit.maxQuantity && <p className="font-medium text-[#97A3B6] text-xs mt-0.5">Tối đa: {outfit.maxQuantity}</p>}
+                                                        <p className="font-extrabold text-[#19182B] text-sm truncate">{outfit.outfitName}</p>
+                                                        <p className="font-black text-[#8B6BFF] text-sm mt-0.5">{new Intl.NumberFormat("vi-VN").format(outfit.campaignPrice)} VND</p>
+                                                        {outfit.maxQuantity && <p className="font-semibold text-[#8D879B] text-xs mt-0.5">Tối đa: {outfit.maxQuantity}</p>}
                                                         {outfit.providerId && (() => {
                                                             const prov = providers.find(p => p.id === outfit.providerId);
                                                             return prov ? (
-                                                                <p className="font-medium text-[#3B82F6] text-xs mt-1 flex items-center gap-1">
+                                                                <p className="font-semibold text-[#478aea] text-xs mt-1 flex items-center gap-1">
                                                                     <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17V9.5h2.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z" /></svg>
                                                                     {prov.providerName}
                                                                 </p>
@@ -274,22 +281,22 @@ export const CampaignDetail = (): JSX.Element => {
                                     )}
                                 </div>
 
-                                {/* Info */}
-                                <div className="nb-card-static p-6">
-                                    <div className="flex items-center gap-2 mb-4">
-                                        <div className="w-6 h-6 rounded-full bg-[#E8F4FD] flex items-center justify-center">
-                                            <svg className="w-3.5 h-3.5 text-[#3B82F6]" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" /></svg>
+                                {/* Metadata — shadow 3px */}
+                                <div className="rounded-[14px] border-[2px] border-[#19182B] bg-white p-6 shadow-[3px_3px_0_#19182B]">
+                                    <div className="flex items-center gap-3 mb-4">
+                                        <div className="w-9 h-9 rounded-[8px] border-[2px] border-[#19182B] bg-[#DCEBFF] shadow-[2px_2px_0_#19182B] flex items-center justify-center">
+                                            <svg className="w-4.5 h-4.5 text-[#478aea]" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" /></svg>
                                         </div>
-                                        <h2 className="font-bold text-[#1a1a2e] text-lg">Thông tin thêm</h2>
+                                        <h2 className="font-black text-[#19182B] text-lg">Thông tin thêm</h2>
                                     </div>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                                         <div>
-                                            <p className="font-semibold text-[#97A3B6] text-xs uppercase tracking-wider mb-1">Ngày tạo</p>
-                                            <p className="font-medium text-[#1A1A2E]">{formatDate(campaign.createdAt)}</p>
+                                            <p className="font-extrabold text-[#8D879B] text-xs uppercase tracking-wider mb-1">Ngày tạo</p>
+                                            <p className="font-bold text-[#19182B]">{formatDate(campaign.createdAt)}</p>
                                         </div>
                                         <div>
-                                            <p className="font-semibold text-[#97A3B6] text-xs uppercase tracking-wider mb-1">Mã chiến dịch</p>
-                                            <p className="font-medium text-[#1A1A2E] font-mono text-xs">{campaign.campaignId}</p>
+                                            <p className="font-extrabold text-[#8D879B] text-xs uppercase tracking-wider mb-1">Mã chiến dịch</p>
+                                            <p className="font-bold text-[#19182B] font-mono text-xs">{campaign.campaignId}</p>
                                         </div>
                                     </div>
                                 </div>
