@@ -50,6 +50,7 @@ export function SchoolProductionOrders() {
                     <BreadcrumbItem><BreadcrumbPage className="font-bold text-[#1A1A2E] text-base">Đơn sản xuất</BreadcrumbPage></BreadcrumbItem>
                 </BreadcrumbList></Breadcrumb>
             </TopNavBar>
+            <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-6">
 
             <h1 className="font-extrabold text-[#1A1A2E] text-[28px]">🏭 Đơn sản xuất</h1>
 
@@ -108,6 +109,7 @@ export function SchoolProductionOrders() {
                     </div>
                 ) : null;
             })()}
+            </main>
         </div>
     );
 }
