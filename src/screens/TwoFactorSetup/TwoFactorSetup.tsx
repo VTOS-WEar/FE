@@ -4,6 +4,8 @@ import { setup2FA, confirm2FA, type Setup2FAResponse } from "../../lib/api/auth"
 import { useNavigate, useLocation } from "react-router-dom";
 import { useToast } from "../../contexts/ToastContext";
 import { Notify } from "../../components/ui/notify";
+import { QRCodeSVG } from "qrcode.react";
+
 
 type Step = "loading" | "scan" | "verify" | "recovery";
 
@@ -194,10 +196,10 @@ export const TwoFactorSetup = (): JSX.Element => {
                         {/* QR Code */}
                         <div className="flex justify-center">
                             <div className="bg-white p-4 rounded-xl border-2 border-[#1A1A2E] shadow-[3px_3px_0_#1A1A2E]">
-                                <img
-                                    src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(setupData.qrCodeUri)}`}
-                                    alt="2FA QR Code"
-                                    className="w-48 h-48"
+                                <QRCodeSVG
+                                    value={setupData.qrCodeUri}
+                                    size={192}
+                                    level="M"
                                 />
                             </div>
                         </div>
