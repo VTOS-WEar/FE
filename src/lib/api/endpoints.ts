@@ -81,5 +81,6 @@ export const endpoints = {
         unreadCount: "/api/notifications/unread-count",
         read: "/api/notifications", // append /{id}/read
         readAll: "/api/notifications/read-all",
+        heartbeat: "/api/notifications/heartbeat",
     },
 } as const;

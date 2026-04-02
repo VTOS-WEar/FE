@@ -95,7 +95,7 @@ export async function getUsers(): Promise<UserDto[]> {
     const raw = await api<any[]>("/api/admin/users", { method: "GET", auth: true });
     return raw.map(u => ({
         ...u,
-        status: u.status || (u.isDeleted ? "Suspended" : u.isActive ? "Active" : "Pending"),
+        status: u.status || (u.isDeleted ? "Suspended" : u.isActive ? "Active" : "Suspended"),
     }));
 }
 
@@ -103,7 +103,7 @@ export async function getUserDetail(id: string): Promise<UserDetailDto> {
     const raw = await api<any>(`/api/admin/users/${id}`, { method: "GET", auth: true });
     return {
         ...raw,
-        status: raw.status || (raw.isDeleted ? "Suspended" : raw.isActive ? "Active" : "Pending"),
+        status: raw.status || (raw.isDeleted ? "Suspended" : raw.isActive ? "Active" : "Suspended"),
     };
 }
 

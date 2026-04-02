@@ -6,6 +6,7 @@ import {
  BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator,
 } from "../../components/ui/breadcrumb";
 import { DashboardSidebar } from "../../components/layout";
+import { TopNavBar } from "../../components/layout/TopNavBar";
 import { useAdminSidebarConfig } from "../../hooks/useAdminSidebarConfig";
 import {
  getDashboardAnalytics, getTotalOrders, getTotalRevenue,
@@ -107,13 +108,13 @@ export const AdminDashboard = (): JSX.Element => {
  <DashboardSidebar {...sidebarConfig} isCollapsed={isCollapsed} onToggle={toggle} onLogout={handleLogout} />
  </div>
  <div className="flex-1 flex flex-col min-w-0">
- <div className="nb-breadcrumb-bar">
+ <TopNavBar>
  <Breadcrumb><BreadcrumbList>
  <BreadcrumbItem><BreadcrumbLink href="/admin/dashboard" className=" font-semibold text-[#4c5769] text-base">Trang chủ</BreadcrumbLink></BreadcrumbItem>
  <BreadcrumbSeparator className="text-[#cbcad7]">/</BreadcrumbSeparator>
  <BreadcrumbItem><BreadcrumbPage className=" font-bold text-[#1A1A2E] text-base">Tổng quan</BreadcrumbPage></BreadcrumbItem>
  </BreadcrumbList></Breadcrumb>
- </div>
+ </TopNavBar>
  <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-8 nb-fade-in">
 
  {/* 2FA Setup Banner */}

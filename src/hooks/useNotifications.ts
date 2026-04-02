@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
+import { HubConnectionBuilder, HubConnectionState, LogLevel } from "@microsoft/signalr";
 import {
     getNotifications,
     getUnreadCount,
@@ -7,13 +8,30 @@ import {
     type InAppNotification,
 } from "../lib/api/notifications";
 
-const POLL_INTERVAL = 30_000; // 30 seconds
+const POLL_INTERVAL = 30_000; // 30 seconds (fallback)
+const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "";
+
+function getAccessToken(): string {
+    return localStorage.getItem("access_token") || sessionStorage.getItem("access_token") || "";
+}
 
 export function useNotifications() {
     const [notifications, setNotifications] = useState<InAppNotification[]>([]);
     const [unreadCount, setUnreadCount] = useState(0);
     const [loading, setLoading] = useState(false);
     const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+    const connectionRef = useRef<ReturnType<typeof buildConnection> | null>(null);
+    const [realtime, setRealtime] = useState(false);
+
+    function buildConnection() {
+        return new HubConnectionBuilder()
+            .withUrl(`${API_BASE}/hubs/notifications`, {
+                accessTokenFactory: () => getAccessToken(),
+            })
+            .withAutomaticReconnect([0, 2000, 5000, 10000])
+            .configureLogging(LogLevel.Warning)
+            .build();
+    }
 
     const fetchUnreadCount = useCallback(async () => {
         try {
@@ -58,10 +76,45 @@ export function useNotifications() {
         }
     }, []);
 
-    // Start polling on mount
+    // Connect to SignalR for real-time push
+    useEffect(() => {
+        const token = getAccessToken();
+        if (!token) return;
+
+        const connection = buildConnection();
+        connectionRef.current = connection;
+
+        // When server pushes "NewNotification", immediately bump unread count
+        connection.on("NewNotification", () => {
+            setUnreadCount((prev) => prev + 1);
+            // Also refresh notification list if it was loaded
+            fetchNotifications();
+        });
+
+        connection.onreconnected(() => setRealtime(true));
+        connection.onclose(() => setRealtime(false));
+
+        connection
+            .start()
+            .then(() => setRealtime(true))
+            .catch(() => setRealtime(false));
+
+        return () => {
+            if (connection.state === HubConnectionState.Connected) {
+                connection.stop();
+            }
+            connectionRef.current = null;
+            setRealtime(false);
+        };
+    }, [fetchNotifications]);
+
+    // Polling fallback — only when SignalR is not connected
     useEffect(() => {
         fetchUnreadCount();
-        intervalRef.current = setInterval(fetchUnreadCount, POLL_INTERVAL);
+
+        intervalRef.current = setInterval(() => {
+            if (!realtime) fetchUnreadCount();
+        }, POLL_INTERVAL);
 
         // Also refresh on window focus
         const onFocus = () => fetchUnreadCount();
@@ -71,7 +124,7 @@ export function useNotifications() {
             if (intervalRef.current) clearInterval(intervalRef.current);
             window.removeEventListener("focus", onFocus);
         };
-    }, [fetchUnreadCount]);
+    }, [fetchUnreadCount, realtime]);
 
     return {
         notifications,

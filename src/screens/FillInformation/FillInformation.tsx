@@ -5,9 +5,7 @@ import {
   UserIcon,
   Loader2,
 } from "lucide-react";
-import { Button } from "../../components/ui/button";
-import { Input } from "../../components/ui/input";
-import { Label } from "../../components/ui/label";
+
 import { Notify } from "../../components/ui/notify";
 import { GuestLayout } from "../../components/layout/GuestLayout";
 import { useState } from "react";
@@ -133,41 +131,41 @@ export const FillInformation = (): JSX.Element => {
                 alt="Avatar"
                 src="https://c.animaapp.com/mjxt3t8wNP0otU/img/group-239260.png"
               />
-              <Button
-                variant="link"
-                className="font-medium text-[#7e45d9] text-base p-0 h-auto"
+              <button
+                type="button"
+                className="font-medium text-[#7e45d9] text-base p-0 h-auto bg-transparent border-none cursor-pointer hover:underline"
               >
                 Tải lên ảnh đại diện
-              </Button>
+              </button>
             </div>
 
             <div className="space-y-6">
               {/* Full Name (read-only, from registration) */}
               <div className="space-y-3">
-                <Label className="font-medium text-black text-xl">
+                <label className="font-medium text-black text-xl">
                   Họ và tên phụ huynh
                   <span className="text-[#ff0000] ml-1">*</span>
-                </Label>
+                </label>
                 <div className="relative">
                   <UserIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 w-6 h-6 text-black opacity-40" />
-                  <Input
+                  <input
                     type="text"
                     value={fullName}
                     disabled
-                    className="h-[3.125rem] pl-11 pr-2.5 bg-gray-50 rounded-lg border border-[#00000036] font-normal text-base text-black/60 cursor-not-allowed"
+                    className="w-full h-[3.125rem] pl-11 pr-2.5 bg-gray-50 rounded-lg border border-[#00000036] font-normal text-base text-black/60 cursor-not-allowed"
                   />
                 </div>
               </div>
 
               {/* Phone input */}
               <div className="space-y-3">
-                <Label className="font-medium text-black text-xl">
+                <label className="font-medium text-black text-xl">
                   Số điện thoại liên hệ
                   <span className="text-[#ff0000] ml-1">*</span>
-                </Label>
+                </label>
                 <div className="relative">
                   <PhoneIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 w-6 h-6 text-black opacity-40" />
-                  <Input
+                  <input
                     type="tel"
                     placeholder="Nhập số điện thoại"
                     value={phone}
@@ -175,7 +173,7 @@ export const FillInformation = (): JSX.Element => {
                     onKeyDown={(e) => {
                       if (e.key === "Enter") void handleSubmit();
                     }}
-                    className="h-[3.125rem] pl-11 pr-2.5 bg-white rounded-lg border border-[#00000036] font-normal text-base focus:border-[#6938ef] focus:ring-1 focus:ring-[#6938ef] transition-colors"
+                    className="w-full h-[3.125rem] pl-11 pr-2.5 bg-white rounded-lg border border-[#00000036] font-normal text-base focus:border-[#6938ef] focus:ring-1 focus:ring-[#6938ef] transition-colors outline-none"
                   />
                 </div>
                 <div className="flex items-center gap-1.5">
@@ -188,22 +186,22 @@ export const FillInformation = (): JSX.Element => {
               </div>
 
               {/* Submit button */}
-              <Button
+              <button
                 type="button"
                 onClick={() => void handleSubmit()}
                 disabled={isLoading}
-                className="w-full h-16 nb-btn nb-btn-purple mt-8"
+                className="w-full h-16 nb-btn nb-btn-purple mt-8 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isLoading ? (
                   <Loader2 className="w-6 h-6 animate-spin mr-2" />
                 ) : null}
-                <span className="font-semibold text-white text-2xl">
+                <span className="font-semibold text-[#1A1A2E] text-2xl">
                   {isLoading ? "Đang lưu..." : "Xác nhận số điện thoại"}
                 </span>
                 {!isLoading && (
                   <ArrowRightIcon className="w-6 h-6 ml-2.5" />
                 )}
-              </Button>
+              </button>
 
             </div>
           </div>

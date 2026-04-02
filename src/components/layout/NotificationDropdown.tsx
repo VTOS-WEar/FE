@@ -7,6 +7,9 @@ const typeIcons: Record<string, string> = {
     ProductionAction: "🏭",
     DeliveryAction: "📦",
     OrderAction: "🛒",
+    AccountRequest: "📋",
+    WithdrawalRequest: "💸",
+    Complaint: "⚠️",
     System: "🔔",
 };
 

@@ -12,7 +12,6 @@ import {
 import { DashboardSidebar } from "../../components/layout";
 import { TopNavBar } from "../../components/layout/TopNavBar";
 import { useSidebarConfig } from "../../hooks/useSidebarConfig";
-import { Button } from "../../components/ui/button";
 import {
     getSchoolProfile,
     getSchoolStudents,
@@ -48,11 +47,30 @@ function StudentFormModal({
     initialData: StudentFormData; isEditing: boolean; isLoading: boolean; availableGrades: string[]; isParentLinked?: boolean;
 }) {
     const [form, setForm] = useState<StudentFormData>(EMPTY_FORM);
-    useEffect(() => { if (isOpen) setForm(initialData); }, [isOpen, initialData]);
+    const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+    useEffect(() => { if (isOpen) { setForm(initialData); setFormErrors({}); } }, [isOpen, initialData]);
     if (!isOpen) return null;
+
+    const validate = (): boolean => {
+        const errs: Record<string, string> = {};
+        if (!form.fullName.trim()) errs.fullName = "Vui lòng nhập họ và tên";
+        if (form.grade && form.grade.length > 5) errs.grade = "Lớp tối đa 5 ký tự";
+        if (form.parentPhone && !/^0\d{9}$/.test(form.parentPhone)) errs.parentPhone = "SĐT phải bắt đầu bằng 0 và có đúng 10 số";
+        if (form.heightCm) {
+            const h = parseInt(form.heightCm);
+            if (isNaN(h) || h < 30 || h > 250) errs.heightCm = "Chiều cao từ 30 - 250 cm";
+        }
+        if (form.weightKg) {
+            const w = parseFloat(form.weightKg);
+            if (isNaN(w) || w < 3 || w > 200) errs.weightKg = "Cân nặng từ 3 - 200 kg";
+        }
+        setFormErrors(errs);
+        return Object.keys(errs).length === 0;
+    };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        if (!validate()) return;
         onSave({
             fullName: form.fullName.trim(),
             dateOfBirth: form.dateOfBirth || undefined,
@@ -102,29 +120,48 @@ function StudentFormModal({
                     <div className="grid grid-cols-2 gap-4">
                         <div>
                             <label className={labelClass}>Lớp</label>
-                            <input type="text" list="grade-options" value={form.grade} onChange={(e) => setForm({ ...form, grade: e.target.value })} placeholder="Chọn hoặc nhập lớp mới" className={inputClass} autoComplete="off" />
-                            <datalist id="grade-options">{availableGrades.map((g) => <option key={g} value={g} />)}</datalist>
+                            {availableGrades.length > 0 ? (
+                                <select value={form.grade} onChange={(e) => setForm({ ...form, grade: e.target.value })} className="w-full nb-select text-sm">
+                                    <option value="">-- Chọn lớp --</option>
+                                    {availableGrades.map((g) => <option key={g} value={g}>{g}</option>)}
+                                </select>
+                            ) : (
+                                <input type="text" maxLength={5} value={form.grade} onChange={(e) => setForm({ ...form, grade: e.target.value })} placeholder="VD: 3A" className={inputClass} autoComplete="off" />
+                            )}
+                            {formErrors.grade && <p className="mt-1 text-xs text-red-500 font-medium">{formErrors.grade}</p>}
                         </div>
                         <div>
                             <label className={labelClass}>SĐT Phụ huynh</label>
                             <div className="relative">
-                                <input type="tel" value={form.parentPhone} onChange={(e) => setForm({ ...form, parentPhone: e.target.value })} placeholder="0901234567" disabled={isEditing && isParentLinked}
+                                <input type="tel" maxLength={10} value={form.parentPhone}
+                                    onChange={(e) => { const v = e.target.value.replace(/\D/g, "").slice(0, 10); setForm({ ...form, parentPhone: v }); }}
+                                    placeholder="0901234567" disabled={isEditing && isParentLinked}
                                     className={`${inputClass} ${isEditing && isParentLinked ? "bg-gray-100 cursor-not-allowed text-gray-400 pr-8" : ""}`} />
                                 {isEditing && isParentLinked && (
                                     <div className="absolute right-3 top-1/2 -translate-y-1/2" title="Đã liên kết phụ huynh"><svg className="w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z" /></svg></div>
                                 )}
                             </div>
+                            {formErrors.parentPhone && <p className="mt-1 text-xs text-red-500 font-medium">{formErrors.parentPhone}</p>}
                             {isEditing && isParentLinked && <p className="mt-1 text-xs text-amber-600 font-medium">🔒 Đã liên kết phụ huynh — không thể thay đổi SĐT</p>}
+                            {!formErrors.parentPhone && form.parentPhone && form.parentPhone.length > 0 && form.parentPhone.length < 10 && <p className="mt-1 text-xs text-amber-500 font-medium">Cần nhập đủ 10 số (hiện {form.parentPhone.length}/10)</p>}
                         </div>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         <div>
                             <label className={labelClass}>Chiều cao (cm)</label>
-                            <input type="number" min="0" max="250" value={form.heightCm} onChange={(e) => setForm({ ...form, heightCm: e.target.value })} placeholder="VD: 140" className={inputClass} />
+                            <input type="number" min={30} max={250} step={1} value={form.heightCm}
+                                onChange={(e) => { const v = e.target.value.replace(/[^0-9]/g, "").slice(0, 3); setForm({ ...form, heightCm: v }); }}
+                                onBlur={() => { if (form.heightCm) { const n = parseInt(form.heightCm); if (n < 30) setForm(f => ({ ...f, heightCm: "30" })); else if (n > 250) setForm(f => ({ ...f, heightCm: "250" })); } }}
+                                placeholder="30 - 250" className={inputClass} />
+                            {formErrors.heightCm && <p className="mt-1 text-xs text-red-500 font-medium">{formErrors.heightCm}</p>}
                         </div>
                         <div>
                             <label className={labelClass}>Cân nặng (kg)</label>
-                            <input type="number" min="0" max="200" step="0.1" value={form.weightKg} onChange={(e) => setForm({ ...form, weightKg: e.target.value })} placeholder="VD: 35.5" className={inputClass} />
+                            <input type="number" min={3} max={200} step={0.1} value={form.weightKg}
+                                onChange={(e) => { const v = e.target.value.match(/^\d{0,3}(\.\d{0,1})?$/)?.[0] || form.weightKg; setForm({ ...form, weightKg: v }); }}
+                                onBlur={() => { if (form.weightKg) { const n = parseFloat(form.weightKg); if (n < 3) setForm(f => ({ ...f, weightKg: "3" })); else if (n > 200) setForm(f => ({ ...f, weightKg: "200" })); } }}
+                                placeholder="3 - 200" className={inputClass} />
+                            {formErrors.weightKg && <p className="mt-1 text-xs text-red-500 font-medium">{formErrors.weightKg}</p>}
                         </div>
                     </div>
                     <div className="flex items-center justify-end gap-3 pt-2">
@@ -198,6 +235,40 @@ export const StudentListV2 = (): JSX.Element => {
     const [deleteLoading, setDeleteLoading] = useState(false);
     const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
     const [availableGrades, setAvailableGrades] = useState<string[]>([]);
+
+    // Sorting state
+    const [sortField, setSortField] = useState<string>("fullName");
+    const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
+
+    const handleSort = (field: string) => {
+        if (sortField === field) setSortDir(d => d === "asc" ? "desc" : "asc");
+        else { setSortField(field); setSortDir("asc"); }
+    };
+
+    const sortedStudents = useMemo(() => {
+        const arr = [...students];
+        arr.sort((a, b) => {
+            let va: string | boolean = "", vb: string | boolean = "";
+            switch (sortField) {
+                case "fullName": va = a.fullName || ""; vb = b.fullName || ""; break;
+                case "grade": va = a.grade || ""; vb = b.grade || ""; break;
+                case "gender": va = a.gender || ""; vb = b.gender || ""; break;
+                case "measurement": va = a.hasMeasurements; vb = b.hasMeasurements; break;
+                case "parent": va = a.isParentLinked; vb = b.isParentLinked; break;
+            }
+            if (typeof va === "boolean") { const na = va ? 1 : 0, nb = vb ? 1 : 0; return sortDir === "asc" ? na - nb : nb - na; }
+            const cmp = (va as string).localeCompare(vb as string, "vi");
+            return sortDir === "asc" ? cmp : -cmp;
+        });
+        return arr;
+    }, [students, sortField, sortDir]);
+
+    const SortIcon = ({ field }: { field: string }) => (
+        <span className="ml-1 inline-flex flex-col leading-none text-[10px] opacity-60">
+            <span className={sortField === field && sortDir === "asc" ? "text-[#6938EF] opacity-100" : ""}>▲</span>
+            <span className={sortField === field && sortDir === "desc" ? "text-[#6938EF] opacity-100" : ""}>▼</span>
+        </span>
+    );
 
     const showToast = (message: string, type: "success" | "error") => { setToast({ message, type }); setTimeout(() => setToast(null), 3500); };
 
@@ -334,9 +405,15 @@ export const StudentListV2 = (): JSX.Element => {
                             {/* Table Header */}
                             <div className="bg-[#EDE9FE] border-b-2 border-[#1A1A2E]">
                                 <div className="hidden lg:grid grid-cols-[2fr_0.8fr_0.7fr_1.2fr_1.8fr_60px] items-center px-6 py-3.5 gap-4">
-                                    {["Học sinh", "Lớp", "Giới Tính", "Trạng thái", "Phụ Huynh", ""].map((h) => (
-                                        <span key={h} className="font-bold text-[#1A1A2E] text-xs uppercase tracking-wider">{h}</span>
-                                    ))}
+                                    {(["fullName", "grade", "gender", "measurement", "parent"] as const).map((field) => {
+                                        const labels: Record<string, string> = { fullName: "Học sinh", grade: "Lớp", gender: "Giới tính", measurement: "Trạng thái", parent: "Phụ Huynh" };
+                                        return (
+                                            <button key={field} type="button" onClick={() => handleSort(field)} className="font-bold text-[#1A1A2E] text-xs uppercase tracking-wider text-left flex items-center cursor-pointer hover:text-[#6938EF] transition-colors">
+                                                {labels[field]}<SortIcon field={field} />
+                                            </button>
+                                        );
+                                    })}
+                                    <span />
                                 </div>
                             </div>
 
@@ -377,7 +454,7 @@ export const StudentListV2 = (): JSX.Element => {
                             {/* Rows */}
                             {!loading && !error && students.length > 0 && (
                                 <div className="divide-y divide-[#E5E7EB]">
-                                    {students.map((student) => (
+                                    {sortedStudents.map((student) => (
                                         <div key={student.id} className="grid grid-cols-1 lg:grid-cols-[2fr_0.8fr_0.7fr_1.2fr_1.8fr_60px] items-center px-6 py-4 gap-4 hover:bg-[#FFF5EB] transition-colors">
                                             {/* Name */}
                                             <div className="flex items-center gap-3">
@@ -423,9 +500,15 @@ export const StudentListV2 = (): JSX.Element => {
                                                 <button onClick={() => handleOpenEdit(student.id)} title="Chỉnh sửa" className="w-8 h-8 flex items-center justify-center rounded-lg border-2 border-transparent hover:border-[#6938EF] hover:bg-[#EDE9FE] transition-all">
                                                     <svg className="w-4 h-4 text-[#6938EF]" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" /></svg>
                                                 </button>
-                                                <button onClick={() => handleOpenDelete(student.id, student.fullName)} title="Xóa" className="w-8 h-8 flex items-center justify-center rounded-lg border-2 border-transparent hover:border-[#EF4444] hover:bg-[#FEE2E2] transition-all">
-                                                    <svg className="w-4 h-4 text-[#EF4444]" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" /></svg>
-                                                </button>
+                                                {student.isParentLinked ? (
+                                                    <span title="Không thể xóa học sinh đã liên kết phụ huynh" className="w-8 h-8 flex items-center justify-center rounded-lg opacity-30 cursor-not-allowed">
+                                                        <svg className="w-4 h-4 text-[#9CA3AF]" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" /></svg>
+                                                    </span>
+                                                ) : (
+                                                    <button onClick={() => handleOpenDelete(student.id, student.fullName)} title="Xóa" className="w-8 h-8 flex items-center justify-center rounded-lg border-2 border-transparent hover:border-[#EF4444] hover:bg-[#FEE2E2] transition-all">
+                                                        <svg className="w-4 h-4 text-[#EF4444]" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" /></svg>
+                                                    </button>
+                                                )}
                                             </div>
                                         </div>
                                     ))}

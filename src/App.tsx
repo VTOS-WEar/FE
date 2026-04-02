@@ -278,6 +278,8 @@ const router = createBrowserRouter([
   { path: "/payment/cancel", element: <RoleGuard allowedRoles={["Parent"]} allowGuest><PaymentCancel /></RoleGuard> },
   { path: "/products", element: <RoleGuard allowedRoles={["Parent"]} allowGuest><ProductList /></RoleGuard> },
   { path: "/products/:id", element: <RoleGuard allowedRoles={["Parent"]} allowGuest><ProductDetail /></RoleGuard> },
+  // ── Catch-all: redirect unknown routes to homepage ──
+  { path: "*", element: <RootRedirect /> },
 ]);
 import { GoogleOAuthProvider } from "@react-oauth/google";
 

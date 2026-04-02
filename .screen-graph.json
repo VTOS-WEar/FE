@@ -207,6 +207,22 @@
       }
     },
     {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:212:14-to-src\\components\\guards\\RoleGuard.tsx",
+      "source": "src\\screens\\FillInformation\\FillInformation.tsx",
+      "target": "src\\components\\guards\\RoleGuard.tsx",
+      "data": {
+        "viaRoute": "/contact-partnership",
+        "trigger": {
+          "element": "<Link to=\"/contact-partnership\" className={`${nbNavLink} ${isContactActive ? nbNavLinkActive : nbNavLinkIdle}`}>\n                Liên hệ\n              </Link>",
+          "line": 212,
+          "endLine": 214,
+          "column": 14,
+          "endColumn": 21,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
       "id": "src\\components\\layout\\NavbarGuest.tsx:231:29-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\FillInformation\\FillInformation.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
@@ -271,15 +287,31 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:396:37-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:379:14-to-src\\components\\guards\\RoleGuard.tsx",
+      "source": "src\\screens\\FillInformation\\FillInformation.tsx",
+      "target": "src\\components\\guards\\RoleGuard.tsx",
+      "data": {
+        "viaRoute": "/contact-partnership",
+        "trigger": {
+          "element": "<Link \n                to=\"/contact-partnership\"\n                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold transition-all duration-150 ${isContactActive ? \"bg-[#1A1A2E] text-white shadow-[3px_3px_0_#6B7280]\" : \"text-[#1A1A2E] hover:bg-white border border-transparent hover:border-[#1A1A2E]/10\"}`}\n              >\n                Liên hệ\n              </Link>",
+          "line": 379,
+          "endLine": 384,
+          "column": 14,
+          "endColumn": 21,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:390:37-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\FillInformation\\FillInformation.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
           "element": "navigate(\"/signin\")",
-          "line": 396,
-          "endLine": 396,
+          "line": 390,
+          "endLine": 390,
           "column": 37,
           "endColumn": 56,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -415,6 +447,22 @@
       }
     },
     {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:212:14-to-src\\components\\guards\\RoleGuard.tsx",
+      "source": "src\\screens\\FillInformation\\FillInformation.tsx",
+      "target": "src\\components\\guards\\RoleGuard.tsx",
+      "data": {
+        "viaRoute": "/contact-partnership",
+        "trigger": {
+          "element": "<Link to=\"/contact-partnership\" className={`${nbNavLink} ${isContactActive ? nbNavLinkActive : nbNavLinkIdle}`}>\n                Liên hệ\n              </Link>",
+          "line": 212,
+          "endLine": 214,
+          "column": 14,
+          "endColumn": 21,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
       "id": "src\\components\\layout\\NavbarGuest.tsx:231:29-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\FillInformation\\FillInformation.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
@@ -479,15 +527,31 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:396:37-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:379:14-to-src\\components\\guards\\RoleGuard.tsx",
+      "source": "src\\screens\\FillInformation\\FillInformation.tsx",
+      "target": "src\\components\\guards\\RoleGuard.tsx",
+      "data": {
+        "viaRoute": "/contact-partnership",
+        "trigger": {
+          "element": "<Link \n                to=\"/contact-partnership\"\n                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold transition-all duration-150 ${isContactActive ? \"bg-[#1A1A2E] text-white shadow-[3px_3px_0_#6B7280]\" : \"text-[#1A1A2E] hover:bg-white border border-transparent hover:border-[#1A1A2E]/10\"}`}\n              >\n                Liên hệ\n              </Link>",
+          "line": 379,
+          "endLine": 384,
+          "column": 14,
+          "endColumn": 21,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:390:37-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\FillInformation\\FillInformation.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
           "element": "navigate(\"/signin\")",
-          "line": 396,
-          "endLine": 396,
+          "line": 390,
+          "endLine": 390,
           "column": 37,
           "endColumn": 56,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -507,22 +571,6 @@
           "column": 14,
           "endColumn": 18,
           "sourceFile": "src\\components\\layout\\Footer.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\DashboardSidebar.tsx:56:8-to-src\\components\\guards\\RoleGuard.tsx",
-      "source": "src\\screens\\AccountSetting\\AccountSetting.tsx",
-      "target": "src\\components\\guards\\RoleGuard.tsx",
-      "data": {
-        "viaRoute": "/signin",
-        "trigger": {
-          "element": "navigate(\"/signin\", { replace: true })",
-          "line": 56,
-          "endLine": 56,
-          "column": 8,
-          "endColumn": 46,
-          "sourceFile": "src\\components\\layout\\DashboardSidebar.tsx"
         }
       }
     },
@@ -591,6 +639,22 @@
       }
     },
     {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:212:14-to-src\\components\\guards\\RoleGuard.tsx",
+      "source": "src\\screens\\FillInformation\\FillInformation.tsx",
+      "target": "src\\components\\guards\\RoleGuard.tsx",
+      "data": {
+        "viaRoute": "/contact-partnership",
+        "trigger": {
+          "element": "<Link to=\"/contact-partnership\" className={`${nbNavLink} ${isContactActive ? nbNavLinkActive : nbNavLinkIdle}`}>\n                Liên hệ\n              </Link>",
+          "line": 212,
+          "endLine": 214,
+          "column": 14,
+          "endColumn": 21,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
       "id": "src\\components\\layout\\NavbarGuest.tsx:231:29-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\FillInformation\\FillInformation.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
@@ -655,15 +719,31 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:396:37-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:379:14-to-src\\components\\guards\\RoleGuard.tsx",
+      "source": "src\\screens\\FillInformation\\FillInformation.tsx",
+      "target": "src\\components\\guards\\RoleGuard.tsx",
+      "data": {
+        "viaRoute": "/contact-partnership",
+        "trigger": {
+          "element": "<Link \n                to=\"/contact-partnership\"\n                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold transition-all duration-150 ${isContactActive ? \"bg-[#1A1A2E] text-white shadow-[3px_3px_0_#6B7280]\" : \"text-[#1A1A2E] hover:bg-white border border-transparent hover:border-[#1A1A2E]/10\"}`}\n              >\n                Liên hệ\n              </Link>",
+          "line": 379,
+          "endLine": 384,
+          "column": 14,
+          "endColumn": 21,
+          "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\NavbarGuest.tsx:390:37-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\FillInformation\\FillInformation.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
           "element": "navigate(\"/signin\")",
-          "line": 396,
-          "endLine": 396,
+          "line": 390,
+          "endLine": 390,
           "column": 37,
           "endColumn": 56,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"

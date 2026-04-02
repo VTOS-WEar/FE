@@ -13,6 +13,7 @@ import {
     type WalletTransactionDto,
 } from "../../lib/api/payments";
 import { getProviderProfile } from "../../lib/api/providers";
+import { VIETNAM_BANKS } from "../../lib/constants/vietnamBanks";
 
 /* ── helpers ── */
 function fmt(n: number) { return n.toLocaleString("vi-VN") + " ₫"; }
@@ -54,6 +55,8 @@ export default function ProviderWallet() {
     const [editingBank, setEditingBank] = useState(false);
     const [bankForm, setBankForm] = useState({ bankCode: "", bankName: "", accountNumber: "", accountName: "" });
     const [savingBank, setSavingBank] = useState(false);
+    const [bankSearch, setBankSearch] = useState("");
+    const [showBankDropdown, setShowBankDropdown] = useState(false);
 
     // Withdraw modal state
     const [showWithdraw, setShowWithdraw] = useState(false);
@@ -150,13 +153,29 @@ export default function ProviderWallet() {
                                     {editingBank ? (
                                         <div className="space-y-3">
                                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                                <div>
-                                                    <label className="block text-xs font-bold text-[#6B7280] mb-1">Mã ngân hàng</label>
-                                                    <input className="nb-input w-full" value={bankForm.bankCode} onChange={e => setBankForm(f => ({ ...f, bankCode: e.target.value }))} placeholder="VCB" />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-xs font-bold text-[#6B7280] mb-1">Tên ngân hàng</label>
-                                                    <input className="nb-input w-full" value={bankForm.bankName} onChange={e => setBankForm(f => ({ ...f, bankName: e.target.value }))} placeholder="Vietcombank" />
+                                                <div className="sm:col-span-2 relative">
+                                                    <label className="block text-xs font-bold text-[#6B7280] mb-1">Ngân hàng</label>
+                                                    <input className="nb-input w-full" value={bankSearch || (bankForm.bankCode ? `${bankForm.bankName} (${bankForm.bankCode})` : "")}
+                                                        onChange={e => { setBankSearch(e.target.value); setShowBankDropdown(true); }}
+                                                        onFocus={() => { setBankSearch(""); setShowBankDropdown(true); }}
+                                                        placeholder="Tìm ngân hàng..." autoComplete="off" />
+                                                    {showBankDropdown && (
+                                                        <div className="absolute z-20 top-full mt-1 left-0 right-0 bg-white border-2 border-[#1A1A2E] rounded-md shadow-[4px_4px_0_#1A1A2E] max-h-48 overflow-y-auto">
+                                                            {VIETNAM_BANKS.filter(b => {
+                                                                const q = bankSearch.toLowerCase();
+                                                                return !q || b.code.toLowerCase().includes(q) || b.shortName.toLowerCase().includes(q) || b.name.toLowerCase().includes(q);
+                                                            }).map(b => (
+                                                                <button key={b.code} type="button" className="w-full text-left px-3 py-2 text-sm hover:bg-[#EDE9FE] transition-colors flex items-center justify-between"
+                                                                    onClick={() => { setBankForm(f => ({ ...f, bankCode: b.code, bankName: b.shortName })); setBankSearch(""); setShowBankDropdown(false); }}>
+                                                                    <span className="font-semibold text-[#1A1A2E]">{b.shortName}</span>
+                                                                    <span className="text-xs text-[#9CA3AF]">{b.code}</span>
+                                                                </button>
+                                                            ))}
+                                                            {VIETNAM_BANKS.filter(b => { const q = bankSearch.toLowerCase(); return !q || b.code.toLowerCase().includes(q) || b.shortName.toLowerCase().includes(q) || b.name.toLowerCase().includes(q); }).length === 0 && (
+                                                                <p className="px-3 py-2 text-sm text-[#9CA3AF]">Không tìm thấy ngân hàng</p>
+                                                            )}
+                                                        </div>
+                                                    )}
                                                 </div>
                                                 <div>
                                                     <label className="block text-xs font-bold text-[#6B7280] mb-1">Số tài khoản</label>
@@ -233,9 +252,10 @@ export default function ProviderWallet() {
                         <p className="text-sm text-[#6B7280]">Số dư hiện tại: <span className="font-extrabold text-[#10B981]">{fmt(wallet?.balance ?? 0)}</span></p>
                         <div>
                             <label className="block text-xs font-bold text-[#6B7280] mb-1">Số tiền muốn rút (₫)</label>
-                            <input className="nb-input w-full" type="number" min={1} max={wallet?.balance ?? 0}
+                            <input className="nb-input w-full" type="number" min={100000} step={10} max={wallet?.balance ?? 0}
                                 value={withdrawAmount} onChange={e => setWithdrawAmount(e.target.value)}
                                 placeholder="Nhập số tiền..." />
+                            <p className="text-xs text-[#9CA3AF] mt-1">Tối thiểu 100,000₫ · Số tiền phải chia hết cho 10</p>
                         </div>
                         {withdrawMsg && (
                             <div className={`nb-alert ${withdrawMsg.type === "ok" ? "nb-alert-success" : "nb-alert-error"}`}>
@@ -248,6 +268,8 @@ export default function ProviderWallet() {
                                 const amt = Number(withdrawAmount);
                                 const max = wallet?.balance ?? 0;
                                 if (!amt || amt <= 0) { setWithdrawMsg({ type: "err", text: "Số tiền không hợp lệ" }); return; }
+                                if (amt < 100000) { setWithdrawMsg({ type: "err", text: "Số tiền tối thiểu là 100,000₫" }); return; }
+                                if (amt % 10 !== 0) { setWithdrawMsg({ type: "err", text: "Số tiền phải chia hết cho 10" }); return; }
                                 if (amt > max) { setWithdrawMsg({ type: "err", text: "Số tiền vượt quá số dư" }); return; }
                                 if (!wallet?.bankAccountNumber) { setWithdrawMsg({ type: "err", text: "Vui lòng cập nhật thông tin ngân hàng trước" }); return; }
                                 setWithdrawing(true);
