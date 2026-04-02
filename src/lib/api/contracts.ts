@@ -84,3 +84,25 @@ export async function rejectContract(id: string, reason: string): Promise<Contra
         auth: true,
     });
 }
+
+// ── Contracted Providers for Campaign Creation ──
+
+export type ContractedProviderDto = {
+    providerId: string;
+    providerName: string;
+    contractId: string;
+    contractName: string;
+    pricePerUnit: number;
+};
+
+export type ContractedProvidersForOutfitsResponse = {
+    outfitProviders: Record<string, ContractedProviderDto[]>;
+};
+
+/** Get contracted providers grouped by outfit (for campaign creation) */
+export async function getContractedProvidersForOutfits(): Promise<ContractedProvidersForOutfitsResponse> {
+    return api<ContractedProvidersForOutfitsResponse>(
+        `${endpoints.schools.me}/contracts/providers-for-outfits`,
+        { method: "GET", auth: true }
+    );
+}

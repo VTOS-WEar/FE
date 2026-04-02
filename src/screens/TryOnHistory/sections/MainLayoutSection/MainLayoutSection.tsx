@@ -26,7 +26,7 @@ export const MainLayoutSection = (): JSX.Element => {
             className="h-auto p-0 hover:bg-transparent"
           >
             <div className="inline-flex items-center gap-2.5 p-1">
-              <span className="[font-family:'Baloo-Regular',Helvetica] font-normal text-black text-base text-center tracking-[0] leading-[normal]">
+              <span className="[font-family:'Baloo_2',Helvetica] font-normal text-black text-base text-center tracking-[0] leading-[normal]">
                 {item.label}
               </span>
               {item.hasDropdown && <ChevronDownIcon className="w-3.5 h-2" />}
@@ -87,7 +87,7 @@ export const MainLayoutSection = (): JSX.Element => {
           alt="Mingcute user fill"
           src="https://c.animaapp.com/mjxt3t8wNP0otU/img/mingcute-user-4-fill.svg"
         />
-        <span className="[font-family:'Baloo-Regular',Helvetica] font-normal text-black text-base text-center tracking-[0] leading-[normal]">
+        <span className="[font-family:'Baloo_2',Helvetica] font-normal text-black text-base text-center tracking-[0] leading-[normal]">
           Hồ sơ
         </span>
         <ChevronDownIcon className="w-3.5 h-2" />

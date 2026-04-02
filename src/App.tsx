@@ -57,8 +57,7 @@ import ProviderRevenue from "./screens/ProviderRevenue/ProviderRevenue";
 import ProviderWallet from "./screens/ProviderWallet/ProviderWallet";
 import { AdminDashboard } from "./screens/AdminDashboard/AdminDashboard";
 import { AdminUsers } from "./screens/AdminUsers/AdminUsers";
-import { AdminVerification } from "./screens/AdminVerification/AdminVerification";
-import { AdminMoneyDistribution } from "./screens/AdminMoneyDistribution/AdminMoneyDistribution";
+import { AdminWithdrawals } from "./screens/AdminWithdrawals/AdminWithdrawals";
 import { ContactPartnership } from "./screens/ContactPartnership";
 import { AdminAccountRequests } from "./screens/AdminAccountRequests";
 import AdminTransactions from "./screens/AdminTransactions/AdminTransactions";
@@ -229,12 +228,8 @@ const router = createBrowserRouter([
     element: <RoleGuard allowedRoles={["Admin"]}><AdminUsers /></RoleGuard>,
   },
   {
-    path: "/admin/verification",
-    element: <RoleGuard allowedRoles={["Admin"]}><AdminVerification /></RoleGuard>,
-  },
-  {
-    path: "/admin/money",
-    element: <RoleGuard allowedRoles={["Admin"]}><AdminMoneyDistribution /></RoleGuard>,
+    path: "/admin/withdrawals",
+    element: <RoleGuard allowedRoles={["Admin"]}><AdminWithdrawals /></RoleGuard>,
   },
   {
     path: "/admin/account-requests",
@@ -283,14 +278,21 @@ const router = createBrowserRouter([
   { path: "/payment/cancel", element: <RoleGuard allowedRoles={["Parent"]} allowGuest><PaymentCancel /></RoleGuard> },
   { path: "/products", element: <RoleGuard allowedRoles={["Parent"]} allowGuest><ProductList /></RoleGuard> },
   { path: "/products/:id", element: <RoleGuard allowedRoles={["Parent"]} allowGuest><ProductDetail /></RoleGuard> },
+  // ── Catch-all: redirect unknown routes to homepage ──
+  { path: "*", element: <RootRedirect /> },
 ]);
+import { GoogleOAuthProvider } from "@react-oauth/google";
+
+const GOOGLE_CLIENT_ID = "749245119490-h5bee9k35vijgfl6vjfbkaut0qpmpit9.apps.googleusercontent.com";
 
 export const App = () => {
   return (
-    <CartProvider>
-      <ToastProvider>
-        <RouterProvider router={router} />
-      </ToastProvider>
-    </CartProvider>
+    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+      <CartProvider>
+        <ToastProvider>
+          <RouterProvider router={router} />
+        </ToastProvider>
+      </CartProvider>
+    </GoogleOAuthProvider>
   );
 };

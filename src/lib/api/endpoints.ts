@@ -13,6 +13,7 @@ export const endpoints = {
         setup2fa: "/api/Auth/2fa/setup",
         confirm2fa: "/api/Auth/2fa/confirm",
         disable2fa: "/api/Auth/2fa/disable",
+        googleLogin: "/api/Auth/google-login",
     },
     admin: {
         users: "/api/admin/users",
@@ -34,6 +35,7 @@ export const endpoints = {
         importTemplate: "/api/schools/me/students/import/template",
         importStudents: "/api/schools/me/students/import",
         importHistory: "/api/schools/me/students/import/history",
+        importStatus: "/api/schools/me/students/import/status",
         grades: "/api/schools/me/students/grades",
         outfits: "/api/schools/me/outfits",
         outfitImageUpload: "/api/schools/me/outfits/upload-image",
@@ -73,5 +75,12 @@ export const endpoints = {
         providerWallet: "/api/payments/provider/wallet",
         providerWalletTransactions: "/api/payments/provider/wallet/transactions",
         providerWalletBankInfo: "/api/payments/provider/wallet/bank-info",
+    },
+    notifications: {
+        list: "/api/notifications",
+        unreadCount: "/api/notifications/unread-count",
+        read: "/api/notifications", // append /{id}/read
+        readAll: "/api/notifications/read-all",
+        heartbeat: "/api/notifications/heartbeat",
     },
 } as const;

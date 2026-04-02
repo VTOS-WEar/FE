@@ -117,7 +117,7 @@ export const Cart = (): JSX.Element => {
   /* ── Empty state (skip if mid-checkout to avoid flash) ── */
   if (allItems.length === 0 && !checkingOut) {
     return (
-      <GuestLayout bgColor="#F4F6FF">
+      <GuestLayout bgColor="#FFF8F0">
         <div className="max-w-[1200px] mx-auto px-4 lg:px-8 py-16 text-center">
           <ShoppingCart className="w-16 h-16 text-gray-300 mx-auto mb-4" />
           <h1 className="font-montserrat font-extrabold text-2xl text-black mb-2">
@@ -169,7 +169,7 @@ export const Cart = (): JSX.Element => {
             {groups.map((group) => (
               <div
                 key={`${group.schoolId}-${group.campaignId}`}
-                className="bg-white rounded-2xl shadow-sm overflow-hidden"
+                className="bg-white rounded-2xl border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E] overflow-hidden"
               >
                 {/* School header */}
                 <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
@@ -285,7 +285,7 @@ export const Cart = (): JSX.Element => {
           {/* ── Right: Order summary ── */}
           <div className="lg:w-[360px] flex-shrink-0 space-y-5">
             {/* Order info */}
-            <div className="bg-white rounded-2xl shadow-sm p-6">
+            <div className="bg-white rounded-2xl border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E] p-6">
               <h3 className="font-montserrat font-bold text-base text-black mb-5">
                 Thông tin đơn hàng
               </h3>
@@ -372,7 +372,7 @@ export const Cart = (): JSX.Element => {
               <button
                 onClick={handleCheckout}
                 disabled={checkingOut || allItems.length === 0}
-                className="w-full py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-montserrat font-bold text-sm rounded-xl hover:from-purple-700 hover:to-blue-700 disabled:opacity-60 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+                className="w-full py-4 nb-btn nb-btn-purple text-sm disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {checkingOut ? (
                   <>
@@ -405,7 +405,7 @@ export const Cart = (): JSX.Element => {
             </div>
 
             {/* Delivery method */}
-            <div className="bg-white rounded-2xl shadow-sm p-6">
+            <div className="bg-white rounded-2xl border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E] p-6">
               <h3 className="font-montserrat font-bold text-base text-black mb-4">
                 Phương thức nhận hàng
               </h3>
@@ -414,8 +414,8 @@ export const Cart = (): JSX.Element => {
                 <label
                   className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${
                     deliveryMethod === "home"
-                      ? "border-purple-500 bg-purple-50/50"
-                      : "border-gray-100 hover:border-gray-200"
+                      ? "border-[#1A1A2E] bg-[#EDE9FE]"
+                      : "border-[#1A1A2E]/20 hover:border-[#1A1A2E]/40"
                   }`}
                 >
                   <input
@@ -440,8 +440,8 @@ export const Cart = (): JSX.Element => {
                 <label
                   className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${
                     deliveryMethod === "school"
-                      ? "border-purple-500 bg-purple-50/50"
-                      : "border-gray-100 hover:border-gray-200"
+                      ? "border-[#1A1A2E] bg-[#EDE9FE]"
+                      : "border-[#1A1A2E]/20 hover:border-[#1A1A2E]/40"
                   }`}
                 >
                   <input

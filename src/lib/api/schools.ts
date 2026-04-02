@@ -101,7 +101,7 @@ export async function updateSchoolProfile(data: UpdateSchoolProfileRequest) {
     });
 }
 
-/** UC-42: Upload school logo via BE → ImgBB, returns { logoURL } */
+/** UC-42: Upload school logo via BE → MinIO, returns { logoURL } */
 export async function uploadSchoolLogo(file: File): Promise<{ logoURL: string }> {
     const formData = new FormData();
     formData.append("file", file);
@@ -192,6 +192,22 @@ export type ImportBatchDto = {
 export async function getImportHistory(limit = 10): Promise<ImportBatchDto[]> {
     const url = `${endpoints.schools.importHistory}?limit=${limit}`;
     return api<ImportBatchDto[]>(url, {
+        method: "GET",
+        auth: true,
+    });
+}
+
+export type ImportStatusDto = {
+    needsUpdate: boolean;
+    currentSemester: string;
+    lastImportDate: string | null;
+    suggestedDeadline: string;
+    studentCount: number;
+};
+
+/** Get import status for current semester (banner visibility) */
+export async function getImportStatus(): Promise<ImportStatusDto> {
+    return api<ImportStatusDto>(endpoints.schools.importStatus, {
         method: "GET",
         auth: true,
     });
@@ -622,6 +638,7 @@ export type PublicSchoolDto = {
     schoolName: string;
     logoURL: string | null;
     level: string | null;
+    rating: number | null;
     contactInfo: string | null;
 };
 
@@ -641,6 +658,8 @@ export type PublicSchoolDetailDto = {
     schoolId: string;
     schoolName: string;
     logoURL: string | null;
+    level?: string | null;
+    rating?: number | null;
     contactInfo: string | null;
     outfitCount: number;
     activeCampaigns: PublicCampaignSummaryDto[];
@@ -658,8 +677,17 @@ export type PublicCampaignDetailDto = {
 };
 
 /** Guest & Parent: list all public schools (paginated) */
-export async function getPublicSchools(): Promise<unknown> {
-    return api<unknown>(endpoints.public.schools, { method: "GET" });
+export type PublicSchoolsResponse = {
+    schools: PublicSchoolDto[];
+    totalCount: number;
+};
+
+export async function getPublicSchools(page?: number, pageSize?: number): Promise<PublicSchoolsResponse> {
+    const q = new URLSearchParams();
+    if (page) q.set("page", String(page));
+    if (pageSize) q.set("pageSize", String(pageSize));
+    const url = q.toString() ? `${endpoints.public.schools}?${q}` : endpoints.public.schools;
+    return api<PublicSchoolsResponse>(url, { method: "GET" });
 }
 
 /** Guest & Parent: public school detail with active campaigns */

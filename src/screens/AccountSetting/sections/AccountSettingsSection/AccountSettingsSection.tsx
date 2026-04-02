@@ -50,10 +50,10 @@ export const AccountSettingsSection = (): JSX.Element => {
               src="https://c.animaapp.com/mjxt3t8wNP0otU/img/frame-239299.svg"
             />
             <div className="flex flex-col gap-[3px] justify-center">
-              <div className="[font-family:'Montserrat',Helvetica] font-normal text-black text-[15px] tracking-[0] leading-[normal]">
+              <div className="font-normal text-black text-[15px] tracking-[0] leading-[normal]">
                 Tài khoản
               </div>
-              <div className="[font-family:'Montserrat',Helvetica] font-semibold text-black text-xl tracking-[0] leading-[normal] whitespace-nowrap">
+              <div className="font-semibold text-black text-xl tracking-[0] leading-[normal] whitespace-nowrap">
                 Võ Gia Truyền
               </div>
             </div>
@@ -69,7 +69,7 @@ export const AccountSettingsSection = (): JSX.Element => {
                     : "bg-[#4182f9] bg-opacity-10 text-[#4182f9]"
                 }`}
               >
-                <span className="[font-family:'Montserrat',Helvetica] font-semibold text-base text-center tracking-[0] leading-[normal]">
+                <span className="font-semibold text-base text-center tracking-[0] leading-[normal]">
                   {item.label}
                 </span>
               </button>
@@ -77,7 +77,7 @@ export const AccountSettingsSection = (): JSX.Element => {
           </nav>
 
           <button className="w-full h-11 rounded-lg flex items-center justify-center px-4 bg-[#f94144] bg-opacity-10 text-[#f94144] mt-auto">
-            <span className="[font-family:'Montserrat',Helvetica] font-semibold text-base text-center tracking-[0] leading-[normal]">
+            <span className="font-semibold text-base text-center tracking-[0] leading-[normal]">
               Đăng Xuất
             </span>
           </button>
@@ -85,10 +85,10 @@ export const AccountSettingsSection = (): JSX.Element => {
 
         <main className="flex-1 bg-[#f5f5fa] rounded-[0px_30px_30px_0px] p-5 min-h-[771px] flex flex-col">
           <div className="mb-2">
-            <h1 className="[font-family:'Montserrat',Helvetica] font-bold text-[#111112] text-[32px] tracking-[0] leading-[normal]">
+            <h1 className="font-bold text-[#111112] text-[32px] tracking-[0] leading-[normal]">
               Cài đặt chung
             </h1>
-            <p className="opacity-50 [font-family:'Montserrat',Helvetica] font-normal text-black text-base tracking-[0] leading-[normal] mt-[10px]">
+            <p className="opacity-50 font-normal text-black text-base tracking-[0] leading-[normal] mt-[10px]">
               Quản lý thông báo và quyền riêng tư.
             </p>
           </div>
@@ -98,7 +98,7 @@ export const AccountSettingsSection = (): JSX.Element => {
               <CardContent className="p-0">
                 <div className="flex items-center gap-2.5 px-5 pt-[21px] pb-[19px]">
                   <BellIcon className="w-[35px] h-[34px] text-black" />
-                  <h2 className="[font-family:'Montserrat',Helvetica] font-semibold text-black text-xl tracking-[0] leading-[normal]">
+                  <h2 className="font-semibold text-black text-xl tracking-[0] leading-[normal]">
                     Cài đặt thông báo
                   </h2>
                 </div>
@@ -112,10 +112,10 @@ export const AccountSettingsSection = (): JSX.Element => {
                       className="flex items-start justify-between"
                     >
                       <div className="flex flex-col gap-2.5 max-w-[500px]">
-                        <div className="[font-family:'Montserrat',Helvetica] font-semibold text-black text-base tracking-[0] leading-[normal]">
+                        <div className="font-semibold text-black text-base tracking-[0] leading-[normal]">
                           {setting.title}
                         </div>
-                        <div className="opacity-70 [font-family:'Montserrat',Helvetica] font-medium text-black text-[13px] tracking-[0] leading-[normal]">
+                        <div className="opacity-70 font-medium text-black text-[13px] tracking-[0] leading-[normal]">
                           {setting.description}
                         </div>
                       </div>
@@ -133,7 +133,7 @@ export const AccountSettingsSection = (): JSX.Element => {
               <CardContent className="p-0">
                 <div className="flex items-center gap-2.5 px-5 pt-[21px] pb-[20.4px]">
                   <SettingsIcon className="w-[34px] h-[32.58px] text-black" />
-                  <h2 className="[font-family:'Montserrat',Helvetica] font-semibold text-black text-xl tracking-[0] leading-[normal]">
+                  <h2 className="font-semibold text-black text-xl tracking-[0] leading-[normal]">
                     Tuỳ chọn ứng dụng
                   </h2>
                 </div>
@@ -142,13 +142,13 @@ export const AccountSettingsSection = (): JSX.Element => {
 
                 <div className="flex items-start justify-between gap-[44px] px-[30px] pt-[21px] pb-[31px]">
                   <div className="flex flex-col gap-1 flex-1">
-                    <label className="opacity-70 [font-family:'Montserrat',Helvetica] font-bold text-black text-sm tracking-[0] leading-[normal]">
+                    <label className="opacity-70 font-bold text-black text-sm tracking-[0] leading-[normal]">
                       NGÔN NGỮ
                     </label>
                     <Select defaultValue="vi">
                       <SelectTrigger className="w-full h-[50px] bg-slate-50 rounded-[15px] border border-solid border-[#00000036] px-5">
                         <SelectValue>
-                          <span className="opacity-80 [font-family:'Montserrat',Helvetica] font-semibold text-black text-base tracking-[0] leading-[normal]">
+                          <span className="opacity-80 font-semibold text-black text-base tracking-[0] leading-[normal]">
                             Tiếng Việt
                           </span>
                         </SelectValue>
@@ -160,13 +160,13 @@ export const AccountSettingsSection = (): JSX.Element => {
                   </div>
 
                   <div className="flex flex-col gap-1 flex-1">
-                    <label className="opacity-70 [font-family:'Montserrat',Helvetica] font-bold text-black text-sm tracking-[0] leading-[normal]">
+                    <label className="opacity-70 font-bold text-black text-sm tracking-[0] leading-[normal]">
                       ĐƠN VỊ TIỀN TỆ
                     </label>
                     <Select defaultValue="vnd">
                       <SelectTrigger className="w-full h-[50px] bg-slate-50 rounded-[15px] border border-solid border-[#00000036] px-5">
                         <SelectValue>
-                          <span className="opacity-80 [font-family:'Montserrat',Helvetica] font-semibold text-black text-base tracking-[0] leading-[normal]">
+                          <span className="opacity-80 font-semibold text-black text-base tracking-[0] leading-[normal]">
                             VNĐ
                           </span>
                         </SelectValue>
@@ -184,7 +184,7 @@ export const AccountSettingsSection = (): JSX.Element => {
           <div className="flex items-center justify-end gap-[23px] mt-auto pt-[29px]">
             <Button className="h-[47px] px-[15px] py-2.5 bg-[#3c6efd] rounded-[10px] shadow-[0px_0px_8.4px_#3c6efd] hover:bg-[#3c6efd]/90 transition-colors">
               <SaveIcon className="w-6 h-6" />
-              <span className="[font-family:'Montserrat',Helvetica] font-semibold text-white text-xl text-center tracking-[0] leading-[normal] whitespace-nowrap">
+              <span className="font-semibold text-white text-xl text-center tracking-[0] leading-[normal] whitespace-nowrap">
                 Lưu thay đổi
               </span>
             </Button>
@@ -194,7 +194,7 @@ export const AccountSettingsSection = (): JSX.Element => {
               className="h-[47px] px-[15px] py-2.5 bg-white rounded-[10px] border border-solid border-[#cac9d6] hover:bg-gray-50 transition-colors"
             >
               <XIcon className="w-6 h-6" />
-              <span className="opacity-70 [font-family:'Montserrat',Helvetica] font-semibold text-black text-xl text-center tracking-[0] leading-[normal] whitespace-nowrap">
+              <span className="opacity-70 font-semibold text-black text-xl text-center tracking-[0] leading-[normal] whitespace-nowrap">
                 Huỷ
               </span>
             </Button>

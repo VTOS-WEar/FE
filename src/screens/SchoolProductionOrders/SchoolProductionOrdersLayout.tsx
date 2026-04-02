@@ -13,13 +13,17 @@ export default function SchoolProductionOrdersLayout() {
     const [isCollapsed, toggle] = useSidebarCollapsed();
 
     return (
-        <div style={{ display: "flex", minHeight: "100vh", background: "#f5f5f5" }}>
-            <div className={`${isCollapsed ? "lg:w-16" : "lg:w-[20rem] xl:w-[23.75rem]"} flex-shrink-0 lg:sticky lg:top-0 lg:h-screen transition-all duration-300`}>
-                <DashboardSidebar {...sidebarConfig} isCollapsed={isCollapsed} onToggle={toggle} />
+        <div className="nb-page flex flex-col">
+            <div className="flex flex-1 flex-col lg:flex-row">
+                <div className={`${isCollapsed ? "lg:w-16" : "lg:w-[16rem]"} flex-shrink-0 lg:sticky lg:top-0 lg:h-screen transition-all duration-300`}>
+                    <DashboardSidebar {...sidebarConfig} isCollapsed={isCollapsed} onToggle={toggle} />
+                </div>
+                <div className="flex-1 flex flex-col min-w-0">
+                    <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8">
+                        <Outlet />
+                    </main>
+                </div>
             </div>
-            <main style={{ flex: 1, padding: "32px 40px", minWidth: 0 }}>
-                <Outlet />
-            </main>
         </div>
     );
 }

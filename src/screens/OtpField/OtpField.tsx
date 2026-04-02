@@ -1,11 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { NavbarGuest, Footer } from "../../components/layout";
-import { Button } from "../../components/ui/button";
 import { Label } from "../../components/ui/label";
 import { Notify } from "../../components/ui/notify";
-import { Separator } from "../../components/ui/separator";
-import { Input } from "../../components/ui/input";
 import { verifyEmail, resendOtpEmail } from "../../lib/api/auth";
 import { ApiError } from "../../lib/api/clients";
 import { GuestLayout } from "../../components/layout/GuestLayout";
@@ -15,8 +11,6 @@ type VerifyEmailErrorDetails = {
     error?: string;
     message?: string;
 };
-
-
 
 function maskEmail(email: string) {
     const [name, domain] = email.split("@");
@@ -31,7 +25,6 @@ export const VerifyOtp = (): JSX.Element => {
 
     const OTP_LEN = 6;
 
-    // ✅ email nhận từ state; fallback localStorage để tránh mất khi refresh
     const email = useMemo(() => {
         const st = location.state as any;
         const fromState = (st?.email as string) || "";
@@ -42,7 +35,6 @@ export const VerifyOtp = (): JSX.Element => {
         return value;
     }, [location.state]);
 
-    // roleName from navigation state (fallback localStorage)
     const roleName = useMemo(() => {
         const st = location.state as any;
         const fromState = (st?.roleName as string) || "";
@@ -53,7 +45,6 @@ export const VerifyOtp = (): JSX.Element => {
         return value;
     }, [location.state]);
 
-    // ✅ otp là string
     const [otp, setOtp] = useState<string>("");
     const inputsRef = useRef<Array<HTMLInputElement | null>>([]);
 
@@ -65,7 +56,6 @@ export const VerifyOtp = (): JSX.Element => {
         durationMs?: 3500;
     } | null>(null);
 
-    // countdown gửi lại    
     const [cooldown, setCooldown] = useState(60);
 
     useEffect(() => {
@@ -78,14 +68,13 @@ export const VerifyOtp = (): JSX.Element => {
         return () => clearInterval(t);
     }, [cooldown]);
 
-    const otpValue = otp; // ✅ luôn là string
+    const otpValue = otp;
 
     const focusIndex = (i: number) => {
         inputsRef.current[i]?.focus();
         inputsRef.current[i]?.select?.();
     };
 
-    // helper: set 1 ký tự tại vị trí i trong otp string
     const setCharAt = (s: string, i: number, ch: string) => {
         const arr = s.padEnd(OTP_LEN, " ").split("");
         arr[i] = ch;
@@ -99,7 +88,6 @@ export const VerifyOtp = (): JSX.Element => {
             return;
         }
 
-        // gõ/dán nhiều số vào 1 ô
         const chars = v.split("");
         setOtp((prev) => {
             let next = prev;
@@ -153,7 +141,6 @@ export const VerifyOtp = (): JSX.Element => {
                 title: "Thiếu thông tin",
                 message: "Không tìm thấy email. Vui lòng quay lại bước trước.",
                 variant: "error",
-
             });
             return;
         }
@@ -190,7 +177,6 @@ export const VerifyOtp = (): JSX.Element => {
                         message: "Mã OTP không đúng. Vui lòng thử lại.",
                         variant: "error",
                     });
-
                     return;
                 }
 
@@ -209,7 +195,6 @@ export const VerifyOtp = (): JSX.Element => {
                     variant: "error",
                 });
                 return;
-
             }
 
             setNotify({
@@ -245,7 +230,6 @@ export const VerifyOtp = (): JSX.Element => {
                 variant: "success",
             });
 
-            // reset OTP + focus lại
             setOtp("");
             setTimeout(() => focusIndex(0), 0);
         } catch (err: any) {
@@ -256,42 +240,40 @@ export const VerifyOtp = (): JSX.Element => {
             });
         } finally {
             setIsLoading(false);
-
         }
     };
 
     return (
-        <GuestLayout bgColor="#f4f2ff">
-
-            <main className="flex-1 bg-[#F4F6FF] px-4 py-10 lg:py-14">
+        <GuestLayout bgColor="#FFF8F0">
+            <main className="nb-page flex-1 px-4 py-10 lg:py-14 nb-fade-in">
                 <div className="mx-auto w-full max-w-6xl">
-                    <div className="overflow-hidden rounded-[2rem] bg-white shadow-[0_20px_60px_rgba(16,15,20,0.12)] ring-1 ring-black/5">
+                    <div className="nb-card-static overflow-hidden rounded-2xl">
                         <div className="flex flex-col lg:flex-row">
-                            {/* LEFT */}
-                            <div className="lg:w-[52%] flex items-center justify-center p-6 lg:p-12">
+                            {/* LEFT — Form */}
+                            <div className="lg:w-[52%] flex items-center justify-center p-6 lg:p-12 bg-white">
                                 <div className="w-full max-w-[26rem]">
-                                    <h1 className="[font-family:'Baloo_2',Helvetica] font-extrabold text-[#100f14] text-3xl lg:text-4xl text-center mb-3">
-                                        Nhập mã OTP
+                                    <h1 className="font-extrabold text-[#1A1A2E] text-3xl lg:text-4xl text-center mb-3">
+                                        Nhập mã OTP ✦
                                     </h1>
 
-                                    <p className="text-center [font-family:'Montserrat',Helvetica] font-medium text-[#676576] text-sm lg:text-base mb-6">
+                                    <p className="text-center font-medium text-[#6B7280] text-sm lg:text-base mb-6">
                                         Mã đã được gửi tới{" "}
-                                        <span className="font-semibold text-[#19181f]">
+                                        <span className="font-bold text-[#1A1A2E]">
                                             {email ? maskEmail(email) : "email của bạn"}
                                         </span>
                                     </p>
 
                                     <div className="flex items-center gap-4 lg:gap-6 my-5 lg:my-6">
-                                        <Separator className="flex-1 h-[1px] bg-[#cac9d6]" />
-                                        <span className="[font-family:'Montserrat',Helvetica] font-medium text-[#676576] text-base">
+                                        <div className="flex-1 h-[2px] bg-[#1A1A2E]/10" />
+                                        <span className="font-bold text-[#6B7280] text-sm uppercase tracking-wider">
                                             Xác thực
                                         </span>
-                                        <Separator className="flex-1 h-[1px] bg-[#cac9d6]" />
+                                        <div className="flex-1 h-[2px] bg-[#1A1A2E]/10" />
                                     </div>
 
                                     <div className="space-y-4">
                                         <div className="space-y-2">
-                                            <Label className="[font-family:'Montserrat',Helvetica] font-medium text-[#9794aa] text-sm lg:text-base">
+                                            <Label className="font-bold text-[#1A1A2E] text-sm">
                                                 OTP (6 chữ số)
                                             </Label>
 
@@ -299,7 +281,7 @@ export const VerifyOtp = (): JSX.Element => {
                                                 {Array.from({ length: OTP_LEN }).map((_, i) => {
                                                     const d = otp[i] ?? "";
                                                     return (
-                                                        <Input
+                                                        <input
                                                             key={i}
                                                             ref={(el) => {
                                                                 inputsRef.current[i] = el;
@@ -311,48 +293,46 @@ export const VerifyOtp = (): JSX.Element => {
                                                             onChange={(e) => handleChange(i, e.target.value)}
                                                             onKeyDown={(e) => handleKeyDown(i, e)}
                                                             onPaste={handlePaste}
-                                                            className="h-12 lg:h-14 w-12 lg:w-14 text-center text-lg lg:text-xl font-bold rounded-md border border-[#cac9d6]"
+                                                            className="w-12 h-14 text-center text-2xl font-extrabold border-2 border-[#1A1A2E] rounded-xl bg-white shadow-[3px_3px_0_#1A1A2E] focus:shadow-[3px_3px_0_#1A1A2E,0_0_0_2px_#B8A9E8] outline-none transition-all"
                                                         />
                                                     );
                                                 })}
                                             </div>
 
-                                            <div className="flex items-center justify-between text-sm lg:text-base mt-2">
+                                            <div className="flex items-center justify-between text-sm mt-2">
                                                 <button
                                                     type="button"
                                                     onClick={() => navigate(-1)}
-                                                    className="[font-family:'Montserrat',Helvetica] font-medium italic text-[#676576] hover:opacity-70"
+                                                    className="font-bold text-[#4C5769] hover:text-[#1A1A2E] transition-colors"
                                                 >
-                                                    Quay lại
+                                                    ← Quay lại
                                                 </button>
 
                                                 <button
                                                     type="button"
                                                     disabled={cooldown > 0 || isLoading}
                                                     onClick={() => void handleResend()}
-                                                    className="[font-family:'Montserrat',Helvetica] font-semibold italic text-[#6938ef] disabled:opacity-50 disabled:cursor-not-allowed hover:underline"
+                                                    className="font-bold text-[#1A1A2E] disabled:opacity-50 disabled:cursor-not-allowed hover:text-[#B8A9E8] transition-colors border-b-2 border-transparent hover:border-[#B8A9E8]"
                                                 >
                                                     {cooldown > 0 ? `Gửi lại OTP (${cooldown}s)` : "Gửi lại OTP"}
                                                 </button>
                                             </div>
                                         </div>
 
-                                        <Button
+                                        <button
                                             type="button"
                                             onClick={() => void handleVerify()}
                                             disabled={isLoading}
-                                            className="w-full h-14 lg:h-16 bg-[#6838ee] rounded-[2.5rem] hover:bg-[#5527d9] mt-3"
+                                            className="nb-btn nb-btn-purple w-full h-14 lg:h-16 text-lg lg:text-xl mt-3 disabled:opacity-50 disabled:cursor-not-allowed"
                                         >
-                                            <span className="[font-family:'Baloo_2',Helvetica] font-extrabold text-white text-lg lg:text-xl">
-                                                {isLoading ? "Đang xác thực..." : "Xác thực"}
-                                            </span>
-                                        </Button>
+                                            {isLoading ? "Đang xác thực..." : "Xác thực ✦"}
+                                        </button>
 
-                                        <p className="text-center [font-family:'Poppins',Helvetica] font-normal text-sm lg:text-base">
-                                            <span className="text-[#494759]">Sai email? </span>
+                                        <p className="text-center font-medium text-sm lg:text-base">
+                                            <span className="text-[#4C5769]">Sai email? </span>
                                             <span
                                                 onClick={() => navigate("/register", { replace: true })}
-                                                className="[font-family:'Montserrat',Helvetica] font-semibold italic text-[#6938ef] cursor-pointer hover:underline"
+                                                className="font-bold text-[#1A1A2E] hover:text-[#B8A9E8] border-b-2 border-[#B8A9E8] transition-colors cursor-pointer"
                                             >
                                                 Đăng ký lại
                                             </span>
@@ -361,25 +341,11 @@ export const VerifyOtp = (): JSX.Element => {
                                 </div>
                             </div>
 
-                            {/* RIGHT */}
-                            <div className="lg:w-[48%] relative overflow-hidden bg-gradient-to-br from-[#94bfff] to-[#c68cf4] p-8 lg:p-12 flex items-center justify-center">
-                                <div className="absolute inset-0 opacity-20 pointer-events-none">
-                                    <img
-                                        className="absolute -top-24 -left-24 w-[36rem] h-[36rem]"
-                                        alt="Vector"
-                                        src="https://c.animaapp.com/mjxt3t8wNP0otU/img/vector-29.svg"
-                                    />
-                                    <img
-                                        className="absolute top-28 -right-40 w-[42rem] h-[48rem]"
-                                        alt="Vector"
-                                        src="https://c.animaapp.com/mjxt3t8wNP0otU/img/vector-28.svg"
-                                    />
-                                    <img
-                                        className="absolute -top-40 right-0 w-[44rem] h-[36rem]"
-                                        alt="Vector"
-                                        src="https://c.animaapp.com/mjxt3t8wNP0otU/img/vector-24.svg"
-                                    />
-                                </div>
+                            {/* RIGHT — Hero with NB */}
+                            <div className="lg:w-[48%] relative overflow-hidden bg-[#EDE9FE] p-8 lg:p-12 flex items-center justify-center border-l-0 lg:border-l-2 border-t-2 lg:border-t-0 border-[#1A1A2E]">
+                                <div className="absolute top-8 left-6 w-14 h-14 bg-[#C8E44D] border-2 border-[#1A1A2E] rounded-lg shadow-[3px_3px_0_#1A1A2E] rotate-12 opacity-60" />
+                                <div className="absolute bottom-14 right-8 w-10 h-10 bg-[#F5C6C2] border-2 border-[#1A1A2E] rounded-full shadow-[3px_3px_0_#1A1A2E] opacity-50" />
+                                <div className="absolute top-[40%] right-6 w-12 h-12 bg-[#F5E642] border-2 border-[#1A1A2E] rounded-lg shadow-[2px_2px_0_#1A1A2E] -rotate-6 opacity-60" />
 
                                 <div className="relative z-10 w-full max-w-md text-right">
                                     <img
@@ -387,11 +353,11 @@ export const VerifyOtp = (): JSX.Element => {
                                         alt="Vtos logo"
                                         src="https://c.animaapp.com/mjxt3t8wNP0otU/img/vtos--1--removebg-preview-2-1.png"
                                     />
-                                    <p className="[font-family:'Montserrat',Helvetica] font-semibold italic text-white text-xl lg:text-3xl leading-relaxed mb-6">
-                                        AI Try-On đồng phục trong vài giây
+                                    <p className="font-extrabold text-[#1A1A2E] text-xl lg:text-3xl leading-relaxed mb-6">
+                                        AI Try-On đồng phục trong vài giây ✦
                                     </p>
                                     <img
-                                        className="w-full max-w-[22rem] lg:max-w-[26rem] h-auto ml-auto"
+                                        className="w-full max-w-[22rem] lg:max-w-[26rem] h-auto ml-auto drop-shadow-[4px_4px_0_rgba(26,26,46,0.3)]"
                                         alt="Students"
                                         src="https://c.animaapp.com/mjxt3t8wNP0otU/img/vtos--3--removebg-preview-1.png"
                                     />
@@ -401,8 +367,6 @@ export const VerifyOtp = (): JSX.Element => {
                     </div>
                 </div>
             </main>
-
-
 
             <Notify
                 open={!!notify}

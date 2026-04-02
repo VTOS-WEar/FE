@@ -10,7 +10,7 @@ interface ProductCardProps {
 
 const ProductCard = ({ name, price, imageUrl, school }: ProductCardProps) => {
   return (
-    <div className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow group">
+    <div className="bg-white rounded-xl border-2 border-[#1A1A2E] overflow-hidden shadow-[4px_4px_0_#1A1A2E] hover:shadow-[6px_6px_0_#1A1A2E] transition-all hover:-translate-y-1 group">
       {/* Image */}
       <div className="relative h-[200px] overflow-hidden">
         <img 
@@ -56,7 +56,7 @@ export default function ProductList() {
   });
 
   return (
-    <div className="bg-vtos-gray-light">
+    <div className="bg-[#FFF8F0]">
       {/* Breadcrumb */}
       <div className="max-w-[1440px] mx-auto px-6 lg:px-12 pt-8 pb-6">
         <div className="flex items-center gap-2.5 text-base">
@@ -78,7 +78,7 @@ export default function ProductList() {
         </div>
 
         {/* Search/Filter Box */}
-        <div className="bg-white rounded-xl border border-vtos-gray-border p-6 lg:p-8 shadow-sm">
+        <div className="bg-white rounded-xl border-2 border-[#1A1A2E] p-6 lg:p-8 shadow-[4px_4px_0_#1A1A2E]">
           <div className="grid grid-cols-1 lg:grid-cols-[2fr,1fr,1fr,auto] gap-5 items-end">
             {/* Search Input */}
             <div className="flex flex-col gap-3">
@@ -122,7 +122,7 @@ export default function ProductList() {
             </div>
 
             {/* Filter Button */}
-            <button className="bg-purple-main hover:bg-purple-dark transition-colors rounded-lg px-5 h-[56px] flex items-center justify-center gap-2.5 shadow-md hover:shadow-lg text-white">
+            <button className="bg-purple-main hover:bg-purple-dark rounded-lg border-2 border-[#1A1A2E] px-5 h-[56px] flex items-center justify-center gap-2.5 shadow-[4px_4px_0_#1A1A2E] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_#1A1A2E] transition-all text-white">
               <span className="font-montserrat font-bold text-base whitespace-nowrap">
                 Lọc
               </span>

@@ -1,12 +1,19 @@
 import { Settings } from "lucide-react";
 
 export const SettingsTab = (): JSX.Element => (
-  <div className="flex flex-col items-center justify-center py-16 gap-4">
-    <div className="w-16 h-16 bg-[#f4f2ff] rounded-full flex items-center justify-center">
-      <Settings className="w-8 h-8 text-[#6938ef] opacity-50" />
+  <div className="flex flex-col items-center justify-center py-16 gap-5 nb-fade-in">
+    <div className="w-20 h-20 bg-[#F5C6C2] rounded-xl flex items-center justify-center border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E]">
+      <Settings className="w-10 h-10 text-[#1A1A2E]" />
     </div>
-    <p className="[font-family:'Montserrat',Helvetica] font-medium text-[#1a1a2e]/50 text-sm text-center">
-      Chức năng đang phát triển.<br />Cài đặt tài khoản sẽ hiển thị ở đây.
-    </p>
+    <div className="text-center">
+      <span className="inline-block px-4 py-1.5 rounded-lg bg-[#F5E642] border-2 border-[#1A1A2E] font-extrabold text-[#1A1A2E] text-sm shadow-[2px_2px_0_#1A1A2E] mb-3">
+        Coming Soon ✦
+      </span>
+      <p className="font-bold text-[#1A1A2E] text-lg mb-1">Cài đặt tài khoản</p>
+      <p className="font-medium text-[#6B7280] text-sm max-w-xs mx-auto">
+        Tính năng đang được phát triển.<br />
+        Cài đặt thông báo, ngôn ngữ sẽ hiển thị ở đây.
+      </p>
+    </div>
   </div>
 );

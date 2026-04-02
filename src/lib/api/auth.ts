@@ -65,6 +65,7 @@ export type LoginResponse = {
     user: UserInfo;
     requiresTwoFactor?: boolean;
     requiresTwoFactorSetup?: boolean;
+    shouldSetup2FA?: boolean;
     twoFactorToken?: string;
 };
 
@@ -117,6 +118,13 @@ export async function disable2FA(code: string, accessToken: string) {
         method: "POST",
         body: JSON.stringify({ code }),
         headers: { Authorization: `Bearer ${accessToken}` },
+    });
+}
+
+export async function googleLogin(idToken: string) {
+    return api<LoginResponse>(endpoints.auth.googleLogin, {
+        method: "POST",
+        body: JSON.stringify({ idToken }),
     });
 }
 //#endregion

@@ -2,6 +2,7 @@ import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { DashboardSidebar } from "../../components/layout";
+import { TopNavBar } from "../../components/layout/TopNavBar";
 import { useAdminSidebarConfig } from "../../hooks/useAdminSidebarConfig";
 import {
     Breadcrumb, BreadcrumbItem, BreadcrumbLink,
@@ -12,20 +13,33 @@ import {
     type AdminComplaintDto, type AdminComplaintListResult
 } from "../../lib/api/admin";
 
-const STATUS_TABS = [
-    { value: "", label: "Tất cả" },
-    { value: "Open", label: "Mở" },
-    { value: "InProgress", label: "Đang xử lý" },
-    { value: "Resolved", label: "Đã giải quyết" },
-    { value: "Closed", label: "Đã đóng" },
-];
-
-const STATUS_COLORS: Record<string, string> = {
-    Open: "bg-red-100 text-red-700",
-    InProgress: "bg-yellow-100 text-yellow-700",
-    Resolved: "bg-green-100 text-green-700",
-    Closed: "bg-gray-100 text-gray-600",
+/* ── Design tokens ── */
+const T = {
+    ink: "#19182B", surface: "#FFFFFF", surfaceSoft: "#FFFDF9",
+    primary: "#8B6BFF", primarySoft: "#E9E1FF",
+    successSoft: "#D9F8E8", warningSoft: "#FFF1BF", dangerSoft: "#FFE3D8",
+    infoSoft: "#DCEBFF", muted: "#6F6A7D",
 };
+
+const STATUS_TONE: Record<string, { bg: string; text: string }> = {
+    Open: { bg: T.dangerSoft, text: "#B2452D" },
+    InProgress: { bg: T.warningSoft, text: "#9A590E" },
+    Resolved: { bg: T.successSoft, text: "#187A4C" },
+    Closed: { bg: "#F0EDF5", text: "#6F6A7D" },
+};
+const STATUS_LABEL: Record<string, string> = {
+    Open: "Đang mở", InProgress: "Đang xử lý", Resolved: "Đã giải quyết", Closed: "Đã đóng",
+};
+
+function Badge({ children, tone }: { children: React.ReactNode; tone?: { bg: string; text: string } }) {
+    const t = tone || { bg: T.surface, text: T.ink };
+    return (
+        <span className="inline-flex items-center rounded-full border-[2px] px-3 py-1 text-[12px] font-black uppercase tracking-wide"
+            style={{ borderColor: T.ink, background: t.bg, color: t.text, boxShadow: `2px 2px 0 ${T.ink}` }}>
+            {children}
+        </span>
+    );
+}
 
 export default function AdminComplaints() {
     const navigate = useNavigate();
@@ -36,7 +50,6 @@ export default function AdminComplaints() {
     const [statusFilter, setStatusFilter] = useState("");
     const [loading, setLoading] = useState(true);
 
-    // Modal
     const [selected, setSelected] = useState<AdminComplaintDto | null>(null);
     const [note, setNote] = useState("");
     const [action, setAction] = useState("");
@@ -45,8 +58,7 @@ export default function AdminComplaints() {
     const fetchData = useCallback(async () => {
         setLoading(true);
         try {
-            const res = await getAdminComplaints({ page, pageSize: 15, status: statusFilter || undefined });
-            setData(res);
+            setData(await getAdminComplaints({ page, pageSize: 15, status: statusFilter || undefined }));
         } catch (e) { console.error(e); }
         setLoading(false);
     }, [page, statusFilter]);
@@ -70,139 +82,220 @@ export default function AdminComplaints() {
         navigate("/signin", { replace: true });
     };
 
-    const totalPages = data ? Math.ceil(data.totalCount / data.pageSize) : 1;
+    const totalPages = data ? Math.max(1, Math.ceil(data.totalCount / data.pageSize)) : 1;
+
+    /* ── Column grid ── */
+    const gridCols = "2fr 1.5fr 1.5fr 1.5fr 1.2fr 1.2fr 1fr";
 
     return (
-        <div className="bg-[#f6f7f8] w-full min-h-screen flex flex-col">
+        <div className="nb-page flex flex-col">
             <div className="flex flex-1 flex-col lg:flex-row">
-                <div className={`${isCollapsed ? "lg:w-16" : "lg:w-[20rem] xl:w-[23.75rem]"} flex-shrink-0 lg:sticky lg:top-0 lg:h-screen transition-all duration-300`}>
+                <div className={`${isCollapsed ? "lg:w-16" : "lg:w-[16rem]"} flex-shrink-0 lg:sticky lg:top-0 lg:h-screen transition-all duration-300`}>
                     <DashboardSidebar {...sidebarConfig} isCollapsed={isCollapsed} onToggle={toggle} onLogout={handleLogout} />
                 </div>
                 <div className="flex-1 flex flex-col min-w-0">
-                    <div className="bg-white border-b border-[#cbcad7] px-6 lg:px-10 py-5">
+                    <TopNavBar>
                         <Breadcrumb><BreadcrumbList>
                             <BreadcrumbItem><BreadcrumbLink href="/admin/dashboard" className="font-semibold text-[#4c5769] text-base">Trang chủ</BreadcrumbLink></BreadcrumbItem>
                             <BreadcrumbSeparator className="text-[#cbcad7]">/</BreadcrumbSeparator>
-                            <BreadcrumbItem><BreadcrumbPage className="font-semibold text-[#4c5769] text-base">Khiếu nại</BreadcrumbPage></BreadcrumbItem>
+                            <BreadcrumbItem><BreadcrumbPage className="font-bold text-[#1A1A2E] text-base">Khiếu nại</BreadcrumbPage></BreadcrumbItem>
                         </BreadcrumbList></Breadcrumb>
-                    </div>
-                    <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-6">
-
-                        <h1 className="font-bold text-black text-[28px]">⚠️ Khiếu nại toàn hệ thống</h1>
+                    </TopNavBar>
+                    <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-6 nb-fade-in">
+                        {/* Header */}
+                        <div>
+                            <h1 className="text-[40px] font-black leading-none md:text-[48px]" style={{ color: T.ink }}>⚠️ Khiếu nại</h1>
+                            <p className="mt-3 max-w-3xl text-[17px] font-semibold leading-8" style={{ color: T.muted }}>
+                                Xem xét và can thiệp khiếu nại giữa Trường và Nhà cung cấp trong toàn hệ thống.
+                            </p>
+                        </div>
 
                         {/* Stats */}
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            <div className="bg-white border border-[#CBCAD7] rounded-2xl p-5 hover:shadow-md transition-shadow">
-                                <p className="text-xs font-semibold text-[#6B7280] uppercase">Đang mở</p>
-                                <p className="text-2xl font-bold text-red-600 mt-1">{data?.openCount ?? 0}</p>
-                            </div>
-                            <div className="bg-white border border-[#CBCAD7] rounded-2xl p-5 hover:shadow-md transition-shadow">
-                                <p className="text-xs font-semibold text-[#6B7280] uppercase">Đang xử lý</p>
-                                <p className="text-2xl font-bold text-yellow-600 mt-1">{data?.inProgressCount ?? 0}</p>
-                            </div>
-                            <div className="bg-white border border-[#CBCAD7] rounded-2xl p-5 hover:shadow-md transition-shadow">
-                                <p className="text-xs font-semibold text-[#6B7280] uppercase">Đã giải quyết</p>
-                                <p className="text-2xl font-bold text-green-600 mt-1">{data?.resolvedCount ?? 0}</p>
-                            </div>
-                        </div>
-
-                        {/* Status tabs */}
-                        <div className="flex gap-1 bg-white border border-[#CBCAD7] rounded-xl p-1 w-fit">
-                            {STATUS_TABS.map(tab => (
-                                <button key={tab.value} onClick={() => { setStatusFilter(tab.value); setPage(1); }}
-                                    className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
-                                        statusFilter === tab.value ? "bg-[#6366F1] text-white" : "text-[#6B7280] hover:bg-gray-100"
-                                    }`}>
-                                    {tab.label}
-                                </button>
+                            {[
+                                { label: "Đang mở", value: data?.openCount ?? 0, color: "#EF4444" },
+                                { label: "Đang xử lý", value: data?.inProgressCount ?? 0, color: "#F59E0B" },
+                                { label: "Đã giải quyết", value: data?.resolvedCount ?? 0, color: "#10B981" },
+                            ].map((s, i) => (
+                                <div key={i} className="rounded-[16px] border-[3px] p-5"
+                                    style={{ borderColor: T.ink, background: T.surface, boxShadow: `5px 5px 0 ${T.ink}` }}>
+                                    <p className="text-[12px] font-black uppercase tracking-wide" style={{ color: T.muted }}>{s.label}</p>
+                                    <p className="text-[32px] font-black mt-1" style={{ color: s.color }}>{s.value}</p>
+                                </div>
                             ))}
                         </div>
 
+                        {/* Toolbar */}
+                        <div className="rounded-[18px] border-[3px] p-4" style={{ borderColor: T.ink, background: T.surface, boxShadow: `6px 6px 0 ${T.ink}` }}>
+                            <div className="flex flex-wrap items-center gap-3">
+                                {[
+                                    { value: "", label: "Tất cả" },
+                                    { value: "Open", label: "Đang mở" },
+                                    { value: "InProgress", label: "Đang xử lý" },
+                                    { value: "Resolved", label: "Đã giải quyết" },
+                                    { value: "Closed", label: "Đã đóng" },
+                                ].map(tab => (
+                                    <button key={tab.value}
+                                        onClick={() => { setStatusFilter(tab.value); setPage(1); }}
+                                        className="rounded-full border-[2px] px-4 py-1.5 text-[13px] font-extrabold transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#19182B]"
+                                        style={{
+                                            borderColor: T.ink,
+                                            background: statusFilter === tab.value ? T.primary : T.surface,
+                                            color: statusFilter === tab.value ? "#fff" : T.ink,
+                                            boxShadow: `2px 2px 0 ${T.ink}`,
+                                        }}>
+                                        {tab.label}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
                         {/* Table */}
-                        <div className="bg-white border border-[#CBCAD7] rounded-2xl overflow-hidden">
-                            <div className="overflow-x-auto">
-                                <table className="w-full text-sm">
-                                    <thead><tr className="bg-[#F9FAFB] border-b border-[#CBCAD7]">
-                                        <th className="text-left px-5 py-3 font-semibold text-[#6B7280] text-xs uppercase">Tiêu đề</th>
-                                        <th className="text-left px-5 py-3 font-semibold text-[#6B7280] text-xs uppercase">Trường</th>
-                                        <th className="text-left px-5 py-3 font-semibold text-[#6B7280] text-xs uppercase">Nhà Cung Cấp</th>
-                                        <th className="text-left px-5 py-3 font-semibold text-[#6B7280] text-xs uppercase">Chiến dịch</th>
-                                        <th className="text-left px-5 py-3 font-semibold text-[#6B7280] text-xs uppercase">Trạng thái</th>
-                                        <th className="text-left px-5 py-3 font-semibold text-[#6B7280] text-xs uppercase">Ngày tạo</th>
-                                        <th className="text-center px-5 py-3 font-semibold text-[#6B7280] text-xs uppercase">Hành động</th>
-                                    </tr></thead>
-                                    <tbody>
-                                        {loading ? (
-                                            <tr><td colSpan={7} className="px-5 py-8 text-center text-[#9CA3AF]">Đang tải...</td></tr>
-                                        ) : data?.items.length === 0 ? (
-                                            <tr><td colSpan={7} className="px-5 py-8 text-center text-[#9CA3AF]">Không có khiếu nại nào</td></tr>
-                                        ) : data?.items.map((c: AdminComplaintDto) => (
-                                            <tr key={c.id} className="border-b border-gray-100 hover:bg-[#F9FAFB] transition-colors">
-                                                <td className="px-5 py-3 font-semibold text-[#1A1A2E] max-w-[200px] truncate">{c.title}</td>
-                                                <td className="px-5 py-3 text-gray-600">{c.schoolName}</td>
-                                                <td className="px-5 py-3 text-gray-600">{c.providerName ?? "—"}</td>
-                                                <td className="px-5 py-3 text-gray-600 max-w-[150px] truncate">{c.campaignName ?? "—"}</td>
-                                                <td className="px-5 py-3">
-                                                    <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${STATUS_COLORS[c.status] ?? "bg-gray-100"}`}>
-                                                        {c.status}
-                                                    </span>
-                                                </td>
-                                                <td className="px-5 py-3 text-[#6B7280] text-xs">{new Date(c.createdAt).toLocaleDateString("vi-VN")}</td>
-                                                <td className="px-5 py-3 text-center">
-                                                    <button onClick={() => setSelected(c)}
-                                                        className="px-3 py-1.5 text-xs font-semibold text-[#6366F1] bg-[#6366F1]/10 rounded-lg hover:bg-[#6366F1]/20 transition-colors">
-                                                        Chi tiết
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
+                        <div className="overflow-hidden rounded-[18px] border-[3px]" style={{ borderColor: T.ink, background: T.surface, boxShadow: `6px 6px 0 ${T.ink}` }}>
+                            {/* Header */}
+                            <div className="sticky top-0 z-10 hidden lg:grid items-center border-b-[3px] px-5 py-4"
+                                style={{ gridTemplateColumns: gridCols, borderColor: T.ink, background: T.primarySoft }}>
+                                {["Tiêu đề", "Trường", "Nhà cung cấp", "Chiến dịch", "Trạng thái", "Ngày tạo", "Hành động"].map((h, i, arr) => (
+                                    <div key={h} className={`text-[12px] font-black uppercase tracking-[0.08em]${i === arr.length - 1 ? " text-right" : ""}`} style={{ color: "#4E4A5B" }}>{h}</div>
+                                ))}
                             </div>
 
-                            {/* Pagination */}
-                            {totalPages > 1 && (
-                                <div className="flex items-center justify-between px-5 py-3 border-t border-gray-100">
-                                    <span className="text-sm text-[#6B7280]">Trang {page}/{totalPages} ({data?.totalCount} khiếu nại)</span>
-                                    <div className="flex gap-2">
-                                        <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page <= 1}
-                                            className="border border-[#CBCAD7] px-3 py-1.5 rounded-xl text-sm disabled:opacity-40 hover:bg-gray-50">Trước</button>
-                                        <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page >= totalPages}
-                                            className="border border-[#CBCAD7] px-3 py-1.5 rounded-xl text-sm disabled:opacity-40 hover:bg-gray-50">Sau</button>
+                            {/* Loading */}
+                            {loading && (
+                                <div className="space-y-3 px-5 py-5">
+                                    {Array.from({ length: 5 }).map((_, i) => (
+                                        <div key={i} className="hidden lg:grid items-center gap-4 rounded-[14px] border px-4 py-4"
+                                            style={{ gridTemplateColumns: gridCols, borderColor: "#D9D4E6", background: T.surfaceSoft }}>
+                                            {Array.from({ length: 7 }).map((_, j) => (
+                                                <div key={j} className="h-5 rounded animate-pulse" style={{ background: "#EAE3FF" }} />
+                                            ))}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+
+                            {/* Empty */}
+                            {!loading && data?.items.length === 0 && (
+                                <div className="flex min-h-[240px] flex-col items-center justify-center px-6 py-12 text-center">
+                                    <div className="flex h-16 w-16 items-center justify-center rounded-[16px] border-[3px] text-[28px]"
+                                        style={{ borderColor: T.ink, background: T.successSoft, boxShadow: `4px 4px 0 ${T.ink}` }}>✅</div>
+                                    <div className="mt-5 text-[28px] font-black">Không có khiếu nại nào</div>
+                                    <p className="mt-3 max-w-lg text-[15px] font-semibold leading-7" style={{ color: T.muted }}>
+                                        Hệ thống chưa ghi nhận khiếu nại nào phù hợp bộ lọc hiện tại.
+                                    </p>
+                                </div>
+                            )}
+
+                            {/* Rows */}
+                            {!loading && data && data.items.length > 0 && (
+                                <div>
+                                    {data.items.map((c, idx) => (
+                                        <div key={c.id} className="hidden lg:grid items-center gap-4 border-b px-5 py-4 transition-colors hover:bg-[#F7F2FF] nb-fade-in"
+                                            style={{ gridTemplateColumns: gridCols, borderColor: "#D9D4E6", animationDelay: `${idx * 40}ms` }}>
+                                            <div className="text-[15px] font-black truncate" style={{ color: T.ink }}>{c.title}</div>
+                                            <div className="text-[14px] font-semibold" style={{ color: "#3D384A" }}>{c.schoolName}</div>
+                                            <div className="text-[14px] font-semibold" style={{ color: "#3D384A" }}>{c.providerName ?? "—"}</div>
+                                            <div className="text-[14px] font-semibold truncate" style={{ color: "#3D384A" }}>{c.campaignName ?? "—"}</div>
+                                            <div><Badge tone={STATUS_TONE[c.status]}>{STATUS_LABEL[c.status] || c.status}</Badge></div>
+                                            <div className="text-[14px] font-semibold" style={{ color: T.muted }}>{new Date(c.createdAt).toLocaleDateString("vi-VN")}</div>
+                                            <div className="flex justify-end">
+                                                <button onClick={() => setSelected(c)}
+                                                    className="rounded-[12px] border-[3px] px-4 py-2 text-[13px] font-extrabold transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+                                                    style={{ borderColor: T.ink, background: T.surface, color: T.ink, boxShadow: `4px 4px 0 ${T.ink}` }}>
+                                                    👁 Chi tiết
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+
+                                    {/* Mobile cards */}
+                                    {data.items.map((c, idx) => (
+                                        <div key={`m-${c.id}`} className="lg:hidden border-b p-4 space-y-3 nb-fade-in"
+                                            style={{ borderColor: "#D9D4E6", animationDelay: `${idx * 40}ms` }}>
+                                            <div className="flex items-start justify-between gap-3">
+                                                <div className="min-w-0">
+                                                    <div className="text-[16px] font-black truncate" style={{ color: T.ink }}>{c.title}</div>
+                                                    <div className="text-[13px] font-semibold mt-1" style={{ color: "#3D384A" }}>{c.schoolName} • {c.providerName ?? "N/A"}</div>
+                                                </div>
+                                                <Badge tone={STATUS_TONE[c.status]}>{STATUS_LABEL[c.status] || c.status}</Badge>
+                                            </div>
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-[13px] font-semibold" style={{ color: T.muted }}>{new Date(c.createdAt).toLocaleDateString("vi-VN")}</span>
+                                                <button onClick={() => setSelected(c)}
+                                                    className="rounded-[12px] border-[3px] px-4 py-2 text-[13px] font-extrabold transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+                                                    style={{ borderColor: T.ink, background: T.surface, color: T.ink, boxShadow: `4px 4px 0 ${T.ink}` }}>
+                                                    👁 Chi tiết
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+
+                                    {/* Pagination */}
+                                    <div className="flex flex-col gap-3 border-t-[3px] px-5 py-4 md:flex-row md:items-center md:justify-between"
+                                        style={{ borderColor: T.ink, background: T.surfaceSoft }}>
+                                        <div className="text-[14px] font-bold" style={{ color: T.muted }}>
+                                            Trang {page}/{totalPages} · {data.totalCount} khiếu nại
+                                        </div>
+                                        {totalPages > 1 && (
+                                            <div className="flex gap-3">
+                                                <button disabled={page <= 1} onClick={() => setPage(p => Math.max(1, p - 1))}
+                                                    className="rounded-[12px] border-[3px] px-4 py-2 text-[13px] font-extrabold transition-all disabled:opacity-40 hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+                                                    style={{ borderColor: T.ink, background: T.surface, color: T.ink, boxShadow: `4px 4px 0 ${T.ink}` }}>← Trước</button>
+                                                <button disabled={page >= totalPages} onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                                                    className="rounded-[12px] border-[3px] px-4 py-2 text-[13px] font-extrabold text-white transition-all disabled:opacity-40 hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+                                                    style={{ borderColor: T.ink, background: T.primary, boxShadow: `4px 4px 0 ${T.ink}` }}>Sau →</button>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             )}
                         </div>
-
                     </main>
                 </div>
             </div>
 
-            {/* Detail / Intervene Modal */}
+            {/* ── Detail / Intervene Modal ── */}
             {selected && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setSelected(null)}>
-                    <div className="bg-white rounded-2xl w-full max-w-lg mx-4 p-6 shadow-xl" onClick={e => e.stopPropagation()}>
-                        <h3 className="text-lg font-bold text-[#1A1A2E] mb-1">{selected.title}</h3>
-                        <p className="text-sm text-[#6B7280] mb-4">
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 nb-backdrop-enter"
+                    style={{ background: "rgba(25, 24, 43, 0.55)" }}
+                    onClick={() => setSelected(null)}>
+                    <div className="w-full max-w-lg rounded-[18px] border-[3px] p-6 space-y-5 nb-modal-enter max-h-[90vh] overflow-y-auto"
+                        style={{ borderColor: T.ink, background: T.surface, boxShadow: `6px 6px 0 ${T.ink}` }}
+                        onClick={e => e.stopPropagation()}>
+                        {/* Header */}
+                        <div className="flex justify-between items-center">
+                            <h2 className="text-[24px] font-black" style={{ color: T.ink }}>{selected.title}</h2>
+                            <button onClick={() => setSelected(null)}
+                                className="flex h-10 w-10 items-center justify-center rounded-[10px] border-[2px] text-[16px] font-black transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none"
+                                style={{ borderColor: T.ink, background: T.surface, boxShadow: `2px 2px 0 ${T.ink}` }}>✕</button>
+                        </div>
+                        <p className="text-[14px] font-semibold" style={{ color: T.muted }}>
                             {selected.schoolName} • {selected.providerName ?? "N/A"} • {new Date(selected.createdAt).toLocaleDateString("vi-VN")}
                         </p>
 
-                        <div className="bg-[#F9FAFB] rounded-xl p-4 mb-4 text-sm text-gray-700 max-h-40 overflow-y-auto">
+                        {/* Description */}
+                        <div className="rounded-[14px] border-[2px] p-4 text-[14px] font-semibold max-h-40 overflow-y-auto"
+                            style={{ borderColor: "#D9D4E6", background: T.surfaceSoft, color: "#3D384A" }}>
                             {selected.description}
                         </div>
 
+                        {/* Existing response */}
                         {selected.response && (
-                            <div className="bg-blue-50 rounded-xl p-4 mb-4 text-sm text-blue-800 max-h-32 overflow-y-auto whitespace-pre-wrap">
-                                <p className="font-semibold mb-1">Phản hồi:</p>
-                                {selected.response}
+                            <div className="rounded-[14px] border-[2px] p-4 text-[14px] max-h-32 overflow-y-auto"
+                                style={{ borderColor: T.ink, background: T.infoSoft }}>
+                                <p className="font-black text-[12px] uppercase mb-1" style={{ color: "#2758B8" }}>Phản hồi</p>
+                                <p className="font-semibold whitespace-pre-wrap" style={{ color: "#1A3A6B" }}>{selected.response}</p>
                             </div>
                         )}
 
+                        {/* Intervene form */}
                         <div className="space-y-3">
                             <textarea value={note} onChange={e => setNote(e.target.value)} placeholder="Ghi chú của Admin..."
-                                className="w-full border border-[#CBCAD7] rounded-xl px-4 py-3 text-sm resize-none h-20 focus:outline-none focus:ring-2 focus:ring-[#6366F1]/30" />
+                                className="w-full resize-none h-20 rounded-[12px] border-[2px] px-4 py-3 text-[14px] font-semibold outline-none transition-all placeholder:text-[#9A95A8] focus:translate-x-[1px] focus:translate-y-[1px] focus:shadow-[2px_2px_0_#19182B]"
+                                style={{ borderColor: T.ink, background: T.surface, boxShadow: `3px 3px 0 ${T.ink}` }} />
                             <select value={action} onChange={e => setAction(e.target.value)}
-                                className="w-full border border-[#CBCAD7] rounded-xl px-4 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#6366F1]/30">
+                                className="w-full rounded-[12px] border-[2px] px-4 py-3 text-[14px] font-semibold outline-none transition-all focus:translate-x-[1px] focus:translate-y-[1px] focus:shadow-[2px_2px_0_#19182B]"
+                                style={{ borderColor: T.ink, background: T.surface, boxShadow: `3px 3px 0 ${T.ink}` }}>
                                 <option value="">Chỉ thêm ghi chú</option>
                                 <option value="escalate">Escalate (chuyển InProgress)</option>
                                 <option value="resolve">Giải quyết</option>
@@ -210,11 +303,13 @@ export default function AdminComplaints() {
                             </select>
                             <div className="flex gap-3">
                                 <button onClick={handleIntervene} disabled={submitting || !note.trim()}
-                                    className="flex-1 bg-[#6366F1] text-white rounded-xl px-4 py-2.5 text-sm font-semibold hover:bg-[#4F46E5] disabled:opacity-50 transition-colors">
-                                    {submitting ? "Đang xử lý..." : "Gửi"}
+                                    className="flex-1 rounded-[12px] border-[3px] py-3 text-[15px] font-extrabold text-white transition-all disabled:opacity-50 hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+                                    style={{ borderColor: T.ink, background: T.primary, boxShadow: `4px 4px 0 ${T.ink}` }}>
+                                    {submitting ? "Đang xử lý..." : "📤 Gửi"}
                                 </button>
                                 <button onClick={() => setSelected(null)}
-                                    className="border border-[#CBCAD7] rounded-xl px-4 py-2.5 text-sm text-[#6B7280] hover:bg-gray-50">
+                                    className="flex-1 rounded-[12px] border-[3px] py-3 text-[15px] font-extrabold transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+                                    style={{ borderColor: T.ink, background: T.surface, color: T.ink, boxShadow: `4px 4px 0 ${T.ink}` }}>
                                     Đóng
                                 </button>
                             </div>

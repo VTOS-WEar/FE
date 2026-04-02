@@ -126,7 +126,7 @@ export const CampaignDetail = (): JSX.Element => {
   };
 
   if (loading) return (
-    <GuestLayout bgColor="#F4F6FF">
+    <GuestLayout bgColor="#FFF8F0">
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="w-10 h-10 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin" />
       </div>
@@ -134,7 +134,7 @@ export const CampaignDetail = (): JSX.Element => {
   );
 
   if (error || !campaign) return (
-    <GuestLayout bgColor="#F4F6FF">
+    <GuestLayout bgColor="#FFF8F0">
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
         <p className="font-montserrat text-gray-500">{error || "Không tìm thấy chương trình."}</p>
         <button onClick={() => navigate("/schools")} className="text-purple-600 hover:underline font-montserrat font-semibold">← Quay lại danh sách trường</button>
@@ -145,7 +145,7 @@ export const CampaignDetail = (): JSX.Element => {
   const status = STATUS_LABEL[campaign.status] ?? { label: campaign.status, color: "bg-gray-100 text-gray-600" };
 
   return (
-    <GuestLayout bgColor="#F4F6FF">
+    <GuestLayout bgColor="#FFF8F0">
       <div className="max-w-[1200px] mx-auto px-4 lg:px-8 py-8">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-sm mb-8 flex-wrap">
@@ -261,7 +261,7 @@ export const CampaignDetail = (): JSX.Element => {
 
       {/* ───── Order Modal ───── */}
       {modal.open && modal.outfit && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={() => setModal({ open: false, outfit: null, variants: [], loadingVariants: false })}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setModal({ open: false, outfit: null, variants: [], loadingVariants: false })}>
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden" onClick={e => e.stopPropagation()}>
             {/* Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">

@@ -5,9 +5,7 @@ import {
   UserIcon,
   Loader2,
 } from "lucide-react";
-import { Button } from "../../components/ui/button";
-import { Input } from "../../components/ui/input";
-import { Label } from "../../components/ui/label";
+
 import { Notify } from "../../components/ui/notify";
 import { GuestLayout } from "../../components/layout/GuestLayout";
 import { useState } from "react";
@@ -110,37 +108,22 @@ export const FillInformation = (): JSX.Element => {
   };
 
   return (
-    <GuestLayout bgColor="#f4f2ff">
-      <main className="flex-1 bg-[#f4f2ff] py-8 lg:py-12 px-4 relative overflow-hidden">
-        {/* Decorative background vectors */}
-        <img
-          className="absolute top-[15rem] right-[45rem] w-[42rem] h-[42rem] opacity-50"
-          alt="Vector"
-          src="https://c.animaapp.com/mjxt3t8wNP0otU/img/vector-23.svg"
-        />
-        <img
-          className="absolute top-[25rem] right-[56rem] w-[45rem] h-[51rem] opacity-50"
-          alt="Vector"
-          src="https://c.animaapp.com/mjxt3t8wNP0otU/img/vector-20.svg"
-        />
-        <img
-          className="absolute top-[-5rem] right-[51rem] w-[51rem] h-[42rem] opacity-50"
-          alt="Vector"
-          src="https://c.animaapp.com/mjxt3t8wNP0otU/img/vector-21.svg"
-        />
+    <GuestLayout bgColor="#FFF8F0">
+      <main className="flex-1 bg-[#FFF8F0] py-8 lg:py-12 px-4 relative overflow-hidden">
+        {/* NB decorative shapes */}
 
         <div className="max-w-4xl mx-auto relative z-10">
           <div className="text-center mb-12">
-            <h1 className="[font-family:'Montserrat',Helvetica] font-bold text-black text-4xl mb-4">
+            <h1 className="font-bold text-black text-4xl mb-4">
               Thông tin phụ huynh
             </h1>
-            <p className="[font-family:'Montserrat',Helvetica] font-medium text-black text-xl opacity-60 max-w-2xl mx-auto">
+            <p className="font-medium text-black text-xl opacity-60 max-w-2xl mx-auto">
               Để bắt đầu trải nghiệm mua sắm, vui lòng cập nhật số điện thoại
               liên hệ của bạn
             </p>
           </div>
 
-          <div className="bg-white rounded-[1.875rem] shadow-lg p-6 lg:p-10 max-w-[32rem] mx-auto">
+          <div className="bg-white rounded-2xl border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E] p-6 lg:p-10 max-w-[32rem] mx-auto">
             {/* Avatar section */}
             <div className="flex flex-col items-center mb-8">
               <img
@@ -148,41 +131,41 @@ export const FillInformation = (): JSX.Element => {
                 alt="Avatar"
                 src="https://c.animaapp.com/mjxt3t8wNP0otU/img/group-239260.png"
               />
-              <Button
-                variant="link"
-                className="[font-family:'Montserrat',Helvetica] font-medium text-[#7e45d9] text-base p-0 h-auto"
+              <button
+                type="button"
+                className="font-medium text-[#7e45d9] text-base p-0 h-auto bg-transparent border-none cursor-pointer hover:underline"
               >
                 Tải lên ảnh đại diện
-              </Button>
+              </button>
             </div>
 
             <div className="space-y-6">
               {/* Full Name (read-only, from registration) */}
               <div className="space-y-3">
-                <Label className="[font-family:'Montserrat',Helvetica] font-medium text-black text-xl">
+                <label className="font-medium text-black text-xl">
                   Họ và tên phụ huynh
                   <span className="text-[#ff0000] ml-1">*</span>
-                </Label>
+                </label>
                 <div className="relative">
                   <UserIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 w-6 h-6 text-black opacity-40" />
-                  <Input
+                  <input
                     type="text"
                     value={fullName}
                     disabled
-                    className="h-[3.125rem] pl-11 pr-2.5 bg-gray-50 rounded-lg border border-[#00000036] [font-family:'Montserrat',Helvetica] font-normal text-base text-black/60 cursor-not-allowed"
+                    className="w-full h-[3.125rem] pl-11 pr-2.5 bg-gray-50 rounded-lg border border-[#00000036] font-normal text-base text-black/60 cursor-not-allowed"
                   />
                 </div>
               </div>
 
               {/* Phone input */}
               <div className="space-y-3">
-                <Label className="[font-family:'Montserrat',Helvetica] font-medium text-black text-xl">
+                <label className="font-medium text-black text-xl">
                   Số điện thoại liên hệ
                   <span className="text-[#ff0000] ml-1">*</span>
-                </Label>
+                </label>
                 <div className="relative">
                   <PhoneIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 w-6 h-6 text-black opacity-40" />
-                  <Input
+                  <input
                     type="tel"
                     placeholder="Nhập số điện thoại"
                     value={phone}
@@ -190,12 +173,12 @@ export const FillInformation = (): JSX.Element => {
                     onKeyDown={(e) => {
                       if (e.key === "Enter") void handleSubmit();
                     }}
-                    className="h-[3.125rem] pl-11 pr-2.5 bg-white rounded-lg border border-[#00000036] [font-family:'Montserrat',Helvetica] font-normal text-base focus:border-[#6938ef] focus:ring-1 focus:ring-[#6938ef] transition-colors"
+                    className="w-full h-[3.125rem] pl-11 pr-2.5 bg-white rounded-lg border border-[#00000036] font-normal text-base focus:border-[#6938ef] focus:ring-1 focus:ring-[#6938ef] transition-colors outline-none"
                   />
                 </div>
                 <div className="flex items-center gap-1.5">
                   <AlertCircleIcon className="w-4 h-4 opacity-60 flex-shrink-0" />
-                  <p className="[font-family:'Montserrat',Helvetica] font-medium text-black text-xs opacity-60">
+                  <p className="font-medium text-black text-xs opacity-60">
                     Số điện thoại sẽ được sử dụng để liên hệ giao hàng và hỗ
                     trợ
                   </p>
@@ -203,22 +186,22 @@ export const FillInformation = (): JSX.Element => {
               </div>
 
               {/* Submit button */}
-              <Button
+              <button
                 type="button"
                 onClick={() => void handleSubmit()}
                 disabled={isLoading}
-                className="w-full h-16 bg-[#4e46dd] rounded-lg shadow-[0px_0px_0.525rem_#4e46dd] hover:bg-[#4e46dd]/90 mt-8 transition-all"
+                className="w-full h-16 nb-btn nb-btn-purple mt-8 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isLoading ? (
                   <Loader2 className="w-6 h-6 animate-spin mr-2" />
                 ) : null}
-                <span className="[font-family:'Montserrat',Helvetica] font-semibold text-white text-2xl">
+                <span className="font-semibold text-[#1A1A2E] text-2xl">
                   {isLoading ? "Đang lưu..." : "Xác nhận số điện thoại"}
                 </span>
                 {!isLoading && (
                   <ArrowRightIcon className="w-6 h-6 ml-2.5" />
                 )}
-              </Button>
+              </button>
 
             </div>
           </div>

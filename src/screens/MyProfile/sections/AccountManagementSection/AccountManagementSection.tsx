@@ -47,10 +47,10 @@ export const AccountManagementSection = (): JSX.Element => {
               <AvatarFallback>VGT</AvatarFallback>
             </Avatar>
             <div className="flex flex-col gap-[3px]">
-              <p className="[font-family:'Montserrat',Helvetica] font-normal text-black text-[15px] tracking-[0] leading-[normal]">
+              <p className="font-normal text-black text-[15px] tracking-[0] leading-[normal]">
                 Tài khoản
               </p>
-              <h2 className="[font-family:'Montserrat',Helvetica] font-semibold text-black text-xl tracking-[0] leading-[normal] whitespace-nowrap">
+              <h2 className="font-semibold text-black text-xl tracking-[0] leading-[normal] whitespace-nowrap">
                 Võ Gia Truyền
               </h2>
             </div>
@@ -61,7 +61,7 @@ export const AccountManagementSection = (): JSX.Element => {
               <Button
                 key={index}
                 variant="ghost"
-                className={`h-11 justify-center rounded-lg [font-family:'Montserrat',Helvetica] font-semibold text-base ${
+                className={`h-11 justify-center rounded-lg font-semibold text-base ${
                   item.active
                     ? "bg-[#3c6efd] text-white hover:bg-[#3c6efd]/90"
                     : "bg-[#4182f9]/10 text-[#4182f9] hover:bg-[#4182f9]/20"
@@ -74,7 +74,7 @@ export const AccountManagementSection = (): JSX.Element => {
 
           <Button
             variant="ghost"
-            className="h-11 mt-[72px] bg-[#f94144]/10 text-[#f94144] hover:bg-[#f94144]/20 rounded-lg [font-family:'Montserrat',Helvetica] font-semibold text-base"
+            className="h-11 mt-[72px] bg-[#f94144]/10 text-[#f94144] hover:bg-[#f94144]/20 rounded-lg font-semibold text-base"
           >
             Đăng Xuất
           </Button>
@@ -88,7 +88,7 @@ export const AccountManagementSection = (): JSX.Element => {
                   {tabs.map((tab, index) => (
                     <Button
                       key={index}
-                      className={`h-auto px-[15px] py-2.5 rounded-[10px] [font-family:'Montserrat',Helvetica] font-semibold text-white text-base ${
+                      className={`h-auto px-[15px] py-2.5 rounded-[10px] font-semibold text-white text-base ${
                         tab.active
                           ? "bg-[linear-gradient(90deg,rgba(65,130,249,1)_0%,rgba(168,122,240,1)_100%)] shadow-[2px_0px_4px_#00000040]"
                           : "bg-[#4182f9] opacity-40"
@@ -112,22 +112,22 @@ export const AccountManagementSection = (): JSX.Element => {
 
                   <div className="flex-1 flex flex-col gap-5">
                     <div className="flex items-center gap-[5px]">
-                      <Label className="w-[154px] [font-family:'Montserrat',Helvetica] font-medium text-black text-base">
+                      <Label className="w-[154px] font-medium text-black text-base">
                         Họ và tên
                       </Label>
                       <Input
                         defaultValue="Võ Gia Truyền"
-                        className="flex-1 h-[50px] bg-white rounded-lg border-[#00000036] opacity-40 [font-family:'Montserrat',Helvetica] font-normal text-black text-base"
+                        className="flex-1 h-[50px] bg-white rounded-lg border-[#00000036] opacity-40 font-normal text-black text-base"
                       />
                     </div>
 
                     <div className="flex items-center gap-[15px]">
-                      <Label className="w-[139px] [font-family:'Montserrat',Helvetica] font-medium text-black text-base">
+                      <Label className="w-[139px] font-medium text-black text-base">
                         Ngày sinh
                       </Label>
                       <Select defaultValue="1">
                         <SelectTrigger className="w-[82px] h-[50px] bg-white rounded-lg border-[#00000036]">
-                          <SelectValue className="opacity-40 [font-family:'Montserrat',Helvetica] font-normal text-black text-base" />
+                          <SelectValue className="opacity-40 font-normal text-black text-base" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="1">1</SelectItem>
@@ -135,7 +135,7 @@ export const AccountManagementSection = (): JSX.Element => {
                       </Select>
                       <Select defaultValue="1">
                         <SelectTrigger className="w-[82px] h-[50px] bg-white rounded-lg border-[#00000036]">
-                          <SelectValue className="opacity-40 [font-family:'Montserrat',Helvetica] font-normal text-black text-base" />
+                          <SelectValue className="opacity-40 font-normal text-black text-base" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="1">1</SelectItem>
@@ -143,7 +143,7 @@ export const AccountManagementSection = (): JSX.Element => {
                       </Select>
                       <Select defaultValue="2000">
                         <SelectTrigger className="w-[105px] h-[50px] bg-white rounded-lg border-[#00000036]">
-                          <SelectValue className="opacity-40 [font-family:'Montserrat',Helvetica] font-normal text-black text-base" />
+                          <SelectValue className="opacity-40 font-normal text-black text-base" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="2000">2000</SelectItem>
@@ -152,7 +152,7 @@ export const AccountManagementSection = (): JSX.Element => {
                     </div>
 
                     <div className="flex items-center">
-                      <Label className="w-[154px] [font-family:'Montserrat',Helvetica] font-medium text-black text-base">
+                      <Label className="w-[154px] font-medium text-black text-base">
                         Giới tính
                       </Label>
                       <RadioGroup defaultValue="female" className="flex gap-0">
@@ -164,7 +164,7 @@ export const AccountManagementSection = (): JSX.Element => {
                           />
                           <Label
                             htmlFor="male"
-                            className="[font-family:'Montserrat',Helvetica] font-normal text-black text-base cursor-pointer"
+                            className="font-normal text-black text-base cursor-pointer"
                           >
                             Nam
                           </Label>
@@ -177,7 +177,7 @@ export const AccountManagementSection = (): JSX.Element => {
                           />
                           <Label
                             htmlFor="female"
-                            className="[font-family:'Montserrat',Helvetica] font-normal text-black text-base cursor-pointer"
+                            className="font-normal text-black text-base cursor-pointer"
                           >
                             Nữ
                           </Label>
@@ -190,7 +190,7 @@ export const AccountManagementSection = (): JSX.Element => {
                           />
                           <Label
                             htmlFor="other"
-                            className="[font-family:'Montserrat',Helvetica] font-normal text-black text-base cursor-pointer"
+                            className="font-normal text-black text-base cursor-pointer"
                           >
                             Khác
                           </Label>
@@ -198,7 +198,7 @@ export const AccountManagementSection = (): JSX.Element => {
                       </RadioGroup>
                     </div>
 
-                    <Button className="w-[138px] h-[51px] self-start bg-[#7e45d9b2] hover:bg-[#7e45d9] rounded-[10px] [font-family:'Montserrat',Helvetica] font-semibold text-white text-base">
+                    <Button className="w-[138px] h-[51px] self-start bg-[#7e45d9b2] hover:bg-[#7e45d9] rounded-[10px] font-semibold text-white text-base">
                       Lưu thay đổi
                     </Button>
                   </div>
@@ -206,17 +206,17 @@ export const AccountManagementSection = (): JSX.Element => {
 
                 <div className="flex flex-col gap-[13px] mt-[92px]">
                   <div className="flex items-center gap-[5px]">
-                    <Label className="w-[154px] [font-family:'Montserrat',Helvetica] font-medium text-black text-base">
+                    <Label className="w-[154px] font-medium text-black text-base">
                       Địa chỉ email
                     </Label>
                     <div className="flex-1 flex items-center gap-2.5 px-2.5 py-[15px] h-[50px] bg-white rounded-lg border border-solid border-[#00000036]">
                       <Input
                         defaultValue="truyen@gmail.com"
-                        className="flex-1 h-auto border-0 p-0 opacity-40 [font-family:'Montserrat',Helvetica] font-normal text-black text-base focus-visible:ring-0"
+                        className="flex-1 h-auto border-0 p-0 opacity-40 font-normal text-black text-base focus-visible:ring-0"
                       />
                       <Button
                         variant="outline"
-                        className="h-auto px-[15px] py-2.5 bg-white rounded-[5px] border-[#4182f9] [font-family:'Montserrat',Helvetica] font-semibold text-[#3c6efd] text-base hover:bg-[#4182f9]/10"
+                        className="h-auto px-[15px] py-2.5 bg-white rounded-[5px] border-[#4182f9] font-semibold text-[#3c6efd] text-base hover:bg-[#4182f9]/10"
                       >
                         Cập nhật
                       </Button>
@@ -224,17 +224,17 @@ export const AccountManagementSection = (): JSX.Element => {
                   </div>
 
                   <div className="flex items-center gap-[5px]">
-                    <Label className="w-[154px] [font-family:'Montserrat',Helvetica] font-medium text-black text-base">
+                    <Label className="w-[154px] font-medium text-black text-base">
                       Số điện thoại
                     </Label>
                     <div className="flex-1 flex items-center gap-2.5 px-2.5 py-[15px] h-[50px] bg-white rounded-lg border border-solid border-[#00000036]">
                       <Input
                         defaultValue="0123456789"
-                        className="flex-1 h-auto border-0 p-0 opacity-40 [font-family:'Montserrat',Helvetica] font-normal text-black text-base focus-visible:ring-0"
+                        className="flex-1 h-auto border-0 p-0 opacity-40 font-normal text-black text-base focus-visible:ring-0"
                       />
                       <Button
                         variant="outline"
-                        className="h-auto px-[15px] py-2.5 bg-white rounded-[5px] border-[#4182f9] [font-family:'Montserrat',Helvetica] font-semibold text-[#3c6efd] text-base hover:bg-[#4182f9]/10"
+                        className="h-auto px-[15px] py-2.5 bg-white rounded-[5px] border-[#4182f9] font-semibold text-[#3c6efd] text-base hover:bg-[#4182f9]/10"
                       >
                         Cập nhật
                       </Button>

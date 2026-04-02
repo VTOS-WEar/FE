@@ -80,10 +80,7 @@ export const AccountTab = (): JSX.Element => {
     fetchProfile();
   }, [navigate]);
 
-    // Check 2FA status from user data in storage
     useEffect(() => {
-      // We'll check if 2FA is enabled by trying to see if user has it set
-      // For now, we read from a localStorage flag set during login or profile fetch
       const twoFA = localStorage.getItem("vtos_2fa_enabled");
       setIs2FAEnabled(twoFA === "true");
     }, []);
@@ -118,15 +115,18 @@ export const AccountTab = (): JSX.Element => {
   if (!user) return <div />;
   const initials = fullName?.split(" ").map(w => w[0]).join("").slice(-2).toUpperCase();
 
+  const inputClass = "nb-input w-full h-11 text-sm flex-1";
+  const selectClass = "nb-input h-11 text-sm px-3";
+
   return (
     <div className="space-y-0">
-      {/* Tabs */}
+      {/* Tabs — NB style */}
       <div className="flex items-center gap-3 mb-8">
         {(["personal", "security"] as const).map((tab) => (
           <button key={tab} onClick={() => setActiveTab(tab)}
-            className={`px-5 py-2.5 rounded-full [font-family:'Montserrat',Helvetica] font-semibold text-sm transition-all ${activeTab === tab
-              ? "bg-[#6938ef] text-white shadow-[0_2px_8px_rgba(105,56,239,0.3)]"
-              : "bg-[#f4f2ff] text-[#6938ef] hover:bg-[#ede9fe]"}`}>
+            className={`px-5 py-2.5 rounded-xl font-bold text-sm transition-all border-2 ${activeTab === tab
+              ? "bg-[#B8A9E8] text-[#1A1A2E] border-[#1A1A2E] shadow-[3px_3px_0_#1A1A2E]"
+              : "bg-[#F3F4F6] text-[#4C5769] border-transparent hover:border-[#1A1A2E]/20 hover:bg-[#EDE9FE]"}`}>
             {tab === "personal" ? "Thông tin cá nhân" : "Bảo mật"}
           </button>
         ))}
@@ -139,13 +139,13 @@ export const AccountTab = (): JSX.Element => {
             {/* Avatar */}
             <div className="flex flex-col items-center gap-3">
               <div className="relative">
-                <div className="w-28 h-28 bg-[#f0edff] rounded-full flex items-center justify-center border-[3px] border-[#cbcad7] shadow-inner">
+                <div className="w-28 h-28 bg-[#EDE9FE] rounded-xl flex items-center justify-center border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E]">
                   {user.avatar
-                    ? <img src={user.avatar} alt="" className="w-full h-full rounded-full object-cover" />
-                    : <span className="[font-family:'Montserrat',Helvetica] font-bold text-[#6938ef] text-3xl">{initials}</span>}
+                    ? <img src={user.avatar} alt="" className="w-full h-full rounded-xl object-cover" />
+                    : <span className="font-extrabold text-[#1A1A2E] text-3xl">{initials}</span>}
                 </div>
-                <button className="absolute bottom-0 right-0 w-8 h-8 bg-white border-2 border-[#6938ef] rounded-full flex items-center justify-center shadow-md hover:bg-[#f4f2ff] transition-colors">
-                  <Camera className="w-4 h-4 text-[#6938ef]" />
+                <button className="absolute bottom-[-4px] right-[-4px] w-9 h-9 bg-[#C8E44D] border-2 border-[#1A1A2E] rounded-lg flex items-center justify-center shadow-[2px_2px_0_#1A1A2E] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
+                  <Camera className="w-4 h-4 text-[#1A1A2E]" />
                 </button>
               </div>
             </div>
@@ -153,34 +153,34 @@ export const AccountTab = (): JSX.Element => {
             {/* Form */}
             <div className="flex-1 space-y-5">
               <div className="flex items-center gap-4">
-                <label className="w-28 flex-shrink-0 [font-family:'Montserrat',Helvetica] font-semibold text-[#1a1a2e] text-sm text-right">Họ và tên</label>
+                <label className="w-28 flex-shrink-0 font-bold text-[#1A1A2E] text-sm text-right">Họ và tên</label>
                 <input type="text" value={fullName} onChange={e => setFullName(e.target.value)}
-                  className="flex-1 bg-[#f8f7fc] border border-[#cbcad7] rounded-xl px-4 py-2.5 [font-family:'Montserrat',Helvetica] font-medium text-sm text-[#1a1a2e] outline-none focus:border-[#6938ef] focus:ring-1 focus:ring-[#6938ef]/20 transition-colors" />
+                  className={inputClass} />
               </div>
               <div className="flex items-center gap-4">
-                <label className="w-28 flex-shrink-0 [font-family:'Montserrat',Helvetica] font-semibold text-[#1a1a2e] text-sm text-right">Ngày sinh</label>
+                <label className="w-28 flex-shrink-0 font-bold text-[#1A1A2E] text-sm text-right">Ngày sinh</label>
                 <div className="flex items-center gap-3">
                   {([
-                    { value: dobDay, set: setDobDay, opts: DAYS, min: "70px" },
-                    { value: dobMonth, set: setDobMonth, opts: MONTHS, min: "70px" },
-                    { value: dobYear, set: setDobYear, opts: YEARS, min: "90px" },
+                    { value: dobDay, set: setDobDay, opts: DAYS },
+                    { value: dobMonth, set: setDobMonth, opts: MONTHS },
+                    { value: dobYear, set: setDobYear, opts: YEARS },
                   ] as const).map((s, i) => (
                     <select key={i} value={s.value} onChange={e => (s.set as (v: number) => void)(Number(e.target.value))}
-                      className={`bg-[#f8f7fc] border border-[#cbcad7] rounded-xl px-3 py-2.5 [font-family:'Montserrat',Helvetica] font-medium text-sm text-[#1a1a2e] outline-none focus:border-[#6938ef] transition-colors min-w-[${s.min}]`}>
+                      className={selectClass}>
                       {s.opts.map(v => <option key={v} value={v}>{v}</option>)}
                     </select>
                   ))}
                 </div>
               </div>
               <div className="flex items-center gap-4">
-                <label className="w-28 flex-shrink-0 [font-family:'Montserrat',Helvetica] font-semibold text-[#1a1a2e] text-sm text-right">Giới tính</label>
+                <label className="w-28 flex-shrink-0 font-bold text-[#1A1A2E] text-sm text-right">Giới tính</label>
                 <div className="flex items-center gap-6">
                   {["Nam", "Nữ", "Khác"].map(g => (
                     <label key={g} className="flex items-center gap-2 cursor-pointer group" onClick={() => setGender(g)}>
-                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${gender === g ? "border-[#6938ef]" : "border-[#cbcad7] group-hover:border-[#a78bfa]"}`}>
-                        {gender === g && <div className="w-2.5 h-2.5 rounded-full bg-[#6938ef]" />}
+                      <div className={`w-5 h-5 rounded-lg border-2 flex items-center justify-center transition-colors ${gender === g ? "border-[#1A1A2E] bg-[#B8A9E8] shadow-[2px_2px_0_#1A1A2E]" : "border-[#D1D5DB] group-hover:border-[#1A1A2E]"}`}>
+                        {gender === g && <div className="w-2 h-2 rounded-sm bg-[#1A1A2E]" />}
                       </div>
-                      <span className="[font-family:'Montserrat',Helvetica] font-medium text-sm text-[#1a1a2e]">{g}</span>
+                      <span className="font-bold text-sm text-[#1A1A2E]">{g}</span>
                     </label>
                   ))}
                 </div>
@@ -188,40 +188,40 @@ export const AccountTab = (): JSX.Element => {
               <div className="flex items-center gap-4">
                 <div className="w-28" />
                 <button onClick={handleSaveProfile} disabled={saving}
-                  className="bg-[#6938ef] hover:bg-[#5a2dd6] disabled:opacity-60 text-white rounded-xl px-6 py-2.5 [font-family:'Montserrat',Helvetica] font-semibold text-sm shadow-[0_2px_8px_rgba(105,56,239,0.3)] transition-all">
-                  {saving ? "Đang lưu..." : "Lưu thay đổi"}
+                  className="nb-btn nb-btn-purple text-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                  {saving ? "Đang lưu..." : "Lưu thay đổi ✦"}
                 </button>
-                {saveMsg && <span className="[font-family:'Montserrat',Helvetica] font-medium text-sm text-emerald-600">✓ {saveMsg}</span>}
+                {saveMsg && <span className="font-bold text-sm text-[#065F46]">✓ {saveMsg}</span>}
               </div>
             </div>
           </div>
 
-          <hr className="border-[#f0f0f5]" />
+          <hr className="border-[#1A1A2E]/10 border-t-2" />
 
           {/* Email */}
           <div className="flex items-center gap-4">
-            <div className="w-10 h-10 bg-[#f0edff] rounded-full flex items-center justify-center flex-shrink-0"><Mail className="w-5 h-5 text-[#6938ef]" /></div>
-            <label className="w-28 flex-shrink-0 [font-family:'Montserrat',Helvetica] font-semibold text-[#1a1a2e] text-sm">Địa chỉ email</label>
+            <div className="w-10 h-10 bg-[#EDE9FE] rounded-lg flex items-center justify-center border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E] flex-shrink-0"><Mail className="w-5 h-5 text-[#1A1A2E]" /></div>
+            <label className="w-28 flex-shrink-0 font-bold text-[#1A1A2E] text-sm">Địa chỉ email</label>
             <input type="email" value={email} onChange={e => setEmail(e.target.value)}
-              className="flex-1 bg-[#f8f7fc] border border-[#cbcad7] rounded-xl px-4 py-2.5 [font-family:'Montserrat',Helvetica] font-medium text-sm text-[#1a1a2e] outline-none focus:border-[#6938ef] transition-colors max-w-xs" />
+              className="nb-input h-11 text-sm flex-1 max-w-xs" />
             <button onClick={handleUpdateEmail} disabled={emailSaving}
-              className="border border-[#6938ef] text-[#6938ef] hover:bg-[#f4f2ff] disabled:opacity-60 rounded-xl px-5 py-2.5 [font-family:'Montserrat',Helvetica] font-semibold text-sm transition-colors">
+              className="nb-btn nb-btn-outline text-sm disabled:opacity-50">
               {emailSaving ? "Đang lưu..." : "Cập nhật"}
             </button>
-            {emailMsg && <span className="[font-family:'Montserrat',Helvetica] font-medium text-sm text-emerald-600">{emailMsg}</span>}
+            {emailMsg && <span className="font-bold text-sm text-[#065F46]">{emailMsg}</span>}
           </div>
 
           {/* Phone */}
           <div className="flex items-center gap-4">
-            <div className="w-10 h-10 bg-[#f0edff] rounded-full flex items-center justify-center flex-shrink-0"><Phone className="w-5 h-5 text-[#6938ef]" /></div>
-            <label className="w-28 flex-shrink-0 [font-family:'Montserrat',Helvetica] font-semibold text-[#1a1a2e] text-sm">Số điện thoại</label>
+            <div className="w-10 h-10 bg-[#EDE9FE] rounded-lg flex items-center justify-center border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E] flex-shrink-0"><Phone className="w-5 h-5 text-[#1A1A2E]" /></div>
+            <label className="w-28 flex-shrink-0 font-bold text-[#1A1A2E] text-sm">Số điện thoại</label>
             <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="01234567890"
-              className="flex-1 bg-[#f8f7fc] border border-[#cbcad7] rounded-xl px-4 py-2.5 [font-family:'Montserrat',Helvetica] font-medium text-sm text-[#1a1a2e] outline-none focus:border-[#6938ef] transition-colors max-w-xs" />
+              className="nb-input h-11 text-sm flex-1 max-w-xs" />
             <button onClick={handleUpdatePhone} disabled={phoneSaving}
-              className="border border-[#6938ef] text-[#6938ef] hover:bg-[#f4f2ff] disabled:opacity-60 rounded-xl px-5 py-2.5 [font-family:'Montserrat',Helvetica] font-semibold text-sm transition-colors">
+              className="nb-btn nb-btn-outline text-sm disabled:opacity-50">
               {phoneSaving ? "Đang lưu..." : "Cập nhật"}
             </button>
-            {phoneMsg && <span className="[font-family:'Montserrat',Helvetica] font-medium text-sm text-emerald-600">{phoneMsg}</span>}
+            {phoneMsg && <span className="font-bold text-sm text-[#065F46]">{phoneMsg}</span>}
           </div>
         </div>
       )}
@@ -229,55 +229,55 @@ export const AccountTab = (): JSX.Element => {
       {/* Security */}
       {activeTab === "security" && (
         <div className="space-y-6">
-          <div className="bg-[#f8f7fc] rounded-xl border border-[#e8e5f5] p-6">
-            <h3 className="[font-family:'Montserrat',Helvetica] font-bold text-[#1a1a2e] text-base mb-4">Đổi mật khẩu</h3>
+          <div className="nb-card-static p-6">
+            <h3 className="font-extrabold text-[#1A1A2E] text-base mb-4">Đổi mật khẩu</h3>
             <div className="space-y-4 max-w-md">
               {["Mật khẩu hiện tại", "Mật khẩu mới", "Xác nhận mật khẩu mới"].map((label, i) => (
                 <div key={i}>
-                  <label className="[font-family:'Montserrat',Helvetica] font-semibold text-[#1a1a2e] text-sm mb-1.5 block">{label}</label>
+                  <label className="font-bold text-[#1A1A2E] text-sm mb-1.5 block">{label}</label>
                   <input type="password" placeholder={`Nhập ${label.toLowerCase()}`}
-                    className="w-full bg-white border border-[#cbcad7] rounded-xl px-4 py-2.5 [font-family:'Montserrat',Helvetica] font-medium text-sm outline-none focus:border-[#6938ef] transition-colors" />
+                    className="nb-input w-full h-11 text-sm" />
                 </div>
               ))}
-              <button className="bg-[#6938ef] hover:bg-[#5a2dd6] text-white rounded-xl px-6 py-2.5 [font-family:'Montserrat',Helvetica] font-semibold text-sm shadow-[0_2px_8px_rgba(105,56,239,0.3)] transition-all mt-2">
-                Cập nhật mật khẩu
+              <button className="nb-btn nb-btn-purple text-sm mt-2">
+                Cập nhật mật khẩu ✦
               </button>
             </div>
           </div>
 
           {/* 2FA Section */}
-          <div className="bg-[#f8f7fc] rounded-xl border border-[#e8e5f5] p-6">
+          <div className="nb-card-static p-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${is2FAEnabled ? 'bg-emerald-100' : 'bg-[#f0edff]'}`}>
-                  {is2FAEnabled ? <ShieldCheck className="w-5 h-5 text-emerald-600" /> : <Shield className="w-5 h-5 text-[#6938ef]" />}
+                <div className={`w-10 h-10 rounded-lg flex items-center justify-center border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E] ${is2FAEnabled ? 'bg-[#C8E44D]' : 'bg-[#EDE9FE]'}`}>
+                  {is2FAEnabled ? <ShieldCheck className="w-5 h-5 text-[#1A1A2E]" /> : <Shield className="w-5 h-5 text-[#1A1A2E]" />}
                 </div>
                 <div>
-                  <h3 className="[font-family:'Montserrat',Helvetica] font-bold text-[#1a1a2e] text-base">Xác thực 2 bước (2FA)</h3>
-                  <p className="[font-family:'Montserrat',Helvetica] font-medium text-[#9794aa] text-sm mt-0.5">
+                  <h3 className="font-extrabold text-[#1A1A2E] text-base">Xác thực 2 bước (2FA)</h3>
+                  <p className="font-medium text-[#6B7280] text-sm mt-0.5">
                     Bảo vệ tài khoản bằng Google Authenticator
                   </p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <span className={`px-3 py-1 rounded-full text-xs font-semibold [font-family:'Montserrat',Helvetica] ${
-                  is2FAEnabled ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500'
+                <span className={`px-3 py-1 rounded-lg text-xs font-bold border-2 ${
+                  is2FAEnabled ? 'bg-[#C8E44D] text-[#1A1A2E] border-[#1A1A2E]' : 'bg-[#F3F4F6] text-[#6B7280] border-transparent'
                 }`}>
                   {is2FAEnabled ? 'Đang bật' : 'Đang tắt'}
                 </span>
                 {is2FAEnabled ? (
                   <button
                     onClick={() => setShowDisable2FA(true)}
-                    className="border border-red-300 text-red-500 hover:bg-red-50 rounded-xl px-5 py-2.5 [font-family:'Montserrat',Helvetica] font-semibold text-sm transition-colors"
+                    className="nb-btn nb-btn-outline text-sm !text-[#991B1B] !border-[#FCA5A5] hover:!bg-[#FEE2E2]"
                   >
                     Tắt 2FA
                   </button>
                 ) : (
                   <button
                     onClick={() => navigate('/2fa-setup')}
-                    className="bg-[#6938ef] hover:bg-[#5a2dd6] text-white rounded-xl px-5 py-2.5 [font-family:'Montserrat',Helvetica] font-semibold text-sm shadow-[0_2px_8px_rgba(105,56,239,0.3)] transition-all"
+                    className="nb-btn nb-btn-purple text-sm"
                   >
-                    Bật 2FA
+                    Bật 2FA ✦
                   </button>
                 )}
               </div>
@@ -285,8 +285,8 @@ export const AccountTab = (): JSX.Element => {
 
             {/* Disable 2FA Dialog */}
             {showDisable2FA && (
-              <div className="mt-4 bg-white rounded-xl border border-red-200 p-4">
-                <p className="[font-family:'Montserrat',Helvetica] font-medium text-sm text-gray-600 mb-3">
+              <div className="mt-4 nb-card-static p-4 !border-[#FCA5A5] !bg-[#FFF5F5]">
+                <p className="font-medium text-sm text-[#4C5769] mb-3">
                   Nhập mã 6 chữ số từ ứng dụng xác thực để tắt 2FA:
                 </p>
                 <div className="flex items-center gap-3">
@@ -297,7 +297,7 @@ export const AccountTab = (): JSX.Element => {
                     value={disable2FACode}
                     onChange={e => { if (/^\d*$/.test(e.target.value)) setDisable2FACode(e.target.value); }}
                     placeholder="000000"
-                    className="flex-1 max-w-[160px] bg-[#f8f7fc] border border-[#cbcad7] rounded-xl px-4 py-2.5 text-center font-mono text-lg tracking-widest outline-none focus:border-red-400 transition-colors"
+                    className="nb-input max-w-[160px] h-11 text-center font-mono text-lg tracking-widest"
                     autoFocus
                   />
                   <button
@@ -316,20 +316,20 @@ export const AccountTab = (): JSX.Element => {
                       } finally { setDisabling2FA(false); }
                     }}
                     disabled={disabling2FA || disable2FACode.length !== 6}
-                    className="bg-red-500 hover:bg-red-600 disabled:opacity-50 text-white rounded-xl px-5 py-2.5 [font-family:'Montserrat',Helvetica] font-semibold text-sm transition-colors"
+                    className="nb-btn text-sm !bg-[#991B1B] !text-white !border-[#1A1A2E] disabled:opacity-50"
                   >
                     {disabling2FA ? "Đang xử lý..." : "Xác nhận tắt"}
                   </button>
                   <button
                     onClick={() => { setShowDisable2FA(false); setDisable2FACode(""); setDisable2FAMsg(""); }}
-                    className="text-gray-400 hover:text-gray-600 [font-family:'Montserrat',Helvetica] font-medium text-sm"
+                    className="text-[#6B7280] hover:text-[#1A1A2E] font-bold text-sm transition-colors"
                   >
                     Hủy
                   </button>
                 </div>
                 {disable2FAMsg && (
-                  <p className={`mt-2 [font-family:'Montserrat',Helvetica] font-medium text-sm ${
-                    disable2FAMsg.startsWith("✓") ? "text-emerald-600" : "text-red-500"
+                  <p className={`mt-2 font-bold text-sm ${
+                    disable2FAMsg.startsWith("✓") ? "text-[#065F46]" : "text-[#991B1B]"
                   }`}>{disable2FAMsg}</p>
                 )}
               </div>

@@ -4,14 +4,15 @@ import {
   ChevronRight,
   Heart,
   Star,
-  Eye,
   GraduationCap,
   ChevronLeft,
-
   X,
   Download,
   Sparkles,
   Camera,
+  ShoppingBag,
+  Box,
+  CheckCircle2
 } from "lucide-react";
 import { GuestLayout } from "../../components/layout/GuestLayout";
 import {
@@ -21,6 +22,24 @@ import {
   type OutfitVariantDto,
 } from "../../lib/api/schools";
 import { guestTryOn, type GuestTryOnResponse } from "../../lib/api/tryOn";
+import { motion } from "framer-motion";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import { Badge } from "@/components/ui/badge";
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 20 },
+  visible: (i: number) => ({
+    opacity: 1, y: 0,
+    transition: { delay: i * 0.1, duration: 0.6, ease: [0.22, 1, 0.36, 1] },
+  }),
+};
 
 /* ── helpers ── */
 const fmt = (n: number) =>
@@ -38,9 +57,10 @@ type RelatedOutfit = {
   outfitName: string;
   price: number;
   mainImageURL: string | null;
+  outfitType: string;
 };
 
-/* ── TryOn Modal ── */
+/* ── TryOn Modal (Neubrutalism) ── */
 function TryOnModal({
   isOpen,
   onClose,
@@ -133,31 +153,31 @@ function TryOnModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
+      {/* Backdrop — no blur, NB style */}
+      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
 
-      {/* Modal */}
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-[720px] max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-200">
+      {/* Modal — NB panel */}
+      <div className="relative bg-[#FFFDF9] rounded-[18px] border-[3px] border-[#19182B] shadow-[6px_6px_0_#19182B] w-full max-w-[760px] max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">
+        <div className="flex items-center justify-between px-6 py-5 border-b-[2px] border-[#19182B]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
-              <Sparkles className="w-5 h-5 text-white" />
+            <div className="flex h-11 w-11 items-center justify-center rounded-[10px] border-[3px] border-[#19182B] bg-[#E9E1FF] shadow-[3px_3px_0_#19182B]">
+              <Sparkles className="w-5 h-5 text-[#7C56FF]" />
             </div>
             <div>
-              <h2 className="font-montserrat font-bold text-[#1a1a2e] text-lg">
+              <h2 className="font-extrabold text-[20px] text-[#19182B] leading-tight">
                 Thử đồ ảo (VR)
               </h2>
-              <p className="font-montserrat text-xs text-gray-400">
+              <p className="font-bold text-[12px] text-[#8D879B] mt-0.5 line-clamp-1 max-w-[280px]">
                 {outfitName}
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
+            className="flex h-9 w-9 items-center justify-center rounded-[8px] border-[2px] border-[#19182B] bg-white shadow-[2px_2px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#19182B]"
           >
-            <X className="w-5 h-5 text-gray-400" />
+            <X className="w-4 h-4 text-[#19182B]" />
           </button>
         </div>
 
@@ -167,34 +187,48 @@ function TryOnModal({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Left: Upload */}
               <div>
-                <p className="font-montserrat font-semibold text-sm text-gray-700 mb-3">
-                  📸 Ảnh của bạn
-                </p>
+                <div className="flex items-center justify-between mb-3">
+                  <p className="font-extrabold text-[14px] text-[#19182B]">
+                    Ảnh của bạn
+                  </p>
+                  {photoPreview && (
+                    <span className="rounded-full border-[2px] border-[#19182B] bg-[#D9F8E8] px-2.5 py-0.5 text-[11px] font-extrabold text-[#19182B] shadow-[2px_2px_0_#19182B]">
+                      AI READY
+                    </span>
+                  )}
+                </div>
                 {!photoPreview ? (
                   <div
                     onDrop={handleDrop}
                     onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
                     onDragLeave={() => setDragOver(false)}
                     onClick={() => fileRef.current?.click()}
-                    className={`border-2 border-dashed rounded-xl p-8 flex flex-col items-center justify-center cursor-pointer transition-all min-h-[280px] ${
-                      dragOver
-                        ? "border-purple-500 bg-purple-50"
-                        : "border-gray-300 bg-gray-50 hover:border-purple-400 hover:bg-purple-50/50"
-                    }`}
+                    className={`rounded-[14px] border-[2px] border-dashed p-6 flex flex-col items-center justify-center cursor-pointer transition-all aspect-[3/4] ${dragOver
+                        ? "border-[#8B6BFF] bg-[#F2ECFF]"
+                        : "border-[#19182B] bg-[#F6F1E8] hover:border-[#8B6BFF] hover:bg-[#F2ECFF]"
+                      }`}
                   >
-                    <Camera className="w-10 h-10 text-purple-300 mb-3" />
-                    <p className="font-montserrat font-semibold text-sm text-gray-600 text-center">
-                      Kéo thả ảnh vào đây
+                    <div className="flex h-16 w-16 items-center justify-center rounded-[12px] border-[2px] border-[#19182B] bg-white shadow-[3px_3px_0_#19182B] mb-4">
+                      <Camera className="w-7 h-7 text-[#8D879B]" />
+                    </div>
+                    <p className="font-black text-[15px] text-[#19182B] text-center">
+                      Tải ảnh của bạn lên
                     </p>
-                    <p className="font-montserrat text-xs text-gray-400 mt-1">
-                      hoặc nhấp để chọn file
+                    <p className="font-semibold text-[13px] text-[#6F6A7D] mt-1.5 text-center leading-relaxed">
+                      Chụp ảnh toàn thân, nền sáng và đứng thẳng để AI thử đồ cho kết quả chính xác hơn.
                     </p>
-                    <p className="font-montserrat text-[10px] text-gray-300 mt-3">
-                      JPG, PNG, WEBP • Tối đa 10MB
-                    </p>
+                    <span className="mt-4 rounded-[8px] border-[2px] border-[#19182B] bg-white px-3 py-1.5 text-[12px] font-extrabold text-[#19182B] shadow-[2px_2px_0_#19182B]">
+                      JPG, PNG, WEBP · tối đa 10MB
+                    </span>
+                    <button
+                      type="button"
+                      className="mt-3 rounded-[10px] border-[2px] border-[#19182B] bg-white px-4 py-2 text-[13px] font-extrabold text-[#19182B] shadow-[3px_3px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B]"
+                    >
+                      Chọn ảnh từ máy của bạn
+                    </button>
                   </div>
                 ) : (
-                  <div className="relative rounded-xl overflow-hidden border border-gray-200">
+                  <div className="relative rounded-[14px] overflow-hidden border-[2px] border-[#19182B] shadow-[3px_3px_0_#19182B]">
                     <img
                       src={photoPreview}
                       alt="Your photo"
@@ -202,9 +236,9 @@ function TryOnModal({
                     />
                     <button
                       onClick={handleReset}
-                      className="absolute top-2 right-2 w-7 h-7 bg-black/50 hover:bg-black/70 rounded-full flex items-center justify-center transition-colors"
+                      className="absolute top-2.5 right-2.5 flex h-8 w-8 items-center justify-center rounded-[8px] border-[2px] border-[#19182B] bg-white shadow-[2px_2px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#19182B]"
                     >
-                      <X className="w-4 h-4 text-white" />
+                      <X className="w-4 h-4 text-[#19182B]" />
                     </button>
                   </div>
                 )}
@@ -222,10 +256,15 @@ function TryOnModal({
 
               {/* Right: Outfit preview */}
               <div>
-                <p className="font-montserrat font-semibold text-sm text-gray-700 mb-3">
-                  👗 Đồng phục
-                </p>
-                <div className="rounded-xl overflow-hidden border border-gray-200">
+                <div className="flex items-center justify-between mb-3">
+                  <p className="font-extrabold text-[14px] text-[#19182B]">
+                    Đồng phục xem trước
+                  </p>
+                  <span className="rounded-full border-[2px] border-[#19182B] bg-[#DCEBFF] px-2.5 py-0.5 text-[11px] font-extrabold text-[#19182B] shadow-[2px_2px_0_#19182B]">
+                    PREVIEW
+                  </span>
+                </div>
+                <div className="rounded-[14px] overflow-hidden border-[2px] border-[#19182B] shadow-[3px_3px_0_#19182B] bg-[#F6F1E8]">
                   <img
                     src={outfitImage}
                     alt={outfitName}
@@ -235,76 +274,88 @@ function TryOnModal({
               </div>
             </div>
           ) : (
-            /* Result view */
+            /* Result view — NB style */
             <div className="flex flex-col items-center">
-              <p className="font-montserrat font-bold text-lg text-[#1a1a2e] mb-4">
-                ✨ Kết quả thử đồ
-              </p>
-              <div className="rounded-2xl overflow-hidden border-2 border-purple-200 shadow-lg max-w-[400px] w-full">
+              <div className="flex items-center gap-3 mb-5">
+                <div className="flex h-10 w-10 items-center justify-center rounded-[10px] border-[3px] border-[#19182B] bg-[#D9F8E8] shadow-[3px_3px_0_#19182B]">
+                  <span className="text-[18px]">✨</span>
+                </div>
+                <h3 className="font-black text-[22px] text-[#19182B]">
+                  Kết quả thử đồ
+                </h3>
+              </div>
+              <div className="rounded-[14px] overflow-hidden border-[3px] border-[#19182B] shadow-[5px_5px_0_#19182B] max-w-[400px] w-full">
                 <img
                   src={result.resultPhotoUrl}
                   alt="Try-on result"
                   className="w-full aspect-[3/4] object-cover"
                 />
               </div>
-              <div className="flex items-center gap-3 mt-5">
+              <div className="flex items-center gap-3 mt-6">
                 <button
                   onClick={handleDownload}
-                  className="flex items-center gap-2 px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-montserrat font-semibold text-sm rounded-xl transition-colors shadow-md"
+                  className="flex items-center gap-2 rounded-[10px] border-[3px] border-[#19182B] bg-[#8B6BFF] px-5 py-3 text-[14px] font-extrabold text-white shadow-[4px_4px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B]"
                 >
                   <Download className="w-4 h-4" />
                   Tải ảnh
                 </button>
                 <button
                   onClick={handleReset}
-                  className="flex items-center gap-2 px-5 py-2.5 bg-white border-2 border-gray-200 text-gray-700 font-montserrat font-semibold text-sm rounded-xl hover:bg-gray-50 transition-colors"
+                  className="flex items-center gap-2 rounded-[10px] border-[3px] border-[#19182B] bg-white px-5 py-3 text-[14px] font-extrabold text-[#19182B] shadow-[4px_4px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B]"
                 >
                   Thử lại
                 </button>
               </div>
               {result.remainingTries >= 0 && (
-                <p className="font-montserrat text-xs text-gray-400 mt-3">
+                <span className="mt-4 rounded-full border-[2px] border-[#19182B] bg-[#FFF1BF] px-3 py-1 text-[12px] font-extrabold text-[#19182B] shadow-[2px_2px_0_#19182B]">
                   Còn {result.remainingTries} lượt thử hôm nay
-                </p>
+                </span>
               )}
             </div>
           )}
 
-          {/* Error */}
+          {/* Error — NB style */}
           {error && (
-            <div className="mt-4 p-3 bg-red-50 border border-red-100 rounded-xl">
-              <p className="font-montserrat font-medium text-sm text-red-600">{error}</p>
+            <div className="mt-4 rounded-[10px] border-[2px] border-[#19182B] bg-[#FFECEA] p-3.5 shadow-[3px_3px_0_#19182B]">
+              <p className="font-bold text-[13px] text-[#D32F2F]">{error}</p>
             </div>
           )}
         </div>
 
         {/* Footer */}
         {!result && (
-          <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-between">
-            <p className="font-montserrat text-xs text-gray-400">
-              Tính năng thử đồ ảo sử dụng AI
+          <div className="px-6 py-4 border-t-[2px] border-[#19182B] bg-[#F6F1E8] rounded-b-[15px] flex items-center justify-between">
+            <p className="font-bold text-[12px] text-[#8D879B]">
+              Tính năng thử đồ sử dụng AI
             </p>
-            <button
-              onClick={handleTryOn}
-              disabled={!photo || processing}
-              className={`flex items-center gap-2 px-6 py-3 font-montserrat font-bold text-sm rounded-xl transition-all shadow-md ${
-                !photo || processing
-                  ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                  : "bg-gradient-to-r from-purple-600 to-pink-500 text-white hover:shadow-lg hover:scale-[1.02]"
-              }`}
-            >
-              {processing ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Đang xử lý...
-                </>
-              ) : (
-                <>
-                  <Sparkles className="w-4 h-4" />
-                  Thử đồ ngay
-                </>
-              )}
-            </button>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={onClose}
+                className="rounded-[10px] border-[3px] border-[#19182B] bg-white px-4 py-2.5 text-[13px] font-extrabold text-[#19182B] shadow-[4px_4px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B]"
+              >
+                Chọn mẫu khác
+              </button>
+              <button
+                onClick={handleTryOn}
+                disabled={!photo || processing}
+                className={`flex items-center gap-2 rounded-[10px] border-[3px] border-[#19182B] px-5 py-2.5 text-[13px] font-extrabold transition-all ${!photo || processing
+                    ? "bg-[#ECEAF2] text-[#9A95A8] shadow-[2px_2px_0_#19182B] cursor-not-allowed"
+                    : "bg-[#8B6BFF] text-white shadow-[4px_4px_0_#19182B] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B]"
+                  }`}
+              >
+                {processing ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Đang xử lý...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-4 h-4" />
+                    Thử đồ ngay
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         )}
       </div>
@@ -321,6 +372,11 @@ export const OutfitDetail = (): JSX.Element => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showTryOn, setShowTryOn] = useState(false);
+
+  const isParent = (() => {
+    const raw = localStorage.getItem("user") || sessionStorage.getItem("user");
+    try { return raw ? JSON.parse(raw).role === "Parent" : false; } catch { return false; }
+  })();
 
   // UI state
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
@@ -355,7 +411,7 @@ export const OutfitDetail = (): JSX.Element => {
         const items = Array.isArray(res) ? res : res?.items ?? [];
         setRelated(items.filter((o: any) => o.outfitId !== outfit.outfitId));
       })
-      .catch(() => {});
+      .catch(() => { });
   }, [outfit]);
 
   /* ── Size change ── */
@@ -371,214 +427,176 @@ export const OutfitDetail = (): JSX.Element => {
   /* ── Loading / Error states ── */
   if (loading)
     return (
-      <GuestLayout bgColor="#F4F6FF">
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <div className="w-10 h-10 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin" />
+      <GuestLayout bgColor="#FFF8F0">
+        <div className="max-w-[1200px] mx-auto px-6 lg:px-12 py-10 min-h-screen">
+          <div className="h-4 w-64 bg-gray-200 rounded animate-pulse mb-8" />
+          <div className="flex flex-col lg:flex-row gap-10">
+            <div className="lg:w-[480px] aspect-[4/5] bg-gray-200 rounded-3xl animate-pulse" />
+            <div className="flex-1 space-y-4 pt-4">
+              <div className="h-10 w-3/4 bg-gray-200 rounded-lg animate-pulse" />
+              <div className="h-6 w-1/4 bg-gray-200 rounded-lg animate-pulse" />
+              <div className="h-12 w-1/3 bg-gray-200 rounded-lg animate-pulse" />
+              <div className="h-24 w-full bg-gray-200 rounded-xl animate-pulse" />
+            </div>
+          </div>
         </div>
       </GuestLayout>
     );
 
   if (error || !outfit)
     return (
-      <GuestLayout bgColor="#F4F6FF">
+      <GuestLayout bgColor="#FFF8F0">
         <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
-          <p className="font-montserrat text-gray-500">{error || "Không tìm thấy."}</p>
-          <button
-            onClick={() => navigate("/schools")}
-            className="text-purple-600 hover:underline font-montserrat font-semibold"
-          >
-            ← Quay lại
+          <p className="font-montserrat font-medium text-gray-500">{error || "Không tìm thấy đồng phục."}</p>
+          <button onClick={() => navigate("/schools")} className="text-purple-600 hover:text-purple-700 font-montserrat font-bold">
+            ← Quay lại danh sách
           </button>
         </div>
       </GuestLayout>
     );
 
   const displayPrice = selectedVariant ? selectedVariant.price : outfit.price;
-  const mainImage =
-    (selectedVariant?.variantImageURL || outfit.mainImageURL) ??
-    "https://placehold.co/500x600?text=No+Image";
+  const mainImage = (selectedVariant?.variantImageURL || outfit.mainImageURL) ?? "https://placehold.co/500x600?text=No+Image";
 
   return (
-    <GuestLayout bgColor="#F4F6FF">
-      <div className="max-w-[1200px] mx-auto px-4 lg:px-8 py-8">
+    <GuestLayout bgColor="#FFF8F0">
+      {/* NB decorative shapes */}
+
+      <div className="relative z-10 max-w-[1200px] mx-auto px-4 lg:px-8 py-8 xl:py-12">
         {/* ───── Breadcrumb ───── */}
-        <div className="flex items-center gap-2 text-sm mb-8 flex-wrap">
-          <Link
-            to="/homepage"
-            className="font-montserrat text-black/40 hover:text-black/70"
-          >
-            Trang chủ
-          </Link>
-          <ChevronRight className="w-4 h-4 text-black/40" />
-          <Link
-            to={`/schools/${outfit.school.schoolId}`}
-            className="font-montserrat text-black/40 hover:text-black/70"
-          >
-            {outfit.school.schoolName}
-          </Link>
-          <ChevronRight className="w-4 h-4 text-black/40" />
-          <span className="font-montserrat text-black/40">
-            {OUTFIT_TYPE_LABEL[outfit.outfitType] ?? outfit.outfitType}
-          </span>
-          <ChevronRight className="w-4 h-4 text-black/40" />
-          <span className="font-montserrat font-semibold text-black line-clamp-1">
-            {outfit.outfitName}
-          </span>
-        </div>
+        <motion.div custom={0} variants={fadeUp} initial="hidden" animate="visible" className="mb-8">
+          <Breadcrumb>
+            <BreadcrumbList className="text-[13px] sm:text-[14px]">
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/" className="text-gray-500 hover:text-purple-600 font-medium transition-colors">Trang chủ</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbLink href={`/schools/${outfit.school.schoolId}`} className="text-gray-500 hover:text-purple-600 font-medium transition-colors line-clamp-1 max-w-[150px] sm:max-w-none">{outfit.school.schoolName}</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <span className="text-gray-500 font-medium">{OUTFIT_TYPE_LABEL[outfit.outfitType] ?? outfit.outfitType}</span>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage className="text-gray-900 font-bold line-clamp-1 max-w-[150px] sm:max-w-[300px]">{outfit.outfitName}</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </motion.div>
 
         {/* ───── Hero: Image + Info ───── */}
-        <div className="flex flex-col lg:flex-row gap-8 mb-12">
-          {/* Left: Image column */}
-          <div className="lg:w-[480px] flex-shrink-0">
-            <div className="relative bg-white rounded-2xl overflow-hidden shadow-sm aspect-[4/5]">
-              <img
-                src={mainImage}
-                alt={outfit.outfitName}
-                className="w-full h-full object-cover"
-              />
+        <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 mb-16">
+          {/* Left: Image gallery */}
+          <motion.div custom={1} variants={fadeUp} initial="hidden" animate="visible" className="lg:w-[400px] flex-shrink-0">
+            <div className="relative bg-white rounded-2xl overflow-hidden border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E] aspect-square group md:aspect-[4/5]">
+              <img src={mainImage} alt={outfit.outfitName} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
               <button
                 onClick={() => setLiked(!liked)}
-                className="absolute top-4 left-4 w-10 h-10 bg-white/90 rounded-full flex items-center justify-center shadow-md hover:scale-110 transition-transform"
+                className="absolute top-4 left-4 w-10 h-10 bg-white shadow-[3px_3px_0_#1A1A2E] border-2 border-[#1A1A2E] rounded-lg flex items-center justify-center hover:scale-110 transition-transform duration-300 z-10"
               >
-                <Heart
-                  className={`w-5 h-5 ${liked ? "fill-red-500 text-red-500" : "text-gray-400"}`}
-                />
+                <Heart className={`w-[20px] h-[20px] ${liked ? "fill-red-500 text-red-500" : "text-gray-400"}`} />
               </button>
             </div>
 
             {/* Thumbnail gallery */}
             {outfit.variants.filter((v) => v.variantImageURL).length > 0 && (
-              <div className="flex gap-3 mt-4 overflow-x-auto pb-2">
-                {/* Main image thumb */}
+              <div className="flex gap-3 mt-4 overflow-x-auto pb-2 scrollbar-hide">
                 <button
-                  onClick={() => {
-                    setSelectedVariant(null);
-                    setSelectedSize(null);
-                  }}
-                  className={`w-20 h-20 rounded-lg overflow-hidden border-2 flex-shrink-0 transition-colors ${
-                    !selectedVariant
-                      ? "border-purple-500"
-                      : "border-transparent hover:border-purple-200"
-                  }`}
+                  onClick={() => { setSelectedVariant(null); setSelectedSize(null); }}
+                  className={`w-[85px] h-[85px] rounded-xl overflow-hidden border-2 flex-shrink-0 transition-all ${!selectedVariant ? "border-blue-500 p-0.5" : "border-transparent hover:border-gray-200"
+                    }`}
                 >
-                  <img
-                    src={outfit.mainImageURL ?? ""}
-                    alt="main"
-                    className="w-full h-full object-cover"
-                  />
+                  <img src={outfit.mainImageURL ?? ""} alt="main" className="w-full h-full object-cover rounded-lg" />
                 </button>
-                {outfit.variants
-                  .filter((v) => v.variantImageURL)
-                  .map((v) => (
-                    <button
-                      key={v.productVariantId}
-                      onClick={() => {
-                        setSelectedVariant(v);
-                        setSelectedSize(v.size);
-                      }}
-                      className={`w-20 h-20 rounded-lg overflow-hidden border-2 flex-shrink-0 transition-colors ${
-                        selectedVariant?.productVariantId === v.productVariantId
-                          ? "border-purple-500"
-                          : "border-transparent hover:border-purple-200"
+                {outfit.variants.filter((v) => v.variantImageURL).map((v) => (
+                  <button
+                    key={v.productVariantId}
+                    onClick={() => { setSelectedVariant(v); setSelectedSize(v.size); }}
+                    className={`w-[85px] h-[85px] rounded-xl overflow-hidden border-2 flex-shrink-0 transition-all ${selectedVariant?.productVariantId === v.productVariantId ? "border-blue-500 p-0.5" : "border-transparent hover:border-gray-200"
                       }`}
-                    >
-                      <img
-                        src={v.variantImageURL!}
-                        alt={v.size}
-                        className="w-full h-full object-cover"
-                      />
-                    </button>
-                  ))}
+                  >
+                    <img src={v.variantImageURL!} alt={v.size} className="w-full h-full object-cover rounded-lg" />
+                  </button>
+                ))}
               </div>
             )}
-          </div>
+          </motion.div>
 
-          {/* Right: Product info */}
-          <div className="flex-1 min-w-0">
-            {/* Name */}
-            <h1 className="font-montserrat font-extrabold text-2xl lg:text-3xl text-black mb-3">
+          {/* Right: Info */}
+          <motion.div custom={2} variants={fadeUp} initial="hidden" animate="visible" className="flex-1 min-w-0 flex flex-col pt-2">
+            <h1 className="font-baloo font-extrabold text-2xl lg:text-3xl leading-[1.2] text-gray-900 mb-3 tracking-tight">
               {outfit.outfitName}
             </h1>
 
             {/* Rating */}
-            <div className="flex items-center gap-2 mb-3">
+            <div className="flex items-center gap-2 mb-4">
               <div className="flex items-center gap-0.5">
                 {[1, 2, 3, 4, 5].map((s) => (
-                  <Star
-                    key={s}
-                    className={`w-4 h-4 ${
-                      s <= Math.round(outfit.averageRating)
-                        ? "fill-yellow-400 text-yellow-400"
-                        : "fill-gray-200 text-gray-200"
-                    }`}
-                  />
+                  <Star key={s} className={`w-[16px] h-[16px] ${s <= Math.round(outfit.averageRating) ? "fill-yellow-400 text-yellow-400" : "fill-gray-200 text-gray-200"}`} />
                 ))}
               </div>
-              <span className="font-montserrat text-sm text-gray-500">
-                {outfit.averageRating > 0
-                  ? `${outfit.averageRating} (${outfit.feedbackCount} đánh giá)`
-                  : "Chưa có đánh giá"}
+              <span className="font-bold text-[13px] text-gray-900 mt-0.5">
+                {outfit.averageRating > 0 ? (
+                  <span className="flex items-center gap-1">
+                    {outfit.averageRating} <span className="font-medium text-gray-500">({outfit.feedbackCount} đánh giá)</span>
+                  </span>
+                ) : (
+                  <span className="font-medium text-gray-400">Chưa có đánh giá</span>
+                )}
               </span>
             </div>
 
             {/* Price */}
-            <p className="font-montserrat font-bold text-2xl text-blue-600 mb-4">
+            <p className="font-baloo font-bold text-[28px] lg:text-[32px] text-[#0ea5e9] mb-4 tracking-tight leading-none drop-shadow-sm">
               {fmt(displayPrice)}
             </p>
 
             {/* Description */}
             {outfit.description && (
-              <p className="font-montserrat text-sm text-gray-600 leading-relaxed mb-6 line-clamp-4">
+              <p className="text-[14px] font-medium text-gray-500 leading-relaxed mb-6 line-clamp-4">
                 {outfit.description}
               </p>
             )}
 
-            {/* School info */}
-            <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-gray-100 mb-6">
-              <span className="font-montserrat font-semibold text-sm text-gray-500 flex-shrink-0">
-                Trường học
-              </span>
-              <div className="flex items-center gap-2 flex-1 min-w-0">
-                {outfit.school.logoURL ? (
-                  <img
-                    src={outfit.school.logoURL}
-                    alt=""
-                    className="w-8 h-8 rounded-full object-cover border"
-                  />
-                ) : (
-                  <GraduationCap className="w-6 h-6 text-purple-400" />
-                )}
-                <Link
-                  to={`/schools/${outfit.school.schoolId}`}
-                  className="font-montserrat font-semibold text-sm text-black hover:text-purple-600 truncate"
-                >
-                  {outfit.school.schoolName}
-                </Link>
+            {/* School Info Block */}
+            <div className="mb-6 space-y-1">
+              <span className="text-xs font-bold text-gray-900 uppercase tracking-wider">Trường học</span>
+              <div className="flex items-center justify-between p-3.5 bg-white rounded-2xl border border-gray-100 shadow-[0_2px_8px_rgb(0,0,0,0.02)] transition-all hover:border-blue-100">
+                <div className="flex items-center gap-3 min-w-0">
+                  {outfit.school.logoURL ? (
+                    <img src={outfit.school.logoURL} alt="" className="w-9 h-9 rounded-full object-cover border border-gray-100 shadow-sm" />
+                  ) : (
+                    <div className="w-9 h-9 rounded-full bg-gray-50 flex items-center justify-center border border-gray-100"><GraduationCap className="w-5 h-5 text-gray-400" /></div>
+                  )}
+                  <Link to={`/schools/${outfit.school.schoolId}`} className="font-bold text-[15px] text-gray-900 hover:text-[#0ea5e9] truncate transition-colors">
+                    {outfit.school.schoolName}
+                  </Link>
+                </div>
+                <div className="flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-600 rounded-full flex-shrink-0">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  <span className="font-bold text-[11px] uppercase tracking-wide">Đã xác thực</span>
+                </div>
               </div>
-              {outfit.isAvailable && (
-                <span className="flex-shrink-0 bg-green-50 text-green-700 font-montserrat font-semibold text-xs px-3 py-1.5 rounded-lg">
-                  Sẵn có
-                </span>
-              )}
             </div>
 
-            {/* Size selector */}
+            {/* Size Selector */}
             {sizes.length > 0 && (
-              <div className="mb-6">
-                <p className="font-montserrat font-semibold text-sm text-gray-700 mb-3">
-                  Chọn kích thước
-                </p>
+              <div className="mb-8 space-y-2">
+                <span className="text-xs font-bold text-gray-900 uppercase tracking-wider">Chọn kích thước</span>
                 <div className="flex flex-wrap gap-2">
+                  {/* For mockup purposes, we can simulate a disabled size by rendering a fake one if sizes are small, but we stick to real data */}
                   {sizes.map((size) => {
+                    const isSelected = selectedSize === size;
                     return (
                       <button
                         key={size}
                         onClick={() => handleSizeSelect(size)}
-                        className={`min-w-[48px] px-4 py-2.5 rounded-lg font-montserrat font-semibold text-sm border-2 transition-all ${
-                          selectedSize === size
-                            ? "bg-purple-600 text-white border-purple-600 shadow-md"
-                            : "bg-white text-gray-700 border-gray-200 hover:border-purple-400"
-                        }`}
+                        className={`min-w-[56px] h-10 px-4 rounded-xl font-bold text-[13px] border-2 transition-all flex items-center justify-center ${isSelected
+                            ? "border-[#0ea5e9] bg-[#0ea5e9]/10 text-[#0ea5e9]"
+                            : "border-gray-200 bg-white text-gray-600 hover:border-gray-300 hover:bg-gray-50"
+                          }`}
                       >
                         {size}
                       </button>
@@ -588,231 +606,203 @@ export const OutfitDetail = (): JSX.Element => {
               </div>
             )}
 
-            {/* CTA Button */}
-            <div className="flex flex-col sm:flex-row gap-3">
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row gap-3 mt-auto pt-4">
+              {isParent && (
+              <button
+                onClick={() => { }} // Add to cart placeholder
+                className="flex-1 min-h-[44px] flex items-center justify-center gap-2 bg-[#0ea5e9] text-white font-bold text-[14px] rounded-xl shadow-[0_4px_12px_rgb(14,165,233,0.2)] hover:bg-[#0284c7] hover:shadow-[0_8px_16px_rgb(14,165,233,0.3)] transition-all hover:-translate-y-0.5 active:translate-y-0"
+              >
+                <ShoppingBag className="w-[16px] h-[16px]" />
+                Thêm vào giỏ hàng
+              </button>
+              )}
+
               <button
                 onClick={() => setShowTryOn(true)}
-                className="flex-1 flex items-center justify-center gap-2 px-6 py-3.5 bg-white text-purple-600 font-montserrat font-bold text-sm rounded-xl border-2 border-purple-200 hover:bg-purple-50 hover:border-purple-400 transition-all"
+                className="flex-1 min-h-[44px] flex items-center justify-center gap-2 bg-white text-[#0ea5e9] font-bold text-[14px] rounded-xl border-2 border-[#0ea5e9] hover:bg-[#f0f9ff] transition-all hover:-translate-y-0.5 active:translate-y-0"
               >
-                <Eye className="w-5 h-5" />
-                Thử đồ (VR)
+                <Box className="w-[16px] h-[16px]" />
+                Thử Ảo (VR)
               </button>
             </div>
-            <p className="font-montserrat text-xs text-gray-400 mt-2 text-center">
-              Để đặt hàng, vui lòng vào chương trình đồng phục của trường.
-            </p>
-          </div>
+            {!isParent && (
+              <p className="text-[13px] font-medium text-gray-400 mt-4 text-center">
+                Để đặt hàng, vui lòng đăng nhập vào tài khoản phụ huynh.
+              </p>
+            )}
+          </motion.div>
         </div>
 
         {/* ───── Tabs Section ───── */}
-        <div className="bg-white rounded-2xl shadow-sm mb-12 overflow-hidden">
-          <div className="flex border-b border-gray-100">
+        <motion.div custom={3} variants={fadeUp} initial="hidden" animate="visible" className="mb-16">
+          <div className="flex gap-8 border-b border-gray-200/60 overflow-x-auto scrollbar-hide">
             {(
               [
                 { key: "desc", label: "Mô tả chi tiết" },
                 { key: "care", label: "Chất liệu & Bảo quản" },
-                {
-                  key: "reviews",
-                  label: `Đánh giá (${outfit.feedbackCount})`,
-                },
+                { key: "reviews", label: `Đánh giá (${outfit.feedbackCount})` },
               ] as const
-            ).map((tab) => (
-              <button
-                key={tab.key}
-                onClick={() => setActiveTab(tab.key)}
-                className={`flex-1 py-4 font-montserrat font-semibold text-sm text-center transition-colors border-b-2 ${
-                  activeTab === tab.key
-                    ? "text-purple-600 border-purple-600"
-                    : "text-gray-400 border-transparent hover:text-gray-600"
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
+            ).map((tab) => {
+              const isActive = activeTab === tab.key;
+              return (
+                <button
+                  key={tab.key}
+                  onClick={() => setActiveTab(tab.key)}
+                  className={`relative py-4 font-bold text-[15px] whitespace-nowrap transition-colors ${isActive ? "text-[#0ea5e9]" : "text-gray-400 hover:text-gray-600"
+                    }`}
+                >
+                  {tab.label}
+                  {isActive && (
+                    <motion.div layoutId="tab-indicator" className="absolute bottom-0 left-0 right-0 h-[3px] bg-[#0ea5e9] rounded-t-full" />
+                  )}
+                </button>
+              );
+            })}
           </div>
 
-          <div className="p-6 lg:p-8">
+          <div className="py-8 min-h-[300px]">
             {activeTab === "desc" && (
-              <div>
-                <h3 className="font-montserrat font-bold text-lg text-black mb-4">
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
+                <h3 className="font-baloo tracking-tight font-extrabold text-2xl text-gray-900 mb-6">
                   Chi tiết sản phẩm
                 </h3>
                 {outfit.description ? (
-                  <div className="font-montserrat text-sm text-gray-600 leading-relaxed whitespace-pre-line">
-                    {outfit.description}
+                  <div className="text-[15px] text-gray-600 leading-relaxed whitespace-pre-line max-w-4xl">
+                    <ul className="space-y-3 list-disc pl-5 marker:text-gray-300">
+                      {/* Note: Mock rendering of bullet points if the description supports newlines, 
+                          else it just falls back to plain text. We fake bullet visually for plain text if splitable. */}
+                      {outfit.description.split('\n').filter(Boolean).map((line, idx) => (
+                        <li key={idx}><span className="font-bold text-gray-800">{line.split(':')[0]}</span>{line.includes(':') ? ':' + line.split(':').slice(1).join(':') : line}</li>
+                      ))}
+                    </ul>
                   </div>
                 ) : (
-                  <p className="font-montserrat text-sm text-gray-400">
-                    Chưa có mô tả chi tiết.
-                  </p>
+                  <p className="text-sm font-medium text-gray-400">Chưa có mô tả chi tiết.</p>
                 )}
                 {outfit.categories.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mt-4">
+                  <div className="flex flex-wrap gap-2 mt-8">
                     {outfit.categories.map((cat) => (
-                      <span
-                        key={cat}
-                        className="bg-purple-50 text-purple-600 font-montserrat font-medium text-xs px-3 py-1.5 rounded-full"
-                      >
+                      <span key={cat} className="bg-sky-50 text-sky-600 font-bold text-[11px] px-3.5 py-1.5 rounded-full uppercase tracking-wider">
                         {cat}
                       </span>
                     ))}
                   </div>
                 )}
-              </div>
+              </motion.div>
             )}
 
             {activeTab === "care" && (
-              <div>
-                <h3 className="font-montserrat font-bold text-lg text-black mb-4">
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
+                <h3 className="font-baloo tracking-tight font-extrabold text-2xl text-gray-900 mb-6">
                   Bảng kích thước
                 </h3>
                 {outfit.sizeChart ? (
-                  <div className="overflow-x-auto">
+                  <div className="overflow-hidden border border-gray-100 rounded-2xl shadow-[0_2px_10px_rgb(0,0,0,0.02)] max-w-4xl">
                     <table className="w-full text-sm">
                       <thead>
-                        <tr className="bg-purple-50">
-                          <th className="font-montserrat font-semibold text-left px-4 py-3 text-gray-700">
-                            Kích thước
-                          </th>
-                          <th className="font-montserrat font-semibold text-center px-4 py-3 text-gray-700">
-                            Ngực ({outfit.sizeChart.unit})
-                          </th>
-                          <th className="font-montserrat font-semibold text-center px-4 py-3 text-gray-700">
-                            Eo ({outfit.sizeChart.unit})
-                          </th>
-                          <th className="font-montserrat font-semibold text-center px-4 py-3 text-gray-700">
-                            Chiều cao ({outfit.sizeChart.unit})
-                          </th>
+                        <tr className="bg-gray-50/80 border-b border-gray-100">
+                          <th className="font-bold text-left px-5 py-4 text-gray-700">Kích thước</th>
+                          <th className="font-bold text-center px-4 py-4 text-gray-700">Ngực ({outfit.sizeChart.unit})</th>
+                          <th className="font-bold text-center px-4 py-4 text-gray-700">Eo ({outfit.sizeChart.unit})</th>
+                          <th className="font-bold text-center px-4 py-4 text-gray-700">Chiều cao ({outfit.sizeChart.unit})</th>
                         </tr>
                       </thead>
                       <tbody>
                         {outfit.sizeChart.details.map((d, i) => (
-                          <tr
-                            key={d.sizeLabel}
-                            className={i % 2 === 0 ? "bg-white" : "bg-gray-50"}
-                          >
-                            <td className="font-montserrat font-semibold px-4 py-3 text-black">
-                              {d.sizeLabel}
-                            </td>
-                            <td className="font-montserrat text-center px-4 py-3 text-gray-600">
-                              {d.chestMin && d.chestMax
-                                ? `${d.chestMin} - ${d.chestMax}`
-                                : "-"}
-                            </td>
-                            <td className="font-montserrat text-center px-4 py-3 text-gray-600">
-                              {d.waistMin && d.waistMax
-                                ? `${d.waistMin} - ${d.waistMax}`
-                                : "-"}
-                            </td>
-                            <td className="font-montserrat text-center px-4 py-3 text-gray-600">
-                              {d.heightMin && d.heightMax
-                                ? `${d.heightMin} - ${d.heightMax}`
-                                : "-"}
-                            </td>
+                          <tr key={d.sizeLabel} className={`border-b border-gray-50/50 hover:bg-sky-50/30 transition-colors bg-white`}>
+                            <td className="font-extrabold px-5 py-4 text-gray-900">{d.sizeLabel}</td>
+                            <td className="text-center px-4 py-4 font-medium text-gray-600">{d.chestMin && d.chestMax ? `${d.chestMin} - ${d.chestMax}` : "-"}</td>
+                            <td className="text-center px-4 py-4 font-medium text-gray-600">{d.waistMin && d.waistMax ? `${d.waistMin} - ${d.waistMax}` : "-"}</td>
+                            <td className="text-center px-4 py-4 font-medium text-gray-600">{d.heightMin && d.heightMax ? `${d.heightMin} - ${d.heightMax}` : "-"}</td>
                           </tr>
                         ))}
                       </tbody>
                     </table>
                   </div>
                 ) : (
-                  <p className="font-montserrat text-sm text-gray-400">
-                    Chưa có bảng kích thước.
-                  </p>
+                  <p className="text-sm font-medium text-gray-400">Chưa có bảng kích thước.</p>
                 )}
-              </div>
+              </motion.div>
             )}
 
             {activeTab === "reviews" && (
-              <div>
-                <div className="flex items-center gap-3 mb-4">
-                  <span className="font-montserrat font-extrabold text-4xl text-black">
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
+                <div className="flex items-center gap-5 p-6 bg-white border border-gray-100 rounded-3xl max-w-max shadow-[0_4px_20px_rgb(0,0,0,0.02)]">
+                  <span className="font-baloo font-extrabold text-[56px] leading-none text-gray-900">
                     {outfit.averageRating}
                   </span>
                   <div>
-                    <div className="flex items-center gap-0.5">
+                    <div className="flex items-center gap-1 mb-1">
                       {[1, 2, 3, 4, 5].map((s) => (
-                        <Star
-                          key={s}
-                          className={`w-5 h-5 ${
-                            s <= Math.round(outfit.averageRating)
-                              ? "fill-yellow-400 text-yellow-400"
-                              : "fill-gray-200 text-gray-200"
-                          }`}
-                        />
+                        <Star key={s} className={`w-5 h-5 ${s <= Math.round(outfit.averageRating) ? "fill-yellow-400 text-yellow-400" : "fill-gray-200 text-gray-200"}`} />
                       ))}
                     </div>
-                    <p className="font-montserrat text-xs text-gray-400 mt-1">
+                    <p className="font-bold text-[13px] text-gray-400">
                       {outfit.feedbackCount} đánh giá
                     </p>
                   </div>
                 </div>
                 {outfit.feedbackCount === 0 && (
-                  <p className="font-montserrat text-sm text-gray-400">
-                    Chưa có đánh giá nào.
-                  </p>
+                  <p className="text-sm font-medium text-gray-400 mt-6">Chưa có đánh giá nào.</p>
                 )}
-              </div>
+              </motion.div>
             )}
           </div>
-        </div>
+        </motion.div>
 
         {/* ───── Related Products ───── */}
         {related.length > 0 && (
-          <div className="mb-12">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="font-montserrat font-extrabold text-xl text-black">
+          <motion.div custom={4} variants={fadeUp} initial="hidden" animate="visible" className="mb-12 pt-8 border-t border-gray-200/50">
+            <div className="flex items-end justify-between mb-8">
+              <h2 className="font-baloo font-extrabold text-[28px] text-gray-900 tracking-tight">
                 Có thể bạn cũng thích
               </h2>
-              <Link
-                to={`/schools/${outfit.school.schoolId}`}
-                className="font-montserrat font-semibold text-sm text-blue-600 hover:underline flex items-center gap-1"
-              >
+              <Link to={`/schools/${outfit.school.schoolId}`} className="font-bold text-[14px] text-[#0ea5e9] hover:text-[#0284c7] flex items-center gap-1.5 transition-colors">
                 Xem tất cả <ChevronRight className="w-4 h-4" />
               </Link>
             </div>
 
-            <div className="relative">
+            <div className="relative group/carousel">
               {relatedScroll > 0 && (
                 <button
                   onClick={() => setRelatedScroll((s) => Math.max(0, s - 1))}
-                  className="absolute -left-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50"
+                  className="absolute -left-5 top-1/3 -translate-y-1/2 z-10 w-12 h-12 bg-white rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.12)] flex items-center justify-center hover:bg-gray-50 hover:scale-105 transition-all text-gray-500 opacity-0 group-hover/carousel:opacity-100"
                 >
-                  <ChevronLeft className="w-5 h-5 text-gray-600" />
+                  <ChevronLeft className="w-5 h-5" />
                 </button>
               )}
 
-              <div className="overflow-hidden">
-                <div
-                  className="flex gap-5 transition-transform duration-300"
-                  style={{
-                    transform: `translateX(-${relatedScroll * 220}px)`,
-                  }}
-                >
+              <div className="overflow-hidden py-4 -my-4 px-2 -mx-2">
+                <div className="flex gap-4 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]" style={{ transform: `translateX(-${relatedScroll * 280}px)` }}>
                   {related.map((item) => (
                     <div
                       key={item.outfitId}
                       onClick={() => navigate(`/outfits/${item.outfitId}`)}
-                      className="w-[200px] flex-shrink-0 bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all cursor-pointer group"
+                      className="w-[264px] flex-shrink-0 bg-white rounded-3xl p-3 shadow-[0_2px_12px_rgb(0,0,0,0.02)] border border-gray-100/60 hover:shadow-[0_8px_24px_rgb(0,0,0,0.06)] hover:border-gray-200 transition-all duration-300 hover:-translate-y-1 cursor-pointer group flex flex-col"
                     >
-                      <div className="w-full aspect-square overflow-hidden bg-purple-50">
+                      <div className="w-full aspect-square bg-gray-50 rounded-2xl overflow-hidden relative border border-gray-100/50">
                         {item.mainImageURL ? (
-                          <img
-                            src={item.mainImageURL}
-                            alt={item.outfitName}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                          />
+                          <img src={item.mainImageURL} alt={item.outfitName} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">
-                            <GraduationCap className="w-10 h-10 text-purple-200" />
+                            <GraduationCap className="w-10 h-10 text-gray-300" />
                           </div>
                         )}
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/[0.03] transition-colors duration-300" />
                       </div>
-                      <div className="p-3">
-                        <h4 className="font-montserrat font-bold text-sm text-black line-clamp-2 mb-1">
-                          {item.outfitName}
-                        </h4>
-                        <p className="font-montserrat font-semibold text-sm text-blue-600">
-                          {fmt(item.price)}
+
+                      <div className="px-1 pt-4 pb-1 flex flex-col gap-0.5">
+                        <div className="flex items-start justify-between gap-3">
+                          <h4 className="font-baloo tracking-tight font-extrabold text-[17px] text-gray-800 line-clamp-1 group-hover:text-[#0ea5e9] transition-colors leading-snug">
+                            {item.outfitName}
+                          </h4>
+                          <p className="font-extrabold text-[14px] text-gray-900 whitespace-nowrap leading-snug drop-shadow-sm mt-1">
+                            {fmt(item.price)}
+                          </p>
+                        </div>
+                        <p className="font-medium text-[13px] text-gray-400">
+                          {outfit.school?.schoolName ?? "THPT"} - {item.outfitType === 'Female' ? 'Nữ' : item.outfitType === 'Male' ? 'Nam' : 'Unisex'}
                         </p>
                       </div>
                     </div>
@@ -822,18 +812,22 @@ export const OutfitDetail = (): JSX.Element => {
 
               {relatedScroll < related.length - 4 && (
                 <button
-                  onClick={() =>
-                    setRelatedScroll((s) => Math.min(related.length - 4, s + 1))
-                  }
-                  className="absolute -right-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50"
+                  onClick={() => setRelatedScroll((s) => Math.min(related.length - 4, s + 1))}
+                  className="absolute -right-5 top-1/3 -translate-y-1/2 z-10 w-12 h-12 bg-white rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.12)] flex items-center justify-center hover:bg-gray-50 hover:scale-105 transition-all text-gray-500 opacity-0 group-hover/carousel:opacity-100"
                 >
-                  <ChevronRight className="w-5 h-5 text-gray-600" />
+                  <ChevronRight className="w-5 h-5" />
                 </button>
               )}
             </div>
-          </div>
+          </motion.div>
         )}
       </div>
+
+      <style>{`
+        .font-baloo { font-family: 'Baloo 2', cursive; }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+      `}</style>
 
       {/* VR Try-On Modal */}
       <TryOnModal

@@ -1,56 +1,70 @@
-import { Card, CardContent } from "../../../../components/ui/card";
+const categories = ["Tiểu học", "THCS", "THPT", "Thể dục"];
+
+const showcaseImages = [
+  {
+    id: "original-image",
+    src: "https://api.builder.io/api/v1/image/assets/TEMP/6150de8fdb5f524f53156fc41728708d3d4ce15e?width=2434s",
+    caption: "Ảnh gốc của bạn",
+    rotate: "-2deg",
+    revealDir: "nb-reveal-left",
+  },
+  {
+    id: "after-tryon-image",
+    src: "https://i.ibb.co/Pvscprsd/Image-w-full.png",
+    caption: "Sau khi thử đồng phục ✦",
+    rotate: "2deg",
+    revealDir: "nb-reveal-right",
+  },
+];
 
 export const ProductShowcaseSection = (): JSX.Element => {
-  const showcaseImages = [
-    {
-      src: "https://c.animaapp.com/mjxt3t8wNP0otU/img/image--w-full-.png",
-      bgClass: "bg-white",
-      borderClass: "border",
-      leftOffset: "left-[-312px]",
-      topOffset: "top-0",
-    },
-    {
-      src: "https://c.animaapp.com/mjxt3t8wNP0otU/img/image--w-full--1.png",
-      bgClass:
-        "bg-[linear-gradient(135deg,rgba(239,246,255,1)_0%,rgba(250,245,255,1)_100%)]",
-      borderClass: "border-blue-200",
-      leftOffset: "left-[-247px]",
-      topOffset: "top-[-15px]",
-    },
-  ];
-
   return (
-    <section className="w-full flex justify-center py-20 translate-y-[-1rem] animate-fade-in opacity-0">
-      <div className="flex flex-col items-center gap-20 max-w-[1307px] w-full px-4">
-        <header className="relative w-full max-w-[1311px]">
-          <h2 className="[font-family:'Baloo-Regular',Helvetica] font-normal text-5xl text-center tracking-[0] leading-[67.2px] mb-4 translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:200ms]">
-            <span className="text-[#8b008be6]">Thử Nhanh – Chuẩn</span>
-            <span className="text-[#332623]"> – Không Cần Studio</span>
+    <section className="nb-section-calm">
+      <div className="mx-auto w-full max-w-[1100px] px-4 md:px-8">
+        {/* Header */}
+        <header className="mx-auto max-w-[700px] text-center mb-14 nb-reveal">
+          <h2 className="text-3xl font-extrabold leading-[1.15] text-[#1A1A2E] md:text-4xl">
+            Kết quả thực tế
           </h2>
-
-          <p className="[font-family:'Baloo_2',Helvetica] font-normal text-[#332623] text-[32px] text-center tracking-[0] leading-[41.6px] max-w-[1014px] mx-auto translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:400ms]">
-            Chỉ với 3 bước: Tải ảnh chân dung - Chọn mẫu đồng phục - Nhận kết
-            quả
+          <p className="mt-3 text-lg font-medium leading-relaxed text-[#4C5769]">
+            Chỉ cần tải ảnh lên — AI tạo hình bạn mặc đồng phục ngay lập tức
           </p>
         </header>
 
-        <div className="flex flex-wrap items-start gap-12 w-full max-w-[1232px] justify-center translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:600ms]">
-          {showcaseImages.map((image, index) => (
-            <Card
-              key={index}
-              className={`w-full max-w-[592px] h-[592px] rounded-3xl overflow-hidden border-solid ${image.borderClass} shadow-[0px_0px_0px_transparent,0px_0px_0px_transparent,0px_10px_15px_-3px_#0000001a,0px_4px_6px_-4px_#0000001a] ${image.bgClass}`}
+        {/* Before/After Images */}
+        <div className="mx-auto mt-12 grid w-fit grid-cols-2 gap-8 md:gap-12">
+          {showcaseImages.map((image) => (
+            <div
+              key={image.id}
+              className={`group w-[40vw] max-w-[430px] min-w-[150px] ${image.revealDir}`}
+              style={{ transform: `rotate(${image.rotate})` }}
             >
-              <CardContent className="p-0 h-full relative">
-                <div
-                  className={`relative ${image.topOffset} ${image.leftOffset} w-[1217px] h-[622px] [background:url(${image.src})_50%_50%_/_cover]`}
-                  style={{
-                    backgroundImage: `url(${image.src})`,
-                    backgroundPosition: "50% 50%",
-                    backgroundSize: "cover",
-                  }}
-                />
-              </CardContent>
-            </Card>
+              <div className="nb-card-static overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-[8px_8px_0_#1A1A2E]">
+                <div className="relative">
+                  <img
+                    src={image.src}
+                    alt={image.caption}
+                    className="h-[340px] lg:h-[400px] w-full object-cover object-center"
+                  />
+                  <div className="absolute bottom-3 left-3 rounded-lg bg-[#B8A9E8] px-3 py-1.5 border-3 border-[#1A1A2E] font-bold text-[#1A1A2E] text-sm shadow-[3px_3px_0_#1A1A2E]">
+                    {image.caption}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Category badges (support accent — cyan) */}
+        <div className="mt-12 flex flex-wrap items-center justify-center gap-3 nb-reveal">
+          <span className="text-sm font-bold text-[#6B7280] uppercase tracking-wider">Hỗ trợ:</span>
+          {categories.map((cat) => (
+            <span
+              key={cat}
+              className="nb-badge nb-badge-blue"
+            >
+              {cat}
+            </span>
           ))}
         </div>
       </div>
