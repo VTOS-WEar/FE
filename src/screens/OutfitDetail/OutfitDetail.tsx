@@ -22,6 +22,7 @@ import {
   type OutfitVariantDto,
 } from "../../lib/api/schools";
 import { guestTryOn, type GuestTryOnResponse } from "../../lib/api/tryOn";
+import { useToast } from "../../contexts/ToastContext";
 import { motion } from "framer-motion";
 import {
   Breadcrumb,
@@ -385,6 +386,7 @@ export const OutfitDetail = (): JSX.Element => {
   const [activeTab, setActiveTab] = useState<"desc" | "care" | "reviews">("desc");
   const [related, setRelated] = useState<RelatedOutfit[]>([]);
   const [relatedScroll, setRelatedScroll] = useState(0);
+  const { showToast } = useToast();
 
   /* ── Fetch outfit ── */
   useEffect(() => {
@@ -610,7 +612,14 @@ export const OutfitDetail = (): JSX.Element => {
             <div className="flex flex-col sm:flex-row gap-3 mt-auto pt-4">
               {isParent && (
               <button
-                onClick={() => { }} // Add to cart placeholder
+                onClick={() => {
+                  showToast({
+                    title: "Thông báo",
+                    message: "Đơn hàng chỉ có thể đặt mua ở trang chiến dịch",
+                    variant: "info",
+                  });
+                  navigate(`/schools/${outfit.school.schoolId}`);
+                }}
                 className="flex-1 min-h-[44px] flex items-center justify-center gap-2 bg-[#0ea5e9] text-white font-bold text-[14px] rounded-xl shadow-[0_4px_12px_rgb(14,165,233,0.2)] hover:bg-[#0284c7] hover:shadow-[0_8px_16px_rgb(14,165,233,0.3)] transition-all hover:-translate-y-0.5 active:translate-y-0"
               >
                 <ShoppingBag className="w-[16px] h-[16px]" />

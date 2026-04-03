@@ -1,9 +1,10 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ChevronRight, ShoppingCart, Box, Star, Check, User } from "lucide-react";
 import { useState } from "react";
 import TryOnModal from "../../components/TryOnModal";
 
 export default function ProductDetail() {
+  const navigate = useNavigate();
   const [selectedSize, setSelectedSize] = useState("M");
   const [activeTab, setActiveTab] = useState("description");
   const [isTryOnOpen, setIsTryOnOpen] = useState(false);
@@ -176,7 +177,13 @@ export default function ProductDetail() {
 
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <button className="flex-1 flex items-center justify-center gap-3 bg-blue-accent hover:bg-blue-accent/90 text-white font-montserrat font-bold text-xl px-12 py-5 rounded-lg border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_#1A1A2E] transition-all duration-300 ease-in-out">
+              <button
+                onClick={() => {
+                  alert("Vui lòng chọn chiến dịch mua đồng phục tại trang trường để đặt hàng.");
+                  navigate("/schools");
+                }}
+                className="flex-1 flex items-center justify-center gap-3 bg-blue-accent hover:bg-blue-accent/90 text-white font-montserrat font-bold text-xl px-12 py-5 rounded-lg border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_#1A1A2E] transition-all duration-300 ease-in-out"
+              >
                 <ShoppingCart className="w-6 h-6 transition-transform duration-300 group-hover:scale-110" />
                 Thêm vào giỏ hàng
               </button>
