@@ -20,6 +20,7 @@ export const AccountTab = (): JSX.Element => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<"personal" | "security">("personal");
   const [user, setUser] = useState<UserInfo | null>(null);
+  const [profileLoading, setProfileLoading] = useState(true);
   const [fullName, setFullName] = useState("");
   const [dobDay, setDobDay] = useState(1);
   const [dobMonth, setDobMonth] = useState(1);
@@ -76,6 +77,7 @@ export const AccountTab = (): JSX.Element => {
         }
         getStorage().setItem("user", JSON.stringify(u));
       } catch (err) { console.error("Failed to fetch profile:", err); }
+      finally { setProfileLoading(false); }
     };
     fetchProfile();
   }, [navigate]);
@@ -113,6 +115,26 @@ export const AccountTab = (): JSX.Element => {
   };
 
   if (!user) return <div />;
+
+  if (profileLoading) {
+    return (
+      <div className="space-y-8 animate-pulse">
+        <div className="flex items-center gap-3 mb-8">
+          <div className="w-24 h-10 bg-gray-200 rounded-xl" />
+          <div className="w-24 h-10 bg-gray-200 rounded-xl" />
+        </div>
+        <div className="flex flex-col md:flex-row gap-8">
+          <div className="w-28 h-28 bg-gray-200 rounded-xl" />
+          <div className="flex-1 space-y-5">
+            <div className="h-11 bg-gray-200 rounded-xl" />
+            <div className="h-11 bg-gray-200 rounded-xl" />
+            <div className="h-11 bg-gray-200 rounded-xl w-2/3" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const initials = fullName?.split(" ").map(w => w[0]).join("").slice(-2).toUpperCase();
 
   const inputClass = "nb-input w-full h-11 text-sm flex-1";

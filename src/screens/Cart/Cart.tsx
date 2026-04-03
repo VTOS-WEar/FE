@@ -32,6 +32,7 @@ export const Cart = (): JSX.Element => {
   const [checkingOut, setCheckingOut] = useState(false);
   const [shippingAddress, setShippingAddress] = useState("");
   const [childMap, setChildMap] = useState<Map<string, ChildProfileDto>>(new Map());
+  const [initialLoading, setInitialLoading] = useState(true);
 
   /* ── Fetch fresh child data ── */
   useEffect(() => {
@@ -41,7 +42,8 @@ export const Cart = (): JSX.Element => {
         for (const k of kids) map.set(k.childId, k);
         setChildMap(map);
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => setInitialLoading(false));
   }, []);
 
   /* ── Derived ── */
@@ -114,10 +116,24 @@ export const Cart = (): JSX.Element => {
     }
   };
 
+  /* ── Loading state — prevent empty cart flash on navigation ── */
+  if (initialLoading) {
+    return (
+      <GuestLayout bgColor="#F4F6FF" mainClassName="flex-1">
+        <div className="max-w-[1200px] mx-auto px-4 lg:px-8 py-16 flex items-center justify-center min-h-[50vh]">
+          <div className="flex flex-col items-center gap-4">
+            <div className="w-10 h-10 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin" />
+            <p className="font-montserrat text-sm text-gray-400">Đang tải giỏ hàng...</p>
+          </div>
+        </div>
+      </GuestLayout>
+    );
+  }
+
   /* ── Empty state (skip if mid-checkout to avoid flash) ── */
   if (allItems.length === 0 && !checkingOut) {
     return (
-      <GuestLayout bgColor="#FFF8F0">
+      <GuestLayout bgColor="#FFF8F0" mainClassName="flex-1">
         <div className="max-w-[1200px] mx-auto px-4 lg:px-8 py-16 text-center">
           <ShoppingCart className="w-16 h-16 text-gray-300 mx-auto mb-4" />
           <h1 className="font-montserrat font-extrabold text-2xl text-black mb-2">
@@ -138,7 +154,7 @@ export const Cart = (): JSX.Element => {
   }
 
   return (
-    <GuestLayout bgColor="#F4F6FF">
+    <GuestLayout bgColor="#F4F6FF" mainClassName="flex-1">
       <div className="max-w-[1200px] mx-auto px-4 lg:px-8 py-8">
         {/* ───── Breadcrumb ───── */}
         <div className="flex items-center gap-2 text-sm mb-6">
