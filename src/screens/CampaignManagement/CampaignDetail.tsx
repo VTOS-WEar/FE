@@ -15,9 +15,11 @@ import { useSidebarConfig } from "../../hooks/useSidebarConfig";
 import {
     getSchoolProfile,
     getCampaignDetail,
+    getCampaignProgress,
     lockCampaign,
     getProviders,
     type CampaignDetailDto,
+    type CampaignProgressDto,
     type ProviderDto,
 } from "../../lib/api/schools";
 import { generateProductionOrder } from "../../lib/api/productionOrders";
@@ -54,6 +56,7 @@ export const CampaignDetail = (): JSX.Element => {
     const sidebarConfig = useSidebarConfig();
     const [schoolName, setSchoolName] = useState("");
     const [campaign, setCampaign] = useState<CampaignDetailDto | null>(null);
+    const [progress, setProgress] = useState<CampaignProgressDto | null>(null);
     const [loading, setLoading] = useState(true);
     const [locking, setLocking] = useState(false);
     const [generating, setGenerating] = useState(false);
@@ -76,8 +79,14 @@ export const CampaignDetail = (): JSX.Element => {
     useEffect(() => {
         if (!id) return;
         setLoading(true);
-        getCampaignDetail(id)
-            .then((data) => setCampaign(data))
+        Promise.all([
+            getCampaignDetail(id),
+            getCampaignProgress(id).catch(() => null),
+        ])
+            .then(([detail, prog]) => {
+                setCampaign(detail);
+                setProgress(prog);
+            })
             .catch(() => showToast("Không tìm thấy chiến dịch", "error"))
             .finally(() => setLoading(false));
     }, [id, showToast]);
@@ -213,7 +222,7 @@ export const CampaignDetail = (): JSX.Element => {
                                 </div>
 
                                 {/* KPI cards — shadow 5px */}
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                                     <div className="rounded-[14px] border-[2px] border-[#19182B] bg-[#E9E1FF] p-5 shadow-[5px_5px_0_#19182B]">
                                         <p className="font-extrabold text-[#19182B] text-xs uppercase tracking-wider mb-2">Trạng thái</p>
                                         <StatusBadge status={campaign.status} />
@@ -236,6 +245,78 @@ export const CampaignDetail = (): JSX.Element => {
                                         <p className="font-black text-[#19182B] text-3xl">{campaign.totalOrders}</p>
                                     </div>
                                 </div>
+
+                                {/* Analytics KPI row — from getCampaignProgress */}
+                                {progress && (
+                                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                                        <div className="rounded-[14px] border-[2px] border-[#19182B] bg-[#FFECEA] p-5 shadow-[5px_5px_0_#19182B]">
+                                            <p className="font-extrabold text-[#19182B] text-xs uppercase tracking-wider mb-2">💰 Doanh thu</p>
+                                            <p className="font-black text-[#19182B] text-xl">{new Intl.NumberFormat("vi-VN").format(progress.totalRevenue)}₫</p>
+                                        </div>
+                                        <div className="rounded-[14px] border-[2px] border-[#19182B] bg-[#DAF0F7] p-5 shadow-[5px_5px_0_#19182B]">
+                                            <p className="font-extrabold text-[#19182B] text-xs uppercase tracking-wider mb-2">👨‍🎓 Học sinh đặt</p>
+                                            <p className="font-black text-[#19182B] text-3xl">{progress.totalStudents}</p>
+                                            <p className="font-semibold text-[#6F6A7D] text-xs mt-1">/ {progress.totalChildProfiles} hồ sơ</p>
+                                        </div>
+                                        <div className="rounded-[14px] border-[2px] border-[#19182B] bg-[#FDF8D0] p-5 shadow-[5px_5px_0_#19182B]">
+                                            <p className="font-extrabold text-[#19182B] text-xs uppercase tracking-wider mb-2">⏳ Đơn chờ xử lý</p>
+                                            <p className="font-black text-[#19182B] text-3xl">{progress.pendingOrders}</p>
+                                        </div>
+                                        <div className="rounded-[14px] border-[2px] border-[#19182B] bg-[#E8F5CC] p-5 shadow-[5px_5px_0_#19182B]">
+                                            <p className="font-extrabold text-[#19182B] text-xs uppercase tracking-wider mb-2">📊 Tỷ lệ đặt</p>
+                                            <p className="font-black text-[#19182B] text-3xl">
+                                                {progress.totalChildProfiles > 0
+                                                    ? Math.round((progress.totalStudents / progress.totalChildProfiles) * 100)
+                                                    : 0}%
+                                            </p>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Outfit breakdown table */}
+                                {progress && progress.outfitBreakdown.length > 0 && (
+                                    <div className="rounded-[14px] border-[2px] border-[#19182B] bg-white p-6 shadow-[4px_4px_0_#19182B]">
+                                        <div className="flex items-center gap-3 mb-5">
+                                            <div className="w-10 h-10 rounded-[10px] border-[3px] border-[#19182B] bg-[#DCEBFF] shadow-[3px_3px_0_#19182B] flex items-center justify-center">
+                                                <svg className="w-5 h-5 text-[#478aea]" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z" /></svg>
+                                            </div>
+                                            <h2 className="font-black text-[#19182B] text-xl">Phân tích theo sản phẩm</h2>
+                                        </div>
+                                        <div className="space-y-3">
+                                            {progress.outfitBreakdown.map((item) => {
+                                                const fillRate = item.maxQuantity && item.maxQuantity > 0
+                                                    ? Math.min(100, Math.round((item.quantityOrdered / item.maxQuantity) * 100))
+                                                    : null;
+                                                return (
+                                                    <div key={item.outfitId} className="p-4 rounded-[10px] border-[2px] border-[#19182B] bg-[#F6F1E8] shadow-[2px_2px_0_#19182B]">
+                                                        <div className="flex items-center justify-between mb-2">
+                                                            <p className="font-extrabold text-[#19182B] text-sm">{item.outfitName}</p>
+                                                            <p className="font-black text-[#8B6BFF] text-sm">{new Intl.NumberFormat("vi-VN").format(item.revenue)}₫</p>
+                                                        </div>
+                                                        <div className="flex items-center gap-4 text-xs font-semibold text-[#6F6A7D]">
+                                                            <span>📦 Đã đặt: <strong className="text-[#19182B]">{item.quantityOrdered}</strong>{item.maxQuantity ? ` / ${item.maxQuantity}` : ""}</span>
+                                                            {item.category && <span>🏷️ {item.category}</span>}
+                                                        </div>
+                                                        {fillRate !== null && (
+                                                            <div className="mt-2">
+                                                                <div className="nb-progress">
+                                                                    <div
+                                                                        className="nb-progress-bar"
+                                                                        style={{
+                                                                            width: `${fillRate}%`,
+                                                                            background: fillRate >= 80 ? "#C8E44D" : fillRate >= 50 ? "#F5E642" : "#A8D4E6",
+                                                                        }}
+                                                                    />
+                                                                </div>
+                                                                <p className="text-[11px] font-bold text-[#8D879B] mt-1">{fillRate}% đã đặt</p>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                )}
 
                                 {/* Outfits list — content card shadow 4px */}
                                 <div className="rounded-[14px] border-[2px] border-[#19182B] bg-white p-6 shadow-[4px_4px_0_#19182B]">

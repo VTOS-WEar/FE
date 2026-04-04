@@ -7,6 +7,11 @@ import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
  * Shared layout for /school/production-orders routes.
  * The sidebar is rendered once here and stays mounted
  * while <Outlet> swaps between list ↔ detail pages.
+ *
+ * Structure mirrors SchoolContracts:
+ *   sidebar | [ TopNavBar (full-width) + main (padded) ]
+ * Child pages render <TopNavBar> + content inside a fragment;
+ * we separate them with flex-col + main padding.
  */
 export default function SchoolProductionOrdersLayout() {
     const sidebarConfig = useSidebarConfig();
@@ -19,11 +24,10 @@ export default function SchoolProductionOrdersLayout() {
                     <DashboardSidebar {...sidebarConfig} isCollapsed={isCollapsed} onToggle={toggle} />
                 </div>
                 <div className="flex-1 flex flex-col min-w-0">
-                    <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8">
-                        <Outlet />
-                    </main>
+                    <Outlet />
                 </div>
             </div>
         </div>
     );
 }
+

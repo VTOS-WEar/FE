@@ -42,7 +42,7 @@ export function SchoolProductionOrders() {
     useEffect(() => { fetchOrders(); }, [fetchOrders]);
 
     return (
-        <div className="space-y-6">
+        <>
             <TopNavBar>
                 <Breadcrumb><BreadcrumbList>
                     <BreadcrumbItem><BreadcrumbLink href="/school/dashboard" className="font-semibold text-[#4c5769] text-base">Trang chủ</BreadcrumbLink></BreadcrumbItem>
@@ -110,6 +110,6 @@ export function SchoolProductionOrders() {
                 ) : null;
             })()}
             </main>
-        </div>
+        </>
     );
 }
