@@ -45,6 +45,12 @@ export type ParentFeedbacksResponse = {
   page: number;
   pageSize: number;
   campaigns: CampaignFilterDto[];
+  ratingCounts: RatingCountDto[];
+};
+
+export type RatingCountDto = {
+  label: string;
+  count: number;
 };
 
 /* ── API Calls ── */

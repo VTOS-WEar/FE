@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Star, AlertCircle, ChevronDown, Package } from "lucide-react";
 import { useToast } from "../../../contexts/ToastContext";
-import { getParentFeedbacks, submitOutfitFeedback, type ParentFeedbackDto, type CampaignFilterDto } from "../../../lib/api/feedback";
+import { getParentFeedbacks, submitOutfitFeedback, type ParentFeedbackDto, type CampaignFilterDto, type RatingCountDto } from "../../../lib/api/feedback";
 
 function fmt(n: number) { return n.toLocaleString("vi-VN") + " ₫"; }
 
@@ -298,14 +298,14 @@ function ReviewCard({ feedback, onRefresh }: ReviewCardProps) {
 export const ReviewsTab = (): JSX.Element => {
   const [feedbacks, setFeedbacks] = useState<ParentFeedbackDto[]>([]);
   const [campaigns, setCampaigns] = useState<CampaignFilterDto[]>([]);
+  const [ratingCounts, setRatingCounts] = useState<RatingCountDto[]>([]);
   const [selectedCampaignId, setSelectedCampaignId] = useState<string | null>(null);
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(8);
+  const pageSize = 2;
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
   const [activeTab, setActiveTab] = useState<"all" | "rated" | "not-rated">("all");
-  const PAGE_SIZE_OPTIONS = [4, 8, 12, 16];
 
   /* ── Fetch feedbacks ── */
   const fetchFeedbacks = async () => {
@@ -319,6 +319,7 @@ export const ReviewsTab = (): JSX.Element => {
       setFeedbacks(result.items);
       setCampaigns(result.campaigns);
       setTotal(result.total);
+      setRatingCounts(result.ratingCounts || []);
     } catch (err) {
       console.error(err);
     } finally {
@@ -328,23 +329,20 @@ export const ReviewsTab = (): JSX.Element => {
 
   useEffect(() => {
     fetchFeedbacks();
-  }, [selectedCampaignId, page, pageSize]);
+  }, [selectedCampaignId, page]);
 
   useEffect(() => {
     setPage(1);
-  }, [selectedCampaignId, activeTab, pageSize]);
+  }, [selectedCampaignId, activeTab]);
 
   /* ── Split rated/not rated ── */
   const ratedFeedbacks = feedbacks.filter((f) => f.rating !== null && f.rating !== undefined);
   const notRatedFeedbacks = feedbacks.filter((f) => f.rating === null || f.rating === undefined);
   
-  // Calculate total based on active tab
+  // Get correct total for pagination based on active tab and backend counts
   const getTabTotal = () => {
-    switch (activeTab) {
-      case "rated": return ratedFeedbacks.length;
-      case "not-rated": return notRatedFeedbacks.length;
-      default: return total;
-    }
+    const countObj = ratingCounts.find(rc => rc.label === activeTab);
+    return countObj ? countObj.count : total;
   };
   
   const tabTotal = getTabTotal();
@@ -436,26 +434,6 @@ export const ReviewsTab = (): JSX.Element => {
         </div>
       )}
 
-      {/* Page Size Selector */}
-      {feedbacks.length > 0 && (
-        <div className="flex items-center justify-between mb-4 px-2">
-          <div className="flex items-center gap-3">
-            <label className="text-sm font-bold text-[#1A1A2E]">Hiển thị:</label>
-            <select
-              value={pageSize}
-              onChange={(e) => setPageSize(Number(e.target.value))}
-              className="px-3 py-2 border-2 border-[#1A1A2E] rounded-lg text-sm font-bold text-[#1A1A2E] bg-white focus:outline-none focus:bg-[#F3F4F6]"
-            >
-              {PAGE_SIZE_OPTIONS.map((size) => (
-                <option key={size} value={size}>
-                  {size} mục
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-      )}
-
       {/* Tab Navigation */}
       {feedbacks.length > 0 && (
         <div className="flex gap-4 border-b-2 border-[#E5E7EB]">
@@ -467,7 +445,7 @@ export const ReviewsTab = (): JSX.Element => {
                 : "text-[#9CA3AF] border-transparent hover:text-[#1A1A2E]"
             }`}
           >
-            Tất cả ({feedbacks.length})
+            Tất cả ({ratingCounts.find(rc => rc.label === "all")?.count || feedbacks.length})
           </button>
           <button
             onClick={() => setActiveTab("not-rated")}
@@ -477,7 +455,7 @@ export const ReviewsTab = (): JSX.Element => {
                 : "text-[#9CA3AF] border-transparent hover:text-[#1A1A2E]"
             }`}
           >
-            Chưa đánh giá ({notRatedFeedbacks.length})
+            Chưa đánh giá ({ratingCounts.find(rc => rc.label === "not-rated")?.count || notRatedFeedbacks.length})
           </button>
           <button
             onClick={() => setActiveTab("rated")}
@@ -487,7 +465,7 @@ export const ReviewsTab = (): JSX.Element => {
                 : "text-[#9CA3AF] border-transparent hover:text-[#1A1A2E]"
             }`}
           >
-            Đã đánh giá ({ratedFeedbacks.length})
+            Đã đánh giá ({ratingCounts.find(rc => rc.label === "rated")?.count || ratedFeedbacks.length})
           </button>
         </div>
       )}

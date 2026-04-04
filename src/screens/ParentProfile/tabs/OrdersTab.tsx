@@ -6,6 +6,7 @@ import {
     payOrder,
     getParentPaymentHistory,
     type ParentPaymentDto,
+    type StatusCountDto,
 } from "../../../lib/api/payments";
 import { getOrderDetail, type OrderDetailDto } from "../../../lib/api/orders";
 
@@ -256,25 +257,23 @@ const STATUS_LABELS: Record<string, string> = {
 };
 
 function StatusTabs({ 
-    payments, 
+    payments,
+    statusCounts,
     selectedStatus, 
     onStatusChange 
 }: { 
-    payments: ParentPaymentDto[], 
+    payments: ParentPaymentDto[],
+    statusCounts: StatusCountDto[],
     selectedStatus: string | null,
     onStatusChange: (status: string | null) => void 
 }) {
-    const statusCounts = useMemo(() => {
-        const counts: Record<string, number> = {};
-        ALL_STATUSES.forEach(s => counts[s] = 0);
-        payments.forEach(p => {
-            const orderStatus = p.orderStatus || "Unknown";
-            if (ALL_STATUSES.includes(orderStatus)) {
-                counts[orderStatus] = (counts[orderStatus] || 0) + 1;
-            }
+    const statusCountMap = useMemo(() => {
+        const map: Record<string, number> = {};
+        statusCounts.forEach(sc => {
+            map[sc.status] = sc.count;
         });
-        return counts;
-    }, [payments]);
+        return map;
+    }, [statusCounts]);
 
     return (
         <div className="flex gap-2 overflow-x-auto pb-3 mb-4 pt-4">
@@ -294,7 +293,7 @@ function StatusTabs({
                 )}
             </button>
             {ALL_STATUSES.map(status => {
-                const count = statusCounts[status] || 0;
+                const count = statusCountMap[status] || 0;
 
                 return (
                     <button
@@ -324,14 +323,14 @@ export const OrdersTab = (): JSX.Element => {
     const navigate = useNavigate();
     const { showToast } = useToast();
     const [payments, setPayments] = useState<ParentPaymentDto[]>([]);
+    const [statusCounts, setStatusCounts] = useState<StatusCountDto[]>([]);
     const [total, setTotal] = useState(0);
     const [page, setPage] = useState(1);
-    const [pageSize, setPageSize] = useState(2);
+    const pageSize = 2;
     const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
     const [payingId, setPayingId] = useState<string | null>(null);
     const [expandedId, setExpandedId] = useState<string | null>(null);
-    const PAGE_SIZE_OPTIONS = [2, 4, 6, 8];
 
     const fetchData = useCallback(async () => {
         setLoading(true);
@@ -339,15 +338,16 @@ export const OrdersTab = (): JSX.Element => {
             const res = await getParentPaymentHistory(page, pageSize);
             setPayments(res.items || []);
             setTotal(res.total || 0);
+            setStatusCounts(res.statusCounts || []);
         } catch { /* ignore */ }
         finally { setLoading(false); }
-    }, [page, pageSize]);
+    }, [page]);
 
     useEffect(() => { fetchData(); }, [fetchData]);
 
     useEffect(() => {
         setPage(1);
-    }, [selectedStatus, pageSize]);
+    }, [selectedStatus]);
 
     // Filter payments by selected order status
     const filteredPayments = useMemo(() => {
@@ -355,10 +355,11 @@ export const OrdersTab = (): JSX.Element => {
         return payments.filter(p => p.orderStatus === selectedStatus);
     }, [payments, selectedStatus]);
 
-    // Calculate total based on filter
+    // Get correct total for pagination
     const getFilteredTotal = () => {
         if (!selectedStatus) return total;
-        return filteredPayments.length;
+        const count = statusCounts.find(sc => sc.status === selectedStatus);
+        return count ? count.count : 0;
     };
 
     const filteredTotal = getFilteredTotal();
@@ -409,25 +410,7 @@ export const OrdersTab = (): JSX.Element => {
     return (
         <div>
             {/* Status Filter Tabs */}
-            <StatusTabs payments={payments} selectedStatus={selectedStatus} onStatusChange={setSelectedStatus} />
-
-            {/* Page Size Selector */}
-            <div className="flex items-center justify-between mb-4 px-2">
-                <div className="flex items-center gap-3">
-                    <label className="text-sm font-bold text-[#1A1A2E]">Hiển thị:</label>
-                    <select
-                        value={pageSize}
-                        onChange={(e) => setPageSize(Number(e.target.value))}
-                        className="px-3 py-2 border-2 border-[#1A1A2E] rounded-lg text-sm font-bold text-[#1A1A2E] bg-white focus:outline-none focus:bg-[#F3F4F6]"
-                    >
-                        {PAGE_SIZE_OPTIONS.map((size) => (
-                            <option key={size} value={size}>
-                                {size} mục
-                            </option>
-                        ))}
-                    </select>
-                </div>
-            </div>
+            <StatusTabs payments={payments} statusCounts={statusCounts} selectedStatus={selectedStatus} onStatusChange={setSelectedStatus} />
 
             {/* Filtered Orders List */}
             <div className="space-y-4">
