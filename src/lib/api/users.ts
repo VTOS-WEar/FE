@@ -70,6 +70,7 @@ export interface ChildProfileDto {
   age: number;
   grade: string;
   gender: string;
+  avatarUrl:string;
   school: ChildSchoolDto;
   heightCm: number;
   weightKg: number;
@@ -101,5 +102,65 @@ export async function findMyChildren(): Promise<FindChildrenResponse> {
     method: "POST",
     auth: true,
   });
+}
+
+/* ── GET /api/children/{id} ── */
+export interface GetChildDetailResponse {
+  childId: string;
+  fullName: string;
+  age: number;
+  grade: string;
+  gender: string; // "Male", "Female", etc.
+  schoolName: string;
+  schoolId: string;
+  avatarUrl?: string | null;
+  bodyMetric: {
+    heightCm: number;
+    weightKg: number;
+  };
+  isStandardSize?: boolean;
+}
+
+export async function getChildProfile(childId: string): Promise<GetChildDetailResponse> {
+  const res = await api(`${endpoints.children.detail}/${childId}`, { auth: true }) as { value: GetChildDetailResponse };
+  return res.value;
+}
+
+/* ── PUT /api/children ── */
+export interface UpdateChildProfileDto {
+  childId: string;
+  fullName?: string;
+  dob?: string; // ISO date string: "2000-01-15"
+  grade?: string;
+  gender?: number; // 1=Male, 2=Female, 3=Other
+  heightCm?: number;
+  weightKg?: number;
+}
+
+export async function updateChildProfile(
+  dto: UpdateChildProfileDto
+): Promise<GetChildDetailResponse> {
+  const res = await api(endpoints.children.update, {
+    method: "PUT",
+    body: JSON.stringify(dto),
+    auth: true,
+  }) as { value: GetChildDetailResponse };
+  return res.value;
+}
+
+/* ── PUT /api/children/{id}/avatar ── */
+export async function updateChildAvatar(
+  childId: string,
+  file: File
+): Promise<{ avatarUrl: string }> {
+  const formData = new FormData();
+  formData.append("avatar", file);
+  
+  const res = await api(`${endpoints.children.avatar}/${childId}/avatar`, {
+    method: "PUT",
+    body: formData,
+    auth: true,
+  }) as { value: { id: string; avatarUrl: string } };
+  return { avatarUrl: res.value.avatarUrl };
 }
 

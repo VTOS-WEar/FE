@@ -53,6 +53,12 @@ export const endpoints = {
         children: "/api/users/me/children",
         findChildren: "/api/users/me/find-children",
     },
+    children: {
+        list: "/api/children",
+        detail: "/api/children", // append /{id} at call time
+        update: "/api/children",
+        avatar: "/api/children", // append /{id}/avatar at call time
+    },
     orders: {
         checkout: "/api/orders/checkout",
         cancel: "/api/orders", // append /{orderId}/cancel at call time
