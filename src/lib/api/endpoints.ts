@@ -91,6 +91,7 @@ export const endpoints = {
         heartbeat: "/api/notifications/heartbeat",
     },
     feedbacks: {
-        submitCampaignOutfit: "/api/feedbacks/campaign-outfit",
+        base: "/api/feedbacks",
+        submitOrderItem: "/api/feedbacks/order-item",
     },
 } as const;

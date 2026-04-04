@@ -7,8 +7,7 @@ import { useToast } from "../../../contexts/ToastContext";
 
 /* ── Types ── */
 type FeedbackFormState = {
-  productVariantId: string;
-  campaignId: string;
+  orderItemId: string;
   outfitName: string;
   outfitImage: string | null;
   rating: number;
@@ -273,9 +272,8 @@ export function FeedbackPage(): JSX.Element {
 
         const initialForms: FeedbackFormMap = {};
         data.items.forEach((item) => {
-          initialForms[item.productVariantId] = {
-            productVariantId: item.productVariantId,
-            campaignId: item.campaignId,
+          initialForms[item.orderItemId] = {
+            orderItemId: item.orderItemId,
             outfitName: item.outfitName,
             outfitImage: item.outfitImage,
             rating: 0,
@@ -352,22 +350,21 @@ export function FeedbackPage(): JSX.Element {
     }));
   };
 
-  const handleSubmitFeedback = async (productVariantId: string) => {
-    const form = forms[productVariantId];
+  const handleSubmitFeedback = async (orderItemId: string) => {
+    const form = forms[orderItemId];
     if (!form || form.rating === 0) return;
 
-    setSubmittingId(productVariantId);
+    setSubmittingId(orderItemId);
     try {
       await submitOutfitFeedback({
-        productVariantId: form.productVariantId,
-        campaignId: form.campaignId,
+        orderItemId: form.orderItemId,
         rating: form.rating,
         comment: form.comment || undefined,
       });
 
       setForms((prev) => ({
         ...prev,
-        [productVariantId]: {
+        [orderItemId]: {
           ...prev[productVariantId],
           isSubmitted: true,
         },
@@ -469,11 +466,10 @@ export function FeedbackPage(): JSX.Element {
           <div className="space-y-4">
             {order.items.map((item) => (
               <OutfitFeedbackCard
-                key={item.productVariantId}
+                key={item.orderItemId}
                 item={item}
-                formState={forms[item.productVariantId] || {
-                  productVariantId: item.productVariantId,
-                  campaignId: item.campaignId,
+                formState={forms[item.orderItemId] || {
+                  orderItemId: item.orderItemId,
                   outfitName: item.outfitName,
                   outfitImage: item.outfitImage,
                   rating: 0,
@@ -481,13 +477,13 @@ export function FeedbackPage(): JSX.Element {
                   isSubmitted: false,
                 }}
                 onRatingChange={(val) =>
-                  handleRatingChange(item.productVariantId, val)
+                  handleRatingChange(item.orderItemId, val)
                 }
                 onCommentChange={(val) =>
-                  handleCommentChange(item.productVariantId, val)
+                  handleCommentChange(item.orderItemId, val)
                 }
-                onSubmit={() => handleSubmitFeedback(item.productVariantId)}
-                isSubmitting={submittingId === item.productVariantId}
+                onSubmit={() => handleSubmitFeedback(item.orderItemId)}
+                isSubmitting={submittingId === item.orderItemId}
                 onComplete={() => navigate("/parentprofile/feedback")}
               />
             ))}

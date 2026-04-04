@@ -3,15 +3,14 @@ import { endpoints } from "./endpoints";
 
 /* ── Types ── */
 export type SubmitFeedbackRequest = {
-  productVariantId: string;
-  campaignId: string;
+  orderItemId: string;
   rating: number;
   comment?: string;
 };
 
 export type SubmitFeedbackResponse = {
   feedbackId: string;
-  productVariantId: string;
+  orderItemId: string;
   rating: number;
   comment?: string;
   timestamp: string;
@@ -19,7 +18,7 @@ export type SubmitFeedbackResponse = {
 
 export type ParentFeedbackDto = {
   feedbackId: string;
-  campaignOutfitId: string;
+  orderItemId: string;
   campaignId: string;
   campaignName: string;
   outfitId: string;
@@ -48,12 +47,12 @@ export type ParentFeedbacksResponse = {
 
 /* ── API Calls ── */
 
-/** POST /api/feedbacks/campaign-outfit — Submit feedback for campaign outfit */
+/** POST /api/feedbacks/order-item — Submit feedback for order item */
 export async function submitOutfitFeedback(
   request: SubmitFeedbackRequest
 ): Promise<SubmitFeedbackResponse> {
   const result = await api<{ isSuccess: boolean; value: SubmitFeedbackResponse; error?: string }>(
-    endpoints.feedbacks.submitCampaignOutfit,
+    endpoints.feedbacks.submitOrderItem,
     {
       method: "POST",
       body: JSON.stringify(request),
@@ -82,7 +81,7 @@ export async function getParentFeedbacks(params: {
   query.append("pageSize", String(params.pageSize || 10));
 
   const result = await api<ParentFeedbacksResponse>(
-    `${endpoints.feedbacks.submitCampaignOutfit.split("/campaign-outfit")[0]}?${query.toString()}`,
+    `${endpoints.feedbacks.base}?${query.toString()}`,
     {
       method: "GET",
       auth: true,
