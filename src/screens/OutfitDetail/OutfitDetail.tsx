@@ -46,6 +46,20 @@ const fadeUp = {
 const fmt = (n: number) =>
   n.toLocaleString("vi-VN", { maximumFractionDigits: 0 }) + " VNĐ";
 
+const formatDate = (dateString: string): string => {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  
+  if (diffDays === 0) return "Hôm nay";
+  if (diffDays === 1) return "Hôm qua";
+  if (diffDays < 7) return `${diffDays} ngày trước`;
+  if (diffDays < 30) return `${Math.floor(diffDays / 7)} tuần trước`;
+  if (diffDays < 365) return `${Math.floor(diffDays / 30)} tháng trước`;
+  return date.toLocaleDateString("vi-VN");
+};
+
 const OUTFIT_TYPE_LABEL: Record<string, string> = {
   Male: "Đồng phục nam",
   Female: "Đồng phục nữ",
@@ -386,6 +400,9 @@ export const OutfitDetail = (): JSX.Element => {
   const [activeTab, setActiveTab] = useState<"desc" | "care" | "reviews">("desc");
   const [related, setRelated] = useState<RelatedOutfit[]>([]);
   const [relatedScroll, setRelatedScroll] = useState(0);
+  const [selectedRatingFilter, setSelectedRatingFilter] = useState<number | "all">("all");
+  const [reviewPage, setReviewPage] = useState(1);
+  const REVIEW_PAGE_SIZE = 5;
   const { showToast } = useToast();
 
   /* ── Fetch outfit ── */
@@ -737,7 +754,8 @@ export const OutfitDetail = (): JSX.Element => {
 
             {activeTab === "reviews" && (
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
-                <div className="flex items-center gap-5 p-6 bg-white border border-gray-100 rounded-3xl max-w-max shadow-[0_4px_20px_rgb(0,0,0,0.02)]">
+                {/* Rating Summary */}
+                <div className="flex items-center gap-5 p-6 bg-white border border-gray-100 rounded-3xl max-w-max shadow-[0_4px_20px_rgb(0,0,0,0.02)] mb-8">
                   <span className="font-baloo font-extrabold text-[56px] leading-none text-gray-900">
                     {outfit.averageRating}
                   </span>
@@ -752,9 +770,170 @@ export const OutfitDetail = (): JSX.Element => {
                     </p>
                   </div>
                 </div>
-                {outfit.feedbackCount === 0 && (
-                  <p className="text-sm font-medium text-gray-400 mt-6">Chưa có đánh giá nào.</p>
+
+                {/* Rating Badges Filter */}
+                {outfit.feedbackCount > 0 && (
+                  <div className="flex flex-wrap gap-3 mb-8">
+                    {/* All badge */}
+                    <button
+                      onClick={() => {
+                        setSelectedRatingFilter("all");
+                        setReviewPage(1);
+                      }}
+                      className={`px-4 py-2 rounded-full font-bold text-[13px] transition-all border-2 ${
+                        selectedRatingFilter === "all"
+                          ? "border-[#0ea5e9] bg-[#0ea5e9]/10 text-[#0ea5e9]"
+                          : "border-gray-200 bg-white text-gray-600 hover:border-gray-300"
+                      }`}
+                    >
+                      Tất cả ({outfit.feedbackCount})
+                    </button>
+
+                    {/* Rating-specific badges */}
+                    {[5, 4, 3, 2, 1].map((rating) => {
+                      const count = outfit.reviews?.filter((r) => r.rating === rating).length || 0;
+                      return (
+                        <button
+                          key={rating}
+                          onClick={() => {
+                            setSelectedRatingFilter(rating);
+                            setReviewPage(1);
+                          }}
+                          className={`px-4 py-2 rounded-full font-bold text-[13px] transition-all border-2 flex items-center gap-1.5 ${
+                            selectedRatingFilter === rating
+                              ? "border-[#0ea5e9] bg-[#0ea5e9]/10 text-[#0ea5e9]"
+                              : "border-gray-200 bg-white text-gray-600 hover:border-gray-300"
+                          } ${count === 0 ? "opacity-50 cursor-not-allowed" : ""}`}
+                          disabled={count === 0}
+                        >
+                          <div className="flex items-center gap-0.5">
+                            {[1, 2, 3, 4, 5].map((s) => (
+                              <Star
+                                key={s}
+                                className={`w-3.5 h-3.5 ${
+                                  s <= rating
+                                    ? "fill-yellow-400 text-yellow-400"
+                                    : "fill-gray-200 text-gray-200"
+                                }`}
+                              />
+                            ))}
+                          </div>
+                          <span>({count})</span>
+                        </button>
+                      );
+                    })}
+                  </div>
                 )}
+
+                {/* Reviews List with Pagination */}
+                {outfit.feedbackCount === 0 ? (
+                  <p className="text-sm font-medium text-gray-400 mt-6">Chưa có đánh giá nào.</p>
+                ) : (() => {
+                  const filteredReviews = selectedRatingFilter === "all"
+                    ? outfit.reviews
+                    : outfit.reviews?.filter((r) => r.rating === selectedRatingFilter);
+                  
+                  const totalReviewPages = Math.ceil((filteredReviews?.length || 0) / REVIEW_PAGE_SIZE);
+                  const startIdx = (reviewPage - 1) * REVIEW_PAGE_SIZE;
+                  const paginatedReviews = filteredReviews?.slice(startIdx, startIdx + REVIEW_PAGE_SIZE);
+
+                  return (
+                    <div className="max-w-4xl">
+                      {/* Reviews List */}
+                      <div className="space-y-4 mb-6">
+                        {paginatedReviews?.map((review) => (
+                          <motion.div
+                            key={review.feedbackId}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.2 }}
+                            className="bg-white border border-gray-100 rounded-2xl p-5 shadow-[0_2px_8px_rgb(0,0,0,0.03)] hover:shadow-[0_4px_12px_rgb(0,0,0,0.06)] transition-shadow"
+                          >
+                            {/* Header: Avatar, name, rating */}
+                            <div className="flex items-start gap-4 mb-3">
+                              <div className="flex-shrink-0">
+                                {review.userAvatarUrl ? (
+                                  <img
+                                    src={review.userAvatarUrl}
+                                    alt={review.userName}
+                                    className="w-12 h-12 rounded-full object-cover border-2 border-gray-100"
+                                  />
+                                ) : (
+                                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#0ea5e9] to-[#06b6d4] flex items-center justify-center text-white font-bold text-lg border-2 border-gray-100">
+                                    {review.userName.charAt(0).toUpperCase()}
+                                  </div>
+                                )}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center justify-between gap-2 mb-2">
+                                  <p className="font-bold text-[14px] text-gray-900 truncate">
+                                    {review.userName}
+                                  </p>
+                                  <span className="text-xs font-medium text-gray-400 flex-shrink-0">
+                                    {formatDate(review.timestamp)}
+                                  </span>
+                                </div>
+                                {/* Rating stars */}
+                                <div className="flex items-center gap-1">
+                                  {[1, 2, 3, 4, 5].map((s) => (
+                                    <Star
+                                      key={s}
+                                      className={`w-4 h-4 ${
+                                        s <= review.rating
+                                          ? "fill-yellow-400 text-yellow-400"
+                                          : "fill-gray-200 text-gray-200"
+                                      }`}
+                                    />
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Comment */}
+                            {review.comment && (
+                              <p className="text-[14px] text-gray-600 leading-relaxed line-clamp-4">
+                                {review.comment}
+                              </p>
+                            )}
+                          </motion.div>
+                        ))}
+                      </div>
+
+                      {/* Pagination Controls */}
+                      {totalReviewPages > 1 && (
+                        <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                          <div className="text-sm font-medium text-gray-500">
+                            Trang {reviewPage} / {totalReviewPages}
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => setReviewPage(Math.max(1, reviewPage - 1))}
+                              disabled={reviewPage === 1}
+                              className={`px-3 py-2 rounded-lg font-bold text-[13px] border-2 transition-all ${
+                                reviewPage === 1
+                                  ? "border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed"
+                                  : "border-[#0ea5e9] bg-white text-[#0ea5e9] hover:bg-[#0ea5e9]/5"
+                              }`}
+                            >
+                              ← Trước
+                            </button>
+                            <button
+                              onClick={() => setReviewPage(Math.min(totalReviewPages, reviewPage + 1))}
+                              disabled={reviewPage === totalReviewPages}
+                              className={`px-3 py-2 rounded-lg font-bold text-[13px] border-2 transition-all ${
+                                reviewPage === totalReviewPages
+                                  ? "border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed"
+                                  : "border-[#0ea5e9] bg-white text-[#0ea5e9] hover:bg-[#0ea5e9]/5"
+                              }`}
+                            >
+                              Tiếp →
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
               </motion.div>
             )}
           </div>
