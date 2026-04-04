@@ -49,6 +49,7 @@ export const endpoints = {
     users: {
         me: "/api/users/me",
         profile: "/api/users/me/profile",
+        avatar: "/api/users/me/avatar",
         children: "/api/users/me/children",
         findChildren: "/api/users/me/find-children",
     },

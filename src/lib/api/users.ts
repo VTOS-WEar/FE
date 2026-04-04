@@ -42,6 +42,21 @@ export async function updateParentProfile(
   return res.value;
 }
 
+/* ── PUT /api/users/me/avatar ── */
+export async function updateParentAvatar(
+  file: File
+): Promise<{ avatarUrl: string }> {
+  const formData = new FormData();
+  formData.append("avatar", file);
+  
+  const res = await api(endpoints.users.avatar, {
+    method: "PUT",
+    body: formData,
+    auth: true,
+  }) as { value: { id: string; avatarUrl: string } };
+  return { avatarUrl: res.value.avatarUrl };
+}
+
 /* ── Children Management Types ── */
 export interface ChildSchoolDto {
   schoolId: string;

@@ -10,7 +10,7 @@ import { useState, useEffect } from "react"
 import { useNavigate, Link, useLocation } from "react-router-dom"
 import { useCart } from "../../contexts/CartContext"
 
-function getSessionUser(): { fullName: string; role: string } | null {
+function getSessionUser(): { fullName: string; role: string; avatar?: string | null } | null {
   const raw = localStorage.getItem("user") || sessionStorage.getItem("user")
   if (!raw) return null
   try { return JSON.parse(raw) } catch { return null }
@@ -27,6 +27,7 @@ export function NavbarGuest() {
   const [loggedIn, setLoggedIn] = useState(isLoggedIn())
   const [userName, setUserName] = useState("")
   const [userRole, setUserRole] = useState("")
+  const [userAvatar, setUserAvatar] = useState<string | null>(null)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   useEffect(() => {
@@ -37,6 +38,7 @@ export function NavbarGuest() {
         const u = getSessionUser()
         setUserName(u?.fullName || "Hồ sơ")
         setUserRole(u?.role || "")
+        setUserAvatar(u?.avatar || null)
       }
     }
     check()
@@ -250,9 +252,17 @@ export function NavbarGuest() {
                     type="button"
                     className="hidden h-11 items-center gap-2 rounded-xl border-2 border-[#1A1A2E] bg-white px-3 shadow-[3px_3px_0_#1A1A2E] transition-all duration-150 hover:-translate-y-[1px] hover:shadow-[4px_4px_0_#1A1A2E] active:shadow-none active:translate-y-0 lg:flex !outline-none"
                   >
-                    <div className="flex h-7 w-7 items-center justify-center rounded-lg border-2 border-[#1A1A2E] bg-[#EDE9FE]">
-                      <User size={14} className="text-[#1A1A2E]" />
-                    </div>
+                    {userAvatar ? (
+                      <img
+                        src={userAvatar}
+                        alt="Avatar"
+                        className="h-7 w-7 rounded-lg border-2 border-[#1A1A2E] object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-7 w-7 items-center justify-center rounded-lg border-2 border-[#1A1A2E] bg-[#EDE9FE]">
+                        <User size={14} className="text-[#1A1A2E]" />
+                      </div>
+                    )}
                     <span className="max-w-[120px] truncate text-sm font-bold text-[#1A1A2E]">{userName}</span>
                     <ChevronDown size={14} className="text-[#1A1A2E]/50" />
                   </button>
