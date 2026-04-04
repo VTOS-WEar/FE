@@ -29,6 +29,8 @@ export type ParentFeedbackDto = {
   feedbackTimestamp: string | null;
   outfitPrice: number;
   outfitType: string;
+  size: string;
+  quantity: number;
 };
 
 export type CampaignFilterDto = {

@@ -1,71 +1,295 @@
 import { useState, useEffect } from "react";
-import { Star, AlertCircle, ChevronDown } from "lucide-react";
-import { getParentFeedbacks, type ParentFeedbackDto, type CampaignFilterDto } from "../../../lib/api/feedback";
+import { useNavigate } from "react-router-dom";
+import { Star, AlertCircle, ChevronDown, Package } from "lucide-react";
+import { useToast } from "../../../contexts/ToastContext";
+import { getParentFeedbacks, submitOutfitFeedback, type ParentFeedbackDto, type CampaignFilterDto } from "../../../lib/api/feedback";
 
 function fmt(n: number) { return n.toLocaleString("vi-VN") + " ₫"; }
 
-/* ── Review Card ── */
-function ReviewCard({ feedback }: Readonly<{ feedback: ParentFeedbackDto }>) {
-  const hasRating = feedback.rating !== null && feedback.rating !== undefined;
+/* ── Rating Stars Component ── */
+function RatingStars({
+  value,
+  onChange,
+  readOnly = false,
+}: Readonly<{
+  value: number;
+  onChange?: (val: number) => void;
+  readOnly?: boolean;
+}>) {
+  const [hoverValue, setHoverValue] = useState(0);
 
   return (
-    <div className="nb-card overflow-hidden hover:shadow-lg transition-shadow">
-      <div className="p-4 flex gap-4">
-        {/* Product Image */}
-        <div className="flex-shrink-0">
-          <img
-            src={feedback.outfitImageUrl || "/placeholder.svg"}
-            alt={feedback.outfitName}
-            className="w-20 h-20 rounded-lg object-cover border-2 border-[#1A1A2E]"
-          />
+    <div className="flex gap-2">
+      {[1, 2, 3, 4, 5].map((star) => {
+        const isFilled = star <= (hoverValue || value);
+        return (
+          <button
+            key={star}
+            type="button"
+            disabled={readOnly}
+            onClick={() => !readOnly && onChange?.(star)}
+            onMouseEnter={() => !readOnly && setHoverValue(star)}
+            onMouseLeave={() => !readOnly && setHoverValue(0)}
+            title={`Đánh giá ${star} sao`}
+            className={`transition-all duration-200 ${
+              isFilled
+                ? "text-[#C8E44D] drop-shadow-[2px_2px_0_#1A1A2E]"
+                : "text-[#D1D5DB]"
+            } ${!readOnly && "cursor-pointer hover:scale-125"}`}
+          >
+            <Star
+              className="w-8 h-8 fill-current"
+              strokeWidth={1.5}
+            />
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+/* ── Review Card ── */
+type ReviewCardProps = {
+  feedback: ParentFeedbackDto;
+  onRefresh: () => Promise<void>;
+};
+
+function ReviewCard({ feedback, onRefresh }: ReviewCardProps) {
+  const navigate = useNavigate();
+  const { showToast } = useToast();
+  const [isEditing, setIsEditing] = useState(false);
+  const [rating, setRating] = useState<number>(feedback.rating ?? 0);
+  const [comment, setComment] = useState<string>(feedback.comment ?? "");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const hasRating = feedback.rating !== null && feedback.rating !== undefined;
+
+  const handleSubmit = async () => {
+    if (rating <= 0) {
+      showToast({
+        title: "⚠️ Thông báo",
+        message: "Vui lòng chọn số sao",
+        variant: "info",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      await submitOutfitFeedback({
+        orderItemId: feedback.orderItemId,
+        rating,
+        comment: comment || undefined,
+      });
+
+      await onRefresh();
+      setIsEditing(false);
+      showToast({
+        title: "✅ Thành công",
+        message: "Đánh giá đã được lưu thành công!",
+        variant: "success",
+        durationMs: 3000,
+      });
+    } catch (err) {
+      console.error(err);
+      showToast({
+        title: "❌ Lỗi",
+        message: "Lỗi khi lưu đánh giá. Vui lòng thử lại.",
+        variant: "error",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleCancel = () => {
+    setRating(feedback.rating ?? 0);
+    setComment(feedback.comment ?? "");
+    setIsEditing(false);
+  };
+
+  if (isEditing) {
+    return (
+      <div className="nb-card overflow-hidden">
+        {/* Header */}
+        <div className="p-5 border-b-2 border-[#1A1A2E]/10">
+          <p className="font-bold text-[#1A1A2E] text-sm">
+            📦 Chiến dịch: <span className="text-[#B8A9E8]">{feedback.campaignName}</span>
+          </p>
         </div>
 
-        {/* Content */}
-        <div className="flex-1">
-          <div className="flex items-start justify-between gap-2">
-            <div className="flex-1">
-              <p className="font-bold text-[#1A1A2E] text-sm">{feedback.outfitName}</p>
-              <p className="text-xs text-[#9CA3AF] mt-0.5">{feedback.campaignName}</p>
-              <p className="text-xs text-[#6B7280] font-medium mt-1">{fmt(feedback.outfitPrice)}</p>
+        {/* Form Content */}
+        <div className="p-5 space-y-4">
+          {/* Product Info */}
+          <div className="flex gap-3 pb-4 border-b-2 border-[#1A1A2E]/10">
+            <div className="w-16 h-16 rounded-lg border-2 border-[#1A1A2E] flex items-center justify-center overflow-hidden bg-[#EDE9FE] flex-shrink-0">
+              {feedback.outfitImageUrl && feedback.outfitImageUrl.trim() !== "" ? (
+                <img 
+                  src={feedback.outfitImageUrl} 
+                  alt={feedback.outfitName} 
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).style.display = "none";
+                  }}
+                />
+              ) : null}
+              {!feedback.outfitImageUrl || feedback.outfitImageUrl.trim() === "" ? (
+                <Package className="w-8 h-8 text-[#B8A9E8]" />
+              ) : null}
             </div>
-
-            {hasRating && (
-              <div className="flex items-center gap-1 bg-[#FEF3C7] px-2 py-1 rounded-lg">
-                <div className="flex gap-0.5">
-                  {[1, 2, 3, 4, 5].map((i) => (
-                    <Star
-                      key={i}
-                      className={`w-3 h-3 ${
-                        i <= (feedback.rating ?? 0)
-                          ? "fill-[#F5E642] text-[#F5E642]"
-                          : "text-[#D1D5DB]"
-                      }`}
-                    />
-                  ))}
-                </div>
-                <span className="text-xs font-bold text-[#92400E]">{feedback.rating}</span>
+            <div className="flex-1">
+              <button
+                onClick={() => navigate(`/outfits/${feedback.outfitId}`)}
+                className="font-bold text-[#1A1A2E] text-sm hover:text-[#B8A9E8] transition-colors text-left"
+                title="Xem chi tiết sản phẩm"
+              >
+                {feedback.outfitName}
+              </button>
+              <p className="text-xs text-[#9CA3AF] mt-1">{feedback.outfitType}</p>
+              <div className="mt-2 space-y-1 text-xs text-[#6B7280]">
+                <p>Kích cỡ: <span className="font-semibold text-[#1A1A2E]">{feedback.size}</span></p>
+                <p>Số lượng: <span className="font-semibold text-[#1A1A2E]">{feedback.quantity}</span></p>
+                <p>Giá: <span className="font-bold text-[#1A1A2E]">{fmt(feedback.outfitPrice)}</span></p>
               </div>
-            )}
+            </div>
           </div>
 
-          {/* Comment / Placeholder */}
-          {hasRating && feedback.comment && (
-            <p className="text-xs text-[#6B7280] mt-2 line-clamp-2">
-              &ldquo;{feedback.comment}&rdquo;
-            </p>
-          )}
-          {!hasRating && (
-            <p className="text-xs text-[#9CA3AF] italic mt-2">Chưa đánh giá sản phẩm này</p>
-          )}
+          {/* Rating Section */}
+          <div>
+            <label className="block text-sm font-bold text-[#1A1A2E] mb-3">Đánh giá</label>
+            <RatingStars value={rating} onChange={setRating} readOnly={isSubmitting} />
+          </div>
 
-          {/* Timestamp */}
+          {/* Comment Section */}
+          <div>
+            <label className="block text-sm font-bold text-[#1A1A2E] mb-2">Bình luận (tùy chọn)</label>
+            <textarea
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              disabled={isSubmitting}
+              placeholder="Chia sẻ cảm nhận của bạn về sản phẩm này..."
+              maxLength={500}
+              className="w-full p-3 border-2 border-[#1A1A2E] rounded-lg text-sm font-medium text-[#1A1A2E] placeholder-[#9CA3AF] focus:outline-none focus:bg-[#F3F4F6] resize-none disabled:opacity-50"
+              rows={4}
+            />
+            <div className="mt-1 text-xs text-[#9CA3AF]">
+              {comment.length}/500
+            </div>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="p-5 border-t-2 border-[#1A1A2E]/10 flex gap-2 justify-end">
+          <button
+            onClick={handleCancel}
+            disabled={isSubmitting}
+            className="nb-btn nb-btn-outline text-sm disabled:opacity-50"
+          >
+            Hủy
+          </button>
+          <button
+            onClick={handleSubmit}
+            disabled={isSubmitting || rating <= 0}
+            className="nb-btn nb-btn-purple text-sm disabled:opacity-50"
+          >
+            {isSubmitting ? "Đang lưu..." : "Lưu đánh giá"}
+          </button>
+        </div>
+        </div>
+    );
+  }
+
+  return (
+    <div className="nb-card overflow-hidden">
+      {/* Header: Campaign name */}
+      <div className="p-5 border-b-2 border-[#1A1A2E]/10">
+        <p className="font-bold text-[#1A1A2E] text-sm">
+          📦 Chiến dịch: <span className="text-[#B8A9E8]">{feedback.campaignName}</span>
+        </p>
+      </div>
+
+      {/* Main content: Product image + details + Rating */}
+      <div className="p-5 flex gap-4">
+        {/* Product Image */}
+        <div className="w-20 h-20 flex-shrink-0 bg-[#EDE9FE] rounded-lg border-2 border-[#1A1A2E] flex items-center justify-center overflow-hidden">
+          {feedback.outfitImageUrl && feedback.outfitImageUrl.trim() !== "" ? (
+            <img
+              src={feedback.outfitImageUrl}
+              alt={feedback.outfitName}
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                (e.target as HTMLImageElement).style.display = "none";
+              }}
+            />
+          ) : null}
+          {!feedback.outfitImageUrl || feedback.outfitImageUrl.trim() === "" ? (
+            <Package className="w-8 h-8 text-[#B8A9E8]" />
+          ) : null}
+        </div>
+
+        {/* Product Details */}
+        <div className="flex-1">
+          <button
+            onClick={() => navigate(`/outfits/${feedback.outfitId}`)}
+            className="font-bold text-[#1A1A2E] text-sm hover:text-[#B8A9E8] transition-colors text-left"
+            title="Xem chi tiết sản phẩm"
+          >
+            {feedback.outfitName}
+          </button>
+          <div className="mt-2 space-y-1 text-xs text-[#6B7280]">
+            <p>Loại: <span className="font-semibold text-[#1A1A2E]">{feedback.outfitType}</span></p>
+            <p>Kích cỡ: <span className="font-semibold text-[#1A1A2E]">{feedback.size}</span></p>
+            <p>Số lượng: <span className="font-semibold text-[#1A1A2E]">{feedback.quantity}</span></p>
+            <p>Giá: <span className="font-bold text-[#1A1A2E]">{fmt(feedback.outfitPrice)}</span></p>
+          </div>
+        </div>
+
+        {/* Rating Section + Button */}
+        <div className="text-right flex flex-col justify-between items-end">
+          {hasRating ? (
+            <div className="flex items-center gap-1 bg-[#FEF3C7] px-3 py-2 rounded-lg">
+              <div className="flex gap-0.5">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <Star
+                    key={i}
+                    className={`w-3 h-3 ${
+                      i <= (feedback.rating ?? 0)
+                        ? "fill-[#F5E642] text-[#F5E642]"
+                        : "text-[#D1D5DB]"
+                    }`}
+                  />
+                ))}
+              </div>
+              <span className="text-xs font-bold text-[#92400E]">{feedback.rating}/5</span>
+            </div>
+          ) : (
+            <div className="px-3 py-2 rounded-lg border-2 border-dashed border-[#D1D5DB]">
+              <span className="text-xs font-bold text-[#9CA3AF]">Chưa đánh giá</span>
+            </div>
+          )}
+          
+          <button
+            onClick={() => setIsEditing(true)}
+            className="nb-btn nb-btn-purple text-xs px-3 py-1 flex items-center gap-1"
+          >
+            <Star className="w-3 h-3" />
+            {hasRating ? "Chỉnh sửa" : "Đánh giá"}
+          </button>
+
           {hasRating && feedback.feedbackTimestamp && (
-            <p className="text-xs text-[#9CA3AF] mt-2">
+            <p className="text-[11px] text-[#9CA3AF] mt-2">
               {new Date(feedback.feedbackTimestamp).toLocaleDateString("vi-VN")}
             </p>
           )}
         </div>
       </div>
+
+      {/* Comment Section */}
+      {hasRating && feedback.comment && (
+        <div className="px-5 pb-5 border-t-2 border-[#1A1A2E]/10">
+          <p className="text-xs text-[#9CA3AF] font-bold mb-2">💬 Bình luận</p>
+          <p className="text-xs text-[#6B7280] italic">"{feedback.comment}"</p>
+        </div>
+      )}
     </div>
   );
 }
@@ -76,43 +300,55 @@ export const ReviewsTab = (): JSX.Element => {
   const [campaigns, setCampaigns] = useState<CampaignFilterDto[]>([]);
   const [selectedCampaignId, setSelectedCampaignId] = useState<string | null>(null);
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(8);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
-
-  const pageSize = 8;
+  const [activeTab, setActiveTab] = useState<"all" | "rated" | "not-rated">("all");
+  const PAGE_SIZE_OPTIONS = [4, 8, 12, 16];
 
   /* ── Fetch feedbacks ── */
-  useEffect(() => {
-    const fetchFeedbacks = async () => {
-      setLoading(true);
-      try {
-        const result = await getParentFeedbacks({
-          campaignId: selectedCampaignId || undefined,
-          page,
-          pageSize,
-        });
-        setFeedbacks(result.items);
-        setCampaigns(result.campaigns);
-        setTotal(result.total);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchFeedbacks = async () => {
+    setLoading(true);
+    try {
+      const result = await getParentFeedbacks({
+        campaignId: selectedCampaignId || undefined,
+        page,
+        pageSize,
+      });
+      setFeedbacks(result.items);
+      setCampaigns(result.campaigns);
+      setTotal(result.total);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchFeedbacks();
   }, [selectedCampaignId, page, pageSize]);
 
   useEffect(() => {
     setPage(1);
-  }, [selectedCampaignId]);
+  }, [selectedCampaignId, activeTab, pageSize]);
 
   /* ── Split rated/not rated ── */
   const ratedFeedbacks = feedbacks.filter((f) => f.rating !== null && f.rating !== undefined);
   const notRatedFeedbacks = feedbacks.filter((f) => f.rating === null || f.rating === undefined);
-  const totalPages = Math.ceil(total / pageSize);
+  
+  // Calculate total based on active tab
+  const getTabTotal = () => {
+    switch (activeTab) {
+      case "rated": return ratedFeedbacks.length;
+      case "not-rated": return notRatedFeedbacks.length;
+      default: return total;
+    }
+  };
+  
+  const tabTotal = getTabTotal();
+  const totalPages = Math.ceil(tabTotal / pageSize);
 
   if (loading) {
     return (
@@ -200,39 +436,96 @@ export const ReviewsTab = (): JSX.Element => {
         </div>
       )}
 
-      {/* Not Yet Rated Section */}
-      {notRatedFeedbacks.length > 0 && (
-        <div>
-          <h3 className="font-bold text-[#1A1A2E] text-sm mb-3 flex items-center gap-2">
-            <div className="w-4 h-4 rounded-full bg-[#FEF3C7] border-2 border-[#F5E642]" />
-            Chưa đánh giá ({notRatedFeedbacks.length})
-          </h3>
-          <div className="grid gap-3">
-            {notRatedFeedbacks.map((feedback) => (
-              <ReviewCard
-                key={feedback.campaignOutfitId}
-                feedback={feedback}
-              />
-            ))}
+      {/* Page Size Selector */}
+      {feedbacks.length > 0 && (
+        <div className="flex items-center justify-between mb-4 px-2">
+          <div className="flex items-center gap-3">
+            <label className="text-sm font-bold text-[#1A1A2E]">Hiển thị:</label>
+            <select
+              value={pageSize}
+              onChange={(e) => setPageSize(Number(e.target.value))}
+              className="px-3 py-2 border-2 border-[#1A1A2E] rounded-lg text-sm font-bold text-[#1A1A2E] bg-white focus:outline-none focus:bg-[#F3F4F6]"
+            >
+              {PAGE_SIZE_OPTIONS.map((size) => (
+                <option key={size} value={size}>
+                  {size} mục
+                </option>
+              ))}
+            </select>
           </div>
         </div>
       )}
 
-      {/* Already Rated Section */}
-      {ratedFeedbacks.length > 0 && (
-        <div>
-          <h3 className="font-bold text-[#1A1A2E] text-sm mb-3 flex items-center gap-2">
-            <div className="w-4 h-4 rounded-full bg-[#D1FAE5] border-2 border-[#C8E44D]" />
+      {/* Tab Navigation */}
+      {feedbacks.length > 0 && (
+        <div className="flex gap-4 border-b-2 border-[#E5E7EB]">
+          <button
+            onClick={() => setActiveTab("all")}
+            className={`px-4 py-3 font-bold text-sm border-b-4 transition-colors ${
+              activeTab === "all"
+                ? "text-[#1A1A2E] border-[#B8A9E8]"
+                : "text-[#9CA3AF] border-transparent hover:text-[#1A1A2E]"
+            }`}
+          >
+            Tất cả ({feedbacks.length})
+          </button>
+          <button
+            onClick={() => setActiveTab("not-rated")}
+            className={`px-4 py-3 font-bold text-sm border-b-4 transition-colors ${
+              activeTab === "not-rated"
+                ? "text-[#1A1A2E] border-[#B8A9E8]"
+                : "text-[#9CA3AF] border-transparent hover:text-[#1A1A2E]"
+            }`}
+          >
+            Chưa đánh giá ({notRatedFeedbacks.length})
+          </button>
+          <button
+            onClick={() => setActiveTab("rated")}
+            className={`px-4 py-3 font-bold text-sm border-b-4 transition-colors ${
+              activeTab === "rated"
+                ? "text-[#1A1A2E] border-[#B8A9E8]"
+                : "text-[#9CA3AF] border-transparent hover:text-[#1A1A2E]"
+            }`}
+          >
             Đã đánh giá ({ratedFeedbacks.length})
-          </h3>
-          <div className="grid gap-3">
-            {ratedFeedbacks.map((feedback) => (
-              <ReviewCard
-                key={feedback.campaignOutfitId}
-                feedback={feedback}
-              />
-            ))}
-          </div>
+          </button>
+        </div>
+      )}
+
+      {/* Tab Content */}
+      {activeTab === "all" && feedbacks.length > 0 && (
+        <div className="grid gap-3 mt-6">
+          {feedbacks.map((feedback) => (
+            <ReviewCard
+              key={feedback.orderItemId}
+              feedback={feedback}
+              onRefresh={fetchFeedbacks}
+            />
+          ))}
+        </div>
+      )}
+
+      {activeTab === "not-rated" && notRatedFeedbacks.length > 0 && (
+        <div className="grid gap-3 mt-6">
+          {notRatedFeedbacks.map((feedback) => (
+            <ReviewCard
+              key={feedback.orderItemId}
+              feedback={feedback}
+              onRefresh={fetchFeedbacks}
+            />
+          ))}
+        </div>
+      )}
+
+      {activeTab === "rated" && ratedFeedbacks.length > 0 && (
+        <div className="grid gap-3 mt-6">
+          {ratedFeedbacks.map((feedback) => (
+            <ReviewCard
+              key={feedback.orderItemId}
+              feedback={feedback}
+              onRefresh={fetchFeedbacks}
+            />
+          ))}
         </div>
       )}
 

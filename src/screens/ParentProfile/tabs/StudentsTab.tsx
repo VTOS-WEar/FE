@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { GraduationCap, Search, CheckCircle2, AlertTriangle, X, Loader2 } from "lucide-react";
+import { useToast } from "../../../contexts/ToastContext";
 import { getMyChildren, findMyChildren } from "../../../lib/api/users";
 import { getVietnamseGender } from "../../../lib/utils";
 import type { ChildProfileDto, FindChildrenResponse } from "../../../lib/api/users";
 import { StudentDetailView } from "./StudentDetailView";
 
 export const StudentsTab = (): JSX.Element => {
+  const { showToast } = useToast();
   const [children, setChildren] = useState<ChildProfileDto[]>([]);
   const [childrenLoading, setChildrenLoading] = useState(false);
   const [findLoading, setFindLoading] = useState(false);
@@ -47,7 +49,13 @@ export const StudentsTab = (): JSX.Element => {
       setFindResult(result);
       if (result.linkedCount > 0) setChildren(await getMyChildren());
       if (result.conflictedCount > 0) setShowConflictModal(true);
-    } catch (err: any) { alert(err?.message || "Không thể tìm học sinh."); }
+    } catch (err: any) { 
+      showToast({
+        title: "❌ Lỗi",
+        message: err?.message || "Không thể tìm học sinh.",
+        variant: "error",
+      });
+    }
     finally { setFindLoading(false); }
   };
 
