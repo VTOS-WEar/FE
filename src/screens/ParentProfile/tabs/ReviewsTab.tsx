@@ -311,8 +311,14 @@ export const ReviewsTab = (): JSX.Element => {
   const fetchFeedbacks = async () => {
     setLoading(true);
     try {
+      // Map activeTab to hasRating parameter
+      let hasRatingFilter: boolean | undefined = undefined;
+      if (activeTab === "rated") hasRatingFilter = true;
+      if (activeTab === "not-rated") hasRatingFilter = false;
+
       const result = await getParentFeedbacks({
         campaignId: selectedCampaignId || undefined,
+        hasRating: hasRatingFilter,
         page,
         pageSize,
       });
@@ -329,24 +335,11 @@ export const ReviewsTab = (): JSX.Element => {
 
   useEffect(() => {
     fetchFeedbacks();
-  }, [selectedCampaignId, page]);
+  }, [selectedCampaignId, page, activeTab]);
 
-  useEffect(() => {
-    setPage(1);
-  }, [selectedCampaignId, activeTab]);
-
-  /* ── Split rated/not rated ── */
-  const ratedFeedbacks = feedbacks.filter((f) => f.rating !== null && f.rating !== undefined);
-  const notRatedFeedbacks = feedbacks.filter((f) => f.rating === null || f.rating === undefined);
-  
-  // Get correct total for pagination based on active tab and backend counts
-  const getTabTotal = () => {
-    const countObj = ratingCounts.find(rc => rc.label === activeTab);
-    return countObj ? countObj.count : total;
-  };
-  
-  const tabTotal = getTabTotal();
-  const totalPages = Math.ceil(tabTotal / pageSize);
+  // Get correct total for pagination based on active tab
+  // Backend đã trả về đúng data theo hasRating filter, nên total = backend total
+  const totalPages = Math.ceil(total / pageSize);
 
   if (loading) {
     return (
@@ -445,7 +438,7 @@ export const ReviewsTab = (): JSX.Element => {
                 : "text-[#9CA3AF] border-transparent hover:text-[#1A1A2E]"
             }`}
           >
-            Tất cả ({ratingCounts.find(rc => rc.label === "all")?.count || feedbacks.length})
+            Tất cả ({ratingCounts.reduce((sum, rc) => sum + rc.count, 0)})
           </button>
           <button
             onClick={() => setActiveTab("not-rated")}
@@ -455,7 +448,7 @@ export const ReviewsTab = (): JSX.Element => {
                 : "text-[#9CA3AF] border-transparent hover:text-[#1A1A2E]"
             }`}
           >
-            Chưa đánh giá ({ratingCounts.find(rc => rc.label === "not-rated")?.count || notRatedFeedbacks.length})
+            Chưa đánh giá ({ratingCounts.find(rc => rc.label === "not-rated")?.count || 0})
           </button>
           <button
             onClick={() => setActiveTab("rated")}
@@ -465,39 +458,15 @@ export const ReviewsTab = (): JSX.Element => {
                 : "text-[#9CA3AF] border-transparent hover:text-[#1A1A2E]"
             }`}
           >
-            Đã đánh giá ({ratingCounts.find(rc => rc.label === "rated")?.count || ratedFeedbacks.length})
+            Đã đánh giá ({ratingCounts.find(rc => rc.label === "rated")?.count || 0})
           </button>
         </div>
       )}
 
-      {/* Tab Content */}
-      {activeTab === "all" && feedbacks.length > 0 && (
+      {/* Tab Content - Server-side filtered data */}
+      {feedbacks.length > 0 && (
         <div className="grid gap-3 mt-6">
           {feedbacks.map((feedback) => (
-            <ReviewCard
-              key={feedback.orderItemId}
-              feedback={feedback}
-              onRefresh={fetchFeedbacks}
-            />
-          ))}
-        </div>
-      )}
-
-      {activeTab === "not-rated" && notRatedFeedbacks.length > 0 && (
-        <div className="grid gap-3 mt-6">
-          {notRatedFeedbacks.map((feedback) => (
-            <ReviewCard
-              key={feedback.orderItemId}
-              feedback={feedback}
-              onRefresh={fetchFeedbacks}
-            />
-          ))}
-        </div>
-      )}
-
-      {activeTab === "rated" && ratedFeedbacks.length > 0 && (
-        <div className="grid gap-3 mt-6">
-          {ratedFeedbacks.map((feedback) => (
             <ReviewCard
               key={feedback.orderItemId}
               feedback={feedback}
