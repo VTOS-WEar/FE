@@ -25,6 +25,31 @@ export type CheckoutResponse = {
   orderCode: number;
 };
 
+export type OrderItemDto = {
+  orderItemId: string;
+  campaignOutfitId: string;
+  productVariantId: string;
+  campaignId: string;
+  outfitId: string;
+  outfitName: string;
+  outfitImage: string | null;
+  quantity: number;
+  size: string;
+  price: number;
+};
+
+export type OrderDetailDto = {
+  orderId: string;
+  childProfileId: string;
+  childName: string;
+  childAvatar: string | null;
+  totalAmount: number;
+  orderStatus: string;
+  orderDate: string;
+  shippingAddress: string;
+  items: OrderItemDto[];
+};
+
 /* ── API Calls ── */
 
 /** POST /api/orders/checkout — Create order + PayOS payment link */
@@ -54,6 +79,19 @@ export async function cancelOrder(orderId: string, reason?: string): Promise<voi
       auth: true,
     }
   );
+}
+
+/** GET /api/orders/{orderId}/detail — Get parent's order details with items and campaign outfits */
+export async function getOrderDetail(orderId: string): Promise<OrderDetailDto> {
+  const result = await api<{ isSuccess: boolean; value: OrderDetailDto }>(
+    `${endpoints.orders.cancel}/${orderId}/detail`,
+    { method: "GET", auth: true },
+  );
+
+  if (result && typeof result === "object" && "value" in result) {
+    return result.value;
+  }
+  return result as unknown as OrderDetailDto;
 }
 
 /* ── School Order Management (UC-45) ── */

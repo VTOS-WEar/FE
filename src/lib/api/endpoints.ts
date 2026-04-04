@@ -90,4 +90,7 @@ export const endpoints = {
         readAll: "/api/notifications/read-all",
         heartbeat: "/api/notifications/heartbeat",
     },
+    feedbacks: {
+        submitCampaignOutfit: "/api/feedbacks/campaign-outfit",
+    },
 } as const;

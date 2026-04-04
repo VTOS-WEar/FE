@@ -1,5 +1,6 @@
-import { useState, useEffect, useCallback } from "react";
-import { ShoppingBag, CreditCard, Clock, CheckCircle, XCircle, ChevronDown } from "lucide-react";
+import { useState, useEffect, useCallback, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
+import { ShoppingBag, CreditCard, Clock, CheckCircle, XCircle, ChevronDown, Star } from "lucide-react";
 import {
     payOrder,
     getParentPaymentHistory,
@@ -103,11 +104,69 @@ function OrderStatusStepper({ orderStatus }: { orderStatus: string }) {
     );
 }
 
+/* ── Status Tabs ── */
+const ALL_STATUSES = ["Pending", "Paid", "Confirmed", "Processed", "Shipped", "Delivered", "Cancelled"];
+
+function StatusTabs({ 
+    payments, 
+    selectedStatus, 
+    onStatusChange 
+}: { 
+    payments: ParentPaymentDto[], 
+    selectedStatus: string | null,
+    onStatusChange: (status: string | null) => void 
+}) {
+    const statusCounts = useMemo(() => {
+        const counts: Record<string, number> = {};
+        ALL_STATUSES.forEach(s => counts[s] = 0);
+        payments.forEach(p => {
+            const status = p.status || "Unknown";
+            counts[status] = (counts[status] || 0) + 1;
+        });
+        return counts;
+    }, [payments]);
+
+    return (
+        <div className="flex gap-2 overflow-x-auto pb-3 mb-4">
+            <button
+                onClick={() => onStatusChange(null)}
+                className={`px-4 py-2 rounded-lg font-bold text-sm whitespace-nowrap transition-all ${
+                    selectedStatus === null
+                        ? "bg-[#B8A9E8] text-white border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E]"
+                        : "bg-[#F3F4F6] text-[#6B7280] border-2 border-[#D1D5DB]"
+                }`}
+            >
+                Tất cả ({payments.length})
+            </button>
+            {ALL_STATUSES.map(status => {
+                const count = statusCounts[status] || 0;
+                if (count === 0) return null;
+
+                return (
+                    <button
+                        key={status}
+                        onClick={() => onStatusChange(status)}
+                        className={`px-4 py-2 rounded-lg font-bold text-sm whitespace-nowrap transition-all ${
+                            selectedStatus === status
+                                ? "bg-[#B8A9E8] text-white border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E]"
+                                : "bg-[#F3F4F6] text-[#6B7280] border-2 border-[#D1D5DB]"
+                        }`}
+                    >
+                        {status} ({count})
+                    </button>
+                );
+            })}
+        </div>
+    );
+}
+
 /* ── Main Component ── */
 export const OrdersTab = (): JSX.Element => {
+    const navigate = useNavigate();
     const [payments, setPayments] = useState<ParentPaymentDto[]>([]);
     const [total, setTotal] = useState(0);
     const [page, setPage] = useState(1);
+    const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
     const [payingId, setPayingId] = useState<string | null>(null);
     const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -123,6 +182,12 @@ export const OrdersTab = (): JSX.Element => {
     }, [page]);
 
     useEffect(() => { fetchData(); }, [fetchData]);
+
+    // Filter payments by selected status
+    const filteredPayments = useMemo(() => {
+        if (!selectedStatus) return payments;
+        return payments.filter(p => p.status === selectedStatus);
+    }, [payments, selectedStatus]);
 
     const handlePay = async (orderId: string) => {
         if (!confirm("Xác nhận thanh toán đơn hàng này?")) return;
@@ -160,68 +225,89 @@ export const OrdersTab = (): JSX.Element => {
     }
 
     return (
-        <div className="space-y-4">
-            {payments.map((p) => {
-                const badge = statusBadge(p.status);
-                const isPending = p.status.toLowerCase() === "pending";
-                const isExpanded = expandedId === p.paymentId;
-                const showStepper = p.orderStatus && p.orderStatus !== "Pending";
+        <div>
+            {/* Status Filter Tabs */}
+            <StatusTabs payments={payments} selectedStatus={selectedStatus} onStatusChange={setSelectedStatus} />
 
-                return (
-                    <div key={p.paymentId} className="nb-card overflow-hidden">
-                        {/* Top row */}
-                        <div
-                            className={`p-5 flex items-center justify-between ${showStepper ? "cursor-pointer" : ""}`}
-                            onClick={() => showStepper && setExpandedId(isExpanded ? null : p.paymentId)}
-                        >
-                            <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 bg-[#EDE9FE] rounded-xl flex items-center justify-center border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E]">
-                                    <CreditCard className="w-6 h-6 text-[#1A1A2E]" />
-                                </div>
-                                <div>
-                                    <p className="font-bold text-[#1A1A2E] text-sm">
-                                        Đơn #{p.orderId.slice(0, 8)}
-                                    </p>
-                                    <p className="font-medium text-[#9CA3AF] text-xs mt-0.5">
-                                        {fmtDate(p.timestamp)}
-                                    </p>
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-4">
-                                <p className="font-extrabold text-[#1A1A2E] text-base">
-                                    {fmt(p.amount)}
-                                </p>
-                                <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold border-2 ${badge.bg} ${badge.text} ${badge.border}`}>
-                                    {badge.icon}
-                                    {badge.label}
-                                </span>
-                                {isPending && (
-                                    <button
-                                        onClick={(e) => { e.stopPropagation(); handlePay(p.orderId); }}
-                                        disabled={payingId === p.orderId}
-                                        className="nb-btn nb-btn-purple text-sm disabled:opacity-50"
-                                    >
-                                        {payingId === p.orderId ? "Đang xử lý..." : "Thanh toán"}
-                                    </button>
-                                )}
-                                {showStepper && (
-                                    <ChevronDown className={`w-5 h-5 text-[#6B7280] transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`} />
-                                )}
-                            </div>
-                        </div>
-
-                        {/* Expanded stepper */}
-                        {isExpanded && showStepper && (
-                            <div className="px-5 pb-5 border-t-2 border-[#1A1A2E]/10">
-                                <p className="font-bold text-[#6B7280] text-xs mt-3 mb-1">
-                                    📍 Trạng thái đơn hàng
-                                </p>
-                                <OrderStatusStepper orderStatus={p.orderStatus} />
-                            </div>
-                        )}
+            {/* Filtered Orders List */}
+            <div className="space-y-4">
+                {filteredPayments.length === 0 ? (
+                    <div className="text-center py-8 text-[#9CA3AF] text-sm">
+                        Không có đơn hàng nào ở trạng thái này
                     </div>
-                );
-            })}
+                ) : (
+                    filteredPayments.map((p) => {
+                        const badge = statusBadge(p.status);
+                        const isPending = p.status.toLowerCase() === "pending";
+                        const isExpanded = expandedId === p.paymentId;
+                        const showStepper = p.orderStatus && p.orderStatus !== "Pending";
+
+                        return (
+                            <div key={p.paymentId} className="nb-card overflow-hidden">
+                                {/* Top row */}
+                                <div
+                                    className={`p-5 flex items-center justify-between ${showStepper ? "cursor-pointer" : ""}`}
+                                    onClick={() => showStepper && setExpandedId(isExpanded ? null : p.paymentId)}
+                                >
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-12 h-12 bg-[#EDE9FE] rounded-xl flex items-center justify-center border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E]">
+                                            <CreditCard className="w-6 h-6 text-[#1A1A2E]" />
+                                        </div>
+                                        <div>
+                                            <p className="font-bold text-[#1A1A2E] text-sm">
+                                                Đơn #{p.orderId.slice(0, 8)}
+                                            </p>
+                                            <p className="font-medium text-[#9CA3AF] text-xs mt-0.5">
+                                                {fmtDate(p.timestamp)}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-4">
+                                        <p className="font-extrabold text-[#1A1A2E] text-base">
+                                            {fmt(p.amount)}
+                                        </p>
+                                        <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold border-2 ${badge.bg} ${badge.text} ${badge.border}`}>
+                                            {badge.icon}
+                                            {badge.label}
+                                        </span>
+                                        {p.orderStatus === "Delivered" && (
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); navigate(`/parentprofile/feedback?orderId=${p.orderId}`); }}
+                                                className="nb-btn nb-btn-purple text-sm flex items-center gap-1"
+                                            >
+                                                <Star className="w-3.5 h-3.5" />
+                                                Đánh giá
+                                            </button>
+                                        )}
+                                        {isPending && (
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); handlePay(p.orderId); }}
+                                                disabled={payingId === p.orderId}
+                                                className="nb-btn nb-btn-purple text-sm disabled:opacity-50"
+                                            >
+                                                {payingId === p.orderId ? "Đang xử lý..." : "Thanh toán"}
+                                            </button>
+                                        )}
+                                        {showStepper && (
+                                            <ChevronDown className={`w-5 h-5 text-[#6B7280] transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`} />
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Expanded stepper */}
+                                {isExpanded && showStepper && (
+                                    <div className="px-5 pb-5 border-t-2 border-[#1A1A2E]/10">
+                                        <p className="font-bold text-[#6B7280] text-xs mt-3 mb-1">
+                                            📍 Trạng thái đơn hàng
+                                        </p>
+                                        <OrderStatusStepper orderStatus={p.orderStatus} />
+                                    </div>
+                                )}
+                            </div>
+                        );
+                    })
+                )}
+            </div>
 
             {totalPages > 1 && (
                 <div className="flex justify-center gap-2 mt-4">
