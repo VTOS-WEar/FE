@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Mail, Phone, Camera, Shield, ShieldCheck } from "lucide-react";
-import { updateParentProfile, getParentProfile } from "../../../lib/api/users";
+import { updateParentProfile, getParentProfile, updateParentAvatar } from "../../../lib/api/users";
 import { disable2FA } from "../../../lib/api/auth";
 
 const DAYS = Array.from({ length: 31 }, (_, i) => i + 1);
@@ -35,6 +35,11 @@ export const AccountTab = (): JSX.Element => {
   const [emailSaving, setEmailSaving] = useState(false);
   const [phoneSaving, setPhoneSaving] = useState(false);
 
+  // Avatar state
+  const [avatarSaving, setAvatarSaving] = useState(false);
+  const [avatarMsg, setAvatarMsg] = useState("");
+  const avatarInputRef = useRef<HTMLInputElement>(null);
+
   // 2FA state
   const [is2FAEnabled, setIs2FAEnabled] = useState(false);
   const [showDisable2FA, setShowDisable2FA] = useState(false);
@@ -63,7 +68,7 @@ export const AccountTab = (): JSX.Element => {
         const data = await getParentProfile();
         const u: UserInfo = {
           id: data.id, fullName: data.fullName || "", email: data.email || "",
-          phone: data.phone || "", role: data.role || "Parent", avatar: null,
+          phone: data.phone || "", role: data.role || "Parent", avatar: data.avatar || null,
           gender: data.gender || "", dateOfBirth: data.dob || "",
         };
         setUser(u); setFullName(u.fullName); setEmail(u.email); setPhone(u.phone || "");
@@ -112,6 +117,46 @@ export const AccountTab = (): JSX.Element => {
     try { await updateParentProfile({ phone }); syncUserStorage({ phone }); setPhoneMsg("✓ Đã cập nhật!"); }
     catch (err: any) { setPhoneMsg("Lỗi: " + (err?.message || "Không thể cập nhật")); }
     finally { setPhoneSaving(false); setTimeout(() => setPhoneMsg(""), 3000); }
+  };
+
+  const handleAvatarClick = () => {
+    avatarInputRef.current?.click();
+  };
+
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      setAvatarMsg("Lỗi: Vui lòng chọn tệp hình ảnh!");
+      setTimeout(() => setAvatarMsg(""), 3000);
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setAvatarMsg("Lỗi: Kích thước tệp không được vượt quá 5MB!");
+      setTimeout(() => setAvatarMsg(""), 3000);
+      return;
+    }
+
+    setAvatarSaving(true);
+    setAvatarMsg("");
+
+    try {
+      const result = await updateParentAvatar(file);
+      syncUserStorage({ avatar: result.avatarUrl });
+      setAvatarMsg("✓ Đã cập nhật avatar!");
+      // Reset file input
+      if (avatarInputRef.current) avatarInputRef.current.value = "";
+      setTimeout(() => setAvatarMsg(""), 3000);
+    } catch (err: any) {
+      setAvatarMsg("Lỗi: " + (err?.message || "Không thể cập nhật avatar"));
+      setTimeout(() => setAvatarMsg(""), 3000);
+    } finally {
+      setAvatarSaving(false);
+    }
   };
 
   if (!user) return <div />;
@@ -166,10 +211,26 @@ export const AccountTab = (): JSX.Element => {
                     ? <img src={user.avatar} alt="" className="w-full h-full rounded-xl object-cover" />
                     : <span className="font-extrabold text-[#1A1A2E] text-3xl">{initials}</span>}
                 </div>
-                <button className="absolute bottom-[-4px] right-[-4px] w-9 h-9 bg-[#C8E44D] border-2 border-[#1A1A2E] rounded-lg flex items-center justify-center shadow-[2px_2px_0_#1A1A2E] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
+                <button 
+                  type="button"
+                  onClick={handleAvatarClick}
+                  disabled={avatarSaving}
+                  className="absolute bottom-[-4px] right-[-4px] w-9 h-9 bg-[#C8E44D] border-2 border-[#1A1A2E] rounded-lg flex items-center justify-center shadow-[2px_2px_0_#1A1A2E] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all disabled:opacity-50 disabled:cursor-not-allowed">
                   <Camera className="w-4 h-4 text-[#1A1A2E]" />
                 </button>
+                <input
+                  ref={avatarInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleAvatarChange}
+                  className="hidden"
+                />
               </div>
+              {avatarMsg && (
+                <span className={`font-bold text-xs ${avatarMsg.startsWith("✓") ? "text-[#065F46]" : "text-[#991B1B]"}`}>
+                  {avatarMsg}
+                </span>
+              )}
             </div>
 
             {/* Form */}

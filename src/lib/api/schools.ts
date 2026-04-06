@@ -732,6 +732,15 @@ export type SizeChartDto = {
     details: SizeChartDetailDto[];
 };
 
+export type ReviewDto = {
+    feedbackId: string;
+    rating: number;
+    comment: string | null;
+    timestamp: string;
+    userName: string;
+    userAvatarUrl: string | null;
+};
+
 export type OutfitDetailDto = {
     outfitId: string;
     outfitName: string;
@@ -747,6 +756,7 @@ export type OutfitDetailDto = {
     categories: string[];
     averageRating: number;
     feedbackCount: number;
+    reviews: ReviewDto[];
 };
 
 /** Guest & Parent: outfit detail */
