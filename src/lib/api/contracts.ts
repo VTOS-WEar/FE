@@ -17,13 +17,14 @@ export type ContractDto = {
     schoolId: string;
     providerId: string;
     contractName: string;
-    status: string; // Pending | Approved | Rejected | Expired
+    status: string; // Pending | Approved | InUse | Fulfilled | Rejected | Expired
     createdAt: string;
     approvedAt?: string | null;
     rejectedAt?: string | null;
     rejectionReason?: string | null;
     schoolName?: string | null;
     providerName?: string | null;
+    expiresAt: string;
     items: ContractItemDto[];
 };
 
@@ -37,6 +38,7 @@ export type CreateContractItemRequest = {
 export type CreateContractRequest = {
     contractName: string;
     providerId: string;
+    expiresAt: string;
     items: CreateContractItemRequest[];
 };
 

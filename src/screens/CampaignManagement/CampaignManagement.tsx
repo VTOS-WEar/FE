@@ -561,7 +561,10 @@ export const CampaignManagement = (): JSX.Element => {
                                                             ) : providers.length === 1 ? (
                                                                 <div className="flex items-center gap-2 rounded-[10px] border-[2px] border-[#19182B] bg-[#D9F8E8] px-3 py-2 shadow-[2px_2px_0_#19182B]">
                                                                     <span className="text-[13px]">✅</span>
-                                                                    <span className="text-[13px] font-black text-[#19182B]">{providers[0].providerName}</span>
+                                                                    <div className="flex flex-col">
+                                                                        <span className="text-[13px] font-black text-[#19182B]">{providers[0].providerName}</span>
+                                                                        <span className="text-[10px] font-bold text-[#6F6A7D]">HĐ: {providers[0].contractName}</span>
+                                                                    </div>
                                                                     <span className="ml-auto text-[12px] font-bold text-[#6F6A7D]">
                                                                         Giá SX: {providers[0].pricePerUnit.toLocaleString("vi-VN")}đ <span className="text-[10px] text-[#9A95A8]">(tham khảo)</span>
                                                                     </span>
@@ -586,7 +589,7 @@ export const CampaignManagement = (): JSX.Element => {
                                                                         <option value="">-- Chọn nhà cung cấp --</option>
                                                                         {providers.map((p) => (
                                                                             <option key={`${p.providerId}-${p.contractId}`} value={p.providerId}>
-                                                                                {p.providerName} — Giá SX: {p.pricePerUnit.toLocaleString("vi-VN")}đ (tham khảo)
+                                                                                {p.providerName} (HĐ: {p.contractName}) — Giá SX: {p.pricePerUnit.toLocaleString("vi-VN")}đ (tham khảo)
                                                                             </option>
                                                                         ))}
                                                                     </select>

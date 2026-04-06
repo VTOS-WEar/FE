@@ -19,11 +19,13 @@ type OutfitOption = { id: string; name: string; price: number };
 const STATUS_BADGE: Record<string, string> = {
     Pending: "nb-badge nb-badge-yellow",
     Approved: "nb-badge nb-badge-green",
+    InUse: "nb-badge bg-[#DBEAFE] text-[#1D4ED8] border-[#1A1A2E]",
+    Fulfilled: "nb-badge bg-[#D1FAE5] text-[#065F46] border-[#1A1A2E]",
     Rejected: "nb-badge nb-badge-red",
     Expired: "nb-badge bg-[#F3F4F6] text-[#6B7280]",
 };
-const STATUS_LABELS: Record<string, string> = { Pending: "Chờ duyệt", Approved: "Đã duyệt", Rejected: "Từ chối", Expired: "Hết hạn" };
-const STATUS_COLORS: Record<string, string> = { Pending: "#f59e0b", Approved: "#10b981", Rejected: "#ef4444", Expired: "#6b7280" };
+const STATUS_LABELS: Record<string, string> = { Pending: "Chờ duyệt", Approved: "Đã duyệt", InUse: "Đang dùng", Fulfilled: "Hoàn thành", Rejected: "Từ chối", Expired: "Hết hạn" };
+const STATUS_COLORS: Record<string, string> = { Pending: "#f59e0b", Approved: "#10b981", InUse: "#3b82f6", Fulfilled: "#059669", Rejected: "#ef4444", Expired: "#6b7280" };
 
 export function SchoolContracts() {
     const sidebarConfig = useSidebarConfig();
@@ -44,6 +46,7 @@ export function SchoolContracts() {
     const [items, setItems] = useState<CreateContractItemRequest[]>([
         { outfitId: "", pricePerUnit: 0, minQuantity: 1, maxQuantity: 100 },
     ]);
+    const [expiresAt, setExpiresAt] = useState("");
     const [creating, setCreating] = useState(false);
     const [error, setError] = useState("");
 
@@ -104,11 +107,13 @@ export function SchoolContracts() {
         setError("");
         if (!contractName.trim()) { setError("Vui lòng nhập tên hợp đồng"); return; }
         if (!selectedProvider) { setError("Vui lòng chọn nhà cung cấp"); return; }
+        if (!expiresAt) { setError("Vui lòng chọn thời hạn hợp đồng"); return; }
+        if (new Date(expiresAt) <= new Date()) { setError("Thời hạn phải ở tương lai"); return; }
         if (items.some(i => !i.outfitId)) { setError("Vui lòng chọn đồng phục cho tất cả mục"); return; }
         setCreating(true);
         try {
-            await createContract({ contractName, providerId: selectedProvider, items } as CreateContractRequest);
-            setShowCreate(false); setContractName(""); setSelectedProvider("");
+            await createContract({ contractName, providerId: selectedProvider, expiresAt: new Date(expiresAt).toISOString(), items } as CreateContractRequest);
+            setShowCreate(false); setContractName(""); setSelectedProvider(""); setExpiresAt("");
             setItems([{ outfitId: "", pricePerUnit: 0, minQuantity: 1, maxQuantity: 100 }]);
             fetchContracts();
         } catch (e: any) { setError(e.message || "Lỗi tạo hợp đồng"); }
@@ -144,7 +149,7 @@ export function SchoolContracts() {
 
                         {/* Status tabs — NB */}
                         <div className="nb-tabs w-fit">
-                            {["", "Pending", "Approved", "Rejected"].map(s => (
+                            {["", "Pending", "Approved", "InUse", "Fulfilled", "Rejected", "Expired"].map(s => (
                                 <button key={s} onClick={() => { setStatusFilter(s); setPage(1); }}
                                     className={`nb-tab ${statusFilter === s ? "nb-tab-active" : ""}`}>
                                     {s ? STATUS_LABELS[s] || s : "Tất cả"}
@@ -175,7 +180,7 @@ export function SchoolContracts() {
                                                     <div className="flex-1 min-w-0">
                                                         <h3 className="font-bold text-[#1A1A2E] text-lg">{c.contractName}</h3>
                                                         <p className="text-sm text-[#6B7280] mt-1">
-                                                            NCC: <strong className="text-[#1A1A2E]">{c.providerName || "—"}</strong> · {c.items.length} mục · {new Date(c.createdAt).toLocaleDateString("vi")}
+                                                            NCC: <strong className="text-[#1A1A2E]">{c.providerName || "—"}</strong> · {c.items.length} mục · Hạn: {new Date(c.expiresAt).toLocaleDateString("vi")}
                                                         </p>
                                                     </div>
                                                     <span className={STATUS_BADGE[c.status] || "nb-badge"}>{STATUS_LABELS[c.status] || c.status}</span>
@@ -219,8 +224,9 @@ export function SchoolContracts() {
                                 <div className="grid grid-cols-2 gap-3 mb-5">
                                     <div className="nb-card-static p-3"><p className="text-xs text-[#9CA3AF] font-bold uppercase mb-1">Nhà cung cấp</p><p className="text-sm font-bold text-[#1A1A2E]">{selected.providerName || "—"}</p></div>
                                     <div className="nb-card-static p-3"><p className="text-xs text-[#9CA3AF] font-bold uppercase mb-1">Ngày tạo</p><p className="text-sm font-bold text-[#1A1A2E]">{new Date(selected.createdAt).toLocaleDateString("vi")}</p></div>
+                                    <div className="nb-card-static p-3"><p className="text-xs text-[#9CA3AF] font-bold uppercase mb-1">Thời hạn</p><p className="text-sm font-bold text-[#1A1A2E]">{new Date(selected.expiresAt).toLocaleDateString("vi")}</p></div>
                                     {selected.approvedAt && (
-                                        <div className="nb-card-static p-3 col-span-2"><p className="text-xs text-[#9CA3AF] font-bold uppercase mb-1">Ngày duyệt</p><p className="text-sm font-bold text-[#1A1A2E]">{new Date(selected.approvedAt).toLocaleDateString("vi")}</p></div>
+                                        <div className="nb-card-static p-3"><p className="text-xs text-[#9CA3AF] font-bold uppercase mb-1">Ngày duyệt</p><p className="text-sm font-bold text-[#1A1A2E]">{new Date(selected.approvedAt).toLocaleDateString("vi")}</p></div>
                                     )}
                                 </div>
                                 <h3 className="font-bold text-sm text-[#1A1A2E] mb-3">Danh sách đồng phục</h3>
@@ -268,6 +274,10 @@ export function SchoolContracts() {
                                     <option value="">-- Chọn nhà cung cấp --</option>
                                     {providers.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
                                 </select>
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold text-[#6B7280] mb-1">Thời hạn hợp đồng <span className="text-red-500">*</span></label>
+                                <input type="date" value={expiresAt} onChange={e => setExpiresAt(e.target.value)} min={new Date().toISOString().split("T")[0]} className="nb-input w-full" />
                             </div>
 
                             <div>

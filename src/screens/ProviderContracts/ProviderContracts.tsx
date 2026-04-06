@@ -15,8 +15,10 @@ import {
 const STATUS_MAP: Record<string, { label: string; badge: string }> = {
     Pending: { label: "Chờ duyệt", badge: "nb-badge nb-badge-yellow" },
     Approved: { label: "Đã duyệt", badge: "nb-badge nb-badge-green" },
+    InUse: { label: "Đang dùng", badge: "nb-badge bg-[#DBEAFE] text-[#1D4ED8] border-[#1A1A2E]" },
+    Fulfilled: { label: "Hoàn thành", badge: "nb-badge bg-[#D1FAE5] text-[#065F46] border-[#1A1A2E]" },
     Rejected: { label: "Từ chối", badge: "nb-badge nb-badge-red" },
-    Expired: { label: "Hết hạn", badge: "nb-badge nb-badge-blue" },
+    Expired: { label: "Hết hạn", badge: "nb-badge bg-[#F3F4F6] text-[#6B7280]" },
 };
 
 export function ProviderContracts() {
@@ -115,7 +117,10 @@ export function ProviderContracts() {
         { value: "", label: "Tất cả" },
         { value: "Pending", label: "Chờ duyệt" },
         { value: "Approved", label: "Đã duyệt" },
+        { value: "InUse", label: "Đang dùng" },
+        { value: "Fulfilled", label: "Hoàn thành" },
         { value: "Rejected", label: "Từ chối" },
+        { value: "Expired", label: "Hết hạn" },
     ];
 
     return (
@@ -171,7 +176,7 @@ export function ProviderContracts() {
                                                     <div className="flex-1 min-w-0">
                                                         <h3 className="font-bold text-[#1A1A2E] text-base">{c.contractName}</h3>
                                                         <p className="font-medium text-[#9CA3AF] text-sm mt-1">
-                                                            Trường: <strong className="text-[#6B7280]">{c.schoolName || "—"}</strong> &nbsp;·&nbsp; {c.items.length} mục &nbsp;·&nbsp; {new Date(c.createdAt).toLocaleDateString("vi")}
+                                                            Trường: <strong className="text-[#6B7280]">{c.schoolName || "—"}</strong> &nbsp;·&nbsp; {c.items.length} mục &nbsp;·&nbsp; Hạn: {new Date(c.expiresAt).toLocaleDateString("vi")}
                                                         </p>
                                                     </div>
                                                     <div className="flex items-center gap-2">
@@ -223,6 +228,16 @@ export function ProviderContracts() {
                                             <span className="block text-xs font-bold text-[#9CA3AF] uppercase mb-1">Ngày tạo</span>
                                             <span className="block text-sm font-bold text-[#1A1A2E]">{new Date(selected.createdAt).toLocaleDateString("vi")}</span>
                                         </div>
+                                        <div className="bg-[#F8FAFC] border-2 border-[#E5E7EB] rounded-lg p-3">
+                                            <span className="block text-xs font-bold text-[#9CA3AF] uppercase mb-1">Thời hạn</span>
+                                            <span className="block text-sm font-bold text-[#1A1A2E]">{new Date(selected.expiresAt).toLocaleDateString("vi")}</span>
+                                        </div>
+                                        {selected.approvedAt && (
+                                            <div className="bg-[#F8FAFC] border-2 border-[#E5E7EB] rounded-lg p-3">
+                                                <span className="block text-xs font-bold text-[#9CA3AF] uppercase mb-1">Ngày duyệt</span>
+                                                <span className="block text-sm font-bold text-[#1A1A2E]">{new Date(selected.approvedAt).toLocaleDateString("vi")}</span>
+                                            </div>
+                                        )}
                                     </div>
 
                                     {error && <div className="nb-alert nb-alert-error mb-4">{error}</div>}
