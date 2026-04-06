@@ -74,9 +74,15 @@ export type ParentPaymentDto = {
     timestamp: string;
 };
 
+export type StatusCountDto = {
+    status: string;
+    count: number;
+};
+
 export type ParentPaymentHistoryResponse = {
     items: ParentPaymentDto[];
     total: number;
+    statusCounts: StatusCountDto[];
 };
 //#endregion
 
