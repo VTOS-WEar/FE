@@ -542,12 +542,17 @@ export const CampaignManagement = (): JSX.Element => {
                                                     <p className="mt-2 text-[13px] font-bold text-[#6F6A7D]">Tự động gán từ hợp đồng đã duyệt.</p>
                                                 </div>
                                             </div>
-                                            <div className="mt-6 space-y-4">
+                                            <div className="mt-6 space-y-5">
                                                 {Array.from(selectedOutfits.values()).map((s) => {
                                                     const providers = contractedProviders[s.outfit.outfitId] || [];
                                                     return (
                                                         <div key={s.outfit.outfitId} className="space-y-2">
-                                                            <p className="text-[14px] font-black text-[#19182B] truncate">{s.outfit.outfitName}</p>
+                                                            <div className="flex items-center justify-between gap-2">
+                                                                <p className="text-[14px] font-black text-[#19182B] truncate">{s.outfit.outfitName}</p>
+                                                                <span className="flex-shrink-0 rounded-full border-[2px] border-[#19182B] bg-[#D9F8E8] px-2.5 py-0.5 text-[11px] font-extrabold text-[#065F46] shadow-[1px_1px_0_#19182B]">
+                                                                    Giá bán: {s.campaignPrice.toLocaleString("vi-VN")}đ (cố định)
+                                                                </span>
+                                                            </div>
                                                             {providers.length === 0 ? (
                                                                 <div className="flex items-center gap-2 rounded-[8px] border-[2px] border-dashed border-[#D1C9E0] bg-[#FAFAFA] px-3 py-2">
                                                                     <span className="text-[13px]">⚠️</span>
@@ -558,32 +563,43 @@ export const CampaignManagement = (): JSX.Element => {
                                                                     <span className="text-[13px]">✅</span>
                                                                     <span className="text-[13px] font-black text-[#19182B]">{providers[0].providerName}</span>
                                                                     <span className="ml-auto text-[12px] font-bold text-[#6F6A7D]">
-                                                                        SX: {providers[0].pricePerUnit.toLocaleString("vi-VN")}đ
+                                                                        Giá SX: {providers[0].pricePerUnit.toLocaleString("vi-VN")}đ <span className="text-[10px] text-[#9A95A8]">(tham khảo)</span>
                                                                     </span>
                                                                 </div>
                                                             ) : (
-                                                                <select
-                                                                    value={s.providerId || ""}
-                                                                    onChange={(e) => {
-                                                                        const val = e.target.value || null;
-                                                                        setSelectedOutfits((prev) => {
-                                                                            const next = new Map(prev);
-                                                                            const existing = next.get(s.outfit.outfitId);
-                                                                            if (existing) {
-                                                                                next.set(s.outfit.outfitId, { ...existing, providerId: val });
-                                                                            }
-                                                                            return next;
-                                                                        });
-                                                                    }}
-                                                                    className={brutalInputClass}
-                                                                >
-                                                                    <option value="">-- Chọn nhà cung cấp --</option>
-                                                                    {providers.map((p) => (
-                                                                        <option key={p.providerId} value={p.providerId}>
-                                                                            {p.providerName} — SX: {p.pricePerUnit.toLocaleString("vi-VN")}đ
-                                                                        </option>
-                                                                    ))}
-                                                                </select>
+                                                                <div className="space-y-1.5">
+                                                                    <select
+                                                                        value={s.providerId || ""}
+                                                                        onChange={(e) => {
+                                                                            const val = e.target.value || null;
+                                                                            setSelectedOutfits((prev) => {
+                                                                                const next = new Map(prev);
+                                                                                const existing = next.get(s.outfit.outfitId);
+                                                                                if (existing) {
+                                                                                    next.set(s.outfit.outfitId, { ...existing, providerId: val });
+                                                                                }
+                                                                                return next;
+                                                                            });
+                                                                        }}
+                                                                        className={brutalInputClass}
+                                                                    >
+                                                                        <option value="">-- Chọn nhà cung cấp --</option>
+                                                                        {providers.map((p) => (
+                                                                            <option key={`${p.providerId}-${p.contractId}`} value={p.providerId}>
+                                                                                {p.providerName} — Giá SX: {p.pricePerUnit.toLocaleString("vi-VN")}đ (tham khảo)
+                                                                            </option>
+                                                                        ))}
+                                                                    </select>
+                                                                    {s.providerId && (() => {
+                                                                        const selected = providers.find(p => p.providerId === s.providerId);
+                                                                        if (!selected) return null;
+                                                                        return (
+                                                                            <p className="text-[11px] font-bold text-[#8D879B] px-1">
+                                                                                💡 Giá SX: {selected.pricePerUnit.toLocaleString("vi-VN")}đ (tham khảo) — Giá bán cho phụ huynh không đổi
+                                                                            </p>
+                                                                        );
+                                                                    })()}
+                                                                </div>
                                                             )}
                                                         </div>
                                                     );

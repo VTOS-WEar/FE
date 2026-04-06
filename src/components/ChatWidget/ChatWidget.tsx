@@ -53,7 +53,13 @@ export function ChatWidget({ channelType, channelId, isOpen, onClose, contextInf
         connectionRef.current = connection;
 
         connection.on("ReceiveMessage", (msg: ChatMessageDto) => {
-            setMessages(prev => prev.some(m => m.messageId === msg.messageId) ? prev : [...prev, msg]);
+            // Fix: Backend broadcasts IsMe=false for all clients.
+            // We override by comparing senderUserId with current user.
+            const raw = localStorage.getItem("user") || sessionStorage.getItem("user");
+            let currentUserId = "";
+            try { if (raw) currentUserId = JSON.parse(raw).userId || JSON.parse(raw).id || ""; } catch { /* ignore */ }
+            const fixedMsg = { ...msg, isMe: currentUserId ? msg.senderUserId === currentUserId : msg.isMe };
+            setMessages(prev => prev.some(m => m.messageId === fixedMsg.messageId) ? prev : [...prev, fixedMsg]);
         });
         connection.onreconnected(() => {
             connection.invoke("JoinChannel", channelType, channelId).catch(() => {});
