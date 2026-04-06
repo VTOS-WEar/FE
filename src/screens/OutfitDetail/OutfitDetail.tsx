@@ -677,18 +677,25 @@ export const OutfitDetail = (): JSX.Element => {
                   Chi tiết sản phẩm
                 </h3>
                 {outfit.description ? (
-                  <div className="text-[15px] text-gray-600 leading-relaxed whitespace-pre-line max-w-4xl">
-                    <ul className="space-y-3 list-disc pl-5 marker:text-gray-300">
-                      {/* Note: Mock rendering of bullet points if the description supports newlines, 
-                          else it just falls back to plain text. We fake bullet visually for plain text if splitable. */}
-                      {outfit.description.split('\n').filter(Boolean).map((line, idx) => (
-                        <li key={idx}><span className="font-bold text-gray-800">{line.split(':')[0]}</span>{line.includes(':') ? ':' + line.split(':').slice(1).join(':') : line}</li>
-                      ))}
-                    </ul>
-                  </div>
+                  <div
+                    className="prose-detail-content text-[15px] text-gray-600 leading-relaxed max-w-4xl"
+                    dangerouslySetInnerHTML={{ __html: outfit.description }}
+                  />
                 ) : (
                   <p className="text-sm font-medium text-gray-400">Chưa có mô tả chi tiết.</p>
                 )}
+                <style>{`
+                  .prose-detail-content h2 { font-size: 1.3rem; font-weight: 800; margin: 1rem 0 0.5rem; color: #111827; }
+                  .prose-detail-content h3 { font-size: 1.1rem; font-weight: 700; margin: 0.75rem 0 0.35rem; color: #111827; }
+                  .prose-detail-content p { margin: 0.35rem 0; }
+                  .prose-detail-content ul { list-style: disc; padding-left: 1.5rem; margin: 0.5rem 0; }
+                  .prose-detail-content ol { list-style: decimal; padding-left: 1.5rem; margin: 0.5rem 0; }
+                  .prose-detail-content li { margin: 0.2rem 0; }
+                  .prose-detail-content li::marker { color: #d1d5db; }
+                  .prose-detail-content blockquote { border-left: 3px solid #8B6BFF; padding-left: 1rem; margin: 0.75rem 0; color: #6B7280; font-style: italic; }
+                  .prose-detail-content hr { border: none; border-top: 2px solid #E5E7EB; margin: 1rem 0; }
+                  .prose-detail-content strong { font-weight: 800; color: #111827; }
+                `}</style>
                 {outfit.categories.length > 0 && (
                   <div className="flex flex-wrap gap-2 mt-8">
                     {outfit.categories.map((cat) => (

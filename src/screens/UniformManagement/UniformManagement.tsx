@@ -23,6 +23,13 @@ import {
     type CreateOutfitRequest,
 } from "../../lib/api/schools";
 import VariantManager from "./VariantManager";
+import { RichTextEditor } from "../../components/RichTextEditor/RichTextEditor";
+
+/* ── Helper: strip HTML tags for preview ── */
+function stripHtml(html: string): string {
+    const doc = new DOMParser().parseFromString(html, "text/html");
+    return doc.body.textContent || "";
+}
 
 
 
@@ -244,12 +251,10 @@ function OutfitFormModal({
                             <label className="mb-2 block text-[14px] font-extrabold text-[#19182B]">
                                 Mô tả
                             </label>
-                            <textarea
+                            <RichTextEditor
                                 value={form.description}
-                                onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
+                                onChange={(html) => setForm((f) => ({ ...f, description: html }))}
                                 placeholder="VD: Vải cotton thoáng mát, form dáng chuẩn"
-                                rows={3}
-                                className={`min-h-[96px] resize-none ${brutalInputClass}`}
                             />
                         </div>
 
@@ -399,7 +404,7 @@ function UniformCard({ item, onEdit, onDelete, onManageVariants }: { item: Outfi
             <div className="flex flex-col bg-white">
                 <div className="px-4 pt-3 pb-2">
                     <h3 className="font-bold text-[#1A1A2E] text-base leading-tight">{item.outfitName}</h3>
-                    <p className="font-medium text-[#4C5769] text-sm mt-0.5 line-clamp-1">{item.description || "Không có mô tả"}</p>
+                    <p className="font-medium text-[#4C5769] text-sm mt-0.5 line-clamp-1">{item.description ? stripHtml(item.description) : "Không có mô tả"}</p>
                 </div>
                 <div className="mx-4 border-t-2 border-[#E5E7EB]" />
                 <div className="px-4 py-3 flex items-center justify-between">
