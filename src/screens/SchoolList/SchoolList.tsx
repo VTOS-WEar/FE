@@ -1,8 +1,9 @@
 import { useState, useEffect, useMemo, useRef } from "react";
-import { Search, MapPin, Star, RotateCcw, ChevronRight, Filter, Building2, CheckCircle } from "lucide-react";
+import { Search, MapPin, Star, RotateCcw, ChevronRight, Building2, CheckCircle } from "lucide-react";
 import { motion, AnimatePresence, useInView } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { GuestLayout } from "@/components/layout/GuestLayout";
+import { PublicPageBreadcrumb } from "@/components/PublicPageBreadcrumb";
 import { getPublicSchools, PublicSchoolDto, parseContactInfo } from "@/lib/api/schools";
 import { fetchProvinces, type Province, type District } from "@/lib/utils/vietnamProvinces";
 
@@ -131,14 +132,20 @@ function SearchableSelect({
         type="button"
         disabled={disabled}
         onClick={() => !disabled && setOpen(!open)}
-        className={`w-full h-9 px-3 rounded-lg border-2 border-[#1A1A2E] bg-white text-sm font-semibold flex items-center justify-between gap-2 transition-all shadow-[3px_3px_0_#1A1A2E] ${
-          disabled ? "opacity-50 cursor-not-allowed" : "hover:shadow-[4px_4px_0_#1A1A2E] hover:-translate-y-[1px] cursor-pointer"
-        } ${open ? "ring-2 ring-[#B8A9E8]/40" : ""}`}
+        className={`w-full h-9 px-3 rounded-lg border-2 border-[#1A1A2E] text-sm font-semibold flex items-center justify-between gap-2 transition-all shadow-[4px_4px_0_#1A1A2E] ${
+          disabled
+            ? "bg-[#F3F4F6] text-[#9CA3AF] cursor-not-allowed"
+            : "bg-white text-[#1A1A2E] hover:shadow-[5px_5px_0_#1A1A2E] hover:-translate-y-[1px] cursor-pointer"
+        } ${open && !disabled ? "ring-2 ring-[#B8A9E8]/45 z-30" : ""}`}
       >
-        <span className={value === "all" ? "text-[#6B7280]" : "text-[#1A1A2E] truncate"}>
+        <span className={`truncate ${value === "all" && !disabled ? "text-[#6B7280]" : ""}`}>
           {selectedLabel}
         </span>
-        <ChevronRight className={`w-3 h-3 text-[#6B7280] shrink-0 transition-transform duration-200 ${open ? "rotate-90" : ""}`} />
+        <ChevronRight
+          className={`w-3.5 h-3.5 shrink-0 transition-transform duration-200 ${open ? "rotate-90" : ""} ${
+            disabled ? "text-[#9CA3AF]" : "text-[#1A1A2E]"
+          }`}
+        />
       </button>
 
       <AnimatePresence>
@@ -153,14 +160,14 @@ function SearchableSelect({
             {/* Search input */}
             <div className="p-2 border-b-2 border-[#1A1A2E]/10">
               <div className="relative">
-                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#6B7280]" />
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#1A1A2E]" />
                 <input
                   ref={inputRef}
                   type="text"
                   placeholder="Tìm kiếm..."
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  className="w-full h-8 pl-8 pr-3 text-sm font-medium rounded-lg bg-[#FFF8F0] border-2 border-transparent outline-none focus:border-[#B8A9E8] transition-colors placeholder:text-[#6B7280]"
+                  className="w-full h-8 pl-8 pr-3 text-sm font-semibold rounded-lg bg-[#FFF8F0] border-2 border-[#1A1A2E]/15 outline-none focus:border-[#B8A9E8] focus:ring-1 focus:ring-[#B8A9E8]/30 transition-colors placeholder:text-[#6B7280]"
                 />
               </div>
             </div>
@@ -314,12 +321,13 @@ const SchoolList = () => {
 
         {/* ═══ HERO HEADER ═══ */}
         <div className="mb-8">
-          <motion.div custom={0} variants={fadeUp} initial="hidden" animate="visible"
-            className="mb-4 text-sm font-bold text-[#6B7280]"
-          >
-            <a href="/" className="hover:text-[#B8A9E8] transition-colors">Trang chủ</a>
-            <span className="mx-2">→</span>
-            <span className="text-[#1A1A2E]">Danh sách trường</span>
+          <motion.div custom={0} variants={fadeUp} initial="hidden" animate="visible" className="mb-4">
+            <PublicPageBreadcrumb
+              items={[
+                { label: "Trang chủ", to: "/homepage" },
+                { label: "Danh sách trường" },
+              ]}
+            />
           </motion.div>
 
           <motion.h1 custom={1} variants={fadeUp} initial="hidden" animate="visible"
@@ -337,16 +345,21 @@ const SchoolList = () => {
 
         {/* ═══ FILTER BAR — NB Card ═══ */}
         <motion.div custom={3} variants={fadeUp} initial="hidden" animate="visible" className="mb-8 relative z-20">
-          <div className="nb-card-static p-5 overflow-visible">
-            <div className="flex items-end gap-4 flex-wrap">
+          <div className="nb-card-static overflow-visible px-5 py-5 shadow-[6px_6px_0_#1A1A2E] ring-2 ring-[#B8A9E8]/35 sm:px-6">
+            <div className="flex w-full flex-wrap items-end gap-x-3 gap-y-3">
               {/* Search */}
-              <div className="flex-1 min-w-[200px] space-y-1">
-                <label className="text-[10px] font-bold text-[#6B7280] ml-1 uppercase tracking-widest">Tìm kiếm</label>
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#6B7280]" />
+              <div className="min-w-[200px] flex-1 space-y-1.5">
+                <label className="block text-[10px] font-bold text-[#6B7280] ml-1 uppercase tracking-widest leading-tight">
+                  Tìm kiếm
+                </label>
+                <div className="group relative w-full transition-transform duration-200 hover:-translate-y-px">
+                  <Search
+                    className="pointer-events-none absolute left-3 top-1/2 z-[2] h-3.5 w-3.5 -translate-y-1/2 text-[#1A1A2E]"
+                    aria-hidden="true"
+                  />
                   <input
                     placeholder="Nhập tên trường..."
-                    className="nb-input w-full pl-10 h-9"
+                    className="relative z-0 w-full h-9 pl-10 pr-3 rounded-lg border-2 border-[#1A1A2E] bg-white text-sm font-semibold text-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E] transition-shadow placeholder:text-[#6B7280] placeholder:font-medium focus:outline-none focus:ring-2 focus:ring-[#B8A9E8]/45 focus:ring-offset-0 group-hover:shadow-[5px_5px_0_#1A1A2E]"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && handleSearch()}
@@ -355,8 +368,10 @@ const SchoolList = () => {
               </div>
 
               {/* Province */}
-              <div className="w-[180px] shrink-0 space-y-1">
-                <label className="text-[10px] font-bold text-[#6B7280] ml-1 uppercase tracking-widest">Tỉnh/Thành phố</label>
+              <div className="w-full max-w-[180px] shrink-0 space-y-1.5 sm:w-[180px]">
+                <label className="block text-[10px] font-bold text-[#6B7280] ml-1 uppercase tracking-widest leading-tight">
+                  Tỉnh/Thành phố
+                </label>
                 <SearchableSelect
                   value={city}
                   onValueChange={handleCityChange}
@@ -369,8 +384,10 @@ const SchoolList = () => {
               </div>
 
               {/* District */}
-              <div className="w-[180px] shrink-0 space-y-1">
-                <label className="text-[10px] font-bold text-[#6B7280] ml-1 uppercase tracking-widest">Quận/Huyện</label>
+              <div className="w-full max-w-[180px] shrink-0 space-y-1.5 sm:w-[180px]">
+                <label className="block text-[10px] font-bold text-[#6B7280] ml-1 uppercase tracking-widest leading-tight">
+                  Quận/Huyện
+                </label>
                 <SearchableSelect
                   value={district}
                   onValueChange={handleDistrictChange}
@@ -383,15 +400,35 @@ const SchoolList = () => {
                 />
               </div>
 
-              {/* Buttons */}
-              <div className="flex gap-2 shrink-0">
-                <button onClick={handleSearch} className="nb-btn nb-btn-purple h-9 text-sm">
-                  <Filter className="w-3.5 h-3.5" />
-                  Tìm kiếm
+              {/* Buttons — spacer label aligns control row với các cột có nhãn */}
+              <div className="flex shrink-0 flex-col gap-1.5">
+                <span
+                  className="block text-[10px] font-bold uppercase tracking-widest leading-tight ml-1 invisible select-none"
+                  aria-hidden="true"
+                >
+                  &nbsp;
+                </span>
+                <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={handleSearch}
+                  className="group relative inline-flex h-9 min-w-[136px] items-center justify-center gap-2 overflow-hidden rounded-lg border-2 border-[#1A1A2E] bg-gradient-to-r from-[#A78BFA] via-[#C4B5FD] to-[#7C3AED] px-3.5 text-sm font-bold text-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E] transition-all duration-200 hover:-translate-y-px hover:shadow-[5px_5px_0_#1A1A2E] hover:brightness-[1.08] hover:saturate-110 active:translate-y-px active:shadow-[3px_3px_0_#1A1A2E] active:brightness-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7C3AED]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#FFF8F0]"
+                  title="Tìm kiếm trường theo tên và địa điểm"
+                >
+                  <span className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/40 via-white/10 to-transparent opacity-95 transition-opacity duration-200 group-hover:from-white/50" />
+                  <span className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_18%,rgba(255,255,255,0.75),transparent_45%)] opacity-90 mix-blend-overlay transition-opacity duration-200 group-hover:opacity-100" />
+                  <Search className="relative z-[1] h-3.5 w-3.5 shrink-0 text-[#1A1A2E]" strokeWidth={2.5} />
+                  <span className="relative z-[1] tracking-tight">Tìm kiếm</span>
                 </button>
-                <button onClick={handleReset} className="nb-btn nb-btn-outline h-9 w-9 !px-0" title="Đặt lại">
-                  <RotateCcw className="w-3.5 h-3.5" />
+                <button
+                  type="button"
+                  onClick={handleReset}
+                  className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border-2 border-[#1A1A2E] bg-white text-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E] transition-all hover:-translate-y-px hover:bg-[#F9FAFB] hover:shadow-[5px_5px_0_#1A1A2E] active:translate-y-px active:shadow-[3px_3px_0_#1A1A2E] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B8A9E8]/45 focus-visible:ring-offset-0"
+                  title="Đặt lại"
+                >
+                  <RotateCcw className="h-3.5 w-3.5" />
                 </button>
+                </div>
               </div>
             </div>
           </div>
@@ -444,12 +481,16 @@ const SchoolList = () => {
                   <motion.div
                     key={school.schoolId}
                     variants={cardItem}
+                    whileHover={{ y: -6, rotate: -1.15, scale: 1.01 }}
+                    whileTap={{ y: 1, scale: 0.992 }}
+                    transition={{ type: "spring", stiffness: 260, damping: 18 }}
                     className="group h-full"
                   >
                     <div
-                      className="nb-card h-full flex flex-col cursor-pointer overflow-hidden"
+                      className="relative nb-card nb-card-wiggle h-full flex flex-col cursor-pointer overflow-hidden border-2 border-[#1A1A2E] bg-white shadow-[4px_4px_0_#1A1A2E] transition-all duration-200 group-hover:shadow-[10px_10px_0_#1A1A2E] group-hover:ring-2 group-hover:ring-[#B8A9E8]/45 active:translate-y-px active:shadow-[3px_3px_0_#1A1A2E]"
                       onClick={() => navigate(`/schools/${school.schoolId}`)}
                     >
+                      <div className="pointer-events-none absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-[#B8A9E8] via-[#C4B5FD] to-[#7C3AED] opacity-85" />
                       {/* Image */}
                       <div className="relative aspect-[4/3] overflow-hidden">
                         <img
@@ -457,15 +498,16 @@ const SchoolList = () => {
                           alt={school.schoolName}
                           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                         />
+                        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#1A1A2E]/38 via-[#1A1A2E]/5 to-white/10 opacity-85 transition-opacity duration-200 group-hover:opacity-100" />
                         {/* Level badge */}
                         <div className="absolute top-3 left-3">
-                          <span className="nb-badge nb-badge-purple text-[11px]">
+                          <span className="inline-flex items-center rounded-full border-2 border-[#1A1A2E] bg-white/95 px-2.5 py-1 text-[11px] font-extrabold text-[#6D5BC4] shadow-[2px_2px_0_#1A1A2E] backdrop-blur-[1px]">
                             {school.level || "No level"}
                           </span>
                         </div>
                         {/* Rating */}
                         <div className="absolute top-3 right-3">
-                          <span className="nb-badge bg-white text-[11px] gap-1">
+                          <span className="inline-flex items-center gap-1 rounded-full border-2 border-[#1A1A2E] bg-white/95 px-2.5 py-1 text-[11px] font-extrabold text-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E] backdrop-blur-[1px]">
                             <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
                             {school.rating || "—"}
                           </span>
@@ -473,8 +515,8 @@ const SchoolList = () => {
                       </div>
 
                       {/* Content */}
-                      <div className="p-5 flex flex-col flex-1">
-                        <h3 className="text-base font-extrabold text-[#1A1A2E] mb-2 leading-snug group-hover:text-[#B8A9E8] transition-colors line-clamp-1">
+                      <div className="p-5 pt-4 flex flex-col flex-1">
+                        <h3 className="text-[1.05rem] font-extrabold text-[#1A1A2E] mb-2 leading-snug group-hover:text-[#7C3AED] transition-colors line-clamp-1">
                           {school.schoolName}
                         </h3>
                         <div className="flex items-start gap-2 text-[#6B7280] mb-4 flex-1">
@@ -484,9 +526,10 @@ const SchoolList = () => {
                           </p>
                         </div>
 
-                        <button className="nb-btn nb-btn-outline w-full h-9 text-xs uppercase tracking-wider gap-2">
+                        <button className="relative w-full h-10 inline-flex items-center justify-center rounded-lg border-2 border-[#1A1A2E] bg-gradient-to-r from-[#F8F6FF] via-white to-[#EFE9FF] text-[11px] font-extrabold uppercase tracking-[0.09em] text-[#1A1A2E] gap-2 shadow-[3px_3px_0_#1A1A2E] transition-all duration-200 group-hover:border-[#7C3AED] group-hover:shadow-[6px_6px_0_#1A1A2E] group-hover:brightness-[1.03] active:translate-y-px active:shadow-[2px_2px_0_#1A1A2E]">
+                          <span className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_18%,rgba(255,255,255,0.55),transparent_45%)] opacity-80 transition-opacity duration-200 group-hover:opacity-100" />
                           Xem đồng phục
-                          <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                          <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 group-hover:text-[#7C3AED] transition-all" />
                         </button>
                       </div>
                     </div>
@@ -514,9 +557,9 @@ const SchoolList = () => {
         {/* Load More */}
         {filteredSchools.length > 0 && (
           <ScrollSection className="mt-16 text-center" delay={0.2}>
-            <button className="nb-btn nb-btn-outline mx-auto gap-2">
+            <button className="group mx-auto inline-flex items-center justify-center gap-2 rounded-lg border-2 border-[#1A1A2E] bg-white px-5 py-2.5 text-sm font-extrabold text-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E] transition-all hover:-translate-y-px hover:border-[#7C3AED] hover:bg-[#FCFAFF] hover:shadow-[5px_5px_0_#1A1A2E] active:translate-y-px active:shadow-[2px_2px_0_#1A1A2E]">
               Xem thêm trường khác
-              <RotateCcw className="w-4 h-4" />
+              <RotateCcw className="w-4 h-4 transition-transform group-hover:rotate-90" />
             </button>
           </ScrollSection>
         )}

@@ -8,6 +8,7 @@
         "/signup/parent",
         "/contact-partnership",
         "/homepage",
+        "/huong-dan-try-on",
         "/parentprofile",
         "/verify-otp",
         "/school/students/import/confirm-save",
@@ -255,15 +256,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:365:16-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:367:16-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\FillInformation\\FillInformation.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/schools",
         "trigger": {
-          "element": "<Link to=\"/schools\" className=\"flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold text-[#1A1A2E] hover:bg-white transition-colors\">\r\n                  <div className=\"flex h-8 w-8 items-center justify-center rounded-lg border-2 border-[#1A1A2E] bg-[#C8E44D] shadow-[2px_2px_0_#1A1A2E]\">\r\n                    <GraduationCap size={14} />\r\n                  </div>\r\n                  Tìm trường\r\n                </Link>",
-          "line": 365,
-          "endLine": 370,
+          "element": "<Link to=\"/schools\" className=\"flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold text-[#1A1A2E] hover:bg-white transition-colors\">\n                  <div className=\"flex h-8 w-8 items-center justify-center rounded-lg border-2 border-[#1A1A2E] bg-[#C8E44D] shadow-[2px_2px_0_#1A1A2E]\">\n                    <GraduationCap size={14} />\n                  </div>\n                  Tìm trường\n                </Link>",
+          "line": 367,
+          "endLine": 372,
           "column": 16,
           "endColumn": 23,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -271,15 +272,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:371:16-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:373:16-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\FillInformation\\FillInformation.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/products",
         "trigger": {
-          "element": "<Link to=\"/products\" className=\"flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold text-[#1A1A2E] hover:bg-white transition-colors\">\r\n                  <div className=\"flex h-8 w-8 items-center justify-center rounded-lg border-2 border-[#1A1A2E] bg-[#EDE9FE] shadow-[2px_2px_0_#1A1A2E]\">\r\n                    <Package size={14} />\r\n                  </div>\r\n                  Kho đồng phục\r\n                </Link>",
-          "line": 371,
-          "endLine": 376,
+          "element": "<Link to=\"/products\" className=\"flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold text-[#1A1A2E] hover:bg-white transition-colors\">\n                  <div className=\"flex h-8 w-8 items-center justify-center rounded-lg border-2 border-[#1A1A2E] bg-[#EDE9FE] shadow-[2px_2px_0_#1A1A2E]\">\n                    <Package size={14} />\n                  </div>\n                  Kho đồng phục\n                </Link>",
+          "line": 373,
+          "endLine": 378,
           "column": 16,
           "endColumn": 23,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -287,15 +288,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:379:14-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:381:14-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\FillInformation\\FillInformation.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/contact-partnership",
         "trigger": {
-          "element": "<Link \r\n                to=\"/contact-partnership\"\r\n                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold transition-all duration-150 ${isContactActive ? \"bg-[#1A1A2E] text-white shadow-[3px_3px_0_#6B7280]\" : \"text-[#1A1A2E] hover:bg-white border border-transparent hover:border-[#1A1A2E]/10\"}`}\r\n              >\r\n                Liên hệ\r\n              </Link>",
-          "line": 379,
-          "endLine": 384,
+          "element": "<Link \n                to=\"/contact-partnership\"\n                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold transition-all duration-150 ${isContactActive ? \"bg-[#1A1A2E] text-white shadow-[3px_3px_0_#6B7280]\" : \"text-[#1A1A2E] hover:bg-white border border-transparent hover:border-[#1A1A2E]/10\"}`}\n              >\n                Liên hệ\n              </Link>",
+          "line": 381,
+          "endLine": 386,
           "column": 14,
           "endColumn": 21,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -303,15 +304,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:390:37-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:392:37-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\FillInformation\\FillInformation.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
           "element": "navigate(\"/signin\")",
-          "line": 390,
-          "endLine": 390,
+          "line": 392,
+          "endLine": 392,
           "column": 37,
           "endColumn": 56,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -319,15 +320,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\Footer.tsx:16:14-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\components\\layout\\Footer.tsx:18:14-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\FillInformation\\FillInformation.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/schools",
         "trigger": {
-          "element": "<a href=\"/schools\" className=\"nb-btn nb-btn-purple text-base px-8 py-3\">\r\n                <span className=\"tracking-wide uppercase\">Thử ngay</span>\r\n                <span>→</span>\r\n              </a>",
-          "line": 16,
-          "endLine": 19,
+          "element": "<a\n                href=\"/schools\"\n                className=\"group relative inline-flex h-12 items-center justify-center gap-2 overflow-hidden whitespace-nowrap rounded-[10px] border border-[#1A1A2E] bg-gradient-to-r from-[#C8E44D] via-[#FDE68A] to-[#EDE9FE] px-7 text-base font-extrabold text-[#1A1A2E] shadow-[3px_3px_0_#1A1A2E] transition-all duration-200 hover:-translate-y-[1px] hover:shadow-[5px_5px_0_#1A1A2E] active:translate-y-[1px] active:shadow-[2px_2px_0_#1A1A2E]\"\n              >\n                <span className=\"pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.55),transparent_40%)] opacity-80 transition-opacity duration-150 group-hover:opacity-100\" />\n                <span className=\"tracking-wide uppercase\">Thử ngay</span>\n                <span className=\"relative transition-transform duration-200 group-hover:translate-x-1\">→</span>\n              </a>",
+          "line": 18,
+          "endLine": 25,
           "column": 14,
           "endColumn": 18,
           "sourceFile": "src\\components\\layout\\Footer.tsx"
@@ -495,15 +496,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:365:16-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:367:16-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\FillInformation\\FillInformation.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/schools",
         "trigger": {
-          "element": "<Link to=\"/schools\" className=\"flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold text-[#1A1A2E] hover:bg-white transition-colors\">\r\n                  <div className=\"flex h-8 w-8 items-center justify-center rounded-lg border-2 border-[#1A1A2E] bg-[#C8E44D] shadow-[2px_2px_0_#1A1A2E]\">\r\n                    <GraduationCap size={14} />\r\n                  </div>\r\n                  Tìm trường\r\n                </Link>",
-          "line": 365,
-          "endLine": 370,
+          "element": "<Link to=\"/schools\" className=\"flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold text-[#1A1A2E] hover:bg-white transition-colors\">\n                  <div className=\"flex h-8 w-8 items-center justify-center rounded-lg border-2 border-[#1A1A2E] bg-[#C8E44D] shadow-[2px_2px_0_#1A1A2E]\">\n                    <GraduationCap size={14} />\n                  </div>\n                  Tìm trường\n                </Link>",
+          "line": 367,
+          "endLine": 372,
           "column": 16,
           "endColumn": 23,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -511,15 +512,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:371:16-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:373:16-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\FillInformation\\FillInformation.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/products",
         "trigger": {
-          "element": "<Link to=\"/products\" className=\"flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold text-[#1A1A2E] hover:bg-white transition-colors\">\r\n                  <div className=\"flex h-8 w-8 items-center justify-center rounded-lg border-2 border-[#1A1A2E] bg-[#EDE9FE] shadow-[2px_2px_0_#1A1A2E]\">\r\n                    <Package size={14} />\r\n                  </div>\r\n                  Kho đồng phục\r\n                </Link>",
-          "line": 371,
-          "endLine": 376,
+          "element": "<Link to=\"/products\" className=\"flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold text-[#1A1A2E] hover:bg-white transition-colors\">\n                  <div className=\"flex h-8 w-8 items-center justify-center rounded-lg border-2 border-[#1A1A2E] bg-[#EDE9FE] shadow-[2px_2px_0_#1A1A2E]\">\n                    <Package size={14} />\n                  </div>\n                  Kho đồng phục\n                </Link>",
+          "line": 373,
+          "endLine": 378,
           "column": 16,
           "endColumn": 23,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -527,15 +528,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:379:14-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:381:14-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\FillInformation\\FillInformation.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/contact-partnership",
         "trigger": {
-          "element": "<Link \r\n                to=\"/contact-partnership\"\r\n                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold transition-all duration-150 ${isContactActive ? \"bg-[#1A1A2E] text-white shadow-[3px_3px_0_#6B7280]\" : \"text-[#1A1A2E] hover:bg-white border border-transparent hover:border-[#1A1A2E]/10\"}`}\r\n              >\r\n                Liên hệ\r\n              </Link>",
-          "line": 379,
-          "endLine": 384,
+          "element": "<Link \n                to=\"/contact-partnership\"\n                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold transition-all duration-150 ${isContactActive ? \"bg-[#1A1A2E] text-white shadow-[3px_3px_0_#6B7280]\" : \"text-[#1A1A2E] hover:bg-white border border-transparent hover:border-[#1A1A2E]/10\"}`}\n              >\n                Liên hệ\n              </Link>",
+          "line": 381,
+          "endLine": 386,
           "column": 14,
           "endColumn": 21,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -543,15 +544,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:390:37-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:392:37-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\FillInformation\\FillInformation.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
           "element": "navigate(\"/signin\")",
-          "line": 390,
-          "endLine": 390,
+          "line": 392,
+          "endLine": 392,
           "column": 37,
           "endColumn": 56,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -559,15 +560,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\Footer.tsx:16:14-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\components\\layout\\Footer.tsx:18:14-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\FillInformation\\FillInformation.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/schools",
         "trigger": {
-          "element": "<a href=\"/schools\" className=\"nb-btn nb-btn-purple text-base px-8 py-3\">\r\n                <span className=\"tracking-wide uppercase\">Thử ngay</span>\r\n                <span>→</span>\r\n              </a>",
-          "line": 16,
-          "endLine": 19,
+          "element": "<a\n                href=\"/schools\"\n                className=\"group relative inline-flex h-12 items-center justify-center gap-2 overflow-hidden whitespace-nowrap rounded-[10px] border border-[#1A1A2E] bg-gradient-to-r from-[#C8E44D] via-[#FDE68A] to-[#EDE9FE] px-7 text-base font-extrabold text-[#1A1A2E] shadow-[3px_3px_0_#1A1A2E] transition-all duration-200 hover:-translate-y-[1px] hover:shadow-[5px_5px_0_#1A1A2E] active:translate-y-[1px] active:shadow-[2px_2px_0_#1A1A2E]\"\n              >\n                <span className=\"pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.55),transparent_40%)] opacity-80 transition-opacity duration-150 group-hover:opacity-100\" />\n                <span className=\"tracking-wide uppercase\">Thử ngay</span>\n                <span className=\"relative transition-transform duration-200 group-hover:translate-x-1\">→</span>\n              </a>",
+          "line": 18,
+          "endLine": 25,
           "column": 14,
           "endColumn": 18,
           "sourceFile": "src\\components\\layout\\Footer.tsx"
@@ -687,15 +688,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:365:16-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:367:16-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\FillInformation\\FillInformation.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/schools",
         "trigger": {
-          "element": "<Link to=\"/schools\" className=\"flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold text-[#1A1A2E] hover:bg-white transition-colors\">\r\n                  <div className=\"flex h-8 w-8 items-center justify-center rounded-lg border-2 border-[#1A1A2E] bg-[#C8E44D] shadow-[2px_2px_0_#1A1A2E]\">\r\n                    <GraduationCap size={14} />\r\n                  </div>\r\n                  Tìm trường\r\n                </Link>",
-          "line": 365,
-          "endLine": 370,
+          "element": "<Link to=\"/schools\" className=\"flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold text-[#1A1A2E] hover:bg-white transition-colors\">\n                  <div className=\"flex h-8 w-8 items-center justify-center rounded-lg border-2 border-[#1A1A2E] bg-[#C8E44D] shadow-[2px_2px_0_#1A1A2E]\">\n                    <GraduationCap size={14} />\n                  </div>\n                  Tìm trường\n                </Link>",
+          "line": 367,
+          "endLine": 372,
           "column": 16,
           "endColumn": 23,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -703,15 +704,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:371:16-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:373:16-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\FillInformation\\FillInformation.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/products",
         "trigger": {
-          "element": "<Link to=\"/products\" className=\"flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold text-[#1A1A2E] hover:bg-white transition-colors\">\r\n                  <div className=\"flex h-8 w-8 items-center justify-center rounded-lg border-2 border-[#1A1A2E] bg-[#EDE9FE] shadow-[2px_2px_0_#1A1A2E]\">\r\n                    <Package size={14} />\r\n                  </div>\r\n                  Kho đồng phục\r\n                </Link>",
-          "line": 371,
-          "endLine": 376,
+          "element": "<Link to=\"/products\" className=\"flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold text-[#1A1A2E] hover:bg-white transition-colors\">\n                  <div className=\"flex h-8 w-8 items-center justify-center rounded-lg border-2 border-[#1A1A2E] bg-[#EDE9FE] shadow-[2px_2px_0_#1A1A2E]\">\n                    <Package size={14} />\n                  </div>\n                  Kho đồng phục\n                </Link>",
+          "line": 373,
+          "endLine": 378,
           "column": 16,
           "endColumn": 23,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -719,15 +720,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:379:14-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:381:14-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\FillInformation\\FillInformation.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/contact-partnership",
         "trigger": {
-          "element": "<Link \r\n                to=\"/contact-partnership\"\r\n                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold transition-all duration-150 ${isContactActive ? \"bg-[#1A1A2E] text-white shadow-[3px_3px_0_#6B7280]\" : \"text-[#1A1A2E] hover:bg-white border border-transparent hover:border-[#1A1A2E]/10\"}`}\r\n              >\r\n                Liên hệ\r\n              </Link>",
-          "line": 379,
-          "endLine": 384,
+          "element": "<Link \n                to=\"/contact-partnership\"\n                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold transition-all duration-150 ${isContactActive ? \"bg-[#1A1A2E] text-white shadow-[3px_3px_0_#6B7280]\" : \"text-[#1A1A2E] hover:bg-white border border-transparent hover:border-[#1A1A2E]/10\"}`}\n              >\n                Liên hệ\n              </Link>",
+          "line": 381,
+          "endLine": 386,
           "column": 14,
           "endColumn": 21,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -735,15 +736,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\NavbarGuest.tsx:390:37-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\components\\layout\\NavbarGuest.tsx:392:37-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\FillInformation\\FillInformation.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
           "element": "navigate(\"/signin\")",
-          "line": 390,
-          "endLine": 390,
+          "line": 392,
+          "endLine": 392,
           "column": 37,
           "endColumn": 56,
           "sourceFile": "src\\components\\layout\\NavbarGuest.tsx"
@@ -751,15 +752,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\Footer.tsx:16:14-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\components\\layout\\Footer.tsx:18:14-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\FillInformation\\FillInformation.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/schools",
         "trigger": {
-          "element": "<a href=\"/schools\" className=\"nb-btn nb-btn-purple text-base px-8 py-3\">\r\n                <span className=\"tracking-wide uppercase\">Thử ngay</span>\r\n                <span>→</span>\r\n              </a>",
-          "line": 16,
-          "endLine": 19,
+          "element": "<a\n                href=\"/schools\"\n                className=\"group relative inline-flex h-12 items-center justify-center gap-2 overflow-hidden whitespace-nowrap rounded-[10px] border border-[#1A1A2E] bg-gradient-to-r from-[#C8E44D] via-[#FDE68A] to-[#EDE9FE] px-7 text-base font-extrabold text-[#1A1A2E] shadow-[3px_3px_0_#1A1A2E] transition-all duration-200 hover:-translate-y-[1px] hover:shadow-[5px_5px_0_#1A1A2E] active:translate-y-[1px] active:shadow-[2px_2px_0_#1A1A2E]\"\n              >\n                <span className=\"pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.55),transparent_40%)] opacity-80 transition-opacity duration-150 group-hover:opacity-100\" />\n                <span className=\"tracking-wide uppercase\">Thử ngay</span>\n                <span className=\"relative transition-transform duration-200 group-hover:translate-x-1\">→</span>\n              </a>",
+          "line": 18,
+          "endLine": 25,
           "column": 14,
           "endColumn": 18,
           "sourceFile": "src\\components\\layout\\Footer.tsx"

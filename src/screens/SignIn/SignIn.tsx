@@ -193,23 +193,24 @@ export const SignIn = (): JSX.Element => {
 
       <main className="nb-page flex-1 px-4 py-10 lg:py-14 nb-fade-in">
         <div className="mx-auto w-full max-w-6xl">
-          <div className="nb-card-static overflow-hidden rounded-2xl">
+          <div className="nb-card-static overflow-hidden rounded-2xl ring-2 ring-[#B8A9E8]/35 shadow-[8px_8px_0_#1A1A2E] nb-reveal-pop">
             <div className="flex flex-col lg:flex-row">
               {/* LEFT — Form */}
               <div className="lg:w-[52%] flex items-center justify-center p-6 lg:p-12 bg-white">
                 <div className="w-full max-w-[26rem]">
-                  <h1 className="font-extrabold text-[#1A1A2E] text-3xl lg:text-4xl text-center mb-6 lg:mb-8">
-                    Đăng nhập ✦
+                  <h1 className="font-extrabold text-[#1A1A2E] text-3xl lg:text-4xl text-center mb-6 lg:mb-8 tracking-tight">
+                    <span>Đăng nhập</span>{" "}
+                    <span className="inline-block text-[#7C3AED]">✦</span>
                   </h1>
 
                   <button
                     type="button"
                     onClick={() => handleGoogleLogin()}
                     disabled={isGoogleLoading}
-                    className="nb-btn nb-btn-outline w-full h-auto py-3 lg:py-4 text-sm lg:text-base"
+                    className="group w-full inline-flex items-center justify-center gap-2 rounded-lg border-2 border-[#1A1A2E] bg-gradient-to-r from-white via-[#FAF9FF] to-[#F1EDFF] px-4 py-3 lg:py-4 text-sm lg:text-base font-bold text-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E] transition-all hover:-translate-y-px hover:border-[#7C3AED] hover:shadow-[5px_5px_0_#1A1A2E] hover:bg-[#FCFAFF] active:translate-y-px active:shadow-[2px_2px_0_#1A1A2E] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B8A9E8]/55 focus-visible:ring-offset-0 disabled:opacity-60 disabled:cursor-not-allowed"
                   >
                     <img
-                      className="w-6 lg:w-7 h-6 lg:h-7"
+                      className="w-6 lg:w-7 h-6 lg:h-7 nb-icon-wiggle"
                       alt="Google"
                       src="https://c.animaapp.com/mjxt3t8wNP0otU/img/flat-color-icons-google.svg"
                     />
@@ -236,7 +237,7 @@ export const SignIn = (): JSX.Element => {
                         placeholder="Nhập email của bạn"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="nb-input w-full h-11 lg:h-12"
+                        className="nb-input w-full h-11 lg:h-12 border-2 border-[#1A1A2E] bg-white shadow-[3px_3px_0_#1A1A2E] transition-all hover:-translate-y-px hover:border-[#7C3AED] hover:shadow-[5px_5px_0_#1A1A2E] hover:bg-[#FCFAFF] active:translate-y-px active:shadow-[2px_2px_0_#1A1A2E] focus:border-[#7C3AED] focus:bg-[#FCFAFF] focus:shadow-[2px_2px_0_#1A1A2E] focus:ring-2 focus:ring-[#B8A9E8]/55 focus:ring-offset-0"
                       />
                     </div>
 
@@ -244,13 +245,13 @@ export const SignIn = (): JSX.Element => {
                       <Label className="font-bold text-[#1A1A2E] text-sm">
                         Mật khẩu
                       </Label>
-                      <div className="relative">
+                      <div className="group relative">
                         <Input
                           type={showPassword ? "text" : "password"}
                           placeholder="Nhập mật khẩu của bạn"
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
-                          className="nb-input w-full h-11 lg:h-12 pr-12"
+                          className="nb-input w-full h-11 lg:h-12 pr-12 border-2 border-[#1A1A2E] bg-white shadow-[3px_3px_0_#1A1A2E] transition-all hover:-translate-y-px hover:border-[#7C3AED] hover:shadow-[5px_5px_0_#1A1A2E] hover:bg-[#FCFAFF] active:translate-y-px active:shadow-[2px_2px_0_#1A1A2E] focus:border-[#7C3AED] focus:bg-[#FCFAFF] focus:shadow-[2px_2px_0_#1A1A2E] focus:ring-2 focus:ring-[#B8A9E8]/55 focus:ring-offset-0"
                           onKeyDown={(e) => {
                             if (e.key === "Enter") handleSignIn();
                           }}
@@ -259,7 +260,7 @@ export const SignIn = (): JSX.Element => {
                         <button
                           type="button"
                           onClick={() => setShowPassword((prev) => !prev)}
-                          className="absolute right-4 top-1/2 -translate-y-1/2 text-[#4C5769] hover:text-[#1A1A2E] transition-colors"
+                          className="absolute right-4 top-1/2 -translate-y-1/2 text-[#4C5769] transition-colors group-hover:text-[#1A1A2E] hover:text-[#7C3AED]"
                           aria-label="Toggle password visibility"
                         >
                           {showPassword ? (
@@ -280,13 +281,15 @@ export const SignIn = (): JSX.Element => {
                       </Link>
                     </div>
 
-                    <button
+                  <button
                       type="button"
                       onClick={handleSignIn}
                       disabled={isLoading}
-                      className="nb-btn nb-btn-purple w-full h-14 lg:h-16 text-lg lg:text-xl mt-3 lg:mt-5 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="group relative w-full h-14 lg:h-16 mt-3 lg:mt-5 inline-flex items-center justify-center rounded-lg border-2 border-[#1A1A2E] bg-gradient-to-r from-[#A78BFA] via-[#C4B5FD] to-[#7C3AED] text-lg lg:text-xl font-extrabold text-[#1A1A2E] shadow-[5px_5px_0_#1A1A2E] transition-all hover:-translate-y-[2px] hover:shadow-[7px_7px_0_#1A1A2E] hover:brightness-110 active:translate-y-px active:shadow-[3px_3px_0_#1A1A2E] disabled:opacity-50 disabled:cursor-not-allowed nb-pulse-ring"
                     >
-                      {isLoading ? "Đang đăng nhập..." : "Đăng nhập ✦"}
+                    <span className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_18%,rgba(255,255,255,0.7),transparent_45%)] opacity-80 transition-opacity duration-200 group-hover:opacity-100" />
+                    <span className="pointer-events-none absolute inset-0 bg-[linear-gradient(110deg,transparent_30%,rgba(255,255,255,0.58)_50%,transparent_70%)] bg-[length:220%_100%] animate-[nb-shimmer_2.6s_linear_infinite]" />
+                      <span className="relative z-[1]">{isLoading ? "Đang đăng nhập..." : "Đăng nhập ✦"}</span>
                     </button>
 
                     <p className="text-center font-medium text-sm lg:text-base">
@@ -303,25 +306,25 @@ export const SignIn = (): JSX.Element => {
               </div>
 
               {/* RIGHT — Hero illustration with NB border */}
-              <div className="lg:w-[48%] relative overflow-hidden bg-[#B8A9E8] p-8 lg:p-12 flex items-center justify-center border-l-0 lg:border-l-2 border-t-2 lg:border-t-0 border-[#1A1A2E]">
+              <div className="lg:w-[48%] relative overflow-hidden bg-gradient-to-br from-[#B8A9E8] via-[#B29BE7] to-[#9B86DF] p-8 lg:p-12 flex items-center justify-center border-l-0 lg:border-l-2 border-t-2 lg:border-t-0 border-[#1A1A2E] nb-hero-glow">
                 {/* Decorative NB shapes */}
-                <div className="absolute top-6 left-6 w-16 h-16 bg-[#C8E44D] border-2 border-[#1A1A2E] rounded-lg shadow-[3px_3px_0_#1A1A2E] rotate-12 opacity-60" />
-                <div className="absolute bottom-12 left-10 w-12 h-12 bg-[#F5E642] border-2 border-[#1A1A2E] rounded-full shadow-[3px_3px_0_#1A1A2E] opacity-50" />
-                <div className="absolute top-[40%] right-6 w-10 h-10 bg-[#F5C6C2] border-2 border-[#1A1A2E] rounded-lg shadow-[2px_2px_0_#1A1A2E] -rotate-6 opacity-60" />
+                <div className="absolute top-6 left-6 w-16 h-16 bg-[#C8E44D] border-2 border-[#1A1A2E] rounded-lg shadow-[4px_4px_0_#1A1A2E] rotate-12 opacity-85 nb-float" />
+                <div className="absolute bottom-12 left-10 w-12 h-12 bg-[#F5E642] border-2 border-[#1A1A2E] rounded-full shadow-[4px_4px_0_#1A1A2E] opacity-70 nb-float-delay" />
+                <div className="absolute top-[40%] right-6 w-10 h-10 bg-[#F5C6C2] border-2 border-[#1A1A2E] rounded-lg shadow-[3px_3px_0_#1A1A2E] -rotate-6 opacity-80 nb-float-slow" />
 
                 <div className="relative z-10 w-full max-w-md text-right">
                   <img
-                    className="w-14 lg:w-16 h-auto mb-4 ml-auto"
+                    className="w-14 lg:w-16 h-auto mb-4 ml-auto nb-logo-hero"
                     alt="Vtos logo"
                     src="https://c.animaapp.com/mjxt3t8wNP0otU/img/vtos--1--removebg-preview-2-1.png"
                   />
 
-                  <p className="font-extrabold text-[#1A1A2E] text-xl lg:text-3xl leading-relaxed mb-6">
+                  <p className="font-extrabold text-[#1A1A2E] text-xl lg:text-3xl leading-relaxed mb-6 drop-shadow-[0_2px_0_rgba(255,255,255,0.35)] nb-reveal-pop">
                     Hỗ trợ hơn 200 mẫu đồng phục ✦
                   </p>
 
                   <img
-                    className="w-full max-w-[22rem] lg:max-w-[26rem] h-auto ml-auto drop-shadow-[4px_4px_0_rgba(26,26,46,0.3)]"
+                    className="w-full max-w-[22rem] lg:max-w-[26rem] h-auto ml-auto drop-shadow-[8px_8px_0_rgba(26,26,46,0.38)] nb-float-slow"
                     alt="Students"
                     src="https://c.animaapp.com/mjxt3t8wNP0otU/img/vtos--3--removebg-preview-1.png"
                   />

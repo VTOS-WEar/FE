@@ -81,7 +81,7 @@ export function NavbarGuest() {
 
   const navItems = [
     { label: "Trang chủ", type: "route", to: "/homepage" },
-    { label: "Cách hoạt động", type: "anchor", href: "/homepage#how-it-works" },
+    { label: "Cách hoạt động", type: "route", to: "/huong-dan-try-on" },
   ] as const
   const parentProfileItems = [
     { label: "Tài khoản", to: "/parentprofile/account", icon: User },
@@ -109,12 +109,12 @@ export function NavbarGuest() {
 
   /* ── NB style tokens ── */
   const nbNavLink = "flex h-10 items-center rounded-lg px-3 lg:px-4 text-sm font-bold transition-all duration-150"
-  const nbNavLinkActive = "bg-[#1A1A2E] text-white shadow-[2px_2px_0_#1A1A2E]"
+  const nbNavLinkActive = "bg-[#1A1A2E] text-white ring-1 ring-[#1A1A2E] shadow-none"
   const nbNavLinkIdle = "text-[#1A1A2E] hover:bg-[#1A1A2E]/5"
-  const nbIconBtn = "relative flex h-10 w-10 items-center justify-center rounded-lg border-2 border-[#1A1A2E] bg-white shadow-[2px_2px_0_#1A1A2E] transition-all duration-150 hover:shadow-[3px_3px_0_#1A1A2E] hover:-translate-y-[1px] active:shadow-none active:translate-y-0"
+  const nbIconBtn = "relative flex h-10 w-10 items-center justify-center rounded-lg border border-[#1A1A2E] bg-white shadow-[2px_2px_0_#1A1A2E] transition-all duration-150 hover:shadow-[3px_3px_0_#1A1A2E] hover:-translate-y-[1px] active:shadow-none active:translate-y-0"
 
   return (
-    <nav className="sticky top-0 z-50 bg-[#FFF8F0] py-2">
+    <nav className="sticky top-0 z-50 border-b border-[#1A1A2E]/15 bg-[#FFF8F0]/95 py-2 backdrop-blur supports-[backdrop-filter]:bg-[#FFF8F0]/90">
       <div className="mx-auto w-full max-w-[1240px] px-3 sm:px-4 lg:px-6">
         <div className="flex h-16 items-center justify-between gap-2 sm:gap-3 lg:gap-5">
           <div className="flex items-center gap-4">
@@ -142,7 +142,7 @@ export function NavbarGuest() {
           </div>
 
           {/* ── Desktop Nav Bar ── */}
-          <div className="hidden w-full max-w-[760px] items-center rounded-xl border-2 border-[#1A1A2E] bg-white px-2 py-1 shadow-[4px_4px_0_#1A1A2E] lg:flex">
+          <div className="hidden w-full max-w-[760px] items-center rounded-xl border border-[#1A1A2E] bg-white px-2 py-1 shadow-[4px_4px_0_#1A1A2E] lg:flex">
             <div className="flex items-center gap-1">
               {navItems.map((item) => {
                 if (item.type === "route") {
@@ -220,7 +220,7 @@ export function NavbarGuest() {
 
             <div className="flex min-w-0 flex-1 items-center gap-2">
               <Input placeholder="Tìm kiếm..." className="h-9 border-none bg-transparent text-sm font-medium shadow-none focus-visible:ring-0 placeholder:text-[#9CA3AF]" />
-              <button type="button" className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg border-2 border-[#1A1A2E] bg-[#1A1A2E] text-white shadow-[2px_2px_0_#6B7280] transition-all duration-150 hover:shadow-[3px_3px_0_#6B7280] hover:-translate-y-[1px] active:shadow-none active:translate-y-0">
+              <button type="button" className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg border border-[#1A1A2E] bg-[#1A1A2E] text-white shadow-[2px_2px_0_#6B7280] transition-all duration-150 hover:shadow-[3px_3px_0_#6B7280] hover:-translate-y-[1px] active:shadow-none active:translate-y-0">
                 <Search size={16} />
               </button>
             </div>
@@ -313,10 +313,12 @@ export function NavbarGuest() {
               <button
                 type="button"
                 onClick={() => navigate("/signin")}
-                className="hidden h-10 items-center gap-2 rounded-xl border-2 border-[#1A1A2E] bg-white px-4 font-bold text-sm text-[#1A1A2E] shadow-[3px_3px_0_#1A1A2E] transition-all duration-150 hover:-translate-y-[1px] hover:shadow-[4px_4px_0_#1A1A2E] active:shadow-none active:translate-y-0 lg:flex"
+                className="group relative hidden h-10 items-center gap-2 overflow-hidden rounded-xl border border-[#1A1A2E] bg-gradient-to-r from-[#C8E44D] via-[#FDE68A] to-[#EDE9FE] px-4 font-bold text-sm text-[#1A1A2E] shadow-[3px_3px_0_#1A1A2E] transition-all duration-150 hover:-translate-y-[1px] hover:shadow-[5px_5px_0_#1A1A2E] active:shadow-none active:translate-y-0 lg:flex"
               >
-                <LogIn size={14} />
-                <span>Đăng nhập</span>
+                <span className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.55),transparent_40%)] opacity-80 transition-opacity duration-150 group-hover:opacity-100" />
+                <LogIn size={14} className="relative" />
+                <span className="relative">Đăng nhập</span>
+                <span className="relative text-[11px] leading-none">✦</span>
               </button>
             )}
           </div>

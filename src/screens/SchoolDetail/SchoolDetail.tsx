@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { MapPin, Phone, Mail, Calendar, GraduationCap, ArrowRight, Shirt, Building2, CheckCircle, Copy } from "lucide-react";
 import { GuestLayout } from "../../components/layout/GuestLayout";
+import { PublicPageBreadcrumb } from "@/components/PublicPageBreadcrumb";
 import { getPublicSchoolDetail, getSchoolUniforms, parseContactInfo, type PublicSchoolDetailDto } from "../../lib/api/schools";
 import { motion, AnimatePresence, useInView } from "framer-motion";
 
@@ -176,12 +177,14 @@ export const SchoolDetail = (): JSX.Element => {
       <div className="relative z-10 max-w-[1100px] mx-auto px-6 lg:px-8 py-10 min-h-screen">
 
         {/* Breadcrumb */}
-        <motion.div custom={0} variants={fadeUp} initial="hidden" animate="visible" className="mb-6 text-sm font-bold text-[#6B7280]">
-          <a href="/" className="hover:text-[#B8A9E8] transition-colors">Trang chủ</a>
-          <span className="mx-2">→</span>
-          <a href="/schools" className="hover:text-[#B8A9E8] transition-colors">Danh sách trường</a>
-          <span className="mx-2">→</span>
-          <span className="text-[#1A1A2E]">{school.schoolName}</span>
+        <motion.div custom={0} variants={fadeUp} initial="hidden" animate="visible" className="mb-6">
+          <PublicPageBreadcrumb
+            items={[
+              { label: "Trang chủ", to: "/homepage" },
+              { label: "Danh sách trường", to: "/schools" },
+              { label: school.schoolName },
+            ]}
+          />
         </motion.div>
 
         {/* ═══ HERO CARD ═══ */}
