@@ -53,6 +53,8 @@ import { OrdersTab } from "./screens/ParentProfile/tabs/OrdersTab";
 import { HistoryTab } from "./screens/ParentProfile/tabs/HistoryTab";
 import { ReviewsTab } from "./screens/ParentProfile/tabs/ReviewsTab";
 import { SettingsTab } from "./screens/ParentProfile/tabs/SettingsTab";
+import { FeedbackPage } from "./screens/ParentProfile/pages/FeedbackPage";
+import { OrderDetailPage } from "./screens/ParentProfile/pages/OrderDetailPage";
 import SchoolWallet from "./screens/SchoolWallet/SchoolWallet";
 import ProviderRevenue from "./screens/ProviderRevenue/ProviderRevenue";
 import ProviderWallet from "./screens/ProviderWallet/ProviderWallet";
@@ -141,6 +143,8 @@ const router = createBrowserRouter([
       { path: "history",  element: <HistoryTab /> },
       { path: "reviews",  element: <ReviewsTab /> },
       { path: "settings", element: <SettingsTab /> },
+      { path: "feedback", element: <FeedbackPage /> },
+      { path: "orders/:orderId", element: <OrderDetailPage /> },
     ],
   },
   {

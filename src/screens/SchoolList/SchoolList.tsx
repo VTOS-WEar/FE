@@ -494,7 +494,7 @@ const SchoolList = () => {
                       {/* Image */}
                       <div className="relative aspect-[4/3] overflow-hidden">
                         <img
-                          src={"https://i.pinimg.com/1200x/95/4a/d9/954ad94edd7118ca3a5eb38b73087363.jpg"}
+                          src={school.logoURL || "https://i.pinimg.com/1200x/95/4a/d9/954ad94edd7118ca3a5eb38b73087363.jpg"}
                           alt={school.schoolName}
                           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                         />
