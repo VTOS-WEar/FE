@@ -61,6 +61,14 @@ export async function createContract(payload: CreateContractRequest): Promise<Co
     });
 }
 
+/** School cancels a Pending contract (before Provider accepts). */
+export async function cancelSchoolContract(id: string): Promise<void> {
+    return api<void>(`${endpoints.schools.me}/contracts/${id}/cancel`, {
+        method: "PUT",
+        auth: true,
+    });
+}
+
 // ── Provider Contract APIs ──
 
 export async function getProviderContracts(status?: string): Promise<ContractDto[]> {

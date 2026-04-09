@@ -1,4 +1,5 @@
 import { endpoints } from "./endpoints";
+import { api } from "./clients";
 
 export type GuestTryOnResponse = {
     tryOnId: string;
@@ -10,6 +11,7 @@ export type GuestTryOnResponse = {
 /**
  * Call virtual try-on API with a user photo and outfit ID.
  * Uses multipart/form-data (not JSON).
+ * Works for both guests and logged-in parents.
  */
 export async function guestTryOn(
     outfitId: string,
@@ -25,7 +27,7 @@ export async function guestTryOn(
         formData.append("GuestSessionId", guestSessionId);
     }
 
-    const res = await fetch(`${import.meta.env.VITE_API_BASE || ""}${endpoints.tryOn.guest}`, {
+    const res = await fetch(`${import.meta.env.VITE_API_BASE || ""}${endpoints.tryOn.request}`, {
         method: "POST",
         body: formData,
         headers: token ? { Authorization: `Bearer ${token}` } : {},
@@ -42,3 +44,32 @@ export async function guestTryOn(
     return res.json();
 }
 
+// ── Try-On History (Parent only) ──
+
+export type TryOnHistoryDto = {
+    id: string;
+    outfitId: string;
+    outfitName: string;
+    outfitImage: string | null;
+    resultPhotoUrl: string | null;
+    uploadedPhotoUrl: string | null;
+    tryOnTimestamp: string;
+};
+
+export type TryOnHistoryResponse = {
+    items: TryOnHistoryDto[];
+    total: number;
+    page: number;
+    pageSize: number;
+};
+
+export async function getTryOnHistory(
+    page = 1,
+    pageSize = 20
+): Promise<TryOnHistoryResponse> {
+    const params = new URLSearchParams({ page: String(page), pageSize: String(pageSize) });
+    return api<TryOnHistoryResponse>(`${endpoints.tryOn.history}?${params}`, {
+        method: "GET",
+        auth: true,
+    });
+}

@@ -1,6 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { HubConnectionBuilder, HubConnectionState, LogLevel } from "@microsoft/signalr";
-import { getChatMessages, sendChatMessage, type ChatMessageDto } from "../../lib/api/chat";
+import {
+    getChatMessages, sendChatMessage, sendUniformProposal, acceptUniformProposal,
+    type ChatMessageDto,
+} from "../../lib/api/chat";
 
 export type ChatContextInfo = {
     icon: string;
@@ -24,6 +27,12 @@ function getAccessToken(): string {
     return localStorage.getItem("access_token") || sessionStorage.getItem("access_token") || "";
 }
 
+function getCurrentUserRole(): string {
+    const raw = localStorage.getItem("user") || sessionStorage.getItem("user");
+    try { if (raw) return JSON.parse(raw).role || ""; } catch { /* ignore */ }
+    return "";
+}
+
 export function ChatWidget({ channelType, channelId, isOpen, onClose, contextInfo }: ChatWidgetProps) {
     const [messages, setMessages] = useState<ChatMessageDto[]>([]);
     const [newMsg, setNewMsg] = useState("");
@@ -33,6 +42,18 @@ export function ChatWidget({ channelType, channelId, isOpen, onClose, contextInf
     const bottomRef = useRef<HTMLDivElement>(null);
     const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
     const connectionRef = useRef<ReturnType<typeof buildConnection> | null>(null);
+
+    // Proposal form state (Provider only)
+    const [showProposalForm, setShowProposalForm] = useState(false);
+    const [proposalName, setProposalName] = useState("");
+    const [proposalImage, setProposalImage] = useState<File | null>(null);
+    const [sendingProposal, setSendingProposal] = useState(false);
+    const [acceptingId, setAcceptingId] = useState<string | null>(null);
+
+    const userRole = getCurrentUserRole();
+    const isProvider = userRole === "Provider";
+    const isSchool = userRole === "School";
+    const isContractChat = channelType === "contract";
 
     function buildConnection() {
         return new HubConnectionBuilder()
@@ -53,8 +74,6 @@ export function ChatWidget({ channelType, channelId, isOpen, onClose, contextInf
         connectionRef.current = connection;
 
         connection.on("ReceiveMessage", (msg: ChatMessageDto) => {
-            // Fix: Backend broadcasts IsMe=false for all clients.
-            // We override by comparing senderUserId with current user.
             const raw = localStorage.getItem("user") || sessionStorage.getItem("user");
             let currentUserId = "";
             try { if (raw) currentUserId = JSON.parse(raw).userId || JSON.parse(raw).id || ""; } catch { /* ignore */ }
@@ -94,9 +113,125 @@ export function ChatWidget({ channelType, channelId, isOpen, onClose, contextInf
         finally { setSending(false); }
     };
 
+    const handleSendProposal = async () => {
+        if (!proposalName.trim() || !proposalImage || sendingProposal) return;
+        setSendingProposal(true);
+        try {
+            await sendUniformProposal(channelId, proposalName.trim(), proposalImage);
+            setProposalName(""); setProposalImage(null); setShowProposalForm(false);
+            if (!connected) await fetchMessages();
+        } catch (e: any) { alert(e.message || "Lỗi gửi đề xuất"); }
+        finally { setSendingProposal(false); }
+    };
+
+    const handleAcceptProposal = async (messageId: string) => {
+        if (!confirm("Chấp nhận đề xuất này? Đồng phục sẽ được tạo trong danh mục trường.")) return;
+        setAcceptingId(messageId);
+        try {
+            await acceptUniformProposal(messageId);
+            await fetchMessages();
+        } catch (e: any) { alert(e.message || "Lỗi chấp nhận đề xuất"); }
+        finally { setAcceptingId(null); }
+    };
+
     const handleKeyDown = (e: React.KeyboardEvent) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(); } };
 
     if (!isOpen) return null;
+
+    // ── Render a single message ──
+    const renderMessage = (m: ChatMessageDto) => {
+        const msgType = m.messageType || "Text";
+
+        // System notification
+        if (msgType === "SystemNotification") {
+            return (
+                <div key={m.messageId} className="flex justify-center my-2">
+                    <div className="px-3 py-2 rounded-lg bg-[#EDE9FE] border border-[#1A1A2E]/20 text-xs text-center max-w-[85%]">
+                        {m.imageUrl && (
+                            <img src={m.imageUrl} alt="" className="w-16 h-16 rounded-lg object-cover mx-auto mb-2 border border-[#1A1A2E]/30" />
+                        )}
+                        <span className="font-semibold text-[#6938EF]">{m.content}</span>
+                        <p className="text-[10px] text-[#9CA3AF] mt-1">
+                            {new Date(m.sentAt).toLocaleTimeString("vi", { hour: "2-digit", minute: "2-digit" })}
+                        </p>
+                    </div>
+                </div>
+            );
+        }
+
+        // Uniform proposal card
+        if (msgType === "UniformProposal") {
+            const isPending = m.proposalStatus === "Pending";
+            const isAccepted = m.proposalStatus === "Accepted";
+            return (
+                <div key={m.messageId} className={`max-w-[85%] ${m.isMe ? "self-end" : "self-start"}`}>
+                    {!m.isMe && <span className="text-[11px] text-[#6B7280] mb-0.5 block font-bold">{m.senderName}</span>}
+                    <div className={`rounded-xl border-2 border-[#1A1A2E] overflow-hidden shadow-[3px_3px_0_#1A1A2E] ${
+                        m.isMe ? "bg-[#F3F0FF]" : "bg-white"
+                    }`}>
+                        {/* Proposal header */}
+                        <div className="px-3 py-2 bg-[#6938EF]/10 border-b border-[#1A1A2E]/20 flex items-center gap-2">
+                            <span className="text-sm">📋</span>
+                            <span className="text-[11px] font-extrabold text-[#6938EF] uppercase tracking-wider">Đề xuất đồng phục</span>
+                            {isAccepted && (
+                                <span className="ml-auto text-[10px] font-bold bg-[#D1FAE5] text-[#065F46] px-2 py-0.5 rounded-full border border-[#065F46]/30">
+                                    ✓ Đã chấp nhận
+                                </span>
+                            )}
+                            {isPending && (
+                                <span className="ml-auto text-[10px] font-bold bg-[#FEF3C7] text-[#92400E] px-2 py-0.5 rounded-full border border-[#92400E]/30">
+                                    Chờ duyệt
+                                </span>
+                            )}
+                        </div>
+                        {/* Image */}
+                        {m.imageUrl && (
+                            <div className="aspect-[4/3] overflow-hidden bg-[#F6F1E8]">
+                                <img src={m.imageUrl} alt={m.proposalOutfitName || ""} className="w-full h-full object-cover" />
+                            </div>
+                        )}
+                        {/* Info */}
+                        <div className="px-3 py-2.5">
+                            <p className="font-bold text-[#1A1A2E] text-sm truncate">{m.proposalOutfitName || "N/A"}</p>
+                            <p className="text-[11px] text-[#6B7280] mt-0.5">{m.content}</p>
+                        </div>
+                        {/* Accept button (School only, Pending only) */}
+                        {isSchool && isPending && !m.isMe && (
+                            <div className="px-3 pb-3">
+                                <button
+                                    onClick={() => handleAcceptProposal(m.messageId)}
+                                    disabled={acceptingId === m.messageId}
+                                    className="w-full nb-btn nb-btn-green text-xs disabled:opacity-50"
+                                >
+                                    {acceptingId === m.messageId ? "Đang xử lý..." : "✓ Chấp nhận đề xuất"}
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                    <span className={`text-[10px] text-[#9CA3AF] mt-0.5 block ${m.isMe ? "text-right" : "text-left"}`}>
+                        {new Date(m.sentAt).toLocaleTimeString("vi", { hour: "2-digit", minute: "2-digit" })}
+                    </span>
+                </div>
+            );
+        }
+
+        // Normal text message
+        return (
+            <div key={m.messageId} className={`max-w-[80%] ${m.isMe ? "self-end" : "self-start"}`}>
+                {!m.isMe && <span className="text-[11px] text-[#6B7280] mb-0.5 block font-bold">{m.senderName}</span>}
+                <div className={`px-3.5 py-2.5 text-sm leading-relaxed border-2 border-[#1A1A2E] ${
+                    m.isMe
+                        ? "bg-[#6938EF] text-white rounded-xl rounded-br-sm shadow-[2px_2px_0_#1A1A2E]"
+                        : "bg-white text-[#1A1A2E] rounded-xl rounded-bl-sm shadow-[2px_2px_0_#1A1A2E]"
+                }`}>
+                    {m.content}
+                </div>
+                <span className={`text-[10px] text-[#9CA3AF] mt-0.5 block ${m.isMe ? "text-right" : "text-left"}`}>
+                    {new Date(m.sentAt).toLocaleTimeString("vi", { hour: "2-digit", minute: "2-digit" })}
+                </span>
+            </div>
+        );
+    };
 
     return (
         <div className="fixed bottom-6 right-6 w-[400px] h-[520px] flex flex-col z-[9999] border-2 border-[#1A1A2E] rounded-xl shadow-[6px_6px_0_#1A1A2E] bg-white overflow-hidden">
@@ -143,27 +278,52 @@ export function ChatWidget({ channelType, channelId, isOpen, onClose, contextInf
                         <p className="text-sm text-[#9CA3AF]">Chưa có tin nhắn nào. Gửi tin nhắn đầu tiên!</p>
                     </div>
                 ) : (
-                    messages.map(m => (
-                        <div key={m.messageId} className={`max-w-[80%] ${m.isMe ? "self-end" : "self-start"}`}>
-                            {!m.isMe && <span className="text-[11px] text-[#6B7280] mb-0.5 block font-bold">{m.senderName}</span>}
-                            <div className={`px-3.5 py-2.5 text-sm leading-relaxed border-2 border-[#1A1A2E] ${
-                                m.isMe
-                                    ? "bg-[#6938EF] text-white rounded-xl rounded-br-sm shadow-[2px_2px_0_#1A1A2E]"
-                                    : "bg-white text-[#1A1A2E] rounded-xl rounded-bl-sm shadow-[2px_2px_0_#1A1A2E]"
-                            }`}>
-                                {m.content}
-                            </div>
-                            <span className={`text-[10px] text-[#9CA3AF] mt-0.5 block ${m.isMe ? "text-right" : "text-left"}`}>
-                                {new Date(m.sentAt).toLocaleTimeString("vi", { hour: "2-digit", minute: "2-digit" })}
-                            </span>
-                        </div>
-                    ))
+                    messages.map(renderMessage)
                 )}
                 <div ref={bottomRef} />
             </div>
 
+            {/* Proposal form (Provider only, contract chats) */}
+            {showProposalForm && isProvider && isContractChat && (
+                <div className="px-4 py-3 border-t-2 border-[#1A1A2E] bg-[#EDE9FE] space-y-2">
+                    <div className="flex items-center justify-between">
+                        <span className="text-xs font-extrabold text-[#6938EF]">📋 Gửi đề xuất đồng phục</span>
+                        <button onClick={() => { setShowProposalForm(false); setProposalName(""); setProposalImage(null); }}
+                            className="text-xs font-bold text-[#9CA3AF] hover:text-[#1A1A2E]">✕</button>
+                    </div>
+                    <input
+                        value={proposalName}
+                        onChange={e => setProposalName(e.target.value)}
+                        placeholder="Tên đồng phục..."
+                        className="nb-input w-full text-xs"
+                    />
+                    <div className="flex items-center gap-2">
+                        <label className="flex-1 cursor-pointer">
+                            <div className="nb-input text-xs text-center py-1.5 truncate">
+                                {proposalImage ? proposalImage.name : "📎 Chọn ảnh đồng phục..."}
+                            </div>
+                            <input type="file" accept="image/jpeg,image/png,image/webp" className="hidden"
+                                onChange={e => { const f = e.target.files?.[0]; if (f) setProposalImage(f); }} />
+                        </label>
+                        <button
+                            onClick={handleSendProposal}
+                            disabled={!proposalName.trim() || !proposalImage || sendingProposal}
+                            className="nb-btn nb-btn-purple nb-btn-sm text-xs disabled:opacity-50"
+                        >
+                            {sendingProposal ? "..." : "Gửi"}
+                        </button>
+                    </div>
+                </div>
+            )}
+
             {/* Input — NB styled */}
             <div className="px-4 py-3 border-t-2 border-[#1A1A2E] flex gap-2 bg-white">
+                {isProvider && isContractChat && !showProposalForm && (
+                    <button onClick={() => setShowProposalForm(true)}
+                        className="nb-btn nb-btn-outline nb-btn-sm text-xs flex-shrink-0" title="Gửi đề xuất đồng phục">
+                        📋
+                    </button>
+                )}
                 <input
                     value={newMsg} onChange={e => setNewMsg(e.target.value)} onKeyDown={handleKeyDown}
                     placeholder="Nhập tin nhắn..."
