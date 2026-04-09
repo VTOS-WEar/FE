@@ -213,8 +213,8 @@ export function ProviderProductionOrders() {
                                     >
                                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                                             <div className="flex-1 min-w-0">
-                                                <h3 className="font-bold text-[#1A1A2E] text-base">{o.batchName}</h3>
-                                                <p className="font-medium text-[#9CA3AF] text-sm mt-1">
+                                                <h3 className="font-bold text-[#1A1A2E] text-base truncate">{o.batchName}</h3>
+                                                <p className="font-medium text-[#9CA3AF] text-sm mt-1 truncate">
                                                     Chiến dịch: <strong className="text-[#6B7280]">{o.campaignName}</strong> &nbsp;·&nbsp;
                                                     Trường: <strong className="text-[#6B7280]">{o.schoolName || "—"}</strong> &nbsp;·&nbsp;
                                                     SL: <strong className="text-[#6B7280]">{o.totalQuantity}</strong> &nbsp;·&nbsp;
@@ -252,7 +252,7 @@ export function ProviderProductionOrders() {
                             <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[1000] p-4">
                                 <div className="bg-white rounded-md border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E] p-8 w-full max-w-[700px] max-h-[85vh] overflow-auto">
                                     <div className="flex items-center justify-between mb-5">
-                                        <h2 className="font-extrabold text-[#1A1A2E] text-xl">📋 {detail.batchName}</h2>
+                                        <h2 className="font-extrabold text-[#1A1A2E] text-xl truncate" title={detail.batchName}>📋 {detail.batchName}</h2>
                                         <span className={STATUS_MAP[detail.status]?.badge || "nb-badge"}>
                                             {STATUS_MAP[detail.status]?.label || detail.status}
                                         </span>
@@ -356,7 +356,7 @@ export function ProviderProductionOrders() {
                                                                             <span className="text-[#9CA3AF] text-xs ml-2">
                                                                                 {new Date(d.deliveredAt).toLocaleDateString("vi")}
                                                                             </span>
-                                                                            {d.note && <p className="text-[#6B7280] text-sm mt-1">📝 {d.note}</p>}
+                                                                            {d.note && <p className="text-[#6B7280] text-sm mt-1 line-clamp-3">📝 {d.note}</p>}
                                                                         </div>
                                                                         {d.isConfirmed ? (
                                                                             <div className="text-right">
@@ -427,7 +427,7 @@ export function ProviderProductionOrders() {
                                                                             <span className={`ml-2 text-xs font-bold px-2 py-0.5 rounded-full border ${s.method === "AtHome" ? "bg-[#DBEAFE] text-[#2563EB] border-[#93C5FD]" : "bg-[#DCFCE7] text-[#16A34A] border-[#86EFAC]"}`}>
                                                                                 {s.method === "AtHome" ? "🏠 Giao nhà" : "🏫 Tại trường"}
                                                                             </span>
-                                                                            {s.note && <p className="text-[#6B7280] text-sm mt-1">📝 {s.note}</p>}
+                                                                            {s.note && <p className="text-[#6B7280] text-sm mt-1 line-clamp-3">📝 {s.note}</p>}
                                                                         </div>
                                                                         <span className={s.status === "Completed" ? "nb-badge nb-badge-green text-xs" : "nb-badge nb-badge-yellow text-xs"}>
                                                                             {s.status === "Completed" ? "✅ Hoàn thành" : "📋 Kế hoạch"}
@@ -490,6 +490,7 @@ export function ProviderProductionOrders() {
                                         placeholder="Nhập lý do từ chối..."
                                         rows={3}
                                         className="nb-input w-full resize-y"
+                                        maxLength={500}
                                     />
                                     <div className="flex gap-3 mt-4">
                                         <button onClick={() => { setShowReject(false); setRejectReason(""); }} className="nb-btn nb-btn-outline flex-1">Hủy</button>
@@ -538,6 +539,7 @@ export function ProviderProductionOrders() {
                                                 placeholder="VD: Đợt 1 gồm áo sơ mi size S-M..."
                                                 rows={2}
                                                 className="nb-input w-full resize-y"
+                                                maxLength={500}
                                             />
                                         </div>
                                     </div>
@@ -562,7 +564,7 @@ function InfoBox({ label, value }: { label: string; value: string }) {
     return (
         <div className="bg-[#F8FAFC] border-2 border-[#E5E7EB] rounded-lg p-3">
             <p className="text-xs font-bold text-[#9CA3AF] uppercase mb-1">{label}</p>
-            <p className="text-sm font-bold text-[#1A1A2E]">{value}</p>
+            <p className="text-sm font-bold text-[#1A1A2E] truncate" title={value}>{value}</p>
         </div>
     );
 }

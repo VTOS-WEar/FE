@@ -76,6 +76,8 @@
   background: var(--nb-bg-page);
   min-height: 100vh;
   width: 100%;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -972,6 +974,57 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* Badge text safety — never exceed container */
+.nb-badge {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Alert body text — allow wrap but clamp to 6 lines max */
+.nb-alert > span:last-child,
+.nb-alert > div:last-child {
+  display: -webkit-box;
+  -webkit-line-clamp: 6;
+  line-clamp: 6;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-width: 0;
+}
+
+/* Stat card value — never wrap, truncate if needed */
+.nb-stat-value {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Expandable text utility — "Read more / Read less" pattern */
+.nb-expandable {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.nb-expandable.nb-expanded {
+  display: block;
+  -webkit-line-clamp: unset;
+  line-clamp: unset;
+}
+
+/* Multi-line truncation (4 lines) */
+.nb-line-clamp-4 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+  -webkit-box-orient: vertical;
 }
 
 /* School card hover wobble */

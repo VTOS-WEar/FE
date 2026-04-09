@@ -572,11 +572,18 @@ export const OutfitDetail = (): JSX.Element => {
               {fmt(displayPrice)}
             </p>
 
-            {/* Description */}
+            {/* Description — show preview button instead of raw render */}
             {outfit.description && (
-              <p className="text-[14px] font-medium text-gray-500 leading-relaxed mb-6 line-clamp-4">
-                {outfit.description}
-              </p>
+              <button
+                onClick={() => {
+                  setActiveTab("desc");
+                  document.getElementById("outfit-tabs")?.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="flex items-center gap-2 mb-6 px-4 py-2.5 rounded-xl border-2 border-gray-200 bg-gray-50 text-[13px] font-bold text-gray-600 hover:border-[#0ea5e9] hover:text-[#0ea5e9] hover:bg-sky-50 transition-all"
+              >
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                Xem mô tả chi tiết
+              </button>
             )}
 
             {/* School Info Block */}
@@ -662,7 +669,7 @@ export const OutfitDetail = (): JSX.Element => {
 
         {/* ───── Tabs Section ───── */}
         <motion.div custom={3} variants={fadeUp} initial="hidden" animate="visible" className="mb-16">
-          <div className="flex gap-8 border-b border-gray-200/60 overflow-x-auto scrollbar-hide">
+          <div id="outfit-tabs" className="flex gap-8 border-b border-gray-200/60 overflow-x-auto scrollbar-hide">
             {(
               [
                 { key: "desc", label: "Mô tả chi tiết" },
@@ -704,14 +711,21 @@ export const OutfitDetail = (): JSX.Element => {
                 <style>{`
                   .prose-detail-content h2 { font-size: 1.3rem; font-weight: 800; margin: 1rem 0 0.5rem; color: #111827; }
                   .prose-detail-content h3 { font-size: 1.1rem; font-weight: 700; margin: 0.75rem 0 0.35rem; color: #111827; }
-                  .prose-detail-content p { margin: 0.35rem 0; }
+                  .prose-detail-content p { margin: 0.35rem 0; font-weight: 400; color: #4B5563; line-height: 1.7; }
                   .prose-detail-content ul { list-style: disc; padding-left: 1.5rem; margin: 0.5rem 0; }
                   .prose-detail-content ol { list-style: decimal; padding-left: 1.5rem; margin: 0.5rem 0; }
                   .prose-detail-content li { margin: 0.2rem 0; }
+                  .prose-detail-content li p { margin: 0; }
                   .prose-detail-content li::marker { color: #d1d5db; }
                   .prose-detail-content blockquote { border-left: 3px solid #8B6BFF; padding-left: 1rem; margin: 0.75rem 0; color: #6B7280; font-style: italic; }
                   .prose-detail-content hr { border: none; border-top: 2px solid #E5E7EB; margin: 1rem 0; }
                   .prose-detail-content strong { font-weight: 800; color: #111827; }
+                  .prose-detail-content em { font-style: italic; color: #374151; }
+                  .prose-detail-content u { text-decoration: underline; text-underline-offset: 3px; text-decoration-color: #8B6BFF; }
+                  .prose-detail-content s { text-decoration: line-through; color: #9CA3AF; }
+                  .prose-detail-content a { color: #2563EB; text-decoration: underline; }
+                  .prose-detail-content a:hover { color: #1D4ED8; }
+                  .prose-detail-content mark { border-radius: 3px; padding: 0.1em 0.2em; }
                 `}</style>
                 {outfit.categories.length > 0 && (
                   <div className="flex flex-wrap gap-2 mt-8">

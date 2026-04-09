@@ -81,8 +81,8 @@ export function SchoolProductionOrders() {
                             className="nb-card p-5 cursor-pointer">
                             <div className="flex items-center justify-between">
                                 <div className="flex-1 min-w-0">
-                                    <h3 className="font-bold text-[#1A1A2E] text-lg">{o.batchName}</h3>
-                                    <p className="text-sm text-[#6B7280] mt-1">
+                                    <h3 className="font-bold text-[#1A1A2E] text-lg truncate">{o.batchName}</h3>
+                                    <p className="text-sm text-[#6B7280] mt-1 truncate">
                                         Chiến dịch: <strong className="text-[#1A1A2E]">{o.campaignName}</strong> · NCC: <strong className="text-[#1A1A2E]">{o.providerName || "—"}</strong> · SL: <strong>{o.totalQuantity}</strong> · {new Date(o.createdDate).toLocaleDateString("vi")}
                                     </p>
                                     {o.deliveryDeadline && (

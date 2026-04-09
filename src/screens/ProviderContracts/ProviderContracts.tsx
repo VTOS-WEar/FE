@@ -174,7 +174,7 @@ export function ProviderContracts() {
                                             >
                                                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                                                     <div className="flex-1 min-w-0">
-                                                        <h3 className="font-bold text-[#1A1A2E] text-base">{c.contractName}</h3>
+                                                        <h3 className="font-bold text-[#1A1A2E] text-base truncate">{c.contractName}</h3>
                                                         <p className="font-medium text-[#9CA3AF] text-sm mt-1">
                                                             Trường: <strong className="text-[#6B7280]">{c.schoolName || "—"}</strong> &nbsp;·&nbsp; {c.items.length} mục &nbsp;·&nbsp; Hạn: {new Date(c.expiresAt).toLocaleDateString("vi")}
                                                         </p>
@@ -213,7 +213,7 @@ export function ProviderContracts() {
                             <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[1000] p-4">
                                 <div className="nb-card-static p-8 w-full max-w-[640px] max-h-[85vh] overflow-auto">
                                     <div className="flex items-center justify-between mb-5">
-                                        <h2 className="font-extrabold text-[#1A1A2E] text-xl">📄 {selected.contractName}</h2>
+                                        <h2 className="font-extrabold text-[#1A1A2E] text-xl truncate" title={selected.contractName}>📄 {selected.contractName}</h2>
                                         <span className={STATUS_MAP[selected.status]?.badge || "nb-badge"}>
                                             {STATUS_MAP[selected.status]?.label || selected.status}
                                         </span>
@@ -291,6 +291,7 @@ export function ProviderContracts() {
                                                 onChange={e => setRejectReason(e.target.value)}
                                                 placeholder="Giải thích lý do từ chối..."
                                                 className="nb-input w-full min-h-[80px] resize-y"
+                                                maxLength={500}
                                             />
                                             <div className="flex gap-3 mt-3">
                                                 <button onClick={() => { setShowReject(false); setRejectReason(""); setError(""); }} className="nb-btn nb-btn-outline flex-1">Hủy</button>

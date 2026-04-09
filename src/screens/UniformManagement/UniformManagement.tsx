@@ -85,6 +85,7 @@ function OutfitFormModal({
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [uploadError, setUploadError] = useState<string | null>(null);
+    const [showPreview, setShowPreview] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const isEditing = !!editingOutfit;
@@ -124,9 +125,16 @@ function OutfitFormModal({
         reader.readAsDataURL(file);
     };
 
+    const descLength = form.description.length;
+    const nameLength = form.outfitName.length;
+    const isDescOver = descLength > 500;
+    const isNameOver = nameLength > 50;
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (!form.outfitName.trim()) return;
+        if (isNameOver) { alert("Tên đồng phục không được vượt quá 50 ký tự."); return; }
+        if (isDescOver) { alert("Mô tả không được vượt quá 500 ký tự (bao gồm định dạng HTML)."); return; }
         onSave(
             {
                 outfitName: form.outfitName.trim(),
@@ -241,21 +249,82 @@ function OutfitFormModal({
                                 value={form.outfitName}
                                 onChange={(e) => setForm((f) => ({ ...f, outfitName: e.target.value }))}
                                 placeholder="VD: Áo sơ mi Nam"
-                                className={brutalInputClass}
+                                className={`${brutalInputClass} ${isNameOver ? '!border-[#EF4444]' : ''}`}
                                 required
+                                maxLength={50}
                             />
+                            <div className={`text-xs font-semibold mt-1 text-right ${isNameOver ? 'text-[#EF4444]' : nameLength > 40 ? 'text-[#F59E0B]' : 'text-[#9CA3AF]'}`}>
+                                {nameLength}/50
+                                {isNameOver && <span className="ml-1">⚠️ Vượt quá giới hạn!</span>}
+                            </div>
                         </div>
 
                         {/* Description — full width */}
                         <div className="md:col-span-2">
-                            <label className="mb-2 block text-[14px] font-extrabold text-[#19182B]">
-                                Mô tả
-                            </label>
-                            <RichTextEditor
-                                value={form.description}
-                                onChange={(html) => setForm((f) => ({ ...f, description: html }))}
-                                placeholder="VD: Vải cotton thoáng mát, form dáng chuẩn"
-                            />
+                            <div className="flex items-center justify-between mb-2">
+                                <label className="block text-[14px] font-extrabold text-[#19182B]">
+                                    Mô tả
+                                </label>
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPreview(!showPreview)}
+                                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-[8px] border-[2px] border-[#19182B] text-[12px] font-extrabold transition-all ${
+                                        showPreview
+                                            ? "bg-[#8B6BFF] text-white shadow-[2px_2px_0_#19182B]"
+                                            : "bg-white text-[#19182B] shadow-[2px_2px_0_#19182B] hover:bg-[#F2ECFF]"
+                                    }`}
+                                >
+                                    {showPreview ? (
+                                        <>
+                                            <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                                            Chỉnh sửa
+                                        </>
+                                    ) : (
+                                        <>
+                                            <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                            Xem trước
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+
+                            {/* ── Always show RichTextEditor (WYSIWYG with toolbar) ── */}
+                            <div className={showPreview ? "hidden" : ""}>
+                                <RichTextEditor
+                                    value={form.description}
+                                    onChange={(html) => setForm((f) => ({ ...f, description: html }))}
+                                    placeholder="VD: Vải cotton thoáng mát, form dáng chuẩn"
+                                />
+                            </div>
+
+                            {/* ── Preview Mode: rendered HTML ── */}
+                            {showPreview && (
+                                <div className="rounded-[8px] border-[2px] border-[#8B6BFF] bg-[#FDFCFF] shadow-[3px_3px_0_#8B6BFF] min-h-[120px] px-5 py-4">
+                                    <div className="flex items-center gap-1.5 mb-3 pb-2 border-b border-[#E9D5FF]">
+                                        <svg className="w-3.5 h-3.5 text-[#8B6BFF]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                        <span className="text-[11px] font-extrabold text-[#8B6BFF] uppercase tracking-wider">Xem trước</span>
+                                    </div>
+                                    {form.description ? (
+                                        <div
+                                            className="prose-editor-content text-[15px] text-[#4B5563] leading-relaxed"
+                                            dangerouslySetInnerHTML={{ __html: form.description }}
+                                        />
+                                    ) : (
+                                        <p className="text-[#9A95A8] text-[15px] font-normal italic">Chưa có nội dung mô tả.</p>
+                                    )}
+                                </div>
+                            )}
+
+                            <div className={`text-xs font-semibold mt-1 text-right ${isDescOver ? 'text-[#EF4444]' : descLength > 400 ? 'text-[#F59E0B]' : 'text-[#9CA3AF]'}`}>
+                                {descLength}/500
+                                {isDescOver && <span className="ml-1">⚠️ Vượt quá giới hạn!</span>}
+                            </div>
+                            {isDescOver && (
+                                <div className="nb-alert nb-alert-warning mt-2 text-xs">
+                                    <span>⚠️</span>
+                                    <span>Mô tả quá dài ({descLength}/500 ký tự). Hãy rút gọn nội dung hoặc bớt định dạng.</span>
+                                </div>
+                            )}
                         </div>
 
                         {/* Price */}
@@ -306,7 +375,7 @@ function OutfitFormModal({
                     </button>
                     <button
                         onClick={handleSubmit}
-                        disabled={isLoading || !form.outfitName.trim()}
+                        disabled={isLoading || !form.outfitName.trim() || isNameOver || isDescOver}
                         className="flex items-center justify-center gap-2 rounded-[8px] border-[3px] border-[#19182B] bg-[#8B6BFF] px-5 py-3 text-[15px] font-extrabold text-white shadow-[4px_4px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {isLoading && (
@@ -403,7 +472,7 @@ function UniformCard({ item, onEdit, onDelete, onManageVariants }: { item: Outfi
             {/* Content */}
             <div className="flex flex-col bg-white">
                 <div className="px-4 pt-3 pb-2">
-                    <h3 className="font-bold text-[#1A1A2E] text-base leading-tight">{item.outfitName}</h3>
+                    <h3 className="font-bold text-[#1A1A2E] text-base leading-tight truncate">{item.outfitName}</h3>
                     <p className="font-medium text-[#4C5769] text-sm mt-0.5 line-clamp-1">{item.description ? stripHtml(item.description) : "Không có mô tả"}</p>
                 </div>
                 <div className="mx-4 border-t-2 border-[#E5E7EB]" />

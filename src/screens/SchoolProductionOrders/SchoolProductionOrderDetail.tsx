@@ -160,7 +160,7 @@ export default function SchoolProductionOrderDetail() {
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                     <button onClick={() => navigate("/school/production-orders")} className="nb-btn nb-btn-outline nb-btn-sm text-sm">← Quay lại</button>
-                    <h1 className="font-extrabold text-[#1A1A2E] text-2xl">🏭 {detail.batchName}</h1>
+                    <h1 className="font-extrabold text-[#1A1A2E] text-2xl truncate" title={detail.batchName}>🏭 {detail.batchName}</h1>
                 </div>
                 <span className={STATUS_BADGE[detail.status] || "nb-badge"}>{STATUS_LABELS[detail.status] || detail.status}</span>
             </div>
@@ -189,7 +189,7 @@ export default function SchoolProductionOrderDetail() {
                         ].map(({ label, value }) => (
                             <div key={label} className="nb-card-static p-4">
                                 <p className="nb-stat-label text-xs">{label}</p>
-                                <p className="font-bold text-[#1A1A2E] text-base mt-1">{value}</p>
+                                <p className="font-bold text-[#1A1A2E] text-base mt-1 truncate" title={value}>{value}</p>
                             </div>
                         ))}
                     </div>
@@ -262,7 +262,7 @@ export default function SchoolProductionOrderDetail() {
                                                     <div>
                                                         <strong className="text-[#1A1A2E]">{d.quantity} sản phẩm</strong>
                                                         <span className="text-xs text-[#6B7280] ml-2">{new Date(d.deliveredAt).toLocaleDateString("vi")}</span>
-                                                        {d.note && <p className="text-xs text-[#4C5769] mt-1">📝 {d.note}</p>}
+                                                        {d.note && <p className="text-xs text-[#4C5769] mt-1 line-clamp-3">📝 {d.note}</p>}
                                                     </div>
                                                     {d.isConfirmed ? (
                                                         <span className="nb-badge nb-badge-green text-xs">
@@ -299,7 +299,7 @@ export default function SchoolProductionOrderDetail() {
                                         <div className="mb-3">
                                             <label className="block text-xs font-bold text-[#6B7280] mb-1">Ghi chú lỗi</label>
                                             <textarea value={confirmForm.defectNote} onChange={e => setConfirmForm(f => ({ ...f, defectNote: e.target.value }))}
-                                                placeholder="Mô tả lỗi..." rows={2} className="nb-input w-full resize-y" />
+                                                placeholder="Mô tả lỗi..." rows={2} className="nb-input w-full resize-y" maxLength={500} />
                                         </div>
                                     )}
                                     <div className="flex gap-3">
@@ -404,10 +404,10 @@ export default function SchoolProductionOrderDetail() {
                                                 <div className="w-full space-y-2">
                                                     <h5 className="font-bold text-sm text-[#1A1A2E]">🚛 Thông tin vận chuyển</h5>
                                                     <div className="grid grid-cols-2 gap-2">
-                                                        <input placeholder="Đơn vị vận chuyển" value={shipForm.shippingCompany} onChange={e => setShipForm(f => ({ ...f, shippingCompany: e.target.value }))} className="nb-input text-sm" />
-                                                        <input placeholder="Mã vận đơn" value={shipForm.trackingCode} onChange={e => setShipForm(f => ({ ...f, trackingCode: e.target.value }))} className="nb-input text-sm" />
+                                                        <input placeholder="Đơn vị vận chuyển" value={shipForm.shippingCompany} onChange={e => setShipForm(f => ({ ...f, shippingCompany: e.target.value }))} maxLength={100} className="nb-input text-sm" />
+                                                        <input placeholder="Mã vận đơn" value={shipForm.trackingCode} onChange={e => setShipForm(f => ({ ...f, trackingCode: e.target.value }))} maxLength={100} className="nb-input text-sm" />
                                                     </div>
-                                                    <input placeholder="URL ảnh xác nhận" value={shipForm.proofImageUrl} onChange={e => setShipForm(f => ({ ...f, proofImageUrl: e.target.value }))} className="nb-input w-full text-sm" />
+                                                    <input placeholder="URL ảnh xác nhận" value={shipForm.proofImageUrl} onChange={e => setShipForm(f => ({ ...f, proofImageUrl: e.target.value }))} maxLength={500} className="nb-input w-full text-sm" />
                                                 </div>
                                             </div>
                                         )}
@@ -464,7 +464,7 @@ export default function SchoolProductionOrderDetail() {
                                                         <span className={`nb-badge text-[10px] ml-2 ${s.method === "AtHome" ? "nb-badge-blue" : "nb-badge-green"}`}>
                                                             {s.method === "AtHome" ? "🏠 Giao nhà" : "🏫 Tại trường"}
                                                         </span>
-                                                        {s.note && <p className="text-xs text-[#4C5769] mt-1">📝 {s.note}</p>}
+                                                        {s.note && <p className="text-xs text-[#4C5769] mt-1 line-clamp-3">📝 {s.note}</p>}
                                                     </div>
                                                     <div className="flex items-center gap-2">
                                                         <span className={`nb-badge text-[10px] ${s.status === "Completed" ? "nb-badge-green" : "nb-badge-yellow"}`}>
@@ -494,12 +494,12 @@ export default function SchoolProductionOrderDetail() {
                         <div>
                             <label className="block text-xs font-bold text-[#6B7280] mb-1">Tiêu đề *</label>
                             <input value={defectForm.title} onChange={e => setDefectForm(f => ({ ...f, title: e.target.value }))}
-                                placeholder="VD: Áo sơ mi bị rách" className="nb-input w-full" />
+                                placeholder="VD: Áo sơ mi bị rách" maxLength={200} className="nb-input w-full" />
                         </div>
                         <div>
                             <label className="block text-xs font-bold text-[#6B7280] mb-1">Mô tả chi tiết *</label>
                             <textarea value={defectForm.description} onChange={e => setDefectForm(f => ({ ...f, description: e.target.value }))}
-                                placeholder="Mô tả chi tiết lỗi..." rows={3} className="nb-input w-full resize-y" />
+                                placeholder="Mô tả chi tiết lỗi..." rows={3} maxLength={1000} className="nb-input w-full resize-y" />
                         </div>
                         <div>
                             <div className="flex justify-between mb-1">
@@ -535,7 +535,7 @@ export default function SchoolProductionOrderDetail() {
                     <div className="bg-white rounded-md w-full max-w-md mx-4 p-6 border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E]" onClick={e => e.stopPropagation()}>
                         <h3 className="font-extrabold text-lg text-[#1A1A2E] mb-4">❌ Từ chối đơn sản xuất</h3>
                         <textarea value={rejectReason} onChange={e => setRejectReason(e.target.value)}
-                            placeholder="Nhập lý do từ chối..." rows={3} className="nb-input w-full resize-y mb-4" />
+                            placeholder="Nhập lý do từ chối..." rows={3} maxLength={500} className="nb-input w-full resize-y mb-4" />
                         <div className="flex gap-3">
                             <button onClick={() => { setShowReject(false); setRejectReason(""); }} className="flex-1 nb-btn nb-btn-outline text-sm">Hủy</button>
                             <button onClick={handleReject} disabled={actionLoading || !rejectReason.trim()} className="flex-1 nb-btn nb-btn-red text-sm disabled:opacity-50">
@@ -565,12 +565,12 @@ export default function SchoolProductionOrderDetail() {
                             </div>
                             <div>
                                 <label className="block text-xs font-bold text-[#6B7280] mb-1">Khung giờ *</label>
-                                <input value={scheduleForm.timeSlot} onChange={e => setScheduleForm(f => ({ ...f, timeSlot: e.target.value }))} placeholder="VD: 8:00 - 11:00" className="nb-input w-full" />
+                                <input value={scheduleForm.timeSlot} onChange={e => setScheduleForm(f => ({ ...f, timeSlot: e.target.value }))} placeholder="VD: 8:00 - 11:00" maxLength={50} className="nb-input w-full" />
                             </div>
                             <div>
                                 <label className="block text-xs font-bold text-[#6B7280] mb-1">Ghi chú</label>
                                 <textarea value={scheduleForm.note} onChange={e => setScheduleForm(f => ({ ...f, note: e.target.value }))}
-                                    placeholder="VD: Phát đồng phục cho khối 10..." rows={2} className="nb-input w-full resize-y" />
+                                    placeholder="VD: Phát đồng phục cho khối 10..." rows={2} maxLength={500} className="nb-input w-full resize-y" />
                             </div>
                         </div>
                         <div className="flex gap-3 mt-4">

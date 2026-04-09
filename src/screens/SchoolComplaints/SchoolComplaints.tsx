@@ -124,7 +124,7 @@ export function SchoolComplaints() {
                                         className="nb-card p-5 cursor-pointer">
                                         <div className="flex items-center justify-between gap-3">
                                             <div className="flex-1 min-w-0">
-                                                <h3 className="font-bold text-[#1A1A2E] text-lg">{c.title}</h3>
+                                                <h3 className="font-bold text-[#1A1A2E] text-lg truncate">{c.title}</h3>
                                                 <p className="text-sm text-[#6B7280] mt-1">
                                                     NCC: <strong className="text-[#1A1A2E]">{c.providerName || "—"}</strong> · {c.campaignName || "—"} · {new Date(c.createdAt).toLocaleDateString("vi")}
                                                 </p>
@@ -209,7 +209,7 @@ function InfoRow({ label, value }: { label: string; value: string }) {
     return (
         <div className="flex gap-3">
             <span className="min-w-[100px] font-bold text-[#6B7280] text-sm">{label}:</span>
-            <span className="text-[#1A1A2E] text-sm font-medium">{value}</span>
+            <span className="text-[#1A1A2E] text-sm font-medium flex-1 min-w-0 line-clamp-4">{value}</span>
         </div>
     );
 }
