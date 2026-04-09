@@ -65,10 +65,10 @@ export const DashboardSidebar = ({
     const iconColor = "text-white";
 
     return (
-        <aside className="nb-sidebar w-full h-full">
+        <aside className="nb-sidebar w-full h-full bg-gradient-to-b from-[#171932] via-[#15172E] to-[#12142A]">
             {/* Logo + Name header */}
-            <div className={`flex ${isCollapsed ? "flex-col items-center gap-2 px-2 py-3" : "items-center gap-3 px-4 py-4"} border-b border-white/10`}>
-                <div className={`${isCollapsed ? "w-8 h-8" : "w-9 h-9"} rounded-md border-2 border-white/20 ${iconBg} flex items-center justify-center flex-shrink-0`}>
+            <div className={`flex ${isCollapsed ? "flex-col items-center gap-2 px-2 py-3" : "items-center gap-3 px-4 py-4"} border-b border-white/10 bg-white/[0.02]`}>
+                <div className={`${isCollapsed ? "w-8 h-8" : "w-9 h-9"} rounded-md border-2 border-white/20 ${iconBg} flex items-center justify-center flex-shrink-0 shadow-[2px_2px_0_rgba(0,0,0,0.25)]`}>
                     <IconComponent className={`${isCollapsed ? "w-4 h-4" : "w-5 h-5"} ${iconColor}`} strokeWidth={1.75} />
                 </div>
                 {!isCollapsed && (
@@ -80,7 +80,7 @@ export const DashboardSidebar = ({
                     </div>
                 )}
                 <button onClick={onToggle}
-                    className="h-7 w-7 rounded-md border-2 border-white/20 bg-white/10 hover:bg-white/20 flex items-center justify-center flex-shrink-0 transition-all"
+                    className="h-7 w-7 rounded-md border-2 border-white/20 bg-white/10 hover:bg-white/20 hover:-translate-y-px flex items-center justify-center flex-shrink-0 transition-all"
                 >
                     {isCollapsed ? <ChevronRightIcon className="w-3.5 h-3.5 text-white" /> : <ChevronLeftIcon className="w-3.5 h-3.5 text-white" />}
                 </button>
@@ -94,8 +94,8 @@ export const DashboardSidebar = ({
                         <button onClick={() => item.href && navigate(item.href)}
                             className={`w-full flex items-center ${isCollapsed ? "justify-center px-0" : "gap-2.5 px-3"} py-2 rounded-md text-[13px] font-semibold transition-all duration-150
                                 ${item.active
-                                    ? "bg-white/12 text-white border-l-4 border-[#B8A9E8]"
-                                    : "text-[#D1D5DB] hover:bg-white/8 hover:text-white"
+                                    ? "bg-gradient-to-r from-[#B8A9E8]/35 to-[#A996E2]/10 text-white border border-[#C4B5FD]/70 shadow-[0_0_0_1px_rgba(184,169,232,0.22)]"
+                                    : "text-[#D1D5DB] hover:bg-white/8 hover:text-white hover:-translate-y-px"
                                 } ${item.href ? "cursor-pointer" : ""}`}
                         >
                             {item.active ? (
@@ -111,7 +111,7 @@ export const DashboardSidebar = ({
                 {navSections.map((section, sIdx) => (
                     <div key={sIdx} className="mt-3">
                         {!isCollapsed && (
-                            <h2 className="px-3 font-bold text-[10px] uppercase tracking-[0.08em] text-[#6B7280] mb-1.5">{section.title}</h2>
+                            <h2 className="px-3 font-bold text-[10px] uppercase tracking-[0.08em] text-[#7D8398] mb-1.5">{section.title}</h2>
                         )}
                         {isCollapsed && <div className="my-1.5 border-t border-white/10" />}
                         <div className="flex flex-col gap-[2px]">
@@ -120,8 +120,8 @@ export const DashboardSidebar = ({
                                     <button onClick={() => item.href && navigate(item.href)}
                                         className={`w-full flex items-center ${isCollapsed ? "justify-center px-0" : "gap-2.5 px-2.5"} py-[7px] rounded-md text-[13px] transition-all duration-150
                                             ${item.active
-                                                ? "bg-white/12 text-white font-bold border-l-4 border-[#B8A9E8]"
-                                                : "text-[#D1D5DB] font-medium hover:bg-white/8 hover:text-white"
+                                                ? "bg-gradient-to-r from-[#B8A9E8]/35 to-[#A996E2]/10 text-white font-bold border border-[#C4B5FD]/70 shadow-[0_0_0_1px_rgba(184,169,232,0.22)]"
+                                                : "text-[#D1D5DB] font-medium hover:bg-white/8 hover:text-white hover:-translate-y-px"
                                             } ${item.href ? "cursor-pointer" : ""}`}
                                     >
                                         <div className="relative flex-shrink-0">
@@ -154,7 +154,7 @@ export const DashboardSidebar = ({
             <div className={`${isCollapsed ? "px-1.5" : "px-2.5"} pb-3 mt-2`}>
                 <div className="relative group">
                     <button onClick={handleLogout}
-                        className={`w-full flex items-center ${isCollapsed ? "justify-center" : "justify-center gap-2"} py-2 rounded-md text-[13px] font-bold text-white bg-[#EF4444] border-2 border-[#EF4444] hover:bg-[#DC2626] active:bg-[#B91C1C] transition-all`}
+                        className={`w-full flex items-center ${isCollapsed ? "justify-center" : "justify-center gap-2"} py-2 rounded-md text-[13px] font-bold text-white bg-gradient-to-r from-[#EF4444] to-[#DC2626] border-2 border-[#EF4444] shadow-[2px_2px_0_rgba(0,0,0,0.25)] hover:-translate-y-px hover:brightness-105 active:bg-[#B91C1C] transition-all`}
                     >
                         <LogOut className="w-4 h-4 text-white" strokeWidth={1.75} />
                         {!isCollapsed && <span>Đăng Xuất</span>}

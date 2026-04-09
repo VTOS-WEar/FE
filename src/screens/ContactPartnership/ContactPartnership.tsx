@@ -50,9 +50,9 @@ export const ContactPartnership = (): JSX.Element => {
             <GuestLayout bgColor="#FFF8F0">
                 <main className="nb-page flex-1 px-4 py-10 lg:py-20 nb-fade-in">
                     <div className="mx-auto w-full max-w-lg text-center">
-                        <div className="nb-card-static p-10">
+                        <div className="nb-card-static p-10 ring-2 ring-[#B8A9E8]/35 shadow-[7px_7px_0_#1A1A2E]">
                             <div className="text-6xl mb-5">✅</div>
-                            <h1 className="font-extrabold text-[#1A1A2E] text-2xl lg:text-3xl mb-3">
+                            <h1 className="font-extrabold text-[#1A1A2E] text-2xl lg:text-3xl mb-3 tracking-tight">
                                 Yêu cầu đã được gửi! ✦
                             </h1>
                             <p className="font-medium text-[#6B7280] text-base mb-6">
@@ -60,7 +60,7 @@ export const ContactPartnership = (): JSX.Element => {
                             </p>
                             <Link
                                 to="/homepage"
-                                className="nb-btn nb-btn-purple text-base"
+                                className="inline-flex h-11 items-center justify-center rounded-lg border-2 border-[#1A1A2E] bg-gradient-to-r from-[#A78BFA] via-[#C4B5FD] to-[#7C3AED] px-5 text-sm font-extrabold text-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E] transition-all hover:-translate-y-px hover:shadow-[5px_5px_0_#1A1A2E]"
                             >
                                 ← Về trang chủ
                             </Link>
@@ -71,16 +71,17 @@ export const ContactPartnership = (): JSX.Element => {
         );
     }
 
-    const inputClass = "nb-input w-full h-11 text-sm";
+    const inputClass = "nb-input w-full h-11 text-sm border-2 border-[#1A1A2E] bg-white shadow-[3px_3px_0_#1A1A2E] transition-all hover:-translate-y-px hover:border-[#7C3AED] hover:shadow-[5px_5px_0_#1A1A2E] hover:bg-[#FCFAFF] focus:border-[#7C3AED] focus:bg-[#FCFAFF] focus:shadow-[2px_2px_0_#1A1A2E] focus:ring-2 focus:ring-[#B8A9E8]/55 focus:ring-offset-0";
 
     return (
         <GuestLayout bgColor="#FFF8F0">
             <main className="nb-page flex-1 px-4 py-10 lg:py-20 nb-fade-in">
-                <div className="mx-auto w-full max-w-2xl">
+                <div className="mx-auto w-full max-w-3xl">
                     <div className="text-center mb-8">
-                        <h1 className="font-extrabold text-[#1A1A2E] text-3xl lg:text-4xl mb-3">
-                            Liên hệ hợp tác ✦
+                        <h1 className="font-extrabold text-[#1A1A2E] text-3xl lg:text-4xl mb-2 tracking-tight leading-tight">
+                            Liên hệ hợp tác <span className="text-[#7C3AED]">✦</span>
                         </h1>
+                        <div className="mx-auto mb-3 h-1 w-28 rounded-full bg-gradient-to-r from-[#EDE9FE] via-[#B8A9E8] to-[#EDE9FE]" />
                         <p className="font-bold text-[#6B7280] text-base lg:text-lg">
                             Bạn là trường học hoặc nhà cung cấp? Điền form bên dưới, chúng tôi sẽ liên hệ lại.
                         </p>
@@ -88,7 +89,7 @@ export const ContactPartnership = (): JSX.Element => {
 
                     <form
                         onSubmit={handleSubmit}
-                        className="nb-card-static p-6 lg:p-8 space-y-5"
+                        className="nb-card-static p-6 lg:p-8 space-y-5 ring-2 ring-[#B8A9E8]/35 shadow-[7px_7px_0_#1A1A2E]"
                     >
                         {/* Type selector */}
                         <div>
@@ -99,9 +100,9 @@ export const ContactPartnership = (): JSX.Element => {
                                 <button
                                     type="button"
                                     onClick={() => setForm(f => ({ ...f, type: 1 }))}
-                                    className={`nb-card p-4 text-center ${
+                                    className={`nb-card p-4 min-h-[116px] text-center flex flex-col items-center justify-center transition-all duration-200 hover:-translate-y-px hover:shadow-[6px_6px_0_#1A1A2E] ${
                                         form.type === 1
-                                            ? "nb-card-blue !border-[#A8D4E6] !shadow-[4px_4px_0_#1A1A2E]"
+                                            ? "bg-gradient-to-b from-[#EFF7FF] to-[#E1EEFF] !border-[#A8D4E6] !shadow-[4px_4px_0_#1A1A2E] ring-2 ring-[#A8D4E6]/45"
                                             : ""
                                     }`}
                                 >
@@ -113,9 +114,9 @@ export const ContactPartnership = (): JSX.Element => {
                                 <button
                                     type="button"
                                     onClick={() => setForm(f => ({ ...f, type: 2 }))}
-                                    className={`nb-card p-4 text-center ${
+                                    className={`nb-card p-4 min-h-[116px] text-center flex flex-col items-center justify-center transition-all duration-200 hover:-translate-y-px hover:shadow-[6px_6px_0_#1A1A2E] ${
                                         form.type === 2
-                                            ? "nb-card-yellow !border-[#F5E642] !shadow-[4px_4px_0_#1A1A2E]"
+                                            ? "bg-gradient-to-b from-[#FFF8EB] to-[#FFEFD8] !border-[#FFD08C] !shadow-[4px_4px_0_#1A1A2E] ring-2 ring-[#FFD08C]/45"
                                             : ""
                                     }`}
                                 >
@@ -207,7 +208,7 @@ export const ContactPartnership = (): JSX.Element => {
                                 onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
                                 placeholder="Thông tin thêm về trường/công ty của bạn..."
                                 rows={3}
-                                className="nb-input w-full text-sm resize-none"
+                                className="nb-input w-full text-sm resize-none border-2 border-[#1A1A2E] bg-white shadow-[3px_3px_0_#1A1A2E] transition-all hover:-translate-y-px hover:border-[#7C3AED] hover:shadow-[5px_5px_0_#1A1A2E] hover:bg-[#FCFAFF] focus:border-[#7C3AED] focus:bg-[#FCFAFF] focus:shadow-[2px_2px_0_#1A1A2E] focus:ring-2 focus:ring-[#B8A9E8]/55 focus:ring-offset-0"
                             />
                         </div>
 
@@ -221,8 +222,9 @@ export const ContactPartnership = (): JSX.Element => {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="nb-btn nb-btn-purple w-full h-14 text-base disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="group relative w-full h-12 inline-flex items-center justify-center rounded-lg border-2 border-[#1A1A2E] bg-gradient-to-r from-[#A78BFA] via-[#C4B5FD] to-[#7C3AED] text-base font-extrabold text-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E] transition-all hover:-translate-y-px hover:shadow-[5px_5px_0_#1A1A2E] hover:brightness-[1.06] active:translate-y-px active:shadow-[2px_2px_0_#1A1A2E] disabled:opacity-50 disabled:cursor-not-allowed"
                         >
+                            <span className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_18%,rgba(255,255,255,0.6),transparent_45%)] opacity-80 transition-opacity group-hover:opacity-100" />
                             {loading ? "Đang gửi..." : "Gửi yêu cầu liên hệ ✦"}
                         </button>
                     </form>

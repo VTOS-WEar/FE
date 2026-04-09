@@ -53,6 +53,8 @@ import { OrdersTab } from "./screens/ParentProfile/tabs/OrdersTab";
 import { HistoryTab } from "./screens/ParentProfile/tabs/HistoryTab";
 import { ReviewsTab } from "./screens/ParentProfile/tabs/ReviewsTab";
 import { SettingsTab } from "./screens/ParentProfile/tabs/SettingsTab";
+import { FeedbackPage } from "./screens/ParentProfile/pages/FeedbackPage";
+import { OrderDetailPage } from "./screens/ParentProfile/pages/OrderDetailPage";
 import SchoolWallet from "./screens/SchoolWallet/SchoolWallet";
 import ProviderRevenue from "./screens/ProviderRevenue/ProviderRevenue";
 import ProviderWallet from "./screens/ProviderWallet/ProviderWallet";
@@ -64,6 +66,8 @@ import { AdminAccountRequests } from "./screens/AdminAccountRequests";
 import AdminTransactions from "./screens/AdminTransactions/AdminTransactions";
 import AdminComplaints from "./screens/AdminComplaints/AdminComplaints";
 import { ProviderProfile } from "./screens/ProviderProfile/ProviderProfile";
+import { HowItWorks } from "./screens/HowItWorks/HowItWorks";
+import { useEffect, useRef } from "react";
 
 /** Smart root redirect: School→dashboard, others→homepage */
 function RootRedirect() {
@@ -125,6 +129,10 @@ const router = createBrowserRouter([
     element: <RoleGuard allowedRoles={["Parent"]} allowGuest={true}><Homepage /></RoleGuard>,
   },
   {
+    path: "/huong-dan-try-on",
+    element: <RoleGuard allowedRoles={["Parent"]} allowGuest={true}><HowItWorks /></RoleGuard>,
+  },
+  {
     path: "/parentprofile",
     element: <RoleGuard allowedRoles={["Parent"]}><ParentProfile /></RoleGuard>,
     children: [
@@ -135,6 +143,8 @@ const router = createBrowserRouter([
       { path: "history",  element: <HistoryTab /> },
       { path: "reviews",  element: <ReviewsTab /> },
       { path: "settings", element: <SettingsTab /> },
+      { path: "feedback", element: <FeedbackPage /> },
+      { path: "orders/:orderId", element: <OrderDetailPage /> },
     ],
   },
   {
@@ -287,6 +297,24 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "";
 
 export const App = () => {
+  const previousPathRef = useRef(`${router.state.location.pathname}${router.state.location.search}`);
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && "scrollRestoration" in window.history) {
+      window.history.scrollRestoration = "manual";
+    }
+
+    const unsubscribe = router.subscribe((state) => {
+      const currentPath = `${state.location.pathname}${state.location.search}`;
+      if (currentPath !== previousPathRef.current) {
+        window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+        previousPathRef.current = currentPath;
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   return (
     <ErrorBoundary>
       <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>

@@ -141,9 +141,9 @@ export const CampaignDetail = (): JSX.Element => {
 
   return (
     <GuestLayout bgColor="#FFF8F0">
-      <div className="max-w-[1200px] mx-auto px-4 lg:px-8 py-8 nb-page">
+      <div className="max-w-[1200px] mx-auto px-4 lg:px-8 py-6 nb-page">
         {/* Breadcrumb — NB style */}
-        <div className="flex items-center gap-2 text-sm mb-8 flex-wrap font-semibold">
+        <div className="flex items-center gap-2 text-sm mb-6 flex-wrap font-semibold">
           <Link to="/homepage" className="text-[#97A3B6] hover:text-[#1A1A2E] transition-colors">Trang chủ</Link>
           <ChevronRight className="w-4 h-4 text-[#CBCAD7]" />
           <Link to="/schools" className="text-[#97A3B6] hover:text-[#1A1A2E] transition-colors">Danh sách trường</Link>
@@ -157,17 +157,17 @@ export const CampaignDetail = (): JSX.Element => {
 
         {/* Back button — NB */}
         <button onClick={() => navigate(`/schools/${campaign.school.id}`)}
-          className="nb-btn nb-btn-outline nb-btn-sm text-sm mb-6">
+          className="nb-btn nb-btn-outline nb-btn-sm text-sm mb-4">
           <ArrowLeft className="w-4 h-4" />
           Quay lại trường học
         </button>
 
         {/* Campaign Header — NB Card */}
-        <div className="nb-card-static p-6 lg:p-8 mb-8">
-          <div className="flex flex-col sm:flex-row sm:items-start gap-4 mb-6">
+        <div className="nb-card-static p-4 lg:p-6 mb-6 hover:shadow-[3px_3px_0_#1A1A2E]">
+          <div className="flex flex-col sm:flex-row sm:items-start gap-3 mb-4">
             {/* School logo */}
             {campaign.school.logoURL && (
-              <div className="w-16 h-16 rounded-[8px] overflow-hidden border-[2px] border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E] flex-shrink-0">
+              <div className="w-14 h-14 rounded-[8px] overflow-hidden border-[2px] border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E] flex-shrink-0">
                 <img src={campaign.school.logoURL} alt={campaign.school.schoolName}
                   className="w-full h-full object-cover" />
               </div>
@@ -180,7 +180,7 @@ export const CampaignDetail = (): JSX.Element => {
           </div>
 
           {/* Date range — NB inline badge */}
-          <div className="flex items-center gap-3 text-sm text-[#4C5769] font-semibold mb-4">
+          <div className="flex items-center gap-3 text-sm text-[#4C5769] font-semibold mb-3">
             <Calendar className="w-4 h-4 text-[#B8A9E8]" />
             <span>
               Từ <strong className="text-[#1A1A2E]">{new Date(campaign.startDate).toLocaleDateString("vi-VN")}</strong>
@@ -189,7 +189,7 @@ export const CampaignDetail = (): JSX.Element => {
           </div>
 
           {campaign.description && (
-            <div className="p-4 rounded-[8px] border-[2px] border-[#E5E7EB] bg-[#F6F1E8]">
+            <div className="p-3 rounded-[8px] border-[2px] border-[#E5E7EB] bg-[#F6F1E8]">
               <p className="font-medium text-sm text-[#4C5769] leading-relaxed">
                 {campaign.description}
               </p>
@@ -213,15 +213,15 @@ export const CampaignDetail = (): JSX.Element => {
           const progressPct = Math.min(100, Math.round((elapsedDays / totalDays) * 100));
 
           return (
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8 nb-stagger">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-6 nb-stagger">
               {/* Countdown */}
-              <div className="nb-card-static p-5 text-center">
-                <p className="font-extrabold text-xs uppercase tracking-wider text-[#6B7280] mb-2">⏳ Còn lại</p>
+              <div className="nb-card-static p-3 text-center transition-all duration-300 ease-out hover:scale-105 hover:shadow-[3px_3px_0_#1A1A2E] cursor-default">
+                <p className="font-extrabold text-xs uppercase tracking-wider text-[#6B7280] mb-1.5">⏳ Còn lại</p>
                 {isActive && daysLeft > 0 ? (
                   <>
                     <p className="font-black text-3xl text-[#1A1A2E]">{daysLeft}</p>
                     <p className="font-semibold text-sm text-[#97A3B6]">ngày</p>
-                    <div className="nb-progress mt-3">
+                    <div className="nb-progress mt-2">
                       <div className="nb-progress-bar" style={{
                         width: `${progressPct}%`,
                         background: progressPct >= 80 ? "#E8A0A0" : progressPct >= 50 ? "#F5E642" : "#C8E44D",
@@ -234,15 +234,15 @@ export const CampaignDetail = (): JSX.Element => {
               </div>
 
               {/* Total Products */}
-              <div className="nb-card-static p-5 text-center">
-                <p className="font-extrabold text-xs uppercase tracking-wider text-[#6B7280] mb-2">👕 Sản phẩm</p>
+              <div className="nb-card-static p-3 text-center transition-all duration-300 ease-out hover:scale-105 hover:shadow-[3px_3px_0_#1A1A2E] cursor-default">
+                <p className="font-extrabold text-xs uppercase tracking-wider text-[#6B7280] mb-1.5">👕 Sản phẩm</p>
                 <p className="font-black text-3xl text-[#1A1A2E]">{totalProducts}</p>
                 <p className="font-semibold text-sm text-[#97A3B6]">mẫu đồng phục</p>
               </div>
 
               {/* Price Range */}
-              <div className="nb-card-static p-5 text-center">
-                <p className="font-extrabold text-xs uppercase tracking-wider text-[#6B7280] mb-2">💰 Giá</p>
+              <div className="nb-card-static p-3 text-center transition-all duration-300 ease-out hover:scale-105 hover:shadow-[3px_3px_0_#1A1A2E] cursor-default">
+                <p className="font-extrabold text-xs uppercase tracking-wider text-[#6B7280] mb-1.5">💰 Giá</p>
                 {minPrice === maxPrice ? (
                   <p className="font-black text-xl text-[#8B6BFF]">{minPrice.toLocaleString("vi-VN")}₫</p>
                 ) : (
@@ -254,10 +254,10 @@ export const CampaignDetail = (): JSX.Element => {
               </div>
 
               {/* Status */}
-              <div className="nb-card-static p-5 text-center">
-                <p className="font-extrabold text-xs uppercase tracking-wider text-[#6B7280] mb-2">📋 Trạng thái</p>
+              <div className="nb-card-static p-3 text-center transition-all duration-300 ease-out hover:scale-105 hover:shadow-[3px_3px_0_#1A1A2E] cursor-default">
+                <p className="font-extrabold text-xs uppercase tracking-wider text-[#6B7280] mb-1.5">📋 Trạng thái</p>
                 <span className={statusCfg.badge + " text-sm"}>{statusCfg.label}</span>
-                <p className="font-semibold text-xs text-[#97A3B6] mt-2">
+                <p className="font-semibold text-xs text-[#97A3B6] mt-1.5">
                   {new Date(campaign.startDate).toLocaleDateString("vi-VN")} — {new Date(campaign.endDate).toLocaleDateString("vi-VN")}
                 </p>
               </div>
@@ -266,7 +266,7 @@ export const CampaignDetail = (): JSX.Element => {
         })()}
 
         {/* Outfits — NB Section */}
-        <h2 className="font-black text-xl text-[#1A1A2E] mb-5 flex items-center gap-2">
+        <h2 className="font-black text-xl text-[#1A1A2E] mb-4 flex items-center gap-2">
           <div className="w-9 h-9 rounded-[8px] border-[2px] border-[#1A1A2E] bg-[#EDE9FE] shadow-[2px_2px_0_#1A1A2E] flex items-center justify-center">
             <Package className="w-4.5 h-4.5 text-[#7C3AED]" />
           </div>
@@ -275,35 +275,35 @@ export const CampaignDetail = (): JSX.Element => {
         </h2>
 
         {campaign.outfits.length === 0 ? (
-          <div className="nb-card-static p-12 text-center">
+          <div className="nb-card-static p-8 text-center border-dashed transition-all duration-300 ease-out hover:scale-105 hover:shadow-[3px_3px_0_#1A1A2E]">
             <Package className="w-10 h-10 text-[#CBCAD7] mx-auto mb-3" />
             <p className="font-bold text-[#97A3B6]">Chưa có đồng phục trong chương trình này.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 nb-stagger">
-            {campaign.outfits.map(outfit => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 nb-stagger">
+            {campaign.outfits.map((outfit, idx) => (
               <div key={outfit.campaignOutfitId}
-                className="nb-card overflow-hidden flex flex-col h-full group">
+                className="nb-card overflow-hidden flex flex-col group transition-all duration-300 ease-out hover:scale-105 hover:shadow-[4px_4px_0_#1A1A2E] hover:-translate-y-1" style={{ animationDelay: `${idx * 50}ms` }}>
                 {/* Image */}
                 <div
-                  className="relative aspect-square bg-[#F6F1E8] overflow-hidden cursor-pointer"
+                  className="relative aspect-[4/3] bg-[#F6F1E8] overflow-hidden cursor-pointer"
                   onClick={() => navigate(`/outfits/${outfit.outfitId}`)}
                 >
                   {outfit.mainImageUrl
-                    ? <img src={outfit.mainImageUrl} alt={outfit.outfitName} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                    ? <img src={outfit.mainImageUrl} alt={outfit.outfitName} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                     : (
                       <div className="w-full h-full flex items-center justify-center">
-                        <Package className="w-16 h-16 text-[#CBCAD7]" />
+                        <Package className="w-12 h-12 text-[#CBCAD7]" />
                       </div>
                     )}
                 </div>
 
                 {/* Info */}
-                <div className="p-5 flex flex-col flex-1">
-                  <h3 className="font-bold text-[#1A1A2E] text-lg mb-1 line-clamp-2 min-h-[3.5rem]">{outfit.outfitName}</h3>
+                <div className="p-2 flex flex-col flex-1 group/info">
+                  <h3 className="font-bold text-[#1A1A2E] text-base mb-1 line-clamp-2 min-h-[2.4rem] transition-colors duration-200 group-hover/card:text-[#8B6BFF]">{outfit.outfitName}</h3>
 
-                  <div className="flex items-center justify-between mt-auto pt-3 border-t-2 border-[#E5E7EB]">
-                    <span className="font-black text-xl text-[#8B6BFF]">
+                  <div className="flex items-center justify-between mt-auto pt-1 border-t-2 border-[#E5E7EB]">
+                    <span className="font-black text-lg text-[#8B6BFF] transition-colors duration-200 group-hover/card:text-[#0ea5e9]">
                       {outfit.campaignPrice.toLocaleString("vi-VN")}₫
                     </span>
                     {outfit.maxQuantity !== null && (
@@ -313,16 +313,16 @@ export const CampaignDetail = (): JSX.Element => {
 
                   <button
                     onClick={() => navigate(`/outfits/${outfit.outfitId}`)}
-                    className="mt-3 text-center font-bold text-sm text-[#8B6BFF] hover:text-[#6938EF] transition-colors"
+                    className="mt-1 text-center font-bold text-sm text-[#8B6BFF] hover:text-[#6938EF] hover:underline hover:underline-offset-2 transition-all duration-200"
                   >
                     Xem chi tiết →
                   </button>
                   {campaign.status === "Active" && (
                     <button
                       onClick={(e) => { e.stopPropagation(); openOrderModal(outfit); }}
-                      className="mt-2 w-full nb-btn nb-btn-purple text-sm"
+                      className="mt-1 w-full nb-btn nb-btn-purple text-sm py-1.5 transition-all duration-200 hover:scale-105 hover:shadow-[3px_3px_0_#1A1A2E]"
                     >
-                      <ShoppingCart className="w-4 h-4" />
+                      <ShoppingCart className="w-3 h-3" />
                       Đặt hàng
                     </button>
                   )}

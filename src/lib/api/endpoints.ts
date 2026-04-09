@@ -54,8 +54,15 @@ export const endpoints = {
     users: {
         me: "/api/users/me",
         profile: "/api/users/me/profile",
+        avatar: "/api/users/me/avatar",
         children: "/api/users/me/children",
         findChildren: "/api/users/me/find-children",
+    },
+    children: {
+        list: "/api/children",
+        detail: "/api/children", // append /{id} at call time
+        update: "/api/children",
+        avatar: "/api/children", // append /{id}/avatar at call time
     },
     orders: {
         checkout: "/api/orders/checkout",
@@ -87,5 +94,9 @@ export const endpoints = {
         read: "/api/notifications", // append /{id}/read
         readAll: "/api/notifications/read-all",
         heartbeat: "/api/notifications/heartbeat",
+    },
+    feedbacks: {
+        base: "/api/feedbacks",
+        submitOrderItem: "/api/feedbacks/order-item",
     },
 } as const;
