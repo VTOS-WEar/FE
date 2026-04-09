@@ -9,7 +9,7 @@ import { TopNavBar } from "../../components/layout/TopNavBar";
 import { useSidebarConfig } from "../../hooks/useSidebarConfig";
 import { ChatWidget, type ChatContextInfo } from "../../components/ChatWidget/ChatWidget";
 import {
-    getSchoolContracts, getSchoolContractDetail, createContract,
+    getSchoolContracts, getSchoolContractDetail, createContract, cancelSchoolContract,
     type ContractDto, type CreateContractRequest, type CreateContractItemRequest,
 } from "../../lib/api/contracts";
 
@@ -23,8 +23,9 @@ const STATUS_BADGE: Record<string, string> = {
     Fulfilled: "nb-badge bg-[#D1FAE5] text-[#065F46] border-[#1A1A2E]",
     Rejected: "nb-badge nb-badge-red",
     Expired: "nb-badge bg-[#F3F4F6] text-[#6B7280]",
+    Cancelled: "nb-badge bg-[#FEE2E2] text-[#991B1B] border-[#1A1A2E]",
 };
-const STATUS_LABELS: Record<string, string> = { Pending: "Chờ duyệt", Approved: "Đã duyệt", InUse: "Đang dùng", Fulfilled: "Hoàn thành", Rejected: "Từ chối", Expired: "Hết hạn" };
+const STATUS_LABELS: Record<string, string> = { Pending: "Chờ duyệt", Approved: "Đã duyệt", InUse: "Đang dùng", Fulfilled: "Hoàn thành", Rejected: "Từ chối", Expired: "Hết hạn", Cancelled: "Đã hủy" };
 const STATUS_COLORS: Record<string, string> = { Pending: "#f59e0b", Approved: "#10b981", InUse: "#3b82f6", Fulfilled: "#059669", Rejected: "#ef4444", Expired: "#6b7280" };
 
 export function SchoolContracts() {
@@ -49,6 +50,7 @@ export function SchoolContracts() {
     const [expiresAt, setExpiresAt] = useState("");
     const [creating, setCreating] = useState(false);
     const [error, setError] = useState("");
+    const [cancelling, setCancelling] = useState<string | null>(null);
 
     // Chat
     const [chatOpen, setChatOpen] = useState(false);
@@ -126,6 +128,18 @@ export function SchoolContracts() {
         const next = [...items]; (next[i] as any)[field] = value; setItems(next);
     };
 
+    const handleCancel = async (e: React.MouseEvent, contractId: string) => {
+        e.stopPropagation();
+        if (!confirm("Bạn có chắc muốn hủy hợp đồng này?")) return;
+        setCancelling(contractId);
+        try {
+            await cancelSchoolContract(contractId);
+            fetchContracts();
+            if (selected?.contractId === contractId) { setShowDetail(false); setSelected(null); }
+        } catch (e: any) { alert(e.message || "Lỗi hủy hợp đồng"); }
+        finally { setCancelling(null); }
+    };
+
     return (
         <div className="nb-page flex flex-col">
             <div className="flex flex-1 flex-col lg:flex-row">
@@ -149,7 +163,7 @@ export function SchoolContracts() {
 
                         {/* Status tabs — NB */}
                         <div className="nb-tabs w-fit">
-                            {["", "Pending", "Approved", "InUse", "Fulfilled", "Rejected", "Expired"].map(s => (
+                            {["", "Pending", "Approved", "InUse", "Fulfilled", "Rejected", "Expired", "Cancelled"].map(s => (
                                 <button key={s} onClick={() => { setStatusFilter(s); setPage(1); }}
                                     className={`nb-tab ${statusFilter === s ? "nb-tab-active" : ""}`}>
                                     {s ? STATUS_LABELS[s] || s : "Tất cả"}
@@ -178,12 +192,18 @@ export function SchoolContracts() {
                                                 className="nb-card p-5 cursor-pointer">
                                                 <div className="flex items-center justify-between gap-3">
                                                     <div className="flex-1 min-w-0">
-                                                        <h3 className="font-bold text-[#1A1A2E] text-lg">{c.contractName}</h3>
-                                                        <p className="text-sm text-[#6B7280] mt-1">
+                                                        <h3 className="font-bold text-[#1A1A2E] text-lg truncate">{c.contractName}</h3>
+                                                        <p className="text-sm text-[#6B7280] mt-1 truncate">
                                                             NCC: <strong className="text-[#1A1A2E]">{c.providerName || "—"}</strong> · {c.items.length} mục · Hạn: {new Date(c.expiresAt).toLocaleDateString("vi")}
                                                         </p>
                                                     </div>
                                                     <span className={STATUS_BADGE[c.status] || "nb-badge"}>{STATUS_LABELS[c.status] || c.status}</span>
+                                                    {c.status === "Pending" && (
+                                                        <button onClick={(e) => handleCancel(e, c.contractId)}
+                                                            disabled={cancelling === c.contractId}
+                                                            className="nb-btn nb-btn-sm nb-btn-red text-xs disabled:opacity-50"
+                                                        >{cancelling === c.contractId ? "Đang hủy..." : "✕ Hủy"}</button>
+                                                    )}
                                                     <button onClick={(e) => { e.stopPropagation(); openContractChat(c); }}
                                                         className="nb-btn nb-btn-sm text-xs bg-[#3B82F6] text-white border-[#1A1A2E]">💬 Chat</button>
                                                 </div>
@@ -248,6 +268,12 @@ export function SchoolContracts() {
                                 )}
                                 <div className="flex gap-3">
                                     <button onClick={() => { setShowDetail(false); setSelected(null); }} className="flex-1 nb-btn nb-btn-outline text-sm">Đóng</button>
+                                    {selected.status === "Pending" && (
+                                        <button onClick={(e) => handleCancel(e, selected.contractId)}
+                                            disabled={cancelling === selected.contractId}
+                                            className="flex-1 nb-btn nb-btn-red text-sm disabled:opacity-50"
+                                        >{cancelling === selected.contractId ? "Đang hủy..." : "✕ Hủy hợp đồng"}</button>
+                                    )}
                                     <button onClick={() => openContractChat(selected)} className="flex-1 nb-btn text-sm bg-[#3B82F6] text-white border-[#1A1A2E]">💬 Chat</button>
                                 </div>
                             </>

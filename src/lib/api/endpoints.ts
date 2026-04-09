@@ -26,7 +26,12 @@ export const endpoints = {
 
     },
     tryOn: {
-        guest: "/api/tryOn/guest",
+        request: "/api/tryOn/request",
+        history: "/api/tryon/history",
+    },
+    chat: {
+        proposal: "/api/chat/messages/proposal",
+        acceptProposal: "/api/chat/proposals", // append /{messageId}/accept
     },
     schools: {
         me: "/api/schools/me",
