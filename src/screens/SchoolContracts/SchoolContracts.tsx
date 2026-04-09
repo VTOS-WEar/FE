@@ -238,7 +238,7 @@ export function SchoolContracts() {
                         ) : selected && (
                             <>
                                 <div className="flex justify-between items-center mb-5">
-                                    <h2 className="font-extrabold text-xl text-[#1A1A2E]">📄 {selected.contractName}</h2>
+                                    <h2 className="font-extrabold text-xl text-[#1A1A2E] truncate" title={selected.contractName}>📄 {selected.contractName}</h2>
                                     <span className={STATUS_BADGE[selected.status] || "nb-badge"}>{STATUS_LABELS[selected.status] || selected.status}</span>
                                 </div>
                                 <div className="grid grid-cols-2 gap-3 mb-5">
@@ -292,7 +292,7 @@ export function SchoolContracts() {
                         <div className="space-y-4">
                             <div>
                                 <label className="block text-xs font-bold text-[#6B7280] mb-1">Tên hợp đồng</label>
-                                <input value={contractName} onChange={e => setContractName(e.target.value)} placeholder="VD: Hợp đồng đồng phục HK1 2026" className="nb-input w-full" />
+                                <input value={contractName} onChange={e => setContractName(e.target.value)} placeholder="VD: Hợp đồng đồng phục HK1 2026" maxLength={200} className="nb-input w-full" />
                             </div>
                             <div>
                                 <label className="block text-xs font-bold text-[#6B7280] mb-1">Nhà cung cấp</label>

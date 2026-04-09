@@ -38,7 +38,7 @@ function CampaignCountdownCard({
  <div className="nb-card-static p-6">
  <div className="flex items-start justify-between mb-4">
  <div>
- <h2 className=" font-bold text-[#1A1A2E] text-lg">
+ <h2 className=" font-bold text-[#1A1A2E] text-lg truncate">
  {campaign.campaignName}
  </h2>
  <p className=" font-medium text-[#6B7280] text-sm mt-0.5">

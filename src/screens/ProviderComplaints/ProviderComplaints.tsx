@@ -151,7 +151,7 @@ export function ProviderComplaints() {
                                     >
                                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                                             <div className="flex-1 min-w-0">
-                                                <h3 className="font-bold text-[#1A1A2E] text-base">{c.title}</h3>
+                                                <h3 className="font-bold text-[#1A1A2E] text-base truncate">{c.title}</h3>
                                                 <p className="font-medium text-[#9CA3AF] text-sm mt-1">
                                                     Chiến dịch: <strong className="text-[#6B7280]">{c.campaignName || "—"}</strong> &nbsp;·&nbsp;
                                                     {new Date(c.createdAt).toLocaleDateString("vi")}
@@ -219,6 +219,7 @@ export function ProviderComplaints() {
                                                         placeholder="Nhập phản hồi..."
                                                         rows={3}
                                                         className="nb-input w-full resize-y"
+                                                        maxLength={500}
                                                     />
                                                     <label className="flex items-center gap-2 mt-3 text-sm text-[#6B7280] font-medium cursor-pointer">
                                                         <input
@@ -265,7 +266,7 @@ function InfoRow({ label, value }: { label: string; value: string }) {
     return (
         <div className="flex gap-3">
             <span className="min-w-[120px] font-bold text-[#9CA3AF] text-sm">{label}:</span>
-            <span className="font-medium text-[#1A1A2E] text-sm">{value}</span>
+            <span className="font-medium text-[#1A1A2E] text-sm flex-1 min-w-0 line-clamp-4">{value}</span>
         </div>
     );
 }

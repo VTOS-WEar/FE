@@ -219,7 +219,7 @@ export function ChatWidget({ channelType, channelId, isOpen, onClose, contextInf
         return (
             <div key={m.messageId} className={`max-w-[80%] ${m.isMe ? "self-end" : "self-start"}`}>
                 {!m.isMe && <span className="text-[11px] text-[#6B7280] mb-0.5 block font-bold">{m.senderName}</span>}
-                <div className={`px-3.5 py-2.5 text-sm leading-relaxed border-2 border-[#1A1A2E] ${
+                <div className={`px-3.5 py-2.5 text-sm leading-relaxed border-2 border-[#1A1A2E] break-all ${
                     m.isMe
                         ? "bg-[#6938EF] text-white rounded-xl rounded-br-sm shadow-[2px_2px_0_#1A1A2E]"
                         : "bg-white text-[#1A1A2E] rounded-xl rounded-bl-sm shadow-[2px_2px_0_#1A1A2E]"
@@ -296,6 +296,7 @@ export function ChatWidget({ channelType, channelId, isOpen, onClose, contextInf
                         onChange={e => setProposalName(e.target.value)}
                         placeholder="Tên đồng phục..."
                         className="nb-input w-full text-xs"
+                        maxLength={100}
                     />
                     <div className="flex items-center gap-2">
                         <label className="flex-1 cursor-pointer">
@@ -328,6 +329,7 @@ export function ChatWidget({ channelType, channelId, isOpen, onClose, contextInf
                     value={newMsg} onChange={e => setNewMsg(e.target.value)} onKeyDown={handleKeyDown}
                     placeholder="Nhập tin nhắn..."
                     className="nb-input flex-1 text-sm"
+                    maxLength={2000}
                 />
                 <button onClick={handleSend} disabled={sending || !newMsg.trim()}
                     className="nb-btn nb-btn-purple nb-btn-sm text-sm disabled:opacity-50">
