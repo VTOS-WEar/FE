@@ -64,6 +64,11 @@ export const endpoints = {
         update: "/api/children",
         avatar: "/api/children", // append /{id}/avatar at call time
     },
+    bodygram: {
+        scanTokens: "/api/bodygram/scan-tokens",
+        complete: "/api/bodygram/scans/complete",
+        status: "/api/bodygram/scans/status",
+    },
     orders: {
         checkout: "/api/orders/checkout",
         cancel: "/api/orders", // append /{orderId}/cancel at call time

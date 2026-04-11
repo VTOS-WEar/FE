@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from "react";
-import { Camera, Loader2, ArrowLeft } from "lucide-react";
+import { Camera, Loader2, ArrowLeft, ScanLine } from "lucide-react";
 import { getChildProfile, updateChildProfile, updateChildAvatar, type GetChildDetailResponse, type UpdateChildProfileDto } from "../../../lib/api/users";
 import { getVietnamseGender, genderMap } from "../../../lib/utils";
+import { useNavigate } from "react-router-dom";
 
 interface StudentDetailViewProps {
   childId: string;
@@ -13,6 +14,7 @@ const MONTHS = Array.from({ length: 12 }, (_, i) => i + 1);
 const YEARS = Array.from({ length: 30 }, (_, i) => new Date().getFullYear() - i);
 
 export const StudentDetailView = ({ childId, onBack }: StudentDetailViewProps): JSX.Element => {
+  const navigate = useNavigate();
   const [student, setStudent] = useState<GetChildDetailResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -340,6 +342,14 @@ export const StudentDetailView = ({ childId, onBack }: StudentDetailViewProps): 
 
           {/* Save Button */}
           <div className="flex items-center gap-4 pt-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <button
+              onClick={() => navigate(`/children/${childId}/scan`)}
+              disabled={saving || uploadingAvatar}
+              className="nb-btn nb-btn-outline text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            >
+              <ScanLine className="w-4 h-4" />
+              Quét số đo với Bodygram
+            </button>
             <button
               onClick={handleSave}
               disabled={saving}

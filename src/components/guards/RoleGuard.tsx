@@ -1,4 +1,4 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import type { ReactNode } from "react";
 
 /**
@@ -35,6 +35,7 @@ export const RoleGuard = ({
     redirectTo,
     children,
 }: RoleGuardProps): JSX.Element => {
+    const location = useLocation();
     const user = getCurrentUser();
 
     // Not logged in
@@ -42,7 +43,9 @@ export const RoleGuard = ({
         if (allowGuest) {
             return <>{children}</>;
         }
-        return <Navigate to={redirectTo || "/signin"} replace />;
+        const redirectPath = `${location.pathname}${location.search}`;
+        const signInTarget = redirectTo || `/signin?redirect=${encodeURIComponent(redirectPath)}`;
+        return <Navigate to={signInTarget} replace />;
     }
 
     // Logged in — check role

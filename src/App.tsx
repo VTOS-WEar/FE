@@ -71,6 +71,7 @@ import { SchoolAccountSettings } from "./screens/SchoolProfile/SchoolAccountSett
 import { HowItWorks } from "./screens/HowItWorks/HowItWorks";
 import { SearchPage } from "./screens/Search/SearchPage";
 import { useEffect, useRef } from "react";
+import { BodygramScannerPage } from "./screens/BodygramScanner/BodygramScannerPage";
 
 /** Smart root redirect: School→dashboard, others→homepage */
 function RootRedirect() {
@@ -149,6 +150,10 @@ const router = createBrowserRouter([
       { path: "feedback", element: <FeedbackPage /> },
       { path: "orders/:orderId", element: <OrderDetailPage /> },
     ],
+  },
+  {
+    path: "/children/:childId/scan",
+    element: <RoleGuard allowedRoles={["Parent"]}><BodygramScannerPage /></RoleGuard>,
   },
   {
     path: "/verify-otp",
