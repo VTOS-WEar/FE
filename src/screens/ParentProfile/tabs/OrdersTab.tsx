@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ShoppingBag, CreditCard, Clock, CheckCircle, XCircle, ChevronDown, Star, Package, Calendar, ChevronRight, User } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useToast } from "../../../contexts/ToastContext";
+import { cn } from "@/lib/utils";
 import {
     payOrder,
     getParentPaymentHistory,
@@ -218,7 +219,7 @@ function OrderCard({
                             <h3 className="font-extrabold text-[#1A1A2E] text-lg leading-tight">
                                 {firstItem?.outfitName || "Mã đơn: #" + p.orderId.substring(0, 8)}
                             </h3>
-                            
+
                             <div className="flex items-center gap-4 text-[12px] font-bold text-[#6B7280]">
                                 <span>Size: <span className="text-[#1A1A2E]">{firstItem?.size || "-"}</span></span>
                                 <span className="text-[#D1D5DB]">|</span>
@@ -385,44 +386,46 @@ export const OrdersTab = (): JSX.Element => {
     const [statusCounts, setStatusCounts] = useState<StatusCountDto[]>([]);
     const [total, setTotal] = useState(0);
     const [page, setPage] = useState(1);
-    const pageSize = 2;
+    const [pageSize] = useState(2); // Increased for better UX
     const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
     const [payingId, setPayingId] = useState<string | null>(null);
     const [expandedId, setExpandedId] = useState<string | null>(null);
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
 
     const fetchData = useCallback(async () => {
         setLoading(true);
         try {
-            const res = await getParentPaymentHistory(page, pageSize);
+            const res = await getParentPaymentHistory(
+                page,
+                pageSize,
+                startDate || undefined,
+                endDate || undefined,
+                selectedStatus || undefined
+            );
             setPayments(res.items || []);
             setTotal(res.total || 0);
             setStatusCounts(res.statusCounts || []);
         } catch { /* ignore */ }
         finally { setLoading(false); }
-    }, [page]);
+    }, [page, pageSize, startDate, endDate, selectedStatus]);
 
     useEffect(() => { fetchData(); }, [fetchData]);
 
-    useEffect(() => {
+    // Handle filter changes: Reset to page 1
+    const handleStatusChange = (status: string | null) => {
+        setSelectedStatus(status);
         setPage(1);
-    }, [selectedStatus]);
-
-    // Filter payments by selected order status
-    const filteredPayments = useMemo(() => {
-        if (!selectedStatus) return payments;
-        return payments.filter(p => p.orderStatus === selectedStatus);
-    }, [payments, selectedStatus]);
-
-    // Get correct total for pagination
-    const getFilteredTotal = () => {
-        if (!selectedStatus) return total;
-        const count = statusCounts.find(sc => sc.status === selectedStatus);
-        return count ? count.count : 0;
     };
 
-    const filteredTotal = getFilteredTotal();
-    const totalPages = Math.ceil(filteredTotal / pageSize);
+    const handleDateChange = (start: string, end: string) => {
+        setStartDate(start);
+        setEndDate(end);
+        setPage(1);
+    };
+
+    const totalPages = Math.ceil(total / pageSize);
 
     const handlePay = async (orderId: string) => {
         if (!confirm("Xác nhận thanh toán đơn hàng này?")) return;
@@ -445,7 +448,7 @@ export const OrdersTab = (): JSX.Element => {
         } finally { setPayingId(null); }
     };
 
-    if (loading) {
+    if (loading && payments.length === 0) {
         return (
             <div className="flex items-center justify-center py-16">
                 <div className="w-8 h-8 border-4 border-[#E5E7EB] border-t-[#B8A9E8] rounded-full animate-spin" />
@@ -453,34 +456,62 @@ export const OrdersTab = (): JSX.Element => {
         );
     }
 
-    if (payments.length === 0) {
-        return (
-            <div className="flex flex-col items-center justify-center py-16 gap-4">
-                <div className="w-16 h-16 bg-[#EDE9FE] rounded-xl flex items-center justify-center border-2 border-[#1A1A2E] shadow-[3px_3px_0_#1A1A2E]">
-                    <ShoppingBag className="w-8 h-8 text-[#1A1A2E]" />
-                </div>
-                <p className="font-medium text-[#6B7280] text-sm text-center">
-                    Bạn chưa có đơn hàng nào.
-                </p>
-            </div>
-        );
-    }
-
     return (
-        <div>
-            {/* Status Filter Tabs */}
-            <StatusTabs payments={payments} total={total} statusCounts={statusCounts} selectedStatus={selectedStatus} onStatusChange={setSelectedStatus} />
+        <div className="relative">
+            {/* Status Tabs */}
+            <StatusTabs payments={payments} total={total} statusCounts={statusCounts} selectedStatus={selectedStatus} onStatusChange={handleStatusChange} />
 
-            {/* Filtered Orders List */}
-            <div className="space-y-4">
-                {filteredPayments.length === 0 ? (
-                    <div className="text-center py-8 text-[#9CA3AF] text-sm">
-                        Không có đơn hàng nào ở trạng thái này
+            {/* Date Filter Bar */}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6 bg-white/50 p-3 rounded-2xl border-2 border-[#1A1A2E]/5">
+                <div className="flex items-center gap-2">
+                    <div className={cn("w-2.5 h-2.5 rounded-full transition-all duration-500", loading ? "bg-[#B8A9E8] animate-ping" : "bg-green-400")} />
+                    <span className="text-[10px] font-black text-[#1A1A2E] uppercase tracking-wider">
+                        {loading ? "Đang cập nhật danh sách..." : "Lọc theo thời gian đặt đồ"}
+                    </span>
+                </div>
+
+                <div className="flex items-center gap-2 bg-white border-2 border-[#1A1A2E] rounded-xl px-4 py-1.5 shadow-[3px_3px_0_#1A1A2E] group transition-all hover:translate-y-[-1px]">
+                    <Calendar className={cn("w-3.5 h-3.5 transition-colors", loading ? "text-[#B8A9E8]" : "text-[#6B7280]")} />
+                    <input
+                        type="date"
+                        value={startDate}
+                        onChange={(e) => handleDateChange(e.target.value, endDate)}
+                        className="text-[11px] font-bold outline-none bg-transparent cursor-pointer"
+                    />
+                    <span className="text-[#1A1A2E]/10 font-black">→</span>
+                    <input
+                        type="date"
+                        value={endDate}
+                        onChange={(e) => handleDateChange(startDate, e.target.value)}
+                        className="text-[11px] font-bold outline-none bg-transparent cursor-pointer"
+                    />
+                    {(startDate || endDate) && (
+                        <button
+                            onClick={() => handleDateChange("", "")}
+                            className="ml-2 text-[9px] bg-[#FEE2E2] text-[#991B1B] hover:bg-[#FCA5A5] px-2 py-0.5 rounded-lg border-2 border-[#1A1A2E] font-black transition-colors"
+                        >
+                            XÓA
+                        </button>
+                    )}
+                </div>
+            </div>
+
+            {/* Orders List Content */}
+            <div className={cn("space-y-4 transition-all duration-300", loading ? "opacity-40 pointer-events-none scale-[0.99] grayscale-[0.5]" : "opacity-100")}>
+                {payments.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-16 gap-4">
+                        <div className="w-16 h-16 bg-[#F3F4F6] rounded-xl flex items-center justify-center border-2 border-[#1A1A2E] shadow-[3px_3px_0_#1A1A2E]">
+                            <ShoppingBag className="w-8 h-8 text-[#9CA3AF]" />
+                        </div>
+                        <p className="font-bold text-[#6B7280] text-sm text-center">
+                            {(startDate || endDate || selectedStatus) 
+                                ? "Không tìm thấy đơn hàng nào khớp với bộ lọc."
+                                : "Bạn chưa có đơn hàng nào."}
+                        </p>
                     </div>
                 ) : (
-                    filteredPayments.map((p) => {
+                    payments.map((p) => {
                         const badge = statusBadge(p.status);
-                        const isPending = p.status.toLowerCase() === "pending";
                         const isExpanded = expandedId === p.paymentId;
                         const showStepper = p.orderStatus && p.orderStatus !== "Pending";
 
@@ -501,7 +532,6 @@ export const OrdersTab = (): JSX.Element => {
                     })
                 )}
             </div>
-
             {totalPages > 1 && (
                 <div className="flex justify-center gap-2 mt-4">
                     <button disabled={page <= 1} onClick={() => setPage(p => p - 1)} className="nb-btn nb-btn-outline text-sm disabled:opacity-50">← Trước</button>
