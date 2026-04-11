@@ -31,11 +31,10 @@ function RatingStars({
             onMouseEnter={() => !readOnly && setHoverValue(star)}
             onMouseLeave={() => !readOnly && setHoverValue(0)}
             title={`Đánh giá ${star} sao`}
-            className={`transition-all duration-200 ${
-              isFilled
-                ? "text-[#C8E44D] drop-shadow-[2px_2px_0_#1A1A2E]"
-                : "text-[#D1D5DB]"
-            } ${!readOnly && "cursor-pointer hover:scale-125"}`}
+            className={`transition-all duration-200 ${isFilled
+              ? "text-[#C8E44D] drop-shadow-[2px_2px_0_#1A1A2E]"
+              : "text-[#D1D5DB]"
+              } ${!readOnly && "cursor-pointer hover:scale-125"}`}
           >
             <Star
               className="w-8 h-8 fill-current"
@@ -123,9 +122,9 @@ function ReviewCard({ feedback, onRefresh }: ReviewCardProps) {
           <div className="flex gap-3 pb-4 border-b-2 border-[#1A1A2E]/10">
             <div className="w-16 h-16 rounded-lg border-2 border-[#1A1A2E] flex items-center justify-center overflow-hidden bg-[#EDE9FE] flex-shrink-0">
               {feedback.outfitImageUrl && feedback.outfitImageUrl.trim() !== "" ? (
-                <img 
-                  src={feedback.outfitImageUrl} 
-                  alt={feedback.outfitName} 
+                <img
+                  src={feedback.outfitImageUrl}
+                  alt={feedback.outfitName}
                   className="w-full h-full object-cover"
                   onError={(e) => {
                     (e.target as HTMLImageElement).style.display = "none";
@@ -194,7 +193,7 @@ function ReviewCard({ feedback, onRefresh }: ReviewCardProps) {
             {isSubmitting ? "Đang lưu..." : "Lưu đánh giá"}
           </button>
         </div>
-        </div>
+      </div>
     );
   }
 
@@ -251,11 +250,10 @@ function ReviewCard({ feedback, onRefresh }: ReviewCardProps) {
                 {[1, 2, 3, 4, 5].map((i) => (
                   <Star
                     key={i}
-                    className={`w-3 h-3 ${
-                      i <= (feedback.rating ?? 0)
-                        ? "fill-[#F5E642] text-[#F5E642]"
-                        : "text-[#D1D5DB]"
-                    }`}
+                    className={`w-3 h-3 ${i <= (feedback.rating ?? 0)
+                      ? "fill-[#F5E642] text-[#F5E642]"
+                      : "text-[#D1D5DB]"
+                      }`}
                   />
                 ))}
               </div>
@@ -266,7 +264,7 @@ function ReviewCard({ feedback, onRefresh }: ReviewCardProps) {
               <span className="text-xs font-bold text-[#9CA3AF]">Chưa đánh giá</span>
             </div>
           )}
-          
+
           <button
             onClick={() => setIsEditing(true)}
             className="nb-btn nb-btn-purple text-xs px-3 py-1 flex items-center gap-1"
@@ -334,6 +332,10 @@ export const ReviewsTab = (): JSX.Element => {
   };
 
   useEffect(() => {
+    setPage(1);
+  }, [selectedCampaignId, activeTab]);
+
+  useEffect(() => {
     fetchFeedbacks();
   }, [selectedCampaignId, page, activeTab]);
 
@@ -341,162 +343,158 @@ export const ReviewsTab = (): JSX.Element => {
   // Backend đã trả về đúng data theo hasRating filter, nên total = backend total
   const totalPages = Math.ceil(total / pageSize);
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-16">
-        <div className="w-8 h-8 border-4 border-[#E5E7EB] border-t-[#B8A9E8] rounded-full animate-spin" />
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h2 className="font-bold text-[#1A1A2E] text-lg">Đánh giá sản phẩm</h2>
-        <p className="text-sm text-[#9CA3AF] mt-1">
-          Quản lý và xem các đánh giá của bạn về sản phẩm từ các đơn hàng
-        </p>
-      </div>
-
-      {/* Campaign Filter */}
-      <div className="relative">
-        <button
-          onClick={() => setShowFilters(!showFilters)}
-          className="w-full nb-card p-4 flex items-center justify-between"
-          title="Lọc theo chiến dịch"
-        >
-          <div className="text-left">
-            <p className="text-xs text-[#9CA3AF] font-bold">BỘ LỌC CHIẾN DỊCH</p>
-            <p className="text-sm font-bold text-[#1A1A2E] mt-1">
-              {selectedCampaignId
-                ? campaigns.find((c) => c.campaignId === selectedCampaignId)?.campaignName || "Chọn chiến dịch"
-                : "Tất cả chiến dịch"}
-            </p>
-          </div>
-          <ChevronDown
-            className={`w-5 h-5 text-[#6B7280] transition-transform ${showFilters ? "rotate-180" : ""}`}
-          />
-        </button>
-
-        {showFilters && (
-          <div className="absolute top-full left-0 right-0 mt-2 bg-white border-2 border-[#1A1A2E] rounded-lg shadow-lg z-10">
-            <button
-              onClick={() => {
-                setSelectedCampaignId(null);
-                setShowFilters(false);
-              }}
-              className={`w-full px-4 py-3 text-left text-sm font-bold transition-colors ${
-                selectedCampaignId === null
-                  ? "bg-[#B8A9E8] text-white"
-                  : "text-[#1A1A2E] hover:bg-[#F3F4F6]"
-              }`}
-              title="Xem tất cả chiến dịch"
-            >
-              Tất cả ({total})
-            </button>
-            {campaigns.map((campaign) => (
-              <button
-                key={campaign.campaignId}
-                onClick={() => {
-                  setSelectedCampaignId(campaign.campaignId);
-                  setShowFilters(false);
-                }}
-                className={`w-full px-4 py-3 text-left text-sm font-bold transition-colors border-t border-[#F3F4F6] ${
-                  selectedCampaignId === campaign.campaignId
-                    ? "bg-[#B8A9E8] text-white"
-                    : "text-[#1A1A2E] hover:bg-[#F3F4F6]"
-                }`}
-              >
-                {campaign.campaignName} ({campaign.count})
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* No data state */}
-      {feedbacks.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-16 gap-4">
-          <div className="w-16 h-16 bg-[#EDE9FE] rounded-xl flex items-center justify-center border-2 border-[#1A1A2E] shadow-[3px_3px_0_#1A1A2E]">
-            <AlertCircle className="w-8 h-8 text-[#1A1A2E]" />
-          </div>
-          <p className="font-medium text-[#6B7280] text-sm text-center">
-            Bạn chưa có sản phẩm nào để đánh giá từ các chiến dịch này.
+      {/* Header & Filter Row */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+        <div>
+          <h2 className="font-bold text-[#1A1A2E] text-xl">Đánh giá sản phẩm sáng tạo</h2>
+          <p className="text-sm text-[#9CA3AF] mt-1">
+            Quản lý và xem các đánh giá của bạn về sản phẩm từ các đơn hàng
           </p>
         </div>
-      )}
 
-      {/* Tab Navigation */}
-      {feedbacks.length > 0 && (
-        <div className="flex gap-4 border-b-2 border-[#E5E7EB]">
+        {/* Campaign Filter */}
+        <div className="relative w-full md:w-[320px]">
           <button
-            onClick={() => setActiveTab("all")}
-            className={`px-4 py-3 font-bold text-sm border-b-4 transition-colors ${
-              activeTab === "all"
-                ? "text-[#1A1A2E] border-[#B8A9E8]"
-                : "text-[#9CA3AF] border-transparent hover:text-[#1A1A2E]"
-            }`}
+            onClick={() => setShowFilters(!showFilters)}
+            className="w-full bg-white border-2 border-[#1A1A2E] p-3 rounded-lg shadow-[4px_4px_0_#1A1A2E] flex items-center justify-between transition-transform active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
+            title="Lọc theo chiến dịch"
           >
-            Tất cả ({ratingCounts.reduce((sum, rc) => sum + rc.count, 0)})
-          </button>
-          <button
-            onClick={() => setActiveTab("not-rated")}
-            className={`px-4 py-3 font-bold text-sm border-b-4 transition-colors ${
-              activeTab === "not-rated"
-                ? "text-[#1A1A2E] border-[#B8A9E8]"
-                : "text-[#9CA3AF] border-transparent hover:text-[#1A1A2E]"
-            }`}
-          >
-            Chưa đánh giá ({ratingCounts.find(rc => rc.label === "not-rated")?.count || 0})
-          </button>
-          <button
-            onClick={() => setActiveTab("rated")}
-            className={`px-4 py-3 font-bold text-sm border-b-4 transition-colors ${
-              activeTab === "rated"
-                ? "text-[#1A1A2E] border-[#B8A9E8]"
-                : "text-[#9CA3AF] border-transparent hover:text-[#1A1A2E]"
-            }`}
-          >
-            Đã đánh giá ({ratingCounts.find(rc => rc.label === "rated")?.count || 0})
-          </button>
-        </div>
-      )}
-
-      {/* Tab Content - Server-side filtered data */}
-      {feedbacks.length > 0 && (
-        <div className="grid gap-3 mt-6">
-          {feedbacks.map((feedback) => (
-            <ReviewCard
-              key={feedback.orderItemId}
-              feedback={feedback}
-              onRefresh={fetchFeedbacks}
+            <div className="text-left">
+              <p className="text-[10px] text-[#9CA3AF] font-bold uppercase tracking-wider">Bộ lọc chiến dịch</p>
+              <p className="text-sm font-bold text-[#1A1A2E] mt-0.5 truncate max-w-[220px]">
+                {selectedCampaignId
+                  ? campaigns.find((c) => c.campaignId === selectedCampaignId)?.campaignName || "Chọn chiến dịch"
+                  : "Tất cả chiến dịch"}
+              </p>
+            </div>
+            <ChevronDown
+              className={`w-5 h-5 text-[#1A1A2E] transition-transform duration-300 ${showFilters ? "rotate-180" : ""}`}
             />
-          ))}
-        </div>
-      )}
+          </button>
 
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex justify-center gap-2 mt-6">
-          <button
-            disabled={page <= 1}
-            onClick={() => setPage((p) => p - 1)}
-            className="nb-btn nb-btn-outline text-sm disabled:opacity-50"
-          >
-            ← Trước
-          </button>
-          <span className="flex items-center text-sm text-[#6B7280] px-4 font-bold">
-            {page}/{totalPages}
-          </span>
-          <button
-            disabled={page >= totalPages}
-            onClick={() => setPage((p) => p + 1)}
-            className="nb-btn nb-btn-outline text-sm disabled:opacity-50"
-          >
-            Sau →
-          </button>
+          {showFilters && (
+            <div className="absolute top-full left-0 right-0 mt-2 bg-white border-2 border-[#1A1A2E] rounded-lg shadow-lg z-10">
+              <button
+                onClick={() => {
+                  setSelectedCampaignId(null);
+                  setShowFilters(false);
+                }}
+                className={`w-full px-4 py-3 text-left text-sm font-bold transition-colors ${selectedCampaignId === null
+                  ? "bg-[#B8A9E8] text-white"
+                  : "text-[#1A1A2E] hover:bg-[#F3F4F6]"
+                  }`}
+                title="Xem tất cả chiến dịch"
+              >
+                Tất cả (tổng số)
+              </button>
+              {campaigns.map((campaign) => (
+                <button
+                  key={campaign.campaignId}
+                  onClick={() => {
+                    setSelectedCampaignId(campaign.campaignId);
+                    setShowFilters(false);
+                  }}
+                  className={`w-full px-4 py-3 text-left text-sm font-bold transition-colors border-t border-[#F3F4F6] ${selectedCampaignId === campaign.campaignId
+                    ? "bg-[#B8A9E8] text-white"
+                    : "text-[#1A1A2E] hover:bg-[#F3F4F6]"
+                    }`}
+                >
+                  {campaign.campaignName} ({campaign.count})
+                </button>
+              ))}
+            </div>
+          )}
         </div>
+      </div>
+
+      {/* Tab Navigation - Always visible */}
+      <div className="flex gap-4 border-b-2 border-[#E5E7EB]">
+        <button
+          onClick={() => setActiveTab("all")}
+          className={`px-4 py-3 font-bold text-sm border-b-4 transition-colors ${activeTab === "all"
+            ? "text-[#1A1A2E] border-[#B8A9E8]"
+            : "text-[#9CA3AF] border-transparent hover:text-[#1A1A2E]"
+            }`}
+        >
+          Tất cả ({ratingCounts.find(rc => rc.label === "all")?.count || 0})
+        </button>
+        <button
+          onClick={() => setActiveTab("not-rated")}
+          className={`px-4 py-3 font-bold text-sm border-b-4 transition-colors ${activeTab === "not-rated"
+            ? "text-[#1A1A2E] border-[#B8A9E8]"
+            : "text-[#9CA3AF] border-transparent hover:text-[#1A1A2E]"
+            }`}
+        >
+          Chưa đánh giá ({ratingCounts.find(rc => rc.label === "not-rated")?.count || 0})
+        </button>
+        <button
+          onClick={() => setActiveTab("rated")}
+          className={`px-4 py-3 font-bold text-sm border-b-4 transition-colors ${activeTab === "rated"
+            ? "text-[#1A1A2E] border-[#B8A9E8]"
+            : "text-[#9CA3AF] border-transparent hover:text-[#1A1A2E]"
+            }`}
+        >
+          Đã đánh giá ({ratingCounts.find(rc => rc.label === "rated")?.count || 0})
+        </button>
+      </div>
+
+      {loading ? (
+        <div className="flex items-center justify-center py-16">
+          <div className="w-8 h-8 border-4 border-[#E5E7EB] border-t-[#B8A9E8] rounded-full animate-spin" />
+        </div>
+      ) : (
+        <>
+          {/* Tab Content - Server-side filtered data */}
+          {feedbacks.length > 0 ? (
+            <div className="grid gap-3 mt-6">
+              {feedbacks.map((feedback) => (
+                <ReviewCard
+                  key={feedback.orderItemId}
+                  feedback={feedback}
+                  onRefresh={fetchFeedbacks}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-16 gap-4">
+              <div className="w-16 h-16 bg-[#EDE9FE] rounded-xl flex items-center justify-center border-2 border-[#1A1A2E] shadow-[3px_3px_0_#1A1A2E]">
+                <AlertCircle className="w-8 h-8 text-[#1A1A2E]" />
+              </div>
+              <p className="font-medium text-[#6B7280] text-sm text-center">
+                {activeTab === "rated"
+                  ? "Bạn chưa có đánh giá nào."
+                  : activeTab === "not-rated"
+                    ? "Tất cả sản phẩm đã được đánh giá."
+                    : "Không tìm thấy sản phẩm nào."}
+              </p>
+            </div>
+          )}
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex justify-center gap-2 mt-6">
+              <button
+                disabled={page <= 1}
+                onClick={() => setPage((p) => p - 1)}
+                className="nb-btn nb-btn-outline text-sm disabled:opacity-50"
+              >
+                ← Trước
+              </button>
+              <span className="flex items-center text-sm text-[#6B7280] px-4 font-bold">
+                {page}/{totalPages}
+              </span>
+              <button
+                disabled={page >= totalPages}
+                onClick={() => setPage((p) => p + 1)}
+                className="nb-btn nb-btn-outline text-sm disabled:opacity-50"
+              >
+                Sau →
+              </button>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
