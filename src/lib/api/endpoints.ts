@@ -68,6 +68,8 @@ export const endpoints = {
         scanTokens: "/api/bodygram/scan-tokens",
         complete: "/api/bodygram/scans/complete",
         status: "/api/bodygram/scans/status",
+        childScans: "/api/bodygram/children",
+        records: "/api/bodygram/records",
     },
     orders: {
         checkout: "/api/orders/checkout",

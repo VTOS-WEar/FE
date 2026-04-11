@@ -11,6 +11,7 @@
         "/huong-dan-try-on",
         "/parentprofile",
         "/children/:childId/scan",
+        "/children/:childId/bodygram-scans/:scanId",
         "/verify-otp",
         "/school/students/import/confirm-save",
         "/school/students/import/confirm-reimport",

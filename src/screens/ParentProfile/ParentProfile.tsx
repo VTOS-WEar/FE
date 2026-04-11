@@ -1,18 +1,26 @@
 import { useEffect, useLayoutEffect, useState, useRef } from "react";
 import { useNavigate, NavLink, Outlet, useLocation } from "react-router-dom";
 import {
-  User, LogOut, ShoppingBag, History, Star, Settings, GraduationCap, ChevronRight
+  User,
+  LogOut,
+  ShoppingBag,
+  History,
+  Star,
+  Settings,
+  GraduationCap,
+  ChevronRight,
+  ScanLine,
 } from "lucide-react";
 import { GuestLayout } from "../../components/layout/GuestLayout";
 import { AnimatePresence, motion } from "framer-motion";
 import { getParentProfile } from "../../lib/api/users";
 
-/* ─── Sidebar Menu Items ─── */
 const SIDEBAR_ITEMS = [
   { label: "Thông tin tài khoản", icon: User, to: "/parentprofile/account" },
   { label: "Quản lý học sinh", icon: GraduationCap, to: "/parentprofile/students" },
   { label: "Đơn hàng", icon: ShoppingBag, to: "/parentprofile/orders" },
-  { label: "Lịch sử", icon: History, to: "/parentprofile/history" },
+  { label: "Lịch sử thử đồ", icon: History, to: "/parentprofile/history" },
+  { label: "Lịch sử Bodygram", icon: ScanLine, to: "/parentprofile/bodygram-history" },
   { label: "Đánh giá", icon: Star, to: "/parentprofile/reviews" },
   { label: "Cài đặt tài khoản", icon: Settings, to: "/parentprofile/settings" },
 ];
@@ -41,7 +49,7 @@ export const ParentProfile = (): JSX.Element => {
       try {
         const raw = localStorage.getItem("user") ?? sessionStorage.getItem("user");
         if (raw) setUser(JSON.parse(raw));
-      } catch {}
+      } catch { }
     };
     window.addEventListener("vtos:user-updated", refresh);
     return () => window.removeEventListener("vtos:user-updated", refresh);
@@ -83,62 +91,67 @@ export const ParentProfile = (): JSX.Element => {
   const handleLogout = () => {
     setIsLoggingOut(true);
     setTimeout(() => {
-      ["access_token", "user", "expires_in"].forEach(k => {
-        localStorage.removeItem(k);
-        sessionStorage.removeItem(k);
+      ["access_token", "user", "expires_in"].forEach((key) => {
+        localStorage.removeItem(key);
+        sessionStorage.removeItem(key);
       });
       navigate("/signin", { replace: true });
     }, 400);
   };
 
-  if (!user) return <div />;
+  if (!user) {
+    return <div />;
+  }
 
   return (
     <GuestLayout bgColor="#FFF8F0" mainClassName="flex-1">
-      <div className="relative z-10 max-w-[1200px] mx-auto px-4 lg:px-8 py-8 md:py-12 nb-fade-in">
-        {/* ───── Breadcrumb ───── */}
+      <div className="relative z-10 mx-auto max-w-[1200px] px-4 py-8 md:py-12 lg:px-8 nb-fade-in">
         <nav className="mb-6 flex items-center gap-2 text-sm font-bold">
-          <a href="/" className="text-[#6B7280] hover:text-[#1A1A2E] transition-colors">Trang chủ</a>
+          <a href="/" className="text-[#6B7280] transition-colors hover:text-[#1A1A2E]">
+            Trang chủ
+          </a>
           <span className="text-[#6B7280]">/</span>
           <span className="text-[#1A1A2E]">Hồ sơ phụ huynh</span>
         </nav>
 
-        {/* ───── Main Layout — NB Card ───── */}
-        <div className="nb-card-static overflow-hidden rounded-2xl flex flex-col lg:flex-row min-h-[500px]">
-          {/* ── Left Sidebar ── */}
-          <div className="lg:w-[280px] flex-shrink-0 border-b-2 lg:border-b-0 lg:border-r-2 border-[#1A1A2E] bg-[#FAFAF5] p-5 xl:p-6 flex flex-col">
-            {/* User info */}
-            <div className="flex items-center gap-3.5 mb-8">
-              <div className="w-12 h-12 bg-[#EDE9FE] rounded-xl flex items-center justify-center border-2 border-[#1A1A2E] shadow-[3px_3px_0_#1A1A2E]">
-                {user.avatar
-                  ? <img src={user.avatar} alt="" className="w-full h-full rounded-xl object-cover" />
-                  : <User className="w-5 h-5 text-[#1A1A2E]" />}
+        <div className="nb-card-static flex min-h-[500px] flex-col overflow-hidden rounded-2xl lg:flex-row">
+          <div className="flex flex-shrink-0 flex-col border-b-2 border-[#1A1A2E] bg-[#FAFAF5] p-5 lg:w-[280px] lg:border-b-0 lg:border-r-2 xl:p-6">
+            <div className="mb-8 flex items-center gap-3.5">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl border-2 border-[#1A1A2E] bg-[#EDE9FE] shadow-[3px_3px_0_#1A1A2E]">
+                {user.avatar ? (
+                  <img src={user.avatar} alt="" className="h-full w-full rounded-xl object-cover" />
+                ) : (
+                  <User className="h-5 w-5 text-[#1A1A2E]" />
+                )}
               </div>
               <div className="min-w-0 flex-1">
-                <p className="font-bold text-[#6B7280] text-[10px] mb-0.5 uppercase tracking-widest">Tài khoản</p>
-                <p className="font-extrabold text-[#1A1A2E] text-[16px] leading-tight truncate" title={user.fullName}>{user.fullName}</p>
+                <p className="mb-0.5 text-[10px] font-bold uppercase tracking-widest text-[#6B7280]">
+                  Tài khoản
+                </p>
+                <p className="truncate text-[16px] font-extrabold leading-tight text-[#1A1A2E]" title={user.fullName}>
+                  {user.fullName}
+                </p>
               </div>
             </div>
 
-            {/* Nav Menu */}
-            <nav className="flex flex-col gap-1.5 flex-1">
-              {SIDEBAR_ITEMS.map(item => {
+            <nav className="flex flex-1 flex-col gap-1.5">
+              {SIDEBAR_ITEMS.map((item) => {
                 const Icon = item.icon;
                 return (
-                  <NavLink
-                    key={item.to}
-                    to={item.to}
-                  >
+                  <NavLink key={item.to} to={item.to}>
                     {({ isActive }) => (
                       <div
-                        className={`group relative flex items-center gap-3 px-3.5 py-3 rounded-xl text-left transition-all font-bold text-[13px] border-2 ${isActive
-                          ? "bg-[#B8A9E8] text-[#1A1A2E] border-[#1A1A2E] shadow-[3px_3px_0_#1A1A2E]"
-                          : "text-[#4C5769] border-transparent hover:bg-[#EDE9FE] hover:border-[#1A1A2E]/20"
+                        className={`group relative flex items-center gap-3 rounded-xl border-2 px-3.5 py-3 text-left text-[13px] font-bold transition-all ${isActive
+                          ? "border-[#1A1A2E] bg-[#B8A9E8] text-[#1A1A2E] shadow-[3px_3px_0_#1A1A2E]"
+                          : "border-transparent text-[#4C5769] hover:border-[#1A1A2E]/20 hover:bg-[#EDE9FE]"
                           }`}
                       >
-                        <Icon className={`w-[18px] h-[18px] transition-colors ${isActive ? "text-[#1A1A2E]" : "text-[#4C5769] group-hover:text-[#1A1A2E]"}`} />
+                        <Icon
+                          className={`h-[18px] w-[18px] transition-colors ${isActive ? "text-[#1A1A2E]" : "text-[#4C5769] group-hover:text-[#1A1A2E]"
+                            }`}
+                        />
                         <span className="flex-1">{item.label}</span>
-                        {isActive && <ChevronRight className="w-3.5 h-3.5 opacity-70" />}
+                        {isActive && <ChevronRight className="h-3.5 w-3.5 opacity-70" />}
                       </div>
                     )}
                   </NavLink>
@@ -146,14 +159,13 @@ export const ParentProfile = (): JSX.Element => {
               })}
             </nav>
 
-            {/* Logout */}
-            <div className="mt-6 pt-5 border-t-2 border-[#1A1A2E]/10">
+            <div className="mt-6 border-t-2 border-[#1A1A2E]/10 pt-5">
               <button
                 onClick={handleLogout}
-                className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-left transition-all font-bold text-[13px] text-[#991B1B] hover:bg-[#FEE2E2] border-2 border-transparent hover:border-[#991B1B]/30"
+                className="flex w-full items-center gap-3 rounded-xl border-2 border-transparent px-3.5 py-3 text-left text-[13px] font-bold text-[#991B1B] transition-all hover:border-[#991B1B]/30 hover:bg-[#FEE2E2]"
               >
-                <LogOut className={`w-[18px] h-[18px] ${isLoggingOut ? "animate-spin" : ""}`} />
-                {isLoggingOut ? "Đang xuất..." : "Đăng Xuất"}
+                <LogOut className={`h-[18px] w-[18px] ${isLoggingOut ? "animate-spin" : ""}`} />
+                {isLoggingOut ? "Đang xuất..." : "Đăng xuất"}
               </button>
             </div>
           </div>
