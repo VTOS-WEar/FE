@@ -337,6 +337,7 @@ export type OutfitDto = {
     sizeChartID: string | null;
     isAvailable: boolean;
     isCustomizable: boolean;
+    canDelete: boolean;
     createdAt: string;
     updatedAt: string | null;
 };
@@ -414,6 +415,15 @@ export async function updateOutfit(id: string, data: UpdateOutfitRequest): Promi
 export async function deleteOutfit(id: string): Promise<void> {
     await api<void>(`${endpoints.schools.outfits}/${id}`, {
         method: "DELETE",
+        auth: true,
+    });
+}
+
+/** Toggle outfit visibility (hide/show) */
+export async function setOutfitAvailability(id: string, isAvailable: boolean): Promise<OutfitDto> {
+    return api<OutfitDto>(`${endpoints.schools.outfits}/${id}/availability`, {
+        method: "PATCH",
+        body: JSON.stringify({ isAvailable }),
         auth: true,
     });
 }

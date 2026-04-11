@@ -6,9 +6,11 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { Bell, ChevronDown, Clock, GraduationCap, LogIn, LogOut, Menu, Package, Search, Settings, ShoppingCart, Star, User, Users, X } from "lucide-react"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useNavigate, Link, useLocation } from "react-router-dom"
 import { useCart } from "../../contexts/CartContext"
+import { getParentProfile } from "../../lib/api/users"
+import { searchPublic, type PublicSearchResponse } from "../../lib/api/public"
 
 function getSessionUser(): { fullName: string; role: string; avatar?: string | null } | null {
   const raw = localStorage.getItem("user") || sessionStorage.getItem("user")
@@ -46,12 +48,85 @@ export function NavbarGuest() {
     return () => clearInterval(interval)
   }, [])
 
+  // Fetch avatar from API when logged in as Parent but localStorage has no avatar yet
+  useEffect(() => {
+    if (!loggedIn || userAvatar || userRole !== "Parent") return
+    getParentProfile()
+      .then(data => {
+        if (!data.avatar) return
+        setUserAvatar(data.avatar)
+        const storage = localStorage.getItem("access_token") ? localStorage : sessionStorage
+        const raw = storage.getItem("user")
+        if (raw) {
+          try {
+            storage.setItem("user", JSON.stringify({ ...JSON.parse(raw), avatar: data.avatar }))
+          } catch {}
+        }
+      })
+      .catch(() => {})
+  }, [loggedIn, userRole, userAvatar])
+
+  // Keep avatar in sync when AccountTab or ParentProfile dispatch vtos:user-updated
+  useEffect(() => {
+    const refresh = () => {
+      const u = getSessionUser()
+      if (u) {
+        setUserName(u.fullName || "Hồ sơ")
+        setUserAvatar(u.avatar || null)
+      }
+    }
+    window.addEventListener("vtos:user-updated", refresh)
+    return () => window.removeEventListener("vtos:user-updated", refresh)
+  }, [])
+
   // Close menu on route change
   useEffect(() => {
     setIsMenuOpen(false)
+    setShowDropdown(false)
   }, [location.pathname, location.hash])
 
   const cartCount = loggedIn ? cartCtx.getItemCount() : 0
+
+  /* ── Search state ── */
+  const [searchQuery, setSearchQuery] = useState("")
+  const [searchResults, setSearchResults] = useState<PublicSearchResponse | null>(null)
+  const [searchLoading, setSearchLoading] = useState(false)
+  const [showDropdown, setShowDropdown] = useState(false)
+  const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const searchContainerRef = useRef<HTMLDivElement>(null)
+
+  const onSearchChange = (value: string) => {
+    setSearchQuery(value)
+    if (searchTimerRef.current) clearTimeout(searchTimerRef.current)
+    if (!value.trim()) {
+      setSearchResults(null)
+      setShowDropdown(false)
+      return
+    }
+    setSearchLoading(true)
+    setShowDropdown(true)
+    searchTimerRef.current = setTimeout(async () => {
+      try {
+        const data = await searchPublic(value.trim())
+        setSearchResults(data)
+      } catch {
+        setSearchResults(null)
+      } finally {
+        setSearchLoading(false)
+      }
+    }, 300)
+  }
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (searchContainerRef.current && !searchContainerRef.current.contains(e.target as Node)) {
+        setShowDropdown(false)
+      }
+    }
+    document.addEventListener("mousedown", handler)
+    return () => document.removeEventListener("mousedown", handler)
+  }, [])
 
   const handleLogout = () => {
     localStorage.removeItem("access_token")
@@ -218,11 +293,145 @@ export function NavbarGuest() {
 
             <div className="mx-2 h-6 w-px bg-[#1A1A2E]/15" />
 
-            <div className="flex min-w-0 flex-1 items-center gap-2">
-              <Input placeholder="Tìm kiếm..." className="h-9 border-none bg-transparent text-sm font-medium shadow-none focus-visible:ring-0 placeholder:text-[#9CA3AF]" />
-              <button type="button" className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg border border-[#1A1A2E] bg-[#1A1A2E] text-white shadow-[2px_2px_0_#6B7280] transition-all duration-150 hover:shadow-[3px_3px_0_#6B7280] hover:-translate-y-[1px] active:shadow-none active:translate-y-0">
+            {/* ── Search Bar ── */}
+            <div className="relative flex min-w-0 flex-1 items-center gap-2" ref={searchContainerRef}>
+              <Input
+                value={searchQuery}
+                onChange={e => onSearchChange(e.target.value)}
+                onKeyDown={e => {
+                  if (e.key === "Enter" && searchQuery.trim()) {
+                    navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`)
+                    setSearchQuery("")
+                    setSearchResults(null)
+                    setShowDropdown(false)
+                  }
+                  if (e.key === "Escape") {
+                    setSearchQuery("")
+                    setSearchResults(null)
+                    setShowDropdown(false)
+                  }
+                }}
+                onFocus={() => { if (searchResults) setShowDropdown(true) }}
+                placeholder="Tìm kiếm trường, đồng phục..."
+                className="h-9 border-none bg-transparent text-sm font-medium shadow-none focus-visible:ring-0 placeholder:text-[#9CA3AF]"
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  if (searchQuery.trim()) {
+                    navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`)
+                    setSearchQuery("")
+                    setSearchResults(null)
+                    setShowDropdown(false)
+                  }
+                }}
+                className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg border border-[#1A1A2E] bg-[#1A1A2E] text-white shadow-[2px_2px_0_#6B7280] transition-all duration-150 hover:shadow-[3px_3px_0_#6B7280] hover:-translate-y-[1px] active:shadow-none active:translate-y-0"
+              >
                 <Search size={16} />
               </button>
+
+              {/* ── Search Dropdown ── */}
+              {showDropdown && (searchResults || searchLoading) && (
+                <div className="absolute top-full left-0 right-0 mt-2 z-[200] rounded-xl border-2 border-[#1A1A2E] bg-white shadow-[4px_4px_0_#1A1A2E] overflow-hidden">
+                  {searchLoading && (
+                    <div className="flex items-center justify-center gap-3 py-6">
+                      <div className="w-5 h-5 rounded-full border-2 border-[#EDE9FE] border-t-[#1A1A2E] animate-spin" />
+                      <span className="text-sm text-[#6B7280] font-medium">Đang tìm...</span>
+                    </div>
+                  )}
+                  {!searchLoading && searchResults && (
+                    <>
+                      {/* Schools section */}
+                      {searchResults.schools.length > 0 && (
+                        <div>
+                          <div className="px-4 py-2 bg-[#F6F1E8] border-b border-[#1A1A2E]/10">
+                            <span className="text-[11px] font-black uppercase tracking-wider text-[#1A1A2E]/50">Trường học</span>
+                          </div>
+                          {searchResults.schools.slice(0, 3).map(school => (
+                            <button
+                              key={school.id}
+                              onClick={() => {
+                                navigate(`/schools/${school.id}`)
+                                setSearchQuery("")
+                                setSearchResults(null)
+                                setShowDropdown(false)
+                              }}
+                              className="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-[#FFF8F0] transition-colors border-b border-[#1A1A2E]/5 last:border-0"
+                            >
+                              <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg border border-[#1A1A2E]/20 bg-[#C8E44D] shadow-[1px_1px_0_#1A1A2E]">
+                                <GraduationCap size={14} className="text-[#1A1A2E]" />
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <p className="text-sm font-bold text-[#1A1A2E] truncate">{school.schoolName}</p>
+                                <p className="text-xs text-[#6B7280] truncate">{school.address || "—"}</p>
+                              </div>
+                              <span className="text-[10px] font-bold text-[#6B7280] shrink-0">{school.uniformCount} đồng phục</span>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                      {/* Uniforms section */}
+                      {searchResults.uniforms.length > 0 && (
+                        <div>
+                          <div className="px-4 py-2 bg-[#F6F1E8] border-b border-[#1A1A2E]/10">
+                            <span className="text-[11px] font-black uppercase tracking-wider text-[#1A1A2E]/50">Đồng phục</span>
+                          </div>
+                          {searchResults.uniforms.slice(0, 3).map(item => (
+                            <button
+                              key={item.id}
+                              onClick={() => {
+                                navigate(`/outfits/${item.id}`)
+                                setSearchQuery("")
+                                setSearchResults(null)
+                                setShowDropdown(false)
+                              }}
+                              className="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-[#FFF8F0] transition-colors border-b border-[#1A1A2E]/5 last:border-0"
+                            >
+                              <div className="h-9 w-9 flex-shrink-0 overflow-hidden rounded-lg border border-[#1A1A2E]/20 shadow-[1px_1px_0_#1A1A2E]">
+                                {item.mainImageUrl ? (
+                                  <img src={item.mainImageUrl} alt={item.outfitName} className="h-full w-full object-cover" />
+                                ) : (
+                                  <div className="flex h-full w-full items-center justify-center bg-[#EDE9FE]">
+                                    <Package size={12} className="text-[#1A1A2E]" />
+                                  </div>
+                                )}
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <p className="text-sm font-bold text-[#1A1A2E] truncate">{item.outfitName}</p>
+                                <p className="text-xs text-[#6B7280] truncate">{item.schoolName}</p>
+                              </div>
+                              <span className="text-[11px] font-extrabold text-[#6938EF] shrink-0">
+                                {new Intl.NumberFormat("vi-VN").format(item.price)}đ
+                              </span>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                      {/* Footer: view all */}
+                      {(searchResults.totalSchools > 0 || searchResults.totalUniforms > 0) && (
+                        <button
+                          onClick={() => {
+                            navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`)
+                            setSearchQuery("")
+                            setSearchResults(null)
+                            setShowDropdown(false)
+                          }}
+                          className="flex w-full items-center justify-center gap-2 px-4 py-3 bg-[#F6F1E8] border-t-2 border-[#1A1A2E]/10 text-sm font-bold text-[#6938EF] hover:bg-[#EDE9FE] transition-colors"
+                        >
+                          Xem {searchResults.totalSchools + searchResults.totalUniforms} kết quả →
+                        </button>
+                      )}
+                      {/* No results */}
+                      {searchResults.schools.length === 0 && searchResults.uniforms.length === 0 && (
+                        <div className="flex flex-col items-center justify-center py-8 gap-2">
+                          <Search size={24} className="text-[#9CA3AF]" />
+                          <p className="text-sm font-medium text-[#6B7280]">Không tìm thấy kết quả cho "{searchQuery}"</p>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+              )}
             </div>
           </div>
 

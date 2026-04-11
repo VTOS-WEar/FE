@@ -1,6 +1,7 @@
 import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { HubConnectionBuilder, HubConnectionState, LogLevel } from "@microsoft/signalr";
 import {
     Breadcrumb, BreadcrumbItem, BreadcrumbLink,
     BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator,
@@ -10,6 +11,11 @@ import { TopNavBar } from "../../components/layout/TopNavBar";
 import { useAdminSidebarConfig } from "../../hooks/useAdminSidebarConfig";
 import { getUsers, getUserDetail, approveUser, suspendUser, type UserDto, type UserDetailDto } from "../../lib/api/admin";
 import * as XLSX from "xlsx";
+
+const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "";
+function getAccessToken(): string {
+    return localStorage.getItem("access_token") || sessionStorage.getItem("access_token") || "";
+}
 
 /* ── Design tokens (matching html.ts reference) ── */
 const T = {
@@ -116,7 +122,18 @@ export const AdminUsers = (): JSX.Element => {
     /* ── Detail modal ── */
     const [selected, setSelected] = useState<UserDetailDto | null>(null);
     const [detailLoading, setDetailLoading] = useState(false);
-    const [actionLoading, setActionLoading] = useState(false);
+    // useRef spam-guard: synchronous, never stale unlike useState.
+    // Modal closes instantly so no loading spinner state is needed.
+    const actionLoadingRef = useRef(false);
+
+    /* ── Toast notification ── */
+    const [toast, setToast] = useState<{ message: string; type: "success" | "warning" | "error" } | null>(null);
+    const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const showToast = useCallback((message: string, type: "success" | "warning" | "error" = "success") => {
+        if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+        setToast({ message, type });
+        toastTimerRef.current = setTimeout(() => setToast(null), 3000);
+    }, []);
 
     /* ── Fetch ── */
     const fetchUsers = useCallback(async () => {
@@ -126,6 +143,33 @@ export const AdminUsers = (): JSX.Element => {
         finally { setLoading(false); }
     }, []);
     useEffect(() => { fetchUsers(); }, [fetchUsers]);
+
+    /* ── SignalR: real-time user status update ── */
+    const connectionRef = useRef<ReturnType<ReturnType<typeof HubConnectionBuilder.prototype.build>> | null>(null);
+    useEffect(() => {
+        const token = getAccessToken();
+        if (!token) return;
+
+        const connection = new HubConnectionBuilder()
+            .withUrl(`${API_BASE}/hubs/notifications`, { accessTokenFactory: () => token })
+            .withAutomaticReconnect([0, 2000, 5000, 10000])
+            .configureLogging(LogLevel.Warning)
+            .build();
+
+        connectionRef.current = connection;
+
+        // Listen for UserStatusChanged events broadcast from SuspendUserCommandHandler / ApproveUserCommandHandler
+        connection.on("UserStatusChanged", (userId: string, isActive: boolean) => {
+            setUsers(prev => prev.map(u => u.id === userId ? { ...u, status: isActive ? "Active" : "Suspended" } : u));
+        });
+
+        connection.start().catch(() => { /* silent fail — page still works via fetchUsers on action */ });
+
+        return () => {
+            if (connection.state === HubConnectionState.Connected) connection.stop();
+            connectionRef.current = null;
+        };
+    }, []);
 
     /* ── Derived data ── */
     const filtered = useMemo(() => {
@@ -162,14 +206,34 @@ export const AdminUsers = (): JSX.Element => {
     };
 
     const handleToggleBan = async () => {
-        if (!selected) return;
-        setActionLoading(true);
+        // useRef guard — synchronous, never stale unlike useState
+        if (!selected || actionLoadingRef.current) return;
+        actionLoadingRef.current = true;
+
+        const targetId = selected.id;
+        const userName = selected.fullName;
+        const prevStatus = selected.status;
+        const newStatus = prevStatus === "Suspended" ? "Active" : "Suspended";
+
+        // Close modal & update table IMMEDIATELY — no flash, no spinner visible
+        setSelected(null);
+        setUsers(prev => prev.map(u => u.id === targetId ? { ...u, status: newStatus } : u));
+
         try {
-            if (selected.status === "Suspended") await approveUser(selected.id);
-            else await suspendUser(selected.id);
-            setSelected(null); await fetchUsers();
-        } catch { /* */ }
-        finally { setActionLoading(false); }
+            if (prevStatus === "Suspended") await approveUser(targetId);
+            else await suspendUser(targetId);
+            if (prevStatus === "Suspended") {
+                showToast(`🔓 Đã mở khoá tài khoản "${userName}"`, "success");
+            } else {
+                showToast(`🔒 Đã khoá tài khoản "${userName}"`, "warning");
+            }
+        } catch {
+            // API failed — revert the optimistic update so the table shows the real state
+            setUsers(prev => prev.map(u => u.id === targetId ? { ...u, status: prevStatus } : u));
+            showToast(`❌ Thao tác thất bại, vui lòng thử lại`, "error");
+        } finally {
+            actionLoadingRef.current = false;
+        }
     };
 
     const handleExportCSV = () => {
@@ -477,10 +541,10 @@ export const AdminUsers = (): JSX.Element => {
                                     ))}
                                 </div>
                                 {selected.role !== "Admin" && (
-                                    <button onClick={handleToggleBan} disabled={actionLoading}
-                                        className="w-full rounded-[12px] border-[3px] py-3 text-[15px] font-extrabold text-white transition-all disabled:opacity-50 hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+                                    <button onClick={handleToggleBan}
+                                        className="w-full rounded-[12px] border-[3px] py-3 text-[15px] font-extrabold text-white transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
                                         style={{ borderColor: T.ink, background: isBanned ? "#10B981" : "#EF4444", boxShadow: `4px 4px 0 ${T.ink}` }}>
-                                        {actionLoading ? "Đang xử lý..." : isBanned ? "🔓 Mở khoá tài khoản" : "🔒 Khoá tài khoản"}
+                                        {isBanned ? "🔓 Mở khoá tài khoản" : "🔒 Khoá tài khoản"}
                                     </button>
                                 )}
                                 <button onClick={() => setSelected(null)}
@@ -489,6 +553,27 @@ export const AdminUsers = (): JSX.Element => {
                             </>
                         )}
                     </div>
+                </div>
+            )}
+
+            {/* ── Toast notification ── */}
+            {toast && (
+                <div
+                    className="fixed top-6 right-6 z-[60] flex items-center gap-3 rounded-[14px] border-[3px] px-5 py-4 text-[15px] font-extrabold nb-fade-in"
+                    style={{
+                        borderColor: T.ink,
+                        background: toast.type === "success" ? T.successSoft : toast.type === "warning" ? T.dangerSoft : T.dangerSoft,
+                        color: toast.type === "success" ? "#187A4C" : "#B2452D",
+                        boxShadow: `4px 4px 0 ${T.ink}`,
+                        minWidth: "260px",
+                        maxWidth: "400px",
+                    }}
+                >
+                    <span className="flex-1">{toast.message}</span>
+                    <button
+                        onClick={() => setToast(null)}
+                        className="ml-2 text-[18px] leading-none opacity-60 hover:opacity-100 transition-opacity"
+                    >✕</button>
                 </div>
             )}
         </div>

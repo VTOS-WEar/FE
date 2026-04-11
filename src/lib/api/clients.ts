@@ -99,6 +99,9 @@ export async function api<T>(
         throw new ApiError(err.message, err.status, err.details);
     }
 
+    // 204 No Content or empty body (some endpoints return 200 with no body) — skip JSON parse
     if (res.status === 204) return null as unknown as T;
-    return (await res.json()) as T;
+    const text = await res.text();
+    if (!text) return null as unknown as T;
+    return JSON.parse(text) as T;
 }

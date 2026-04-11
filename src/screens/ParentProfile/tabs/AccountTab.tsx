@@ -1,8 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Mail, Phone, Camera, Shield, ShieldCheck } from "lucide-react";
+import { Mail, Phone, Camera } from "lucide-react";
 import { updateParentProfile, getParentProfile, updateParentAvatar } from "../../../lib/api/users";
-import { disable2FA } from "../../../lib/api/auth";
 
 const DAYS = Array.from({ length: 31 }, (_, i) => i + 1);
 const MONTHS = Array.from({ length: 12 }, (_, i) => i + 1);
@@ -18,7 +17,6 @@ const genderMap: Record<string, number> = { "Nam": 1, "Nữ": 2, "Khác": 3 };
 
 export const AccountTab = (): JSX.Element => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<"personal" | "security">("personal");
   const [user, setUser] = useState<UserInfo | null>(null);
   const [profileLoading, setProfileLoading] = useState(true);
   const [fullName, setFullName] = useState("");
@@ -39,13 +37,6 @@ export const AccountTab = (): JSX.Element => {
   const [avatarSaving, setAvatarSaving] = useState(false);
   const [avatarMsg, setAvatarMsg] = useState("");
   const avatarInputRef = useRef<HTMLInputElement>(null);
-
-  // 2FA state
-  const [is2FAEnabled, setIs2FAEnabled] = useState(false);
-  const [showDisable2FA, setShowDisable2FA] = useState(false);
-  const [disable2FACode, setDisable2FACode] = useState("");
-  const [disabling2FA, setDisabling2FA] = useState(false);
-  const [disable2FAMsg, setDisable2FAMsg] = useState("");
 
   const getStorage = () => localStorage.getItem("access_token") ? localStorage : sessionStorage;
   const syncUserStorage = (updates: Partial<UserInfo>) => {
@@ -81,16 +72,13 @@ export const AccountTab = (): JSX.Element => {
           if (!isNaN(d.getTime())) { setDobDay(d.getDate()); setDobMonth(d.getMonth() + 1); setDobYear(d.getFullYear()); }
         }
         getStorage().setItem("user", JSON.stringify(u));
+        localStorage.setItem("vtos_2fa_enabled", (data.twoFactorEnabled ?? false) ? "true" : "false");
+        window.dispatchEvent(new CustomEvent("vtos:user-updated"));
       } catch (err) { console.error("Failed to fetch profile:", err); }
       finally { setProfileLoading(false); }
     };
     fetchProfile();
   }, [navigate]);
-
-    useEffect(() => {
-      const twoFA = localStorage.getItem("vtos_2fa_enabled");
-      setIs2FAEnabled(twoFA === "true");
-    }, []);
 
   const handleSaveProfile = async () => {
     setSaving(true); setSaveMsg("");
@@ -147,6 +135,7 @@ export const AccountTab = (): JSX.Element => {
     try {
       const result = await updateParentAvatar(file);
       syncUserStorage({ avatar: result.avatarUrl });
+      window.dispatchEvent(new CustomEvent("vtos:user-updated"));
       setAvatarMsg("✓ Đã cập nhật avatar!");
       // Reset file input
       if (avatarInputRef.current) avatarInputRef.current.value = "";
@@ -186,22 +175,7 @@ export const AccountTab = (): JSX.Element => {
   const selectClass = "nb-input h-11 text-sm px-3";
 
   return (
-    <div className="space-y-0">
-      {/* Tabs — NB style */}
-      <div className="flex items-center gap-3 mb-8">
-        {(["personal", "security"] as const).map((tab) => (
-          <button key={tab} onClick={() => setActiveTab(tab)}
-            className={`px-5 py-2.5 rounded-xl font-bold text-sm transition-all border-2 ${activeTab === tab
-              ? "bg-[#B8A9E8] text-[#1A1A2E] border-[#1A1A2E] shadow-[3px_3px_0_#1A1A2E]"
-              : "bg-[#F3F4F6] text-[#4C5769] border-transparent hover:border-[#1A1A2E]/20 hover:bg-[#EDE9FE]"}`}>
-            {tab === "personal" ? "Thông tin cá nhân" : "Bảo mật"}
-          </button>
-        ))}
-      </div>
-
-      {/* Personal Info */}
-      {activeTab === "personal" && (
-        <div className="space-y-8">
+    <div className="space-y-8">
           <div className="flex flex-col md:flex-row gap-8">
             {/* Avatar */}
             <div className="flex flex-col items-center gap-3">
@@ -306,120 +280,6 @@ export const AccountTab = (): JSX.Element => {
             </button>
             {phoneMsg && <span className="font-bold text-sm text-[#065F46]">{phoneMsg}</span>}
           </div>
-        </div>
-      )}
-
-      {/* Security */}
-      {activeTab === "security" && (
-        <div className="space-y-6">
-          <div className="nb-card-static p-6">
-            <h3 className="font-extrabold text-[#1A1A2E] text-base mb-4">Đổi mật khẩu</h3>
-            <div className="space-y-4 max-w-md">
-              {["Mật khẩu hiện tại", "Mật khẩu mới", "Xác nhận mật khẩu mới"].map((label, i) => (
-                <div key={i}>
-                  <label className="font-bold text-[#1A1A2E] text-sm mb-1.5 block">{label}</label>
-                  <input type="password" placeholder={`Nhập ${label.toLowerCase()}`}
-                    className="nb-input w-full h-11 text-sm" />
-                </div>
-              ))}
-              <button className="nb-btn nb-btn-purple text-sm mt-2">
-                Cập nhật mật khẩu ✦
-              </button>
-            </div>
-          </div>
-
-          {/* 2FA Section */}
-          <div className="nb-card-static p-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-lg flex items-center justify-center border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E] ${is2FAEnabled ? 'bg-[#C8E44D]' : 'bg-[#EDE9FE]'}`}>
-                  {is2FAEnabled ? <ShieldCheck className="w-5 h-5 text-[#1A1A2E]" /> : <Shield className="w-5 h-5 text-[#1A1A2E]" />}
-                </div>
-                <div>
-                  <h3 className="font-extrabold text-[#1A1A2E] text-base">Xác thực 2 bước (2FA)</h3>
-                  <p className="font-medium text-[#6B7280] text-sm mt-0.5">
-                    Bảo vệ tài khoản bằng Google Authenticator
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className={`px-3 py-1 rounded-lg text-xs font-bold border-2 ${
-                  is2FAEnabled ? 'bg-[#C8E44D] text-[#1A1A2E] border-[#1A1A2E]' : 'bg-[#F3F4F6] text-[#6B7280] border-transparent'
-                }`}>
-                  {is2FAEnabled ? 'Đang bật' : 'Đang tắt'}
-                </span>
-                {is2FAEnabled ? (
-                  <button
-                    onClick={() => setShowDisable2FA(true)}
-                    className="nb-btn nb-btn-outline text-sm !text-[#991B1B] !border-[#FCA5A5] hover:!bg-[#FEE2E2]"
-                  >
-                    Tắt 2FA
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => navigate('/2fa-setup')}
-                    className="nb-btn nb-btn-purple text-sm"
-                  >
-                    Bật 2FA ✦
-                  </button>
-                )}
-              </div>
-            </div>
-
-            {/* Disable 2FA Dialog */}
-            {showDisable2FA && (
-              <div className="mt-4 nb-card-static p-4 !border-[#FCA5A5] !bg-[#FFF5F5]">
-                <p className="font-medium text-sm text-[#4C5769] mb-3">
-                  Nhập mã 6 chữ số từ ứng dụng xác thực để tắt 2FA:
-                </p>
-                <div className="flex items-center gap-3">
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    maxLength={6}
-                    value={disable2FACode}
-                    onChange={e => { if (/^\d*$/.test(e.target.value)) setDisable2FACode(e.target.value); }}
-                    placeholder="000000"
-                    className="nb-input max-w-[160px] h-11 text-center font-mono text-lg tracking-widest"
-                    autoFocus
-                  />
-                  <button
-                    onClick={async () => {
-                      if (disable2FACode.length !== 6) return;
-                      setDisabling2FA(true); setDisable2FAMsg("");
-                      try {
-                        const token = localStorage.getItem("access_token")!;
-                        await disable2FA(disable2FACode, token);
-                        setIs2FAEnabled(false);
-                        localStorage.setItem("vtos_2fa_enabled", "false");
-                        setShowDisable2FA(false); setDisable2FACode("");
-                        setDisable2FAMsg("✓ Đã tắt 2FA");
-                      } catch (err: any) {
-                        setDisable2FAMsg(err?.message || "Mã không hợp lệ");
-                      } finally { setDisabling2FA(false); }
-                    }}
-                    disabled={disabling2FA || disable2FACode.length !== 6}
-                    className="nb-btn text-sm !bg-[#991B1B] !text-white !border-[#1A1A2E] disabled:opacity-50"
-                  >
-                    {disabling2FA ? "Đang xử lý..." : "Xác nhận tắt"}
-                  </button>
-                  <button
-                    onClick={() => { setShowDisable2FA(false); setDisable2FACode(""); setDisable2FAMsg(""); }}
-                    className="text-[#6B7280] hover:text-[#1A1A2E] font-bold text-sm transition-colors"
-                  >
-                    Hủy
-                  </button>
-                </div>
-                {disable2FAMsg && (
-                  <p className={`mt-2 font-bold text-sm ${
-                    disable2FAMsg.startsWith("✓") ? "text-[#065F46]" : "text-[#991B1B]"
-                  }`}>{disable2FAMsg}</p>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
-      )}
     </div>
   );
 };

@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState, useRef } from "react";
 import { useNavigate, NavLink, Outlet, useLocation } from "react-router-dom";
 import {
   User, LogOut, ShoppingBag, History, Star, Settings, GraduationCap, ChevronRight
 } from "lucide-react";
 import { GuestLayout } from "../../components/layout/GuestLayout";
 import { AnimatePresence, motion } from "framer-motion";
+import { getParentProfile } from "../../lib/api/users";
 
 /* ─── Sidebar Menu Items ─── */
 const SIDEBAR_ITEMS = [
@@ -20,15 +21,64 @@ export const ParentProfile = (): JSX.Element => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const prevPathRef = useRef(location.pathname);
+  const [showLoader, setShowLoader] = useState(false);
 
-  /* ── Auth guard ── */
-  const rawUser = localStorage.getItem("user") || sessionStorage.getItem("user");
-  let user: { fullName?: string; avatar?: string | null } | null = null;
-  try { if (rawUser) user = JSON.parse(rawUser); } catch { /* ignore */ }
+  /* ── User state (reactive: re-renders on avatar/name update) ── */
+  const [user, setUser] = useState<{ fullName?: string; avatar?: string | null } | null>(() => {
+    try {
+      const raw = localStorage.getItem("user") ?? sessionStorage.getItem("user");
+      return raw ? JSON.parse(raw) : null;
+    } catch { return null; }
+  });
 
   useEffect(() => {
-    if (!rawUser) navigate("/signin", { replace: true });
-  }, [navigate, rawUser]);
+    if (!user) navigate("/signin", { replace: true });
+  }, [navigate, user]);
+
+  useEffect(() => {
+    const refresh = () => {
+      try {
+        const raw = localStorage.getItem("user") ?? sessionStorage.getItem("user");
+        if (raw) setUser(JSON.parse(raw));
+      } catch {}
+    };
+    window.addEventListener("vtos:user-updated", refresh);
+    return () => window.removeEventListener("vtos:user-updated", refresh);
+  }, []);
+
+  // Fetch avatar + fullName from API on mount so sidebar shows immediately after login
+  useEffect(() => {
+    const syncFromApi = async () => {
+      try {
+        const data = await getParentProfile();
+        const storage = localStorage.getItem("access_token") ? localStorage : sessionStorage;
+        const raw = storage.getItem("user");
+        if (!raw) return;
+        const stored = JSON.parse(raw);
+        const updated = { ...stored, avatar: data.avatar ?? stored.avatar, fullName: data.fullName || stored.fullName };
+        storage.setItem("user", JSON.stringify(updated));
+        setUser(updated);
+      } catch { /* non-critical */ }
+    };
+    syncFromApi();
+  }, []);
+
+  // useLayoutEffect fires after DOM commit but BEFORE browser paint
+  // — guarantees the loader is visible before the user sees anything
+  useLayoutEffect(() => {
+    if (location.pathname !== prevPathRef.current) {
+      prevPathRef.current = location.pathname;
+      setShowLoader(true);
+    }
+  }, [location.pathname]);
+
+  // Timer: dismiss loader after overlay has been visible
+  useEffect(() => {
+    if (!showLoader) return;
+    const t = setTimeout(() => setShowLoader(false), 400);
+    return () => clearTimeout(t);
+  }, [showLoader]);
 
   const handleLogout = () => {
     setIsLoggingOut(true);
@@ -109,18 +159,39 @@ export const ParentProfile = (): JSX.Element => {
           </div>
 
           {/* ── Right Content ── */}
-          <div className="flex-1 min-w-0 bg-white">
+          <div className="flex-1 min-w-0 bg-white relative overflow-hidden">
+            {/* Loading overlay — shown briefly on tab change before new content mounts */}
+            <AnimatePresence>
+              {showLoader && (
+                <motion.div
+                  key="tab-loader"
+                  initial={{ opacity: 1 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute inset-0 z-10 flex items-center justify-center bg-white"
+                >
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="w-10 h-10 rounded-full border-[3px] border-[#EDE9FE] border-t-[#1A1A2E] animate-spin" />
+                    <p className="text-xs font-bold text-[#6B7280] tracking-wide">Đang tải...</p>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+            {/* Content — only mounts after loader clears */}
             <AnimatePresence mode="wait">
-              <motion.div
-                key={location.pathname}
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -15 }}
-                transition={{ duration: 0.3, ease: "easeOut" }}
-                className="h-full p-5 lg:p-8"
-              >
-                <Outlet />
-              </motion.div>
+              {!showLoader && (
+                <motion.div
+                  key={location.pathname}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2, ease: "easeInOut" }}
+                  className="h-full p-5 lg:p-8"
+                >
+                  <Outlet />
+                </motion.div>
+              )}
             </AnimatePresence>
           </div>
         </div>

@@ -167,6 +167,28 @@ export async function resetPassword(payload: ResetPasswordRequest) {
     });
 }
 //#endregion
+//#region Change Password
+export type ChangePasswordRequest = {
+    otp: string;
+    newPassword: string;
+    confirmPassword: string;
+};
+
+export async function requestChangePasswordOtp(accessToken: string) {
+    return api<{ message: string }>(endpoints.auth.changePasswordTeRequest, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${accessToken}` },
+    });
+}
+
+export async function changePassword(dto: ChangePasswordRequest, accessToken: string) {
+    return api<{ message: string }>(endpoints.auth.changePassword, {
+        method: "POST",
+        body: JSON.stringify(dto),
+        headers: { Authorization: `Bearer ${accessToken}` },
+    });
+}
+//#endregion
 //#region Verify Phone
 export type VerifyPhoneRequest = {
     phone: string;

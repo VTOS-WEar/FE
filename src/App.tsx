@@ -66,7 +66,10 @@ import { AdminAccountRequests } from "./screens/AdminAccountRequests";
 import AdminTransactions from "./screens/AdminTransactions/AdminTransactions";
 import AdminComplaints from "./screens/AdminComplaints/AdminComplaints";
 import { ProviderProfile } from "./screens/ProviderProfile/ProviderProfile";
+import { ProviderAccountSettings } from "./screens/ProviderProfile/ProviderAccountSettings";
+import { SchoolAccountSettings } from "./screens/SchoolProfile/SchoolAccountSettings";
 import { HowItWorks } from "./screens/HowItWorks/HowItWorks";
+import { SearchPage } from "./screens/Search/SearchPage";
 import { useEffect, useRef } from "react";
 
 /** Smart root redirect: School→dashboard, others→homepage */
@@ -229,6 +232,14 @@ const router = createBrowserRouter([
     path: "/provider/profile",
     element: <RoleGuard allowedRoles={["Provider"]}><ProviderProfile /></RoleGuard>,
   },
+  {
+    path: "/provider/account-settings",
+    element: <RoleGuard allowedRoles={["Provider"]}><ProviderAccountSettings /></RoleGuard>,
+  },
+  {
+    path: "/school/account-settings",
+    element: <RoleGuard allowedRoles={["School"]}><SchoolAccountSettings /></RoleGuard>,
+  },
   // ── Admin routes ──
   {
     path: "/admin/dashboard",
@@ -289,6 +300,7 @@ const router = createBrowserRouter([
   { path: "/payment/cancel", element: <RoleGuard allowedRoles={["Parent"]} allowGuest><PaymentCancel /></RoleGuard> },
   { path: "/products", element: <RoleGuard allowedRoles={["Parent"]} allowGuest><ProductList /></RoleGuard> },
   { path: "/products/:id", element: <RoleGuard allowedRoles={["Parent"]} allowGuest><ProductDetail /></RoleGuard> },
+  { path: "/search", element: <RoleGuard allowedRoles={["Parent"]} allowGuest><SearchPage /></RoleGuard> },
   // ── Catch-all: redirect unknown routes to homepage ──
   { path: "*", element: <RootRedirect /> },
 ]);
