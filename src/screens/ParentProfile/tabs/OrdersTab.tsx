@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { ShoppingBag, CreditCard, Clock, CheckCircle, XCircle, ChevronDown, Star, Package } from "lucide-react";
+import { ShoppingBag, CreditCard, Clock, CheckCircle, XCircle, ChevronDown, Star, Package, Calendar, ChevronRight, User } from "lucide-react";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useToast } from "../../../contexts/ToastContext";
 import {
     payOrder,
@@ -81,10 +82,10 @@ function OrderStatusStepper({ orderStatus }: { orderStatus: string }) {
                         <div key={step.key} className="flex flex-col items-center relative z-10" style={{ flex: 1 }}>
                             <div
                                 className={`w-9 h-9 rounded-lg flex items-center justify-center text-sm font-bold transition-all duration-300 border-2 border-[#1A1A2E] ${isCompleted
-                                        ? "bg-[#C8E44D] shadow-[2px_2px_0_#1A1A2E]"
-                                        : isCurrent
-                                            ? "bg-[#B8A9E8] shadow-[2px_2px_0_#1A1A2E] animate-pulse"
-                                            : "bg-[#F3F4F6] border-[#D1D5DB]"
+                                    ? "bg-[#C8E44D] shadow-[2px_2px_0_#1A1A2E]"
+                                    : isCurrent
+                                        ? "bg-[#B8A9E8] shadow-[2px_2px_0_#1A1A2E] animate-pulse"
+                                        : "bg-[#F3F4F6] border-[#D1D5DB]"
                                     }`}
                             >
                                 {isCompleted ? (
@@ -152,90 +153,149 @@ function OrderCard({
     const firstItem = orderDetail?.items[0];
 
     return (
-        <div className="nb-card overflow-hidden">
-            {/* Header: Campaign name + Status */}
-            <div
-                className={`p-5 border-b-2 border-[#1A1A2E]/10 flex items-center justify-between ${showStepper ? "cursor-pointer hover:bg-[#F9FAFB]" : ""}`}
-                onClick={onExpandToggle}
-            >
-                <p className="font-bold text-[#1A1A2E] text-sm">
-                    📦 Chiến dịch: <span className="text-[#B8A9E8]">{orderDetail?.campaignName || "Đang tải..."}</span>
-                </p>
+        <div className={`nb-card overflow-hidden transition-all duration-300 ${isExpanded ? 'ring-2 ring-[#B8A9E8]' : ''}`}>
+            {/* Header: Campaign + Status */}
+            <div className="px-5 py-3 bg-[#1A1A2E]/5 flex items-center justify-between border-b-2 border-[#1A1A2E]/10">
+                <div className="flex items-center gap-2">
+                    <div className="bg-[#1A1A2E] text-white p-1 rounded">
+                        <ShoppingBag className="w-3.5 h-3.5" />
+                    </div>
+                    <span className="font-bold text-[10px] uppercase tracking-wider text-[#1A1A2E]">
+                        {orderDetail?.campaignName || "---"}
+                    </span>
+                </div>
                 <div className="flex items-center gap-3">
-                    <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold border-2 ${badge.bg} ${badge.text} ${badge.border}`}>
+                    <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold border-2 ${badge.bg} ${badge.text} ${badge.border} shadow-[2px_2px_0_#1A1A2E]`}>
                         {badge.icon}
                         {STATUS_LABELS[p.orderStatus] || p.orderStatus}
                     </span>
                     {showStepper && (
-                        <ChevronDown className={`w-5 h-5 text-[#6B7280] transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`} />
-                    )}
-                </div>
-            </div>
-
-            {/* Main content: Product image + details + Total */}
-            <div className="p-5 flex gap-4">
-                {/* Product Image */}
-                <div className="w-20 h-20 flex-shrink-0 bg-[#EDE9FE] rounded-lg border-2 border-[#1A1A2E] flex items-center justify-center overflow-hidden">
-                    {loadingDetail ? (
-                        <div className="w-4 h-4 border-2 border-[#B8A9E8] border-t-transparent rounded-full animate-spin" />
-                    ) : firstItem?.outfitImage ? (
-                        <img src={firstItem.outfitImage} alt={firstItem.outfitName} className="w-full h-full object-cover" />
-                    ) : (
-                        <Package className="w-8 h-8 text-[#B8A9E8]" />
-                    )}
-                </div>
-
-                {/* Product Details */}
-                <div className="flex-1">
-                    <p className="font-bold text-[#1A1A2E] text-sm">{firstItem?.outfitName || "Đang tải..."}</p>
-                    <div className="mt-2 space-y-1 text-xs text-[#6B7280]">
-                        <p>Kích cỡ: <span className="font-semibold text-[#1A1A2E]">{firstItem?.size || "-"}</span></p>
-                        <p>Số lượng: <span className="font-semibold text-[#1A1A2E]">{firstItem?.quantity || "-"}</span></p>
-                        <p>Giá: <span className="font-bold text-[#1A1A2E]">{firstItem ? fmt(firstItem.price / firstItem.quantity) : "-"}</span></p>
-                    </div>
-                </div>
-
-                {/* Total Info + Actions */}
-                <div className="text-right flex flex-col justify-between">
-                    <div>
-                        <p className="text-[11px] text-[#9CA3AF] font-medium">Tổng tiền ({orderDetail?.items.length} sản phẩm)</p>
-                        <p className="font-extrabold text-[#1A1A2E] text-base">{fmt(p.amount)}</p>
-                    </div>
-
-                    {/* Action Buttons */}
-                    <div className="flex flex-col gap-2 items-end">
-                        {p.orderStatus === "Delivered" && (
-                            <button
-                                onClick={(e) => { e.stopPropagation(); onNavigateFeedback(); }}
-                                className="nb-btn nb-btn-purple text-xs px-2 py-1 flex items-center gap-1 whitespace-nowrap"
-                            >
-                                <Star className="w-3 h-3" />
-                                Đánh giá
-                            </button>
-                        )}
-                        {isPending && (
-                            <button
-                                onClick={(e) => { e.stopPropagation(); onPay(); }}
-                                disabled={payingId === p.orderId}
-                                className="nb-btn nb-btn-purple text-xs px-2 py-1 disabled:opacity-50"
-                            >
-                                {payingId === p.orderId ? "Đang xử lý..." : "Thanh toán"}
-                            </button>
-                        )}
-                        <button
-                            onClick={() => onNavigateDetail()}
-                            className="nb-btn nb-btn-outline text-xs px-2 py-1"
-                        >
-                            Xem chi tiết
+                        <button onClick={onExpandToggle} className="p-1 hover:bg-white rounded transition-colors">
+                            <ChevronDown className={`w-4 h-4 text-[#1A1A2E] transition-transform duration-300 ${isExpanded ? "rotate-180" : ""}`} />
                         </button>
+                    )}
+                </div>
+            </div>
+
+            {/* Main Content */}
+            <div className="p-5">
+                <div className="flex flex-col lg:flex-row gap-6 justify-between items-start">
+                    {/* Left: Product & Child (Tightly Grouped) */}
+                    <div className="flex flex-row gap-5 items-start">
+                        {/* Product Image + Child Avatar Badge */}
+                        <div className="relative flex-shrink-0">
+                            <div className="w-28 h-28 rounded-2xl border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E] overflow-hidden bg-white flex items-center justify-center group pointer-events-none">
+                                {loadingDetail ? (
+                                    <div className="w-5 h-5 border-2 border-[#B8A9E8] border-t-transparent rounded-full animate-spin" />
+                                ) : firstItem?.outfitImage ? (
+                                    <img src={firstItem.outfitImage} alt={firstItem.outfitName} className="w-full h-full object-cover transition-transform group-hover:scale-110" />
+                                ) : (
+                                    <Package className="w-10 h-10 text-[#B8A9E8]" />
+                                )}
+                            </div>
+                            {/* Child Avatar Overlap */}
+                            {orderDetail?.childAvatar && (
+                                <div className="absolute -bottom-1 -right-1 w-9 h-9 rounded-full border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E] overflow-hidden bg-white z-10">
+                                    <Avatar className="w-full h-full rounded-none">
+                                        <AvatarImage src={orderDetail.childAvatar} />
+                                        <AvatarFallback className="text-[10px] font-black bg-[#E9D5FF]">
+                                            {orderDetail.childName.charAt(0)}
+                                        </AvatarFallback>
+                                    </Avatar>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="flex-1 space-y-2">
+                            <div className="flex items-center gap-2 text-[#9CA3AF] font-bold text-[10px] uppercase tracking-wider">
+                                <Calendar className="w-3.5 h-3.5" />
+                                {fmtDate(p.timestamp)}
+                                {orderDetail?.childName && (
+                                    <span className="text-[#1A1A2E] font-black ml-1">• {orderDetail.childName}</span>
+                                )}
+                            </div>
+
+                            <h3 className="font-extrabold text-[#1A1A2E] text-lg leading-tight">
+                                {firstItem?.outfitName || "Mã đơn: #" + p.orderId.substring(0, 8)}
+                            </h3>
+                            
+                            <div className="flex items-center gap-4 text-[12px] font-bold text-[#6B7280]">
+                                <span>Size: <span className="text-[#1A1A2E]">{firstItem?.size || "-"}</span></span>
+                                <span className="text-[#D1D5DB]">|</span>
+                                <span>Số lượng: <span className="text-[#1A1A2E]">{firstItem?.quantity || "-"}</span></span>
+                                {orderDetail && orderDetail.items.length > 1 && (
+                                    <>
+                                        <span className="text-[#D1D5DB]">|</span>
+                                        <span className="text-[#B8A9E8]">+{orderDetail.items.length - 1} sp khác</span>
+                                    </>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Right: Informative Summary Box */}
+                    <div className="flex flex-col justify-between p-4 bg-[#E9D5FF] border-2 border-[#1A1A2E] rounded-[20px] shadow-[4px_4px_0_#1A1A2E] min-w-[210px]">
+                        <div className="space-y-4">
+                            <div className="flex justify-between items-start border-b border-[#1A1A2E]/10 pb-3">
+                                <div>
+                                    <p className="text-[9px] text-[#1A1A2E] font-black uppercase tracking-widest mb-1.5 opacity-60">Thanh toán</p>
+                                    <div className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg border-2 font-black text-[9px] uppercase ${badge.bg === 'bg-white' ? 'bg-white' : badge.bg} ${badge.text} border-[#1A1A2E]`}>
+                                        {badge.label}
+                                    </div>
+                                </div>
+                                <div className="text-right">
+                                    <p className="text-[9px] text-[#1A1A2E] font-black uppercase tracking-widest mb-1.5 opacity-60">Sản phẩm</p>
+                                    <span className="font-black text-[#1A1A2E] text-xs">x{orderDetail?.items.length || 0}</span>
+                                </div>
+                            </div>
+
+                            <div className="flex justify-between items-end">
+                                <div>
+                                    <p className="text-[9px] text-[#1A1A2E] font-black uppercase tracking-widest mb-1 opacity-60">Tổng tiền</p>
+                                    <p className="font-black text-xl text-[#1A1A2E] leading-none">{fmt(p.amount)}</p>
+                                </div>
+                                <div className="flex flex-col gap-2">
+                                    <button
+                                        onClick={() => onNavigateDetail()}
+                                        className="text-[10px] font-black text-[#1A1A2E] flex items-center justify-end gap-1 hover:text-[#B8A9E8] transition-colors uppercase"
+                                    >
+                                        Chi tiết <ChevronRight className="w-3.5 h-3.5" />
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="mt-4 pt-4 border-t border-[#1A1A2E]/10">
+                            {p.orderStatus === "Delivered" && (
+                                <button
+                                    onClick={(e) => { e.stopPropagation(); onNavigateFeedback(); }}
+                                    className="nb-btn nb-btn-purple w-full text-[10px] py-2 font-black shadow-[3px_3px_0_#1A1A2E] bg-white text-[#1A1A2E]"
+                                >
+                                    ĐÁNH GIÁ NGAY
+                                </button>
+                            )}
+
+                            {isPending && (
+                                <button
+                                    onClick={(e) => { e.stopPropagation(); onPay(); }}
+                                    disabled={payingId === p.orderId}
+                                    className="nb-btn nb-btn-purple w-full text-[10px] py-2 font-black shadow-[3px_3px_0_#1A1A2E]"
+                                >
+                                    THANH TOÁN NGAY
+                                </button>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
 
-            {/* Expanded stepper */}
+            {/* Stepper (Collapsible) */}
             {isExpanded && showStepper && (
-                <div className="px-5 pb-5 border-t-2 border-[#1A1A2E]/10">
-                    <p className="font-bold text-[#6B7280] text-xs mt-3 mb-1">📍 Trạng thái đơn hàng</p>
+                <div className="px-5 pb-6 border-t-2 border-[#1A1A2E]/5 bg-[#F9FAFB]/50 animate-in slide-in-from-top duration-300">
+                    <div className="flex items-center gap-2 mt-4 mb-2">
+                        <div className="w-1.5 h-4 bg-[#B8A9E8] rounded-full" />
+                        <p className="font-bold text-[#1A1A2E] text-xs">Lộ trình đơn hàng</p>
+                    </div>
                     <OrderStatusStepper orderStatus={p.orderStatus} />
                 </div>
             )}
@@ -281,8 +341,8 @@ function StatusTabs({
             <button
                 onClick={() => onStatusChange(null)}
                 className={`relative px-4 py-2 rounded-lg font-bold text-sm whitespace-nowrap transition-all ${selectedStatus === null
-                        ? "bg-[#B8A9E8] text-white border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E]"
-                        : "bg-[#F3F4F6] text-[#6B7280] border-2 border-[#D1D5DB]"
+                    ? "bg-[#B8A9E8] text-white border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E]"
+                    : "bg-[#F3F4F6] text-[#6B7280] border-2 border-[#D1D5DB]"
                     }`}
             >
                 Tất cả
@@ -300,8 +360,8 @@ function StatusTabs({
                         key={status}
                         onClick={() => onStatusChange(status)}
                         className={`relative px-4 py-2 rounded-lg font-bold text-sm whitespace-nowrap transition-all ${selectedStatus === status
-                                ? "bg-[#B8A9E8] text-white border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E]"
-                                : "bg-[#F3F4F6] text-[#6B7280] border-2 border-[#D1D5DB]"
+                            ? "bg-[#B8A9E8] text-white border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E]"
+                            : "bg-[#F3F4F6] text-[#6B7280] border-2 border-[#D1D5DB]"
                             }`}
                     >
                         {STATUS_LABELS[status]}
