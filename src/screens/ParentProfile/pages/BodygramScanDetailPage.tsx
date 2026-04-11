@@ -12,6 +12,7 @@ type HighlightMetric = {
   key: string;
   label: string;
   value?: number | null;
+  unit?: string;
 };
 
 type OverlayPoint = { x: number; y: number };
@@ -19,24 +20,24 @@ type OverlayPoint = { x: number; y: number };
 const ICON_BASE_URL = "https://www.platform.bodygram.com/measurement/";
 
 const measurementDictionary: Record<string, string> = {
-  neckGirth: "Neck (Cổ)",
-  neckBaseGirth: "Neck Base (Gốc cổ)",
-  acrossBackShoulderWidth: "Shoulder Width (Vai)",
-  wristGirthR: "Wrist (Cổ tay)",
-  backNeckPointToWristLengthR: "Sleeve Length (Dài tay áo)",
-  outerArmLengthR: "Outer Arm Length (Tay ngoài)",
-  underBustGirth: "Under Bust (Dưới ngực)",
-  bellyWaistGirth: "Belly Waist (Eo bụng)",
-  backNeckPointToWaist: "Back Length (Dài lưng)",
-  topHipGirth: "Top Hip (Hông trên)",
-  midThighGirthR: "Mid Thigh (Giữa đùi)",
-  kneeGirthR: "Knee (Gối)",
-  outsideLegLengthR: "Outside Leg Length (Chân ngoài)",
-  insideLegLengthR: "Inside Leg Length (Chân trong)",
-  insideLegHeight: "Inside Leg Height (Chiều cao chân trong)",
-  outerAnkleHeightR: "Outer Ankle Height (Mắt cá ngoài)",
-  outseamR: "Outseam (Đường chạy ngoài)",
-  backNeckPointToGroundContoured: "Full Body Length (Toàn thân)",
+  neckGirth: "Vòng cổ",
+  neckBaseGirth: "Gốc cổ",
+  acrossBackShoulderWidth: "Chiều rộng vai",
+  wristGirthR: "Vòng cổ tay",
+  backNeckPointToWristLengthR: "Dài tay áo",
+  outerArmLengthR: "Chiều dài tay ngoài",
+  underBustGirth: "Vòng chân ngực",
+  bellyWaistGirth: "Vòng bụng",
+  backNeckPointToWaist: "Chiều dài lưng",
+  topHipGirth: "Vòng hông trên",
+  midThighGirthR: "Vòng đùi giữa",
+  kneeGirthR: "Vòng đầu gối",
+  outsideLegLengthR: "Chiều dài chân ngoài",
+  insideLegLengthR: "Chiều dài chân trong",
+  insideLegHeight: "Chiều cao chân trong",
+  outerAnkleHeightR: "Chiều cao mắt cá ngoài",
+  outseamR: "Dài quần (Outseam)",
+  backNeckPointToGroundContoured: "Chiều dài toàn thân",
 };
 
 const measurementIcons: Record<string, string> = {
@@ -62,7 +63,7 @@ const measurementIcons: Record<string, string> = {
 
 const measurementCategories = [
   {
-    title: "Upper Body & Arms (Phần trên & tay)",
+    title: "Thân trên & Tay",
     keys: [
       "neckGirth",
       "neckBaseGirth",
@@ -76,7 +77,7 @@ const measurementCategories = [
     ],
   },
   {
-    title: "Lower Body & Legs (Phần dưới & chân)",
+    title: "Thân dưới & Chân",
     keys: [
       "topHipGirth",
       "midThighGirthR",
@@ -160,12 +161,14 @@ export const BodygramScanDetailPage = (): JSX.Element => {
 
   const highlights = useMemo<HighlightMetric[]>(
     () => [
-      { key: "upperArm", label: "Tay trên", value: detail?.upperArmCm },
-      { key: "bust", label: "Ngực", value: detail?.bustCm },
-      { key: "waist", label: "Eo", value: detail?.waistCm },
-      { key: "thigh", label: "Đùi", value: detail?.thighCm },
-      { key: "hip", label: "Hông", value: detail?.hipCm },
-      { key: "calf", label: "Bắp chân", value: detail?.calfCm },
+      { key: "height", label: "Chiều cao", value: detail?.heightCm, unit: "cm" },
+      { key: "weight", label: "Cân nặng", value: detail?.weightKg, unit: "kg" },
+      { key: "upperArm", label: "Tay trên", value: detail?.upperArmCm, unit: "cm" },
+      { key: "bust", label: "Ngực", value: detail?.bustCm, unit: "cm" },
+      { key: "waist", label: "Eo", value: detail?.waistCm, unit: "cm" },
+      { key: "thigh", label: "Đùi", value: detail?.thighCm, unit: "cm" },
+      { key: "hip", label: "Hông", value: detail?.hipCm, unit: "cm" },
+      { key: "calf", label: "Bắp chân", value: detail?.calfCm, unit: "cm" },
     ],
     [detail],
   );
@@ -244,22 +247,24 @@ export const BodygramScanDetailPage = (): JSX.Element => {
   const overlayHeight = overlayContainerRef.current?.clientHeight ?? 0;
 
   return (
-    <div className="pb-10">
+    <div className="relative overflow-x-hidden pb-10 p-2">
+      <div className="pointer-events-none absolute left-[-80px] top-12 h-48 w-48 rounded-full bg-[#E9D5FF]/35 blur-3xl" />
+      <div className="pointer-events-none absolute right-[-100px] top-24 h-56 w-56 rounded-full bg-[#C7F9CC]/25 blur-3xl" />
       <div className="mx-auto max-w-[1240px]">
         <Link
           to="/parentprofile/bodygram-history"
-          className="mb-4 inline-flex items-center gap-2 font-bold text-[#6B7280] hover:text-[#1A1A2E]"
+          className="mb-4 inline-flex items-center gap-2 font-bold text-[#6B7280] transition-all duration-300 hover:-translate-x-1 hover:text-[#1A1A2E]"
         >
           <ArrowLeft className="h-4 w-4" />
           Quay lại lịch sử Bodygram
         </Link>
 
         <div className="grid gap-6 xl:grid-cols-[0.6fr_0.4fr]">
-          <section>
-            <div className="overflow-hidden rounded-2xl border-2 border-[#1A1A2E] bg-white p-5 shadow-[4px_4px_0_#1A1A2E]">
+          <section className="animate-in fade-in slide-in-from-left-4 duration-500">
+            <div className="relative overflow-visible rounded-2xl border-2 border-[#1A1A2E] bg-white p-5 shadow-[4px_4px_0_#1A1A2E] transition-all duration-300 hover:z-10 hover:-translate-y-1 hover:shadow-[6px_6px_0_#1A1A2E]">
               <div className="mb-4 flex items-start justify-between gap-4">
                 <div>
-                  <p className="text-[10px] font-extrabold uppercase tracking-wider text-[#6B7280]">Measurements</p>
+                  <p className="text-[10px] font-extrabold uppercase tracking-wider text-[#6B7280]">Chỉ số cơ thể</p>
                   <h1 className="mt-1 text-2xl font-extrabold leading-none text-[#1A1A2E]">{detail.childName}</h1>
                   <p className="mt-1 text-xs font-medium text-[#4C5769]">
                     Scan lúc {new Date(detail.scannedAt).toLocaleString("vi-VN")}
@@ -268,7 +273,7 @@ export const BodygramScanDetailPage = (): JSX.Element => {
                 <div className="flex gap-2">
                   <button
                     onClick={resetViewer}
-                    className="flex h-10 w-10 items-center justify-center rounded-full bg-[#F3F4F6] text-[#0F766E] transition-colors hover:bg-[#E5E7EB]"
+                    className="flex h-10 w-10 items-center justify-center rounded-full bg-[#F3F4F6] text-[#0F766E] transition-all duration-300 hover:-translate-y-0.5 hover:rotate-[-12deg] hover:bg-[#E5E7EB]"
                     title="Khôi phục trạng thái ban đầu"
                   >
                     <RefreshCcw className="h-5 w-5" />
@@ -276,7 +281,7 @@ export const BodygramScanDetailPage = (): JSX.Element => {
                   {detail.avatarUrl && (
                     <button
                       onClick={() => window.open(detail.avatarUrl!, "_blank")}
-                      className="flex h-10 w-10 items-center justify-center rounded-full bg-[#F3F4F6] text-[#0F766E] transition-colors hover:bg-[#E5E7EB]"
+                      className="flex h-10 w-10 items-center justify-center rounded-full bg-[#F3F4F6] text-[#0F766E] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#E5E7EB]"
                       title="Tải xuống mô hình 3D (.obj)"
                     >
                       <Download className="h-5 w-5" />
@@ -285,7 +290,7 @@ export const BodygramScanDetailPage = (): JSX.Element => {
                 </div>
               </div>
 
-              <div ref={overlayContainerRef} className="relative h-[500px] overflow-hidden rounded-xl border-2 border-[#1A1A2E] bg-white/50">
+              <div ref={overlayContainerRef} className="relative h-[500px] overflow-hidden rounded-xl border-2 border-[#1A1A2E] bg-gradient-to-b from-white via-[#F8FAFC] to-[#EEF2FF]">
                 <BodygramAvatarViewer
                   key={viewerKey}
                   avatarUrl={detail.avatarUrl}
@@ -332,7 +337,7 @@ export const BodygramScanDetailPage = (): JSX.Element => {
                           ref={(node) => {
                             labelRefs.current[key] = node;
                           }}
-                          className={`absolute rounded-xl border border-[#E5E7EB] bg-white px-4 py-2 shadow-sm ${placement}`}
+                          className={`absolute rounded-xl border border-[#E5E7EB] bg-white px-4 py-2 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md ${placement}`}
                         >
                           <p className="text-sm font-medium text-[#1A1A2E]">{label}</p>
                           <p className="text-xl font-extrabold text-[#111827]">
@@ -348,23 +353,23 @@ export const BodygramScanDetailPage = (): JSX.Element => {
 
               <button
                 onClick={() => setIsInteractiveViewer((value) => !value)}
-                className={`mt-4 w-full rounded-xl border-2 px-4 py-3 text-center text-sm font-bold transition-all ${isInteractiveViewer
+                className={`mt-4 w-full rounded-xl border-2 px-4 py-3 text-center text-sm font-bold transition-all duration-300 hover:-translate-y-0.5 ${isInteractiveViewer
                   ? "cursor-pointer border-[#991B1B] text-[#991B1B] hover:bg-[#991B1B] hover:text-white"
                   : "cursor-pointer border-[#0F766E] text-[#0F766E] hover:bg-[#0F766E] hover:text-white"
                   }`}
               >
-                {isInteractiveViewer ? "Thoát chế độ 360 độ" : "See avatar in 360°"}
+                {isInteractiveViewer ? "Thoát chế độ 360 độ" : "Xem mô hình 360°"}
               </button>
             </div>
           </section>
 
-          <section className="space-y-4">
-            <div className="rounded-2xl border-2 border-[#1A1A2E] bg-white p-5 shadow-[4px_4px_0_#1A1A2E]">
-              <h2 className="mb-4 text-lg font-extrabold text-[#1A1A2E]">Health Indicator</h2>
+          <section className="animate-in fade-in slide-in-from-right-4 duration-500 space-y-4">
+            <div className="relative rounded-2xl border-2 border-[#1A1A2E] bg-white p-5 shadow-[4px_4px_0_#1A1A2E] transition-all duration-300 hover:z-10 hover:-translate-y-1 hover:shadow-[6px_6px_0_#1A1A2E]">
+              <h2 className="mb-4 text-lg font-extrabold text-[#1A1A2E]">Chỉ số sức khỏe</h2>
               <div className="space-y-5">
                 <div className="border-b border-gray-100 pb-4">
                   <div className="flex items-center gap-2 text-xs font-bold text-[#1A1A2E]">
-                    Waist-to-Hip Ratio
+                    Tỷ lệ Eo trên Hông (WHR)
                     <div className="flex h-4 w-4 items-center justify-center rounded-full border-2 border-[#1A1A2E] text-[10px] font-bold">?</div>
                   </div>
                   <p className="mt-2 text-4xl font-extrabold text-[#111827]">{detail.waistToHipRatio?.toFixed(2) ?? "--"}</p>
@@ -372,15 +377,15 @@ export const BodygramScanDetailPage = (): JSX.Element => {
 
                 <div className="space-y-0 text-xs">
                   <div className="grid grid-cols-[1fr_auto_24px] items-center gap-3 border-b border-[#E5E7EB] py-2">
-                    <span className="text-[#6B7280]">Less than 0.80</span>
-                    <span className="font-bold text-[#111827]">Low risk</span>
+                    <span className="text-[#6B7280]">Nhỏ hơn 0.80</span>
+                    <span className="font-bold text-[#111827]">Rủi ro thấp</span>
                     <div className="flex w-6 justify-end">
                       {detail.waistToHipRatio != null && detail.waistToHipRatio <= 0.80 && <Check className="h-4 w-4 stroke-[3px] text-[#111827]" />}
                     </div>
                   </div>
                   <div className="grid grid-cols-[1fr_auto_24px] items-center gap-3 border-b border-[#E5E7EB] py-2">
-                    <span className="text-[#6B7280]">0.81 to 0.85</span>
-                    <span className="font-bold text-[#111827]">Moderate risk</span>
+                    <span className="text-[#6B7280]">0.81 đến 0.85</span>
+                    <span className="font-bold text-[#111827]">Rủi ro trung bình</span>
                     <div className="flex w-6 justify-end">
                       {detail.waistToHipRatio != null && detail.waistToHipRatio > 0.80 && detail.waistToHipRatio <= 0.85 && (
                         <Check className="h-4 w-4 stroke-[3px] text-[#111827]" />
@@ -388,8 +393,8 @@ export const BodygramScanDetailPage = (): JSX.Element => {
                     </div>
                   </div>
                   <div className="grid grid-cols-[1fr_auto_24px] items-center gap-3 py-2">
-                    <span className="text-[#6B7280]">Above 0.86</span>
-                    <span className="font-bold text-[#111827]">High risk</span>
+                    <span className="text-[#6B7280]">Trên 0.86</span>
+                    <span className="font-bold text-[#111827]">Rủi ro cao</span>
                     <div className="flex w-6 justify-end">
                       {detail.waistToHipRatio != null && detail.waistToHipRatio > 0.85 && <Check className="h-4 w-4 stroke-[3px] text-[#111827]" />}
                     </div>
@@ -399,15 +404,26 @@ export const BodygramScanDetailPage = (): JSX.Element => {
             </div>
 
             <div className="grid grid-cols-2 gap-3">
-              {highlights.map((metric) => (
-                <div key={metric.key} className="rounded-xl border border-[#D1D5DB] bg-white p-4 shadow-sm transition-colors hover:border-[#1A1A2E]">
-                  <p className="text-xs font-medium text-[#111827]">{metric.label}</p>
-                  <p className="mt-2 text-2xl font-extrabold leading-none text-[#111827]">
-                    {metric.value?.toFixed(1) ?? "--"}
-                    <span className="ml-1 text-sm font-medium text-[#6B7280]">cm</span>
-                  </p>
-                </div>
-              ))}
+              {highlights.map((metric) => {
+                const isCore = metric.key === "height" || metric.key === "weight";
+                return (
+                  <div
+                    key={metric.key}
+                    className={`relative rounded-xl border p-4 transition-all duration-300 hover:z-10 hover:-translate-y-1 ${isCore
+                      ? "bg-[#F3E8FF] border-[#1A1A2E] border-2 shadow-[2px_2px_0_#1A1A2E]"
+                      : "bg-white border-[#D1D5DB] shadow-sm hover:border-[#1A1A2E] hover:shadow-md"
+                      }`}
+                  >
+                    <p className={`text-xs font-bold ${isCore ? "text-[#581C87]" : "text-[#111827]"}`}>{metric.label}</p>
+                    <p className="mt-2 text-2xl font-black leading-none text-[#111827]">
+                      {metric.value?.toFixed(1) ?? "--"}
+                      <span className="ml-1 text-[13px] font-bold text-[#6B7280]">
+                        {metric.unit || "cm"}
+                      </span>
+                    </p>
+                  </div>
+                );
+              })}
             </div>
           </section>
         </div>
@@ -421,13 +437,13 @@ export const BodygramScanDetailPage = (): JSX.Element => {
             if (categoryMeasurements.length === 0) return null;
 
             return (
-              <div key={category.title} className="rounded-2xl border-2 border-[#1A1A2E] bg-white p-6 shadow-[4px_4px_0_#1A1A2E]">
+              <div key={category.title} className="relative animate-in fade-in slide-in-from-bottom-4 duration-500 rounded-2xl border-2 border-[#1A1A2E] bg-white p-6 shadow-[4px_4px_0_#1A1A2E] transition-all duration-300 hover:z-10 hover:-translate-y-1 hover:shadow-[6px_6px_0_#1A1A2E]">
                 <h3 className="mb-5 text-lg font-extrabold text-[#1A1A2E]">{category.title}</h3>
                 <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                   {categoryMeasurements.map((measurement) => (
                     <div
                       key={measurement!.name}
-                      className="group relative flex min-h-[140px] flex-col justify-between overflow-hidden rounded-2xl border border-[#E5E7EB] bg-white p-4 shadow-sm transition-all hover:border-[#1A1A2E] hover:shadow-md"
+                      className="group relative z-0 flex min-h-[140px] flex-col justify-between overflow-hidden rounded-2xl border border-[#E5E7EB] bg-white p-4 shadow-sm transition-all duration-300 hover:z-10 hover:-translate-y-1 hover:border-[#1A1A2E] hover:shadow-md"
                     >
                       <div className="relative z-10">
                         <p className="text-xs font-bold text-[#6B7280]">

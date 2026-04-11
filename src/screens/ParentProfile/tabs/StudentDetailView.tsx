@@ -351,6 +351,17 @@ export const StudentDetailView = ({ childId, onBack }: StudentDetailViewProps): 
               Quét số đo với Bodygram
             </button>
             <button
+              onClick={() => {
+                localStorage.setItem("selectedStudentId", childId);
+                navigate("/parentprofile/bodygram-history");
+              }}
+              disabled={saving || uploadingAvatar}
+              className="nb-btn nb-btn-outline text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            >
+              <ScanLine className="w-4 h-4" />
+              Xem lịch sử quét Bodygram
+            </button>
+            <button
               onClick={handleSave}
               disabled={saving}
               className="nb-btn nb-btn-purple text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 hover:shadow-[2px_2px_0_#1A1A2E] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all duration-300 active:translate-x-0 active:translate-y-0 active:shadow-none"

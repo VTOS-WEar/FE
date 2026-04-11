@@ -5,7 +5,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
-import { Bell, ChevronDown, Clock, GraduationCap, LogIn, LogOut, Menu, Package, Search, Settings, ShoppingCart, Star, User, Users, X } from "lucide-react"
+import { Bell, ChevronDown, Clock, GraduationCap, History, LogIn, LogOut, Menu, Package, ScanLine, Search, Settings, ShoppingCart, Star, User, Users, X } from "lucide-react"
 import { useState, useEffect, useRef } from "react"
 import { useNavigate, Link, useLocation } from "react-router-dom"
 import { useCart } from "../../contexts/CartContext"
@@ -60,10 +60,10 @@ export function NavbarGuest() {
         if (raw) {
           try {
             storage.setItem("user", JSON.stringify({ ...JSON.parse(raw), avatar: data.avatar }))
-          } catch {}
+          } catch { }
         }
       })
-      .catch(() => {})
+      .catch(() => { })
   }, [loggedIn, userRole, userAvatar])
 
   // Keep avatar in sync when AccountTab or ParentProfile dispatch vtos:user-updated
@@ -162,7 +162,8 @@ export function NavbarGuest() {
     { label: "Tài khoản", to: "/parentprofile/account", icon: User },
     { label: "Học sinh", to: "/parentprofile/students", icon: Users },
     { label: "Đơn hàng", to: "/parentprofile/orders", icon: Package },
-    { label: "Lịch sử", to: "/parentprofile/history", icon: Clock },
+    { label: "Lịch sử thử đồ", to: "/parentprofile/history", icon: History },
+    { label: "Lịch sử Bodygram", to: "/parentprofile/bodygram-history", icon: ScanLine },
     { label: "Đánh giá", to: "/parentprofile/reviews", icon: Star },
     { label: "Cài đặt", to: "/parentprofile/settings", icon: Settings },
   ] as const
@@ -240,9 +241,9 @@ export function NavbarGuest() {
                 }
                 const isActive = isAnchorActive(item.href)
                 return (
-                  <a 
-                    key={item.label} 
-                    href={item.href} 
+                  <a
+                    key={item.label}
+                    href={item.href}
                     onClick={(e) => handleAnchorClick(e, item.href)}
                     className={`${nbNavLink} ${isActive ? nbNavLinkActive : nbNavLinkIdle}`}
                   >
@@ -488,7 +489,7 @@ export function NavbarGuest() {
                         </DropdownMenuItem>
                       </div>
                       <div className="border-b-2 border-[#1A1A2E]/10">
-                        {parentProfileItems.slice(1, 5).map((item) => {
+                        {parentProfileItems.slice(1, 6).map((item) => {
                           const IconComp = item.icon
                           return (
                             <DropdownMenuItem key={item.to} asChild className="cursor-pointer transition-colors duration-150 data-[highlighted]:bg-[#FFF8F0] m-0 rounded-none px-3 py-2.5">
@@ -597,7 +598,7 @@ export function NavbarGuest() {
                 </Link>
               </div>
 
-              <Link 
+              <Link
                 to="/contact-partnership"
                 className={`flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold transition-all duration-150 ${isContactActive ? "bg-[#1A1A2E] text-white shadow-[3px_3px_0_#6B7280]" : "text-[#1A1A2E] hover:bg-white border border-transparent hover:border-[#1A1A2E]/10"}`}
               >

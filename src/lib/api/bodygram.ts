@@ -93,8 +93,29 @@ export async function getScanStatus(customScanId: string): Promise<ScanStatusRes
   });
 }
 
-export async function getChildBodygramScans(childId: string): Promise<BodygramHistoryItem[]> {
-  return api<BodygramHistoryItem[]>(`${endpoints.bodygram.childScans}/${childId}/scans`, {
+export interface PaginatedBodygramHistoryResponse {
+  items: BodygramHistoryItem[];
+  totalCount: number;
+  totalPages: number;
+  currentPage: number;
+}
+
+export async function getChildBodygramScans(
+  childId: string, 
+  pageNumber: number = 1, 
+  pageSize: number = 3,
+  startDate?: string, 
+  endDate?: string
+): Promise<PaginatedBodygramHistoryResponse> {
+  const params = new URLSearchParams({ 
+    pageNumber: pageNumber.toString(),
+    pageSize: pageSize.toString(),
+  });
+  
+  if (startDate) params.append("startDate", startDate);
+  if (endDate) params.append("endDate", endDate);
+
+  return api<PaginatedBodygramHistoryResponse>(`${endpoints.bodygram.childScans}/${childId}/scans?${params.toString()}`, {
     auth: true,
   });
 }

@@ -2,8 +2,9 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { ArrowLeft, CheckCircle2, Copy, Loader2, ScanLine, Smartphone } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
-import { createScanToken, getScanStatus, type CreateScanTokenResponse } from "../../lib/api/bodygram";
+import { createScanToken, getChildBodygramScans, getScanStatus, type CreateScanTokenResponse } from "../../lib/api/bodygram";
 import { getChildProfile, type GetChildDetailResponse } from "../../lib/api/users";
+import { GuestLayout } from "@/components/layout/GuestLayout";
 
 type ScanSession = Pick<CreateScanTokenResponse, "customScanId" | "scannerUrl">;
 
@@ -28,6 +29,7 @@ export const BodygramScannerPage = (): JSX.Element => {
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
   const [result, setResult] = useState<GetChildDetailResponse | null>(null);
+  const [completedScanRecordId, setCompletedScanRecordId] = useState<string | null>(null);
   const mobile = useMemo(() => isMobileDevice(), []);
 
   useEffect(() => {
@@ -45,7 +47,7 @@ export const BodygramScannerPage = (): JSX.Element => {
         });
       } catch (err: any) {
         if (!active) return;
-        setError(err?.message || "Khong the khoi tao phien quet Bodygram.");
+        setError(err?.message || "Không thể khởi tạo phiên quét Bodygram.");
       } finally {
         if (active) setLoading(false);
       }
@@ -76,9 +78,15 @@ export const BodygramScannerPage = (): JSX.Element => {
         try {
           const status = await getScanStatus(session.customScanId);
           if (cancelled || status.status !== "Completed") return;
-          const child = await getChildProfile(childId);
+
+          const [child, history] = await Promise.all([
+            getChildProfile(childId),
+            getChildBodygramScans(childId, 1, 1),
+          ]);
+
           if (cancelled) return;
           setResult(child);
+          setCompletedScanRecordId(history.items[0]?.scanRecordId ?? null);
         } catch {
           // Keep polling while the desktop page is waiting for the phone scan to finish.
         }
@@ -99,139 +107,158 @@ export const BodygramScannerPage = (): JSX.Element => {
   };
 
   if (!childId) {
-    return <div className="p-6">Thieu ma hoc sinh.</div>;
+    return <div className="p-6">Thiếu mã học sinh.</div>;
   }
 
   return (
-    <div className="min-h-screen bg-[#FFF8F0] px-4 py-6 md:px-8">
-      <div className="mx-auto max-w-5xl">
-        <Link
-          to="/parentprofile/students"
-          className="mb-4 inline-flex items-center gap-2 font-bold text-[#6B7280] hover:text-[#1A1A2E]"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Quay lai ho so hoc sinh
-        </Link>
+    <GuestLayout bgColor="#FFF8F0" mainClassName="flex-1">
+      <div className="relative min-h-screen overflow-x-hidden bg-[#FFF8F0] px-4 py-6 md:px-8">
+        <div className="pointer-events-none absolute left-[-56px] top-12 h-44 w-44 rounded-full bg-[#E9D5FF]/40 blur-3xl" />
+        <div className="pointer-events-none absolute right-[-80px] top-20 h-56 w-56 rounded-full bg-[#C8E44D]/20 blur-3xl" />
+        <div className="mx-auto max-w-5xl">
+          <Link
+            to="/parentprofile/students"
+            className="mb-4 inline-flex items-center gap-2 font-bold text-[#6B7280] transition-all duration-300 hover:-translate-x-1 hover:text-[#1A1A2E]"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Quay lại hồ sơ học sinh
+          </Link>
 
-        <div className="nb-card-static rounded-2xl p-5 md:p-8">
-          <div className="mb-6">
-            <p className="mb-2 inline-flex items-center gap-2 rounded-full border-2 border-[#1A1A2E] bg-[#C8E44D] px-3 py-1 text-xs font-extrabold uppercase tracking-wider text-[#1A1A2E]">
-              <ScanLine className="h-4 w-4" />
-              Bodygram Scanner
-            </p>
-            <h1 className="text-2xl font-extrabold text-[#1A1A2E] md:text-3xl">Quet so do co the</h1>
-            <p className="mt-2 max-w-2xl text-sm font-medium text-[#4C5769]">
-              {mobile
-                ? "Dang mo Bodygram Scanner truc tiep tren dien thoai de tranh loi camera trong iframe."
-                : "Khoi tao phien quet tren may tinh, sau do dung dien thoai mo QR de quet va cho ket qua dong bo ve trang nay."}
-            </p>
-          </div>
-
-          {loading && (
-            <div className="flex items-center gap-3 rounded-xl border-2 border-[#1A1A2E] bg-white p-4 font-bold text-[#1A1A2E]">
-              <Loader2 className="h-5 w-5 animate-spin" />
-              Dang khoi tao phien quet Bodygram...
+          <div className="nb-card-static animate-in fade-in slide-in-from-bottom-4 duration-500 rounded-2xl p-5 md:p-8">
+            <div className="mb-6">
+              <p className="mb-2 inline-flex items-center gap-2 rounded-full border-2 border-[#1A1A2E] bg-[#C8E44D] px-3 py-1 text-xs font-extrabold uppercase tracking-wider text-[#1A1A2E]">
+                <ScanLine className="h-4 w-4" />
+                Bodygram Scanner
+              </p>
+              <h1 className="text-2xl font-extrabold text-[#1A1A2E] md:text-3xl">Quét số đo cơ thể</h1>
+              <p className="mt-2 max-w-2xl text-sm font-medium text-[#4C5769]">
+                {mobile
+                  ? "Đang mở Bodygram Scanner trực tiếp trên điện thoại để tránh lỗi camera trong iframe."
+                  : "Khởi tạo phiên quét trên máy tính, sau đó dùng điện thoại mở mã QR để quét và chờ kết quả đồng bộ về trang này."}
+              </p>
             </div>
-          )}
 
-          {!loading && error && (
-            <div className="rounded-xl border-2 border-[#991B1B] bg-[#FEE2E2] p-4 text-sm font-bold text-[#991B1B]">
-              {error}
-            </div>
-          )}
-
-          {!loading && !error && session && mobile && !result && (
-            <div className="space-y-4">
-              <div className="rounded-xl border-2 border-[#1A1A2E] bg-[#FAFAF5] p-4 text-sm font-medium text-[#4C5769]">
-                Bodygram Scanner se duoc mo truc tiep trong mot tab an toan hon cho camera. Neu trinh duyet khong tu mo, bam nut ben duoi.
-              </div>
-              <div className="flex items-center gap-3 rounded-xl border-2 border-[#1A1A2E] bg-white p-4 font-bold text-[#1A1A2E]">
-                <Loader2 className={`h-5 w-5 ${redirecting ? "animate-spin" : ""}`} />
-                {redirecting ? "Dang chuyen sang Bodygram Scanner..." : "San sang mo Bodygram Scanner"}
-              </div>
-              <a
-                href={session.scannerUrl}
-                className="nb-btn nb-btn-purple text-sm inline-flex"
+            {!mobile && !result && (
+              <div
+                role="alert"
+                className="mb-6 rounded-xl border-2 border-[#B45309] bg-[#FEF3C7] p-4 text-sm font-extrabold text-[#92400E] shadow-[3px_3px_0_#B45309]/20 animate-pulse"
               >
-                Mo Bodygram Scanner
-              </a>
-            </div>
-          )}
-
-          {!loading && !error && session && !mobile && !result && (
-            <div className="grid gap-6 md:grid-cols-[1.1fr_0.9fr]">
-              <div className="rounded-2xl border-2 border-[#1A1A2E] bg-white p-5">
-                <p className="text-sm font-extrabold text-[#1A1A2E]">Buoc 1</p>
-                <p className="mt-2 text-sm font-medium text-[#4C5769]">
-                  Dung dien thoai quet ma QR ben phai de mo Bodygram Scanner truc tiep.
-                </p>
-                <p className="mt-5 text-sm font-extrabold text-[#1A1A2E]">Buoc 2</p>
-                <p className="mt-2 text-sm font-medium text-[#4C5769]">
-                  Thuc hien scan tren dien thoai. Trang nay se tu cap nhat khi he thong nhan duoc ket qua tu Bodygram.
-                </p>
-                <div className="mt-6 rounded-xl border-2 border-dashed border-[#1A1A2E] bg-[#FAFAF5] p-4">
-                  <p className="mb-2 text-xs font-extrabold uppercase tracking-wider text-[#6B7280]">Link du phong</p>
-                  <p className="break-all text-sm font-medium text-[#1A1A2E]">{session.scannerUrl}</p>
-                  <button onClick={() => void handleCopyLink()} className="nb-btn nb-btn-outline mt-4 text-sm">
-                    <Copy className="h-4 w-4" />
-                    {copied ? "Da sao chep" : "Sao chep link"}
-                  </button>
-                </div>
+                Lưu ý: Không tải lại trang sau khi quét xong trên điện thoại. Vui lòng chờ hệ thống đồng bộ kết quả.
               </div>
+            )}
 
-              <div className="rounded-2xl border-2 border-[#1A1A2E] bg-[#FAFAF5] p-5">
-                <div className="flex flex-col items-center justify-center gap-4 text-center">
-                  <div className="rounded-2xl border-2 border-[#1A1A2E] bg-white p-4 shadow-[4px_4px_0_#1A1A2E]">
-                    <QRCodeSVG value={session.scannerUrl} size={220} includeMargin />
+            {loading && (
+              <div className="flex items-center gap-3 rounded-xl border-2 border-[#1A1A2E] bg-white p-4 font-bold text-[#1A1A2E]">
+                <Loader2 className="h-5 w-5 animate-spin" />
+                Đang khởi tạo phiên quét Bodygram...
+              </div>
+            )}
+
+            {!loading && error && (
+              <div className="rounded-xl border-2 border-[#991B1B] bg-[#FEE2E2] p-4 text-sm font-bold text-[#991B1B]">
+                {error}
+              </div>
+            )}
+
+            {!loading && !error && session && mobile && !result && (
+              <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <div className="rounded-xl border-2 border-[#1A1A2E] bg-[#FAFAF5] p-4 text-sm font-medium text-[#4C5769]">
+                  Bodygram Scanner sẽ được mở trực tiếp trong một tab an toàn hơn cho camera. Nếu trình duyệt không tự mở, bấm nút bên dưới.
+                </div>
+                <div className="flex items-center gap-3 rounded-xl border-2 border-[#1A1A2E] bg-white p-4 font-bold text-[#1A1A2E]">
+                  <Loader2 className={`h-5 w-5 ${redirecting ? "animate-spin" : ""}`} />
+                  {redirecting ? "Đang chuyển sang Bodygram Scanner..." : "Sẵn sàng mở Bodygram Scanner"}
+                </div>
+                <a href={session.scannerUrl} className="nb-btn nb-btn-purple inline-flex text-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#1A1A2E]">
+                  Mở Bodygram Scanner
+                </a>
+              </div>
+            )}
+
+            {!loading && !error && session && !mobile && !result && (
+              <div className="grid gap-6 md:grid-cols-[1.1fr_0.9fr]">
+                <div className="relative animate-in fade-in slide-in-from-left-4 duration-500 rounded-2xl border-2 border-[#1A1A2E] bg-white p-5 transition-all duration-300 hover:z-10 hover:-translate-y-1 hover:shadow-[5px_5px_0_#1A1A2E]">
+                  <p className="text-sm font-extrabold text-[#1A1A2E]">Bước 1</p>
+                  <p className="mt-2 text-sm font-medium text-[#4C5769]">
+                    Dùng điện thoại quét mã QR bên phải để mở Bodygram Scanner trực tiếp.
+                  </p>
+                  <p className="mt-5 text-sm font-extrabold text-[#1A1A2E]">Bước 2</p>
+                  <p className="mt-2 text-sm font-medium text-[#4C5769]">
+                    Thực hiện scan trên điện thoại. Trang này sẽ tự cập nhật khi hệ thống nhận được kết quả từ Bodygram.
+                  </p>
+                  <div className="mt-6 rounded-xl border-2 border-dashed border-[#1A1A2E] bg-[#FAFAF5] p-4">
+                    <p className="mb-2 text-xs font-extrabold uppercase tracking-wider text-[#6B7280]">Link dự phòng</p>
+                    <p className="break-all text-sm font-medium text-[#1A1A2E]">{session.scannerUrl}</p>
+                    <button onClick={() => void handleCopyLink()} className="nb-btn nb-btn-outline mt-4 text-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[3px_3px_0_#1A1A2E]">
+                      <Copy className="h-4 w-4" />
+                      {copied ? "Đã sao chép" : "Sao chép link"}
+                    </button>
                   </div>
-                  <div className="inline-flex items-center gap-2 rounded-full bg-[#EDE9FE] px-3 py-2 text-sm font-bold text-[#1A1A2E]">
-                    <Smartphone className="h-4 w-4" />
-                    Dang cho quet tren dien thoai
+                </div>
+
+                <div className="relative animate-in fade-in slide-in-from-right-4 duration-500 rounded-2xl border-2 border-[#1A1A2E] bg-[#FAFAF5] p-5 transition-all duration-300 hover:z-10 hover:-translate-y-1 hover:shadow-[5px_5px_0_#1A1A2E]">
+                  <div className="flex flex-col items-center justify-center gap-4 text-center">
+                    <div className="rounded-2xl border-2 border-[#1A1A2E] bg-white p-4 shadow-[4px_4px_0_#1A1A2E] transition-transform duration-300 hover:scale-[1.02]">
+                      <QRCodeSVG value={session.scannerUrl} size={220} includeMargin />
+                    </div>
+                    <div className="inline-flex animate-pulse items-center gap-2 rounded-full bg-[#EDE9FE] px-3 py-2 text-sm font-bold text-[#1A1A2E]">
+                      <Smartphone className="h-4 w-4" />
+                      Đang chờ quét trên điện thoại
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {result && (
-            <div className="rounded-2xl border-2 border-[#1A1A2E] bg-[#F0FDF4] p-6">
-              <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-[#DCFCE7] px-3 py-1 text-sm font-extrabold text-[#166534]">
-                <CheckCircle2 className="h-4 w-4" />
-                Da dong bo ket qua scan
-              </div>
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="rounded-xl border-2 border-[#1A1A2E] bg-white p-4">
-                  <p className="text-xs font-extrabold uppercase tracking-wider text-[#6B7280]">Chieu cao</p>
-                  <p className="mt-2 text-3xl font-extrabold text-[#1A1A2E]">{result.bodyMetric.heightCm || 0} cm</p>
+            {result && (
+              <div className="relative animate-in fade-in zoom-in-95 duration-500 rounded-2xl border-2 border-[#1A1A2E] bg-[#F0FDF4] p-6 shadow-[4px_4px_0_#1A1A2E]">
+                <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-[#DCFCE7] px-3 py-1 text-sm font-extrabold text-[#166534]">
+                  <CheckCircle2 className="h-4 w-4" />
+                  Đã đồng bộ kết quả scan
                 </div>
-                <div className="rounded-xl border-2 border-[#1A1A2E] bg-white p-4">
-                  <p className="text-xs font-extrabold uppercase tracking-wider text-[#6B7280]">Can nang</p>
-                  <p className="mt-2 text-3xl font-extrabold text-[#1A1A2E]">{result.bodyMetric.weightKg || 0} kg</p>
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="rounded-xl border-2 border-[#1A1A2E] bg-white p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-[4px_4px_0_#1A1A2E]">
+                    <p className="text-xs font-extrabold uppercase tracking-wider text-[#6B7280]">Chiều cao</p>
+                    <p className="mt-2 text-3xl font-extrabold text-[#1A1A2E]">{result.bodyMetric.heightCm || 0} cm</p>
+                  </div>
+                  <div className="rounded-xl border-2 border-[#1A1A2E] bg-white p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-[4px_4px_0_#1A1A2E]">
+                    <p className="text-xs font-extrabold uppercase tracking-wider text-[#6B7280]">Cân nặng</p>
+                    <p className="mt-2 text-3xl font-extrabold text-[#1A1A2E]">{result.bodyMetric.weightKg || 0} kg</p>
+                  </div>
+                </div>
+                <div className="mt-5 flex flex-wrap gap-3">
+                  {completedScanRecordId ? (
+                    <button
+                      onClick={() => {
+                        localStorage.setItem("selectedStudentId", childId);
+                        navigate(`/parentprofile/bodygram-history/${childId}/scans/${completedScanRecordId}`);
+                      }}
+                      className="nb-btn nb-btn-purple text-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#1A1A2E]"
+                    >
+                      Xem kết quả scan body
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        localStorage.setItem("selectedStudentId", childId);
+                        navigate("/parentprofile/bodygram-history");
+                      }}
+                      className="nb-btn nb-btn-purple text-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#1A1A2E]"
+                    >
+                      Xem lịch sử Bodygram
+                    </button>
+                  )}
+                  {!mobile && (
+                    <button onClick={() => window.location.reload()} className="nb-btn nb-btn-outline text-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[3px_3px_0_#1A1A2E]">
+                      Tạo phiên quét mới
+                    </button>
+                  )}
                 </div>
               </div>
-              <div className="mt-5 flex flex-wrap gap-3">
-                <button
-                  onClick={() => {
-                    localStorage.setItem("selectedStudentId", childId);
-                    navigate("/parentprofile/students");
-                  }}
-                  className="nb-btn nb-btn-purple text-sm"
-                >
-                  Quay lai ho so hoc sinh
-                </button>
-                {!mobile && (
-                  <button
-                    onClick={() => window.location.reload()}
-                    className="nb-btn nb-btn-outline text-sm"
-                  >
-                    Tao phien quet moi
-                  </button>
-                )}
-              </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </GuestLayout>
   );
 };
