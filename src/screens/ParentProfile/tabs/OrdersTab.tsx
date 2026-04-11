@@ -34,7 +34,6 @@ const ORDER_STEPS = [
     { key: "Processed", label: "Đang xử lý", icon: "📦" },
     { key: "Shipped", label: "Đang giao", icon: "🚚" },
     { key: "Delivered", label: "Đã nhận", icon: "🎉" },
-    { key: "Cancelled", label: "Đã hủy", icon: "❌" },
 ];
 
 const STATUS_ORDER: Record<string, number> = {
@@ -81,13 +80,12 @@ function OrderStatusStepper({ orderStatus }: { orderStatus: string }) {
                     return (
                         <div key={step.key} className="flex flex-col items-center relative z-10" style={{ flex: 1 }}>
                             <div
-                                className={`w-9 h-9 rounded-lg flex items-center justify-center text-sm font-bold transition-all duration-300 border-2 border-[#1A1A2E] ${
-                                    isCompleted
+                                className={`w-9 h-9 rounded-lg flex items-center justify-center text-sm font-bold transition-all duration-300 border-2 border-[#1A1A2E] ${isCompleted
                                         ? "bg-[#C8E44D] shadow-[2px_2px_0_#1A1A2E]"
                                         : isCurrent
                                             ? "bg-[#B8A9E8] shadow-[2px_2px_0_#1A1A2E] animate-pulse"
                                             : "bg-[#F3F4F6] border-[#D1D5DB]"
-                                }`}
+                                    }`}
                             >
                                 {isCompleted ? (
                                     <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" /></svg>
@@ -95,9 +93,8 @@ function OrderStatusStepper({ orderStatus }: { orderStatus: string }) {
                                     <span className="text-xs">{step.icon}</span>
                                 )}
                             </div>
-                            <span className={`mt-2 text-[11px] font-bold text-center leading-tight ${
-                                isCompleted ? "text-[#065F46]" : isCurrent ? "text-[#1A1A2E]" : "text-[#9CA3AF]"
-                            }`}>
+                            <span className={`mt-2 text-[11px] font-bold text-center leading-tight ${isCompleted ? "text-[#065F46]" : isCurrent ? "text-[#1A1A2E]" : "text-[#9CA3AF]"
+                                }`}>
                                 {step.label}
                             </span>
                         </div>
@@ -157,7 +154,7 @@ function OrderCard({
     return (
         <div className="nb-card overflow-hidden">
             {/* Header: Campaign name + Status */}
-            <div 
+            <div
                 className={`p-5 border-b-2 border-[#1A1A2E]/10 flex items-center justify-between ${showStepper ? "cursor-pointer hover:bg-[#F9FAFB]" : ""}`}
                 onClick={onExpandToggle}
             >
@@ -204,7 +201,7 @@ function OrderCard({
                         <p className="text-[11px] text-[#9CA3AF] font-medium">Tổng tiền ({orderDetail?.items.length} sản phẩm)</p>
                         <p className="font-extrabold text-[#1A1A2E] text-base">{fmt(p.amount)}</p>
                     </div>
-                    
+
                     {/* Action Buttons */}
                     <div className="flex flex-col gap-2 items-end">
                         {p.orderStatus === "Delivered" && (
@@ -258,18 +255,18 @@ const STATUS_LABELS: Record<string, string> = {
     Cancelled: "Đã hủy",
 };
 
-function StatusTabs({ 
+function StatusTabs({
     payments,
     total,
     statusCounts,
-    selectedStatus, 
-    onStatusChange 
-}: { 
+    selectedStatus,
+    onStatusChange
+}: {
     payments: ParentPaymentDto[],
     total: number,
     statusCounts: StatusCountDto[],
     selectedStatus: string | null,
-    onStatusChange: (status: string | null) => void 
+    onStatusChange: (status: string | null) => void
 }) {
     const statusCountMap = useMemo(() => {
         const map: Record<string, number> = {};
@@ -283,11 +280,10 @@ function StatusTabs({
         <div className="flex gap-2 overflow-x-auto pb-3 mb-4 pt-4">
             <button
                 onClick={() => onStatusChange(null)}
-                className={`relative px-4 py-2 rounded-lg font-bold text-sm whitespace-nowrap transition-all ${
-                    selectedStatus === null
+                className={`relative px-4 py-2 rounded-lg font-bold text-sm whitespace-nowrap transition-all ${selectedStatus === null
                         ? "bg-[#B8A9E8] text-white border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E]"
                         : "bg-[#F3F4F6] text-[#6B7280] border-2 border-[#D1D5DB]"
-                }`}
+                    }`}
             >
                 Tất cả
                 {total > 0 && (
@@ -303,11 +299,10 @@ function StatusTabs({
                     <button
                         key={status}
                         onClick={() => onStatusChange(status)}
-                        className={`relative px-4 py-2 rounded-lg font-bold text-sm whitespace-nowrap transition-all ${
-                            selectedStatus === status
+                        className={`relative px-4 py-2 rounded-lg font-bold text-sm whitespace-nowrap transition-all ${selectedStatus === status
                                 ? "bg-[#B8A9E8] text-white border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E]"
                                 : "bg-[#F3F4F6] text-[#6B7280] border-2 border-[#D1D5DB]"
-                        }`}
+                            }`}
                     >
                         {STATUS_LABELS[status]}
                         {count > 0 && (
@@ -430,7 +425,7 @@ export const OrdersTab = (): JSX.Element => {
                         const showStepper = p.orderStatus && p.orderStatus !== "Pending";
 
                         return (
-                            <OrderCard 
+                            <OrderCard
                                 key={p.paymentId}
                                 payment={p}
                                 isExpanded={isExpanded}

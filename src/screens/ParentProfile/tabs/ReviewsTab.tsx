@@ -1,10 +1,19 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Star, AlertCircle, ChevronDown, Package } from "lucide-react";
+import { Star, AlertCircle, ChevronDown, Package, Calendar, Clock, ShoppingBag, MessageSquare, Edit2, History, XCircle } from "lucide-react";
 import { useToast } from "../../../contexts/ToastContext";
 import { getParentFeedbacks, submitOutfitFeedback, type ParentFeedbackDto, type CampaignFilterDto, type RatingCountDto } from "../../../lib/api/feedback";
 
 function fmt(n: number) { return n.toLocaleString("vi-VN") + " ₫"; }
+function fmtFullDate(iso: string) {
+  return new Date(iso).toLocaleString("vi-VN", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
 
 /* ── Rating Stars Component ── */
 function RatingStars({
@@ -110,87 +119,80 @@ function ReviewCard({ feedback, onRefresh }: ReviewCardProps) {
     return (
       <div className="nb-card overflow-hidden">
         {/* Header */}
-        <div className="p-5 border-b-2 border-[#1A1A2E]/10">
-          <p className="font-bold text-[#1A1A2E] text-sm">
-            📦 Chiến dịch: <span className="text-[#B8A9E8]">{feedback.campaignName}</span>
-          </p>
+        <div className="p-4 border-b-2 border-[#1A1A2E]/10 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <ShoppingBag className="w-4 h-4 text-[#B8A9E8]" />
+            <span className="font-bold text-xs uppercase text-[#1A1A2E]">
+              📦 Chiến dịch: <span className="text-[#B8A9E8]">{feedback.campaignName}</span>
+            </span>
+          </div>
+          <button onClick={handleCancel} className="text-[#9CA3AF] hover:text-[#1A1A2E]">
+            <XCircle className="w-5 h-5" />
+          </button>
         </div>
 
         {/* Form Content */}
-        <div className="p-5 space-y-4">
-          {/* Product Info */}
-          <div className="flex gap-3 pb-4 border-b-2 border-[#1A1A2E]/10">
-            <div className="w-16 h-16 rounded-lg border-2 border-[#1A1A2E] flex items-center justify-center overflow-hidden bg-[#EDE9FE] flex-shrink-0">
-              {feedback.outfitImageUrl && feedback.outfitImageUrl.trim() !== "" ? (
+        <div className="p-5 space-y-6">
+          <div className="flex gap-4">
+            <div className="w-20 h-20 rounded-lg border-2 border-[#1A1A2E] overflow-hidden bg-[#EDE9FE] flex-shrink-0 shadow-[2px_2px_0_#1A1A2E]">
+              {feedback.outfitImageUrl ? (
                 <img
                   src={feedback.outfitImageUrl}
                   alt={feedback.outfitName}
                   className="w-full h-full object-cover"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).style.display = "none";
-                  }}
                 />
-              ) : null}
-              {!feedback.outfitImageUrl || feedback.outfitImageUrl.trim() === "" ? (
-                <Package className="w-8 h-8 text-[#B8A9E8]" />
-              ) : null}
+              ) : (
+                <Package className="w-8 h-8 text-[#B8A9E8] m-auto mt-6" />
+              )}
             </div>
             <div className="flex-1">
-              <button
-                onClick={() => navigate(`/outfits/${feedback.outfitId}`)}
-                className="font-bold text-[#1A1A2E] text-sm hover:text-[#B8A9E8] transition-colors text-left"
-                title="Xem chi tiết sản phẩm"
-              >
-                {feedback.outfitName}
-              </button>
-              <p className="text-xs text-[#9CA3AF] mt-1">{feedback.outfitType}</p>
-              <div className="mt-2 space-y-1 text-xs text-[#6B7280]">
-                <p>Kích cỡ: <span className="font-semibold text-[#1A1A2E]">{feedback.size}</span></p>
-                <p>Số lượng: <span className="font-semibold text-[#1A1A2E]">{feedback.quantity}</span></p>
-                <p>Giá: <span className="font-bold text-[#1A1A2E]">{fmt(feedback.outfitPrice)}</span></p>
+              <h3 className="font-bold text-[#1A1A2E] text-sm leading-tight mb-1">{feedback.outfitName}</h3>
+              <p className="text-xs text-[#9CA3AF] mb-3">{feedback.outfitType}</p>
+              
+              <div className="flex flex-wrap gap-2">
+                <span className="px-2 py-0.5 bg-[#F3F4F6] border border-[#D1D5DB] rounded text-[10px] font-bold text-[#1A1A2E]">Size {feedback.size}</span>
+                <span className="px-2 py-0.5 bg-[#F3F4F6] border border-[#D1D5DB] rounded text-[10px] font-bold text-[#1A1A2E]">x{feedback.quantity}</span>
+                <span className="px-2 py-0.5 bg-[#C8E44D]/20 border border-[#C8E44D] rounded text-[10px] font-bold text-[#1A1A2E]">{fmt(feedback.outfitPrice)}</span>
               </div>
             </div>
           </div>
 
-          {/* Rating Section */}
-          <div>
-            <label className="block text-sm font-bold text-[#1A1A2E] mb-3">Đánh giá</label>
-            <RatingStars value={rating} onChange={setRating} readOnly={isSubmitting} />
-          </div>
+          <div className="space-y-4 pt-4 border-t-2 border-[#1A1A2E]/5">
+            <div>
+              <label className="block text-xs font-bold text-[#1A1A2E] uppercase mb-2">Chất lượng sản phẩm</label>
+              <RatingStars value={rating} onChange={setRating} readOnly={isSubmitting} />
+            </div>
 
-          {/* Comment Section */}
-          <div>
-            <label className="block text-sm font-bold text-[#1A1A2E] mb-2">Bình luận (tùy chọn)</label>
-            <textarea
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              disabled={isSubmitting}
-              placeholder="Chia sẻ cảm nhận của bạn về sản phẩm này..."
-              maxLength={500}
-              className="w-full p-3 border-2 border-[#1A1A2E] rounded-lg text-sm font-medium text-[#1A1A2E] placeholder-[#9CA3AF] focus:outline-none focus:bg-[#F3F4F6] resize-none disabled:opacity-50"
-              rows={4}
-            />
-            <div className="mt-1 text-xs text-[#9CA3AF]">
-              {comment.length}/500
+            <div>
+              <label className="block text-xs font-bold text-[#1A1A2E] uppercase mb-2">Cảm nhận của bạn</label>
+              <textarea
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                disabled={isSubmitting}
+                placeholder="Sản phẩm mặc lên rất đẹp, bé rất thích..."
+                maxLength={500}
+                className="w-full p-3 border-2 border-[#1A1A2E] rounded-lg text-sm font-medium text-[#1A1A2E] placeholder-[#9CA3AF] focus:outline-none focus:bg-[#F9FAFB] shadow-[2px_2px_0_#1A1A2E] resize-none disabled:opacity-50"
+                rows={3}
+              />
             </div>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="p-5 border-t-2 border-[#1A1A2E]/10 flex gap-2 justify-end">
+        <div className="p-4 bg-[#F9FAFB] border-t-2 border-[#1A1A2E]/10 flex gap-3 justify-end">
           <button
             onClick={handleCancel}
             disabled={isSubmitting}
-            className="nb-btn nb-btn-outline text-sm disabled:opacity-50"
+            className="nb-btn nb-btn-outline text-xs px-4 py-2"
           >
             Hủy
           </button>
           <button
             onClick={handleSubmit}
             disabled={isSubmitting || rating <= 0}
-            className="nb-btn nb-btn-purple text-sm disabled:opacity-50"
+            className="nb-btn nb-btn-purple text-xs px-6 py-2"
           >
-            {isSubmitting ? "Đang lưu..." : "Lưu đánh giá"}
+            {isSubmitting ? "Đang lưu..." : "Xác nhận"}
           </button>
         </div>
       </div>
@@ -199,95 +201,117 @@ function ReviewCard({ feedback, onRefresh }: ReviewCardProps) {
 
   return (
     <div className="nb-card overflow-hidden">
-      {/* Header: Campaign name */}
-      <div className="p-5 border-b-2 border-[#1A1A2E]/10">
-        <p className="font-bold text-[#1A1A2E] text-sm">
-          📦 Chiến dịch: <span className="text-[#B8A9E8]">{feedback.campaignName}</span>
-        </p>
-      </div>
+      <div className="p-5 flex flex-col md:flex-row gap-6">
+        {/* Product Section */}
+        <div className="flex-1 flex gap-5">
+          <div className="relative">
+            <div className="w-20 h-20 rounded-lg border-2 border-[#1A1A2E] overflow-hidden bg-[#EDE9FE] shadow-[2px_2px_0_#1A1A2E]">
+              {feedback.outfitImageUrl ? (
+                <img
+                  src={feedback.outfitImageUrl}
+                  alt={feedback.outfitName}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <Package className="w-8 h-8 text-[#B8A9E8] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+              )}
+            </div>
+            {hasRating && (
+              <div className="absolute -top-2 -right-2 bg-[#C8E44D] border-2 border-[#1A1A2E] px-1.5 py-0.5 rounded font-bold text-[9px] shadow-[1px_1px_0_#1A1A2E]">
+                {feedback.rating}/5 ⭐
+              </div>
+            )}
+          </div>
 
-      {/* Main content: Product image + details + Rating */}
-      <div className="p-5 flex gap-4">
-        {/* Product Image */}
-        <div className="w-20 h-20 flex-shrink-0 bg-[#EDE9FE] rounded-lg border-2 border-[#1A1A2E] flex items-center justify-center overflow-hidden">
-          {feedback.outfitImageUrl && feedback.outfitImageUrl.trim() !== "" ? (
-            <img
-              src={feedback.outfitImageUrl}
-              alt={feedback.outfitName}
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                (e.target as HTMLImageElement).style.display = "none";
-              }}
-            />
-          ) : null}
-          {!feedback.outfitImageUrl || feedback.outfitImageUrl.trim() === "" ? (
-            <Package className="w-8 h-8 text-[#B8A9E8]" />
-          ) : null}
-        </div>
-
-        {/* Product Details */}
-        <div className="flex-1">
-          <button
-            onClick={() => navigate(`/outfits/${feedback.outfitId}`)}
-            className="font-bold text-[#1A1A2E] text-sm hover:text-[#B8A9E8] transition-colors text-left"
-            title="Xem chi tiết sản phẩm"
-          >
-            {feedback.outfitName}
-          </button>
-          <div className="mt-2 space-y-1 text-xs text-[#6B7280]">
-            <p>Loại: <span className="font-semibold text-[#1A1A2E]">{feedback.outfitType}</span></p>
-            <p>Kích cỡ: <span className="font-semibold text-[#1A1A2E]">{feedback.size}</span></p>
-            <p>Số lượng: <span className="font-semibold text-[#1A1A2E]">{feedback.quantity}</span></p>
-            <p>Giá: <span className="font-bold text-[#1A1A2E]">{fmt(feedback.outfitPrice)}</span></p>
+          <div className="flex-1 min-w-0">
+            <p className="text-[10px] font-bold text-[#9CA3AF] mb-1 uppercase truncate">
+              📦 {feedback.campaignName}
+            </p>
+            <h3 
+              className="font-bold text-[#1A1A2E] text-sm truncate hover:text-[#B8A9E8] transition-colors cursor-pointer mb-2"
+              onClick={() => navigate(`/outfits/${feedback.outfitId}`)}
+            >
+              {feedback.outfitName}
+            </h3>
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-[11px] font-medium text-[#6B7280]">
+              <span className="flex items-center gap-1">
+                <ShoppingBag className="w-3.5 h-3.5" />
+                {feedback.outfitType}
+              </span>
+              <span className="px-1.5 py-0.5 bg-[#F3F4F6] border border-[#D1D5DB] rounded">
+                Size {feedback.size}
+              </span>
+              <span className="font-bold text-[#1A1A2E]">
+                {fmt(feedback.outfitPrice)}
+              </span>
+            </div>
           </div>
         </div>
 
-        {/* Rating Section + Button */}
-        <div className="text-right flex flex-col justify-between items-end">
-          {hasRating ? (
-            <div className="flex items-center gap-1 bg-[#FEF3C7] px-3 py-2 rounded-lg">
-              <div className="flex gap-0.5">
-                {[1, 2, 3, 4, 5].map((i) => (
-                  <Star
-                    key={i}
-                    className={`w-3 h-3 ${i <= (feedback.rating ?? 0)
-                      ? "fill-[#F5E642] text-[#F5E642]"
-                      : "text-[#D1D5DB]"
-                      }`}
-                  />
-                ))}
-              </div>
-              <span className="text-xs font-bold text-[#92400E]">{feedback.rating}/5</span>
+        {/* Timeline Section */}
+        <div className="flex flex-row md:flex-col justify-between md:justify-center gap-4 md:pl-6 md:border-l-2 md:border-dashed md:border-[#1A1A2E]/10 min-w-[160px]">
+          <div className="flex flex-col">
+            <div className="flex items-center gap-1.5 text-[#9CA3AF] mb-0.5">
+              <Calendar className="w-3.5 h-3.5" />
+              <span className="text-[9px] font-bold uppercase tracking-wider">Thời gian đặt</span>
             </div>
-          ) : (
-            <div className="px-3 py-2 rounded-lg border-2 border-dashed border-[#D1D5DB]">
-              <span className="text-xs font-bold text-[#9CA3AF]">Chưa đánh giá</span>
-            </div>
-          )}
-
-          <button
-            onClick={() => setIsEditing(true)}
-            className="nb-btn nb-btn-purple text-xs px-3 py-1 flex items-center gap-1"
-          >
-            <Star className="w-3 h-3" />
-            {hasRating ? "Chỉnh sửa" : "Đánh giá"}
-          </button>
-
-          {hasRating && feedback.feedbackTimestamp && (
-            <p className="text-[11px] text-[#9CA3AF] mt-2">
-              {new Date(feedback.feedbackTimestamp).toLocaleDateString("vi-VN")}
+            <p className="text-[11px] font-bold text-[#1A1A2E]">
+              {fmtFullDate(feedback.orderDate)}
             </p>
-          )}
+          </div>
+
+          <div className="flex flex-col">
+            <div className="flex items-center gap-1.5 text-[#9CA3AF] mb-0.5">
+              <Clock className="w-3.5 h-3.5" />
+              <span className="text-[9px] font-bold uppercase tracking-wider">Thời gian phản hồi</span>
+            </div>
+            <p className="text-[11px] font-bold text-[#1A1A2E]">
+              {feedback.feedbackTimestamp 
+                ? fmtFullDate(feedback.feedbackTimestamp)
+                : "---"
+              }
+            </p>
+          </div>
         </div>
       </div>
 
-      {/* Comment Section */}
-      {hasRating && feedback.comment && (
-        <div className="px-5 pb-5 border-t-2 border-[#1A1A2E]/10">
-          <p className="text-xs text-[#9CA3AF] font-bold mb-2">💬 Bình luận</p>
-          <p className="text-xs text-[#6B7280] italic">"{feedback.comment}"</p>
+      {/* Bottom Action/Review Section */}
+      <div className="px-5 py-4 bg-[#F9FAFB] border-t-2 border-[#1A1A2E]/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="flex-1 w-full">
+          {hasRating ? (
+            <div className="flex gap-2.5 items-start">
+              <MessageSquare className="w-4 h-4 text-[#B8A9E8] mt-0.5 flex-shrink-0" />
+              <p className="text-xs text-[#6B7280] italic leading-relaxed line-clamp-2">
+                {feedback.comment ? `"${feedback.comment}"` : "Bạn không để lại bình luận."}
+              </p>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2 text-[#9CA3AF]">
+              <Star className="w-4 h-4" />
+              <span className="text-xs italic">Sản phẩm này chưa được đánh giá</span>
+            </div>
+          )}
         </div>
-      )}
+
+        <button
+          onClick={() => setIsEditing(true)}
+          className={`nb-btn text-xs px-4 py-1.5 flex items-center gap-1.5 whitespace-nowrap ${
+            hasRating ? "nb-btn-outline" : "nb-btn-purple transition-transform active:scale-95"
+          }`}
+        >
+          {hasRating ? (
+            <>
+              <Edit2 className="w-3.5 h-3.5" />
+              Sửa đổi
+            </>
+          ) : (
+            <>
+              <Star className="w-3.5 h-3.5 fill-current" />
+              Đánh giá ngay
+            </>
+          )}
+        </button>
+      </div>
     </div>
   );
 }
