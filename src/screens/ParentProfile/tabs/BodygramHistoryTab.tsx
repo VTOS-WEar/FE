@@ -4,8 +4,26 @@ import { ArrowDown, ArrowUp, Minus, Calendar, ChevronLeft, ChevronRight, Calcula
 import { getChildBodygramScans, type BodygramHistoryItem } from "../../../lib/api/bodygram";
 import { getMyChildren, type ChildProfileDto } from "../../../lib/api/users";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
+import {
+  LineChart as OriginalLineChart,
+  Line as OriginalLine,
+  XAxis as OriginalXAxis,
+  YAxis as OriginalYAxis,
+  CartesianGrid as OriginalCartesianGrid,
+  Tooltip as OriginalTooltip,
+  ResponsiveContainer as OriginalResponsiveContainer,
+  Legend as OriginalLegend
+} from "recharts";
 import { BodygramAvatarViewer } from "../../BodygramScanner/BodygramAvatarViewer";
+
+const LineChart = OriginalLineChart as any;
+const Line = OriginalLine as any;
+const XAxis = OriginalXAxis as any;
+const YAxis = OriginalYAxis as any;
+const CartesianGrid = OriginalCartesianGrid as any;
+const Tooltip = OriginalTooltip as any;
+const ResponsiveContainer = OriginalResponsiveContainer as any;
+const Legend = OriginalLegend as any;
 
 const CustomLegend = (props: any) => {
   const { payload } = props;

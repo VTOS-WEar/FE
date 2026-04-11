@@ -188,7 +188,11 @@ export const BodygramScannerPage = (): JSX.Element => {
                   </p>
                   <div className="mt-6 rounded-xl border-2 border-dashed border-[#1A1A2E] bg-[#FAFAF5] p-4">
                     <p className="mb-2 text-xs font-extrabold uppercase tracking-wider text-[#6B7280]">Link dự phòng</p>
-                    <p className="break-all text-sm font-medium text-[#1A1A2E]">{session.scannerUrl}</p>
+                    <p className="break-all text-sm font-medium text-[#1A1A2E]">
+                      {session.scannerUrl.length > 60
+                        ? `${session.scannerUrl.slice(0, 45)}...${session.scannerUrl.slice(-15)}`
+                        : session.scannerUrl}
+                    </p>
                     <button onClick={() => void handleCopyLink()} className="nb-btn nb-btn-outline mt-4 text-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[3px_3px_0_#1A1A2E]">
                       <Copy className="h-4 w-4" />
                       {copied ? "Đã sao chép" : "Sao chép link"}
