@@ -1,7 +1,7 @@
 import {
     LayoutDashboard, Users, Shirt, School,
     Megaphone, FileText, Factory,
-    AlertTriangle, ShoppingBag, Wallet
+    AlertTriangle, ShoppingBag, Wallet, Settings
 } from "lucide-react";
 import type { DashboardSidebarProps } from "../components/layout";
 
@@ -38,6 +38,11 @@ export const DASHBOARD_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, 'isCollapsed'
                     icon: School,
                     label: "Hồ sơ trường",
                     href: "/school/profile",
+                },
+                {
+                    icon: Settings,
+                    label: "Cài đặt tài khoản",
+                    href: "/school/account-settings",
                 },
             ],
         },

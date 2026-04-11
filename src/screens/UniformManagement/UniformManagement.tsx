@@ -18,6 +18,7 @@ import {
     createOutfit,
     updateOutfit,
     deleteOutfit,
+    setOutfitAvailability,
     uploadOutfitImage,
     type OutfitDto,
     type CreateOutfitRequest,
@@ -446,9 +447,64 @@ function DeleteConfirmDialog({
 }
 
 /* ────────────────────────────────────────────────────────────────────── */
+/* Hide Confirm Dialog — Neubrutalism Concept                             */
+/* ────────────────────────────────────────────────────────────────────── */
+function HideConfirmDialog({
+    isOpen, onClose, onConfirm, outfitName, isLoading,
+}: {
+    isOpen: boolean; onClose: () => void; onConfirm: () => void; outfitName: string; isLoading: boolean;
+}) {
+    if (!isOpen) return null;
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+            <div className="absolute inset-0 bg-black/50" onClick={onClose} />
+            <div className="relative w-full max-w-[420px] mx-4 rounded-[18px] border-[3px] border-[#19182B] bg-white shadow-[6px_6px_0_#19182B] overflow-hidden">
+                <div className="border-b-[3px] border-[#19182B] bg-[#FEF3C7] px-6 py-4">
+                    <div className="flex items-center gap-3">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-[8px] border-[2px] border-[#19182B] bg-white shadow-[2px_2px_0_#19182B] text-lg">
+                            🙈
+                        </div>
+                        <h3 className="text-[18px] font-black text-[#19182B]">Ẩn đồng phục?</h3>
+                    </div>
+                </div>
+                <div className="px-6 py-5">
+                    <p className="font-semibold text-[#6F6A7D] text-[15px] mb-5">
+                        Đồng phục <strong className="text-[#19182B]">"{outfitName}"</strong> đã từng thuộc chiến dịch đã hoàn tất nên không thể xóa. Bạn có muốn ẩn đồng phục này khỏi trang công khai không?
+                    </p>
+                    <div className="flex justify-end gap-3">
+                        <button
+                            onClick={onClose}
+                            className="rounded-[8px] border-[3px] border-[#19182B] bg-white px-5 py-3 text-[15px] font-extrabold text-[#19182B] shadow-[4px_4px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+                        >
+                            Hủy
+                        </button>
+                        <button
+                            onClick={onConfirm}
+                            disabled={isLoading}
+                            className="flex items-center gap-2 rounded-[8px] border-[3px] border-[#19182B] bg-[#D97706] px-5 py-3 text-[15px] font-extrabold text-white shadow-[4px_4px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            {isLoading && (
+                                <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <circle cx="12" cy="12" r="10" strokeOpacity="0.25" />
+                                    <path d="M4 12a8 8 0 018-8" strokeLinecap="round" />
+                                </svg>
+                            )}
+                            Ẩn
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+/* ────────────────────────────────────────────────────────────────────── */
 /* Uniform Card                                                          */
 /* ────────────────────────────────────────────────────────────────────── */
-function UniformCard({ item, onEdit, onDelete, onManageVariants }: { item: OutfitDto; onEdit: (item: OutfitDto) => void; onDelete: (item: OutfitDto) => void; onManageVariants: (item: OutfitDto) => void }) {
+function UniformCard({ item, onEdit, onDelete, onManageVariants, onHide }: {
+    item: OutfitDto; onEdit: (item: OutfitDto) => void; onDelete: (item: OutfitDto) => void;
+    onManageVariants: (item: OutfitDto) => void; onHide: (item: OutfitDto) => void;
+}) {
     const formattedPrice = new Intl.NumberFormat("vi-VN").format(item.price) + "đ";
 
     return (
@@ -463,9 +519,15 @@ function UniformCard({ item, onEdit, onDelete, onManageVariants }: { item: Outfi
                     <button onClick={() => onEdit(item)} className="w-8 h-8 flex items-center justify-center rounded-lg bg-white border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E] hover:bg-[#F5F3FF] text-[#6938EF] transition-all" title="Sửa">
                         <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" /></svg>
                     </button>
-                    <button onClick={() => onDelete(item)} className="w-8 h-8 flex items-center justify-center rounded-lg bg-white border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E] hover:bg-[#FEE2E2] text-[#EF4444] transition-all" title="Xóa">
-                        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" /></svg>
-                    </button>
+                    {item.canDelete ? (
+                        <button onClick={() => onDelete(item)} className="w-8 h-8 flex items-center justify-center rounded-lg bg-white border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E] hover:bg-[#FEE2E2] text-[#EF4444] transition-all" title="Xóa">
+                            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" /></svg>
+                        </button>
+                    ) : (
+                        <button onClick={() => onHide(item)} className="w-8 h-8 flex items-center justify-center rounded-lg bg-white border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E] hover:bg-[#FEF3C7] text-[#D97706] transition-all" title="Ẩn đồng phục">
+                            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" /></svg>
+                        </button>
+                    )}
                 </div>
             </div>
 
@@ -535,6 +597,8 @@ export const UniformManagement = (): JSX.Element => {
     const [formLoading, setFormLoading] = useState(false);
     const [deletingOutfit, setDeletingOutfit] = useState<OutfitDto | null>(null);
     const [deleteLoading, setDeleteLoading] = useState(false);
+    const [hidingOutfit, setHidingOutfit] = useState<OutfitDto | null>(null);
+    const [hideLoading, setHideLoading] = useState(false);
 
     /* ── Variant modal state ── */
     const [variantOutfit, setVariantOutfit] = useState<OutfitDto | null>(null);
@@ -616,6 +680,22 @@ export const UniformManagement = (): JSX.Element => {
             showToast(err instanceof Error ? err.message : "Có lỗi xảy ra", "error");
         } finally {
             setDeleteLoading(false);
+        }
+    };
+
+    /* ── Hide (toggle availability = false) ── */
+    const handleHide = async () => {
+        if (!hidingOutfit) return;
+        setHideLoading(true);
+        try {
+            await setOutfitAvailability(hidingOutfit.outfitId, false);
+            showToast("Đồng phục đã được ẩn khỏi trang công khai.", "success");
+            setHidingOutfit(null);
+            fetchOutfits();
+        } catch (err: unknown) {
+            showToast(err instanceof Error ? err.message : "Có lỗi xảy ra", "error");
+        } finally {
+            setHideLoading(false);
         }
     };
 
@@ -716,7 +796,7 @@ export const UniformManagement = (): JSX.Element => {
                             <>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                                     {paginatedOutfits.map((item) => (
-                                        <UniformCard key={item.outfitId} item={item} onEdit={openEdit} onDelete={setDeletingOutfit} onManageVariants={setVariantOutfit} />
+                                        <UniformCard key={item.outfitId} item={item} onEdit={openEdit} onDelete={setDeletingOutfit} onManageVariants={setVariantOutfit} onHide={setHidingOutfit} />
                                     ))}
                                     <UploadPlaceholderCard onClick={openCreate} />
                                 </div>
@@ -757,6 +837,14 @@ export const UniformManagement = (): JSX.Element => {
                 onConfirm={handleDelete}
                 outfitName={deletingOutfit?.outfitName || ""}
                 isLoading={deleteLoading}
+            />
+
+            <HideConfirmDialog
+                isOpen={!!hidingOutfit}
+                onClose={() => setHidingOutfit(null)}
+                onConfirm={handleHide}
+                outfitName={hidingOutfit?.outfitName || ""}
+                isLoading={hideLoading}
             />
 
             {/* Toast */}

@@ -99,16 +99,9 @@ export const HistoryTab = (): JSX.Element => {
 
       {/* Loading */}
       {loading ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="nb-card-static p-0 overflow-hidden">
-              <div className="aspect-[3/4] bg-gray-100 animate-pulse" />
-              <div className="p-3 space-y-2">
-                <div className="h-4 bg-gray-100 rounded animate-pulse w-3/4" />
-                <div className="h-3 bg-gray-100 rounded animate-pulse w-1/2" />
-              </div>
-            </div>
-          ))}
+        <div className="flex flex-col items-center justify-center py-20 gap-3">
+          <div className="w-10 h-10 rounded-full border-[3px] border-[#EDE9FE] border-t-[#1A1A2E] animate-spin" />
+          <p className="text-xs font-bold text-[#6B7280] tracking-wide">Đang tải...</p>
         </div>
       ) : (
         <>

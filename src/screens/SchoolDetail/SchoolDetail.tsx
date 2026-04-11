@@ -285,10 +285,10 @@ export const SchoolDetail = (): JSX.Element => {
                 const academicYearStr = startYear === endYear ? `${startYear}` : `${startYear} - ${endYear}`;
 
                 return (
-                  <motion.div key={c.campaignId} variants={cardItem}>
+                  <motion.div key={c.campaignId} variants={cardItem} className="h-full">
                     <div
                       onClick={() => canViewDetail && navigate(`/campaigns/${c.campaignId}`)}
-                      className={`nb-card overflow-hidden flex flex-col sm:flex-row ${canViewDetail ? "cursor-pointer" : ""}`}
+                      className={`nb-card overflow-hidden flex flex-col sm:flex-row h-full ${canViewDetail ? "cursor-pointer" : ""}`}
                     >
                       {/* Academic Year Side */}
                       <div className="bg-[#B8A9E8] p-5 flex flex-col justify-center items-center text-[#1A1A2E] shrink-0 sm:w-[130px] md:w-[150px] border-r-3 border-[#1A1A2E]">
@@ -300,8 +300,8 @@ export const SchoolDetail = (): JSX.Element => {
                       </div>
 
                       {/* Content */}
-                      <div className="flex-1 p-5 flex flex-col justify-center relative bg-white">
-                        <div className="flex items-start justify-between gap-4 mb-2">
+                      <div className="flex-1 min-w-0 p-5 flex flex-col relative bg-white">
+                        <div className="flex items-start justify-between gap-2 mb-2 flex-wrap">
                           <h3 className="font-extrabold text-sm text-[#1A1A2E] leading-tight line-clamp-2 flex-1">{c.campaignName}</h3>
                           <span className={`shrink-0 nb-badge ${s.badge}`}>{s.label}</span>
                         </div>

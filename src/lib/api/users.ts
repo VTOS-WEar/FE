@@ -22,6 +22,8 @@ export interface ParentProfileResponse {
   isDeleted: boolean;
   createdAt: string;
   lastLogin: string;
+  avatar?: string | null;
+  twoFactorEnabled?: boolean;
 }
 
 /* ── GET /api/users/me ── */

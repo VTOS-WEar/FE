@@ -1,6 +1,6 @@
 import {
     LayoutDashboard, Building2, FileText,
-    Factory, AlertTriangle, Wallet, BarChart3
+    Factory, AlertTriangle, Wallet, BarChart3, Settings
 } from "lucide-react";
 import type { DashboardSidebarProps } from "../components/layout";
 
@@ -32,6 +32,11 @@ export const PROVIDER_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, 'isCollapsed' 
                     icon: FileText,
                     label: "Hợp đồng",
                     href: "/provider/contracts",
+                },
+                {
+                    icon: Settings,
+                    label: "Cài đặt tài khoản",
+                    href: "/provider/account-settings",
                 },
             ],
         },

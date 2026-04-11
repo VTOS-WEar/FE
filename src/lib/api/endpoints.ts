@@ -23,7 +23,7 @@ export const endpoints = {
         schools: "/api/public/schools",
         categories: "/api/public/categories",
         outfits: "/api/public/outfits",
-
+        search: "/api/public/search",
     },
     tryOn: {
         request: "/api/tryOn/request",
