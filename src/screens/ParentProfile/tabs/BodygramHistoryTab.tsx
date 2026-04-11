@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ArrowDown, ArrowUp, Minus, Calendar, ChevronLeft, ChevronRight, Calculator } from "lucide-react";
 import { getChildBodygramScans, type BodygramHistoryItem } from "../../../lib/api/bodygram";
 import { getMyChildren, type ChildProfileDto } from "../../../lib/api/users";
@@ -89,6 +89,7 @@ function calculatePercentageDiff(current?: number | null, prev?: number | null) 
 }
 
 export const BodygramHistoryTab = (): JSX.Element => {
+  const navigate = useNavigate();
   const [children, setChildren] = useState<ChildProfileDto[]>([]);
   const [selectedChildId, setSelectedChildId] = useState("");
   const [allItems, setAllItems] = useState<BodygramHistoryItem[]>([]);
@@ -101,6 +102,7 @@ export const BodygramHistoryTab = (): JSX.Element => {
   const itemsPerPage = 3;
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [selectedCompareIds, setSelectedCompareIds] = useState<string[]>([]);
 
   useEffect(() => {
     let active = true;
@@ -226,6 +228,46 @@ export const BodygramHistoryTab = (): JSX.Element => {
       }));
   }, [summaryItems]);
 
+  const selectedCompareItems = useMemo(() => {
+    const selected = allItems.filter((item) => selectedCompareIds.includes(item.scanRecordId));
+    return selected.sort((left, right) => new Date(left.scannedAt).getTime() - new Date(right.scannedAt).getTime());
+  }, [allItems, selectedCompareIds]);
+
+  const handleToggleCompare = (scanRecordId: string) => {
+    setSelectedCompareIds((current) => {
+      if (current.includes(scanRecordId)) {
+        return current.filter((id) => id !== scanRecordId);
+      }
+
+      if (current.length >= 2) {
+        return current;
+      }
+
+      return [...current, scanRecordId];
+    });
+  };
+
+  const handleCompare = () => {
+    if (selectedCompareItems.length !== 2 || !selectedChildId) return;
+
+    const query = new URLSearchParams({
+      left: selectedCompareItems[0].scanRecordId,
+      right: selectedCompareItems[1].scanRecordId,
+    });
+
+    navigate(`/parentprofile/bodygram-history/${selectedChildId}/compare?${query.toString()}`);
+  };
+
+  useEffect(() => {
+    if (selectedCompareItems.length !== 2) return;
+
+    const timeoutId = window.setTimeout(() => {
+      handleCompare();
+    }, 180);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [selectedCompareItems, selectedChildId]);
+
   if (loading) {
     return (
       <div className="space-y-4">
@@ -260,6 +302,7 @@ export const BodygramHistoryTab = (): JSX.Element => {
                 setSelectedChildId(child.childId);
                 setStartDate("");
                 setEndDate("");
+                setSelectedCompareIds([]);
                 setCurrentPage(1);
               }}
               className={`min-w-max rounded-xl border-2 border-[#1A1A2E] px-3 py-1.5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[3px_3px_0_#1A1A2E] active:translate-y-0 flex items-center gap-2 ${selectedChildId === child.childId
@@ -544,6 +587,27 @@ export const BodygramHistoryTab = (): JSX.Element => {
               </div>
             )}
 
+            {selectedCompareIds.length > 0 && (
+              <div className="mb-4 flex flex-col gap-3 rounded-2xl border-2 border-[#1A1A2E] bg-[#EEF2FF] p-4 shadow-[3px_3px_0_#1A1A2E] md:flex-row md:items-center md:justify-between">
+                <div>
+                  <p className="text-sm font-extrabold text-[#1A1A2E]">
+                    {selectedCompareIds.length === 1 ? "Đã chọn 1 lần quét. Chọn thêm 1 lần nữa để so sánh." : "Đã chọn đủ 2 lần quét. Đang mở màn so sánh..."}
+                  </p>
+                  <p className="mt-1 text-xs font-bold text-[#4C5769]">
+                    Màn so sánh sẽ hiển thị 2 cột dữ liệu và phần chênh lệch giữa hai lần quét.
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={() => setSelectedCompareIds([])}
+                    className="rounded-xl border-2 border-[#1A1A2E] bg-white px-4 py-2 text-sm font-bold text-[#1A1A2E] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[3px_3px_0_#1A1A2E]"
+                  >
+                    Bỏ chọn
+                  </button>
+                </div>
+              </div>
+            )}
+
             <div className="relative animate-in fade-in slide-in-from-bottom-4 duration-500 rounded-2xl border-2 border-gray-500 bg-white overflow-visible shadow-[3px_3px_0_#1A1A2E] transition-all duration-300 hover:z-10 hover:shadow-[5px_5px_0_#1A1A2E] m-1">
               <div className="overflow-x-auto rounded-2xl">
                 <table className="w-full text-left font-medium text-[13px] min-w-max">
@@ -641,9 +705,18 @@ export const BodygramHistoryTab = (): JSX.Element => {
                                   Xem chi tiết
                                 </Link>
                                 <label
-                                  className="flex items-center gap-1.5 cursor-pointer opacity-80"
+                                  className={`flex items-center gap-1.5 ${selectedCompareIds.length >= 2 && !selectedCompareIds.includes(item.scanRecordId)
+                                    ? "cursor-not-allowed opacity-45"
+                                    : "cursor-pointer opacity-80"
+                                    }`}
                                 >
-                                  <input type="checkbox" className="w-[14px] h-[14px] rounded border-[#1A1A2E] text-[#1A1A2E] focus:ring-[#1A1A2E]" />
+                                  <input
+                                    type="checkbox"
+                                    checked={selectedCompareIds.includes(item.scanRecordId)}
+                                    disabled={selectedCompareIds.length >= 2 && !selectedCompareIds.includes(item.scanRecordId)}
+                                    onChange={() => handleToggleCompare(item.scanRecordId)}
+                                    className="w-[14px] h-[14px] rounded border-[#1A1A2E] text-[#1A1A2E] focus:ring-[#1A1A2E] disabled:cursor-not-allowed"
+                                  />
                                   <span className="text-[12px] font-bold text-[#1A1A2E]">So sánh</span>
                                 </label>
                               </div>

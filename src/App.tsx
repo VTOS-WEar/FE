@@ -56,6 +56,7 @@ import { SettingsTab } from "./screens/ParentProfile/tabs/SettingsTab";
 import { BodygramHistoryTab } from "./screens/ParentProfile/tabs/BodygramHistoryTab";
 import { FeedbackPage } from "./screens/ParentProfile/pages/FeedbackPage";
 import { OrderDetailPage } from "./screens/ParentProfile/pages/OrderDetailPage";
+import { BodygramScanComparePage } from "./screens/ParentProfile/pages/BodygramScanComparePage";
 import SchoolWallet from "./screens/SchoolWallet/SchoolWallet";
 import ProviderRevenue from "./screens/ProviderRevenue/ProviderRevenue";
 import ProviderWallet from "./screens/ProviderWallet/ProviderWallet";
@@ -152,6 +153,7 @@ const router = createBrowserRouter([
       { path: "settings", element: <SettingsTab /> },
       { path: "feedback", element: <FeedbackPage /> },
       { path: "orders/:orderId", element: <OrderDetailPage /> },
+      { path: "bodygram-history/:childId/compare", element: <BodygramScanComparePage /> },
       { path: "bodygram-history/:childId/scans/:scanId", element: <BodygramScanDetailPage /> },
     ],
   },

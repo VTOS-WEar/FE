@@ -216,7 +216,13 @@ function OrderCard({
                                     {badge.icon}
                                     {badge.label}
                                 </span>
-                                <span className="text-[9px] font-black text-[#9CA3AF] uppercase tracking-wider flex items-center gap-1">
+                                <span
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        if (firstItem?.campaignId) navigate(`/campaigns/${firstItem.campaignId}`);
+                                    }}
+                                    className="text-[9px] font-black text-[#9CA3AF] uppercase tracking-wider flex items-center gap-1 cursor-pointer hover:text-[#1A1A2E] transition-colors"
+                                >
                                     <ShoppingBag className="w-3 h-3" />
                                     {orderDetail?.campaignName || "---"}
                                 </span>
@@ -260,7 +266,7 @@ function OrderCard({
                     </div>
 
                     {/* Right: Modern Summary Box */}
-                    <div className="flex flex-col justify-between p-4 bg-[#F9F7FF] border-2 border-[#1A1A2E] rounded-[15px] shadow-[2px_2px_0_#1A1A2E] min-w-[220px]">
+                    <div className="flex flex-col justify-between p-4 bg-[#F5F3FF] border-2 border-[#1A1A2E] rounded-[15px] shadow-[2px_2px_0_#1A1A2E] min-w-[220px]">
                         <div className="flex justify-between items-start mb-4">
                             <div>
                                 <p className="text-[8px] text-[#9CA3AF] font-black uppercase tracking-widest mb-1">Tổng thanh toán</p>
