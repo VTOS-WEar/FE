@@ -34,6 +34,7 @@ const ORDER_STEPS = [
     { key: "Processed", label: "Đang xử lý", icon: "📦" },
     { key: "Shipped", label: "Đang giao", icon: "🚚" },
     { key: "Delivered", label: "Đã nhận", icon: "🎉" },
+    { key: "Cancelled", label: "Đã hủy", icon: "❌" },
 ];
 
 const STATUS_ORDER: Record<string, number> = {
@@ -246,7 +247,7 @@ function OrderCard({
 }
 
 /* ── Status Tabs ── */
-const ALL_STATUSES = ["Paid", "Confirmed", "Processed", "Shipped", "Delivered"];
+const ALL_STATUSES = ["Paid", "Confirmed", "Processed", "Shipped", "Delivered", "Cancelled"];
 
 const STATUS_LABELS: Record<string, string> = {
     Paid: "Đã thanh toán",
@@ -254,6 +255,7 @@ const STATUS_LABELS: Record<string, string> = {
     Processed: "Đang xử lý",
     Shipped: "Đang giao",
     Delivered: "Đã nhận",
+    Cancelled: "Đã hủy",
 };
 
 function StatusTabs({ 
