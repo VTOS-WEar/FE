@@ -260,11 +260,13 @@ const STATUS_LABELS: Record<string, string> = {
 
 function StatusTabs({ 
     payments,
+    total,
     statusCounts,
     selectedStatus, 
     onStatusChange 
 }: { 
     payments: ParentPaymentDto[],
+    total: number,
     statusCounts: StatusCountDto[],
     selectedStatus: string | null,
     onStatusChange: (status: string | null) => void 
@@ -288,9 +290,9 @@ function StatusTabs({
                 }`}
             >
                 Tất cả
-                {payments.length > 0 && (
+                {total > 0 && (
                     <span className="absolute -top-2 -right-2 bg-[#C8E44D] text-[#1A1A2E] text-xs font-bold px-2 py-0.5 rounded-full border-2 border-[#1A1A2E] shadow-[1px_1px_0_#1A1A2E] min-w-[24px] text-center">
-                        {payments.length}
+                        {total}
                     </span>
                 )}
             </button>
@@ -412,7 +414,7 @@ export const OrdersTab = (): JSX.Element => {
     return (
         <div>
             {/* Status Filter Tabs */}
-            <StatusTabs payments={payments} statusCounts={statusCounts} selectedStatus={selectedStatus} onStatusChange={setSelectedStatus} />
+            <StatusTabs payments={payments} total={total} statusCounts={statusCounts} selectedStatus={selectedStatus} onStatusChange={setSelectedStatus} />
 
             {/* Filtered Orders List */}
             <div className="space-y-4">
