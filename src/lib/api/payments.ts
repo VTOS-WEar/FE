@@ -69,7 +69,7 @@ export type ParentPaymentDto = {
     paymentId: string;
     orderId: string;
     amount: number;
-    status: string;
+    paymentStatus: string;
     orderStatus: string;
     timestamp: string;
 };

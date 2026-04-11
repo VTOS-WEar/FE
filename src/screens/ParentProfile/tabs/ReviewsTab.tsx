@@ -117,9 +117,9 @@ function ReviewCard({ feedback, onRefresh }: ReviewCardProps) {
 
   if (isEditing) {
     return (
-      <div className="nb-card overflow-hidden">
+      <div className="nb-card !rounded-[12px] overflow-hidden shadow-[3px_3px_0_#1A1A2E] hover:shadow-[6px_6px_0_#1A1A2E] transition-all duration-300">
         {/* Header */}
-        <div className="p-4 border-b-2 border-[#1A1A2E]/10 flex items-center justify-between">
+        <div className="p-4 border-b-2 border-[#1A1A2E]/10 flex items-center justify-between rounded-t-[12px]">
           <div className="flex items-center gap-2">
             <ShoppingBag className="w-4 h-4 text-[#B8A9E8]" />
             <span className="font-bold text-xs uppercase text-[#1A1A2E]">
@@ -148,7 +148,7 @@ function ReviewCard({ feedback, onRefresh }: ReviewCardProps) {
             <div className="flex-1">
               <h3 className="font-bold text-[#1A1A2E] text-sm leading-tight mb-1">{feedback.outfitName}</h3>
               <p className="text-xs text-[#9CA3AF] mb-3">{feedback.outfitType}</p>
-              
+
               <div className="flex flex-wrap gap-2">
                 <span className="px-2 py-0.5 bg-[#F3F4F6] border border-[#D1D5DB] rounded text-[10px] font-bold text-[#1A1A2E]">Size {feedback.size}</span>
                 <span className="px-2 py-0.5 bg-[#F3F4F6] border border-[#D1D5DB] rounded text-[10px] font-bold text-[#1A1A2E]">x{feedback.quantity}</span>
@@ -200,7 +200,7 @@ function ReviewCard({ feedback, onRefresh }: ReviewCardProps) {
   }
 
   return (
-    <div className="nb-card overflow-hidden">
+    <div className="nb-card !rounded-[12px] overflow-hidden shadow-[3px_3px_0_#1A1A2E] hover:shadow-[6px_6px_0_#1A1A2E] transition-all duration-300 hover:-translate-y-1">
       <div className="p-5 flex flex-col md:flex-row gap-6">
         {/* Product Section */}
         <div className="flex-1 flex gap-5">
@@ -227,7 +227,7 @@ function ReviewCard({ feedback, onRefresh }: ReviewCardProps) {
             <p className="text-[10px] font-bold text-[#9CA3AF] mb-1 uppercase truncate">
               📦 {feedback.campaignName}
             </p>
-            <h3 
+            <h3
               className="font-bold text-[#1A1A2E] text-sm truncate hover:text-[#B8A9E8] transition-colors cursor-pointer mb-2"
               onClick={() => navigate(`/outfits/${feedback.outfitId}`)}
             >
@@ -266,7 +266,7 @@ function ReviewCard({ feedback, onRefresh }: ReviewCardProps) {
               <span className="text-[9px] font-bold uppercase tracking-wider">Thời gian phản hồi</span>
             </div>
             <p className="text-[11px] font-bold text-[#1A1A2E]">
-              {feedback.feedbackTimestamp 
+              {feedback.feedbackTimestamp
                 ? fmtFullDate(feedback.feedbackTimestamp)
                 : "---"
               }
@@ -295,9 +295,8 @@ function ReviewCard({ feedback, onRefresh }: ReviewCardProps) {
 
         <button
           onClick={() => setIsEditing(true)}
-          className={`nb-btn text-xs px-4 py-1.5 flex items-center gap-1.5 whitespace-nowrap ${
-            hasRating ? "nb-btn-outline" : "nb-btn-purple transition-transform active:scale-95"
-          }`}
+          className={`nb-btn text-xs px-4 py-1.5 flex items-center gap-1.5 whitespace-nowrap ${hasRating ? "nb-btn-outline" : "nb-btn-purple transition-transform active:scale-95"
+            }`}
         >
           {hasRating ? (
             <>
@@ -382,7 +381,7 @@ export const ReviewsTab = (): JSX.Element => {
         <div className="relative w-full md:w-[320px]">
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className="w-full bg-white border-2 border-[#1A1A2E] p-3 rounded-lg shadow-[4px_4px_0_#1A1A2E] flex items-center justify-between transition-transform active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
+            className="w-full bg-white border-2 border-[#1A1A2E] p-3 rounded-lg shadow-[3px_3px_0_#1A1A2E] flex items-center justify-between transition-all hover:-translate-y-0.5 hover:shadow-[5px_5px_0_#1A1A2E] active:shadow-none"
             title="Lọc theo chiến dịch"
           >
             <div className="text-left">
@@ -483,7 +482,7 @@ export const ReviewsTab = (): JSX.Element => {
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center py-16 gap-4">
-              <div className="w-16 h-16 bg-[#EDE9FE] rounded-xl flex items-center justify-center border-2 border-[#1A1A2E] shadow-[3px_3px_0_#1A1A2E]">
+              <div className="w-16 h-16 bg-[#EDE9FE] rounded-xl flex items-center justify-center border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E]">
                 <AlertCircle className="w-8 h-8 text-[#1A1A2E]" />
               </div>
               <p className="font-medium text-[#6B7280] text-sm text-center">

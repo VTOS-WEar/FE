@@ -21,11 +21,26 @@ function fmtDate(iso: string) {
 }
 
 function statusBadge(status: string) {
-    switch (status.toLowerCase()) {
-        case "pending": return { label: "Chờ thanh toán", bg: "bg-[#FEF3C7]", text: "text-[#92400E]", border: "border-[#F5E642]", icon: <Clock className="w-3.5 h-3.5" /> };
-        case "paid": case "completed": case "success": return { label: "Đã thanh toán", bg: "bg-[#D1FAE5]", text: "text-[#065F46]", border: "border-[#C8E44D]", icon: <CheckCircle className="w-3.5 h-3.5" /> };
-        case "cancelled": case "failed": return { label: "Đã hủy", bg: "bg-[#FEE2E2]", text: "text-[#991B1B]", border: "border-[#FCA5A5]", icon: <XCircle className="w-3.5 h-3.5" /> };
-        default: return { label: status, bg: "bg-[#F3F4F6]", text: "text-[#6B7280]", border: "border-[#D1D5DB]", icon: null };
+    if (!status) return { label: "---", bg: "bg-gray-100", text: "text-gray-400", border: "border-gray-200", icon: null };
+    const s = status.toLowerCase();
+    switch (s) {
+        case "paid":
+            return { label: "Đã thanh toán", bg: "bg-green-50", text: "text-green-600", border: "border-green-200", icon: <span className="text-[10px]">💳</span> };
+        case "confirmed":
+            return { label: "Đã xác nhận", bg: "bg-blue-50", text: "text-blue-600", border: "border-blue-200", icon: <span className="text-[10px]">✅</span> };
+        case "processed":
+            return { label: "Đang xử lý", bg: "bg-indigo-50", text: "text-indigo-600", border: "border-indigo-200", icon: <span className="text-[10px]">📦</span> };
+        case "shipped":
+            return { label: "Đang giao", bg: "bg-sky-50", text: "text-sky-600", border: "border-sky-200", icon: <span className="text-[10px]">🚚</span> };
+        case "delivered":
+            return { label: "Đã nhận", bg: "bg-emerald-50", text: "text-emerald-600", border: "border-emerald-200", icon: <span className="text-[10px]">🎉</span> };
+
+        case "pending":
+            return { label: "Chờ thanh toán", bg: "bg-orange-50", text: "text-orange-600", border: "border-orange-200", icon: <Clock className="w-3 h-3" /> };
+        case "cancelled": case "failed": case "refunded":
+            return { label: s === "refunded" ? "Đã hoàn tiền" : "Đã hủy", bg: "bg-red-50", text: "text-red-600", border: "border-red-200", icon: <XCircle className="w-3 h-3" /> };
+        default:
+            return { label: status, bg: "bg-gray-50", text: "text-gray-600", border: "border-gray-200", icon: null };
     }
 }
 
@@ -131,8 +146,9 @@ function OrderCard({
     payingId,
     setPayingId,
 }: OrderCardProps) {
-    const badge = statusBadge(p.status);
-    const isPending = p.status.toLowerCase() === "pending";
+    const navigate = useNavigate();
+    const badge = statusBadge(p.orderStatus);
+    const isPending = p.paymentStatus === "Pending" || p.paymentStatus === "Unpaid";
     const [orderDetail, setOrderDetail] = useState<OrderDetailDto | null>(null);
     const [loadingDetail, setLoadingDetail] = useState(false);
 
@@ -154,49 +170,35 @@ function OrderCard({
     const firstItem = orderDetail?.items[0];
 
     return (
-        <div className={`nb-card overflow-hidden transition-all duration-300 ${isExpanded ? 'ring-2 ring-[#B8A9E8]' : ''}`}>
-            {/* Header: Campaign + Status */}
-            <div className="px-5 py-3 bg-[#1A1A2E]/5 flex items-center justify-between border-b-2 border-[#1A1A2E]/10">
-                <div className="flex items-center gap-2">
-                    <div className="bg-[#1A1A2E] text-white p-1 rounded">
-                        <ShoppingBag className="w-3.5 h-3.5" />
-                    </div>
-                    <span className="font-bold text-[10px] uppercase tracking-wider text-[#1A1A2E]">
-                        {orderDetail?.campaignName || "---"}
-                    </span>
-                </div>
-                <div className="flex items-center gap-3">
-                    <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold border-2 ${badge.bg} ${badge.text} ${badge.border} shadow-[2px_2px_0_#1A1A2E]`}>
-                        {badge.icon}
-                        {STATUS_LABELS[p.orderStatus] || p.orderStatus}
-                    </span>
-                    {showStepper && (
-                        <button onClick={onExpandToggle} className="p-1 hover:bg-white rounded transition-colors">
-                            <ChevronDown className={`w-4 h-4 text-[#1A1A2E] transition-transform duration-300 ${isExpanded ? "rotate-180" : ""}`} />
-                        </button>
-                    )}
-                </div>
-            </div>
-
-            {/* Main Content */}
+        <div
+            onClick={onExpandToggle}
+            className={`nb-card !rounded-[12px] overflow-hidden transition-all duration-300 shadow-[3px_3px_0_#1A1A2E] hover:shadow-[6px_6px_0_#1A1A2E] hover:-translate-y-1 cursor-pointer select-none ${isExpanded ? 'ring-2 ring-[#B8A9E8]' : ''}`}
+        >
             <div className="p-5">
-                <div className="flex flex-col lg:flex-row gap-6 justify-between items-start">
-                    {/* Left: Product & Child (Tightly Grouped) */}
-                    <div className="flex flex-row gap-5 items-start">
-                        {/* Product Image + Child Avatar Badge */}
+                <div className="flex flex-col lg:flex-row gap-6 justify-between items-stretch">
+                    {/* Left: Identity & Product */}
+                    <div className="flex flex-row gap-5 items-start flex-1 min-w-0">
+                        {/* Image Section */}
                         <div className="relative flex-shrink-0">
-                            <div className="w-28 h-28 rounded-2xl border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E] overflow-hidden bg-white flex items-center justify-center group pointer-events-none">
+                            <div className="w-24 h-24 rounded-2xl border-2 border-[#1A1A2E] shadow-[3px_3px_0_#1A1A2E] overflow-hidden bg-white flex items-center justify-center group pointer-events-none">
                                 {loadingDetail ? (
                                     <div className="w-5 h-5 border-2 border-[#B8A9E8] border-t-transparent rounded-full animate-spin" />
                                 ) : firstItem?.outfitImage ? (
                                     <img src={firstItem.outfitImage} alt={firstItem.outfitName} className="w-full h-full object-cover transition-transform group-hover:scale-110" />
                                 ) : (
-                                    <Package className="w-10 h-10 text-[#B8A9E8]" />
+                                    <Package className="w-8 h-8 text-[#B8A9E8]" />
                                 )}
                             </div>
-                            {/* Child Avatar Overlap */}
+
+                            {/* Items count badge on image */}
+                            {orderDetail && orderDetail.items.length > 1 && (
+                                <div className="absolute -top-2 -left-2 bg-[#C8E44D] text-[#1A1A2E] text-[9px] font-black px-1.5 py-0.5 rounded-md border-2 border-[#1A1A2E] shadow-[1.5px_1.5px_0_#1A1A2E] z-20">
+                                    +{orderDetail.items.length - 1}
+                                </div>
+                            )}
+
                             {orderDetail?.childAvatar && (
-                                <div className="absolute -bottom-1 -right-1 w-9 h-9 rounded-full border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E] overflow-hidden bg-white z-10">
+                                <div className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full border-2 border-[#1A1A2E] shadow-[1.5px_1.5px_0_#1A1A2E] overflow-hidden bg-white z-10">
                                     <Avatar className="w-full h-full rounded-none">
                                         <AvatarImage src={orderDetail.childAvatar} />
                                         <AvatarFallback className="text-[10px] font-black bg-[#E9D5FF]">
@@ -207,82 +209,98 @@ function OrderCard({
                             )}
                         </div>
 
-                        <div className="flex-1 space-y-2">
-                            <div className="flex items-center gap-2 text-[#9CA3AF] font-bold text-[10px] uppercase tracking-wider">
-                                <Calendar className="w-3.5 h-3.5" />
-                                {fmtDate(p.timestamp)}
+                        {/* Details Section */}
+                        <div className="flex-1 space-y-1.5 min-w-0">
+                            <div className="flex flex-wrap items-center gap-2 mb-0.5">
+                                <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg border-2 font-black text-[9px] uppercase shadow-[2px_2px_0_#1A1A2E] ${badge.bg} ${badge.text} ${badge.border}`}>
+                                    {badge.icon}
+                                    {badge.label}
+                                </span>
+                                <span className="text-[9px] font-black text-[#9CA3AF] uppercase tracking-wider flex items-center gap-1">
+                                    <ShoppingBag className="w-3 h-3" />
+                                    {orderDetail?.campaignName || "---"}
+                                </span>
+                            </div>
+
+                            <div className="space-y-0.5">
+                                <h3
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        if (firstItem?.outfitId) {
+                                            navigate(`/outfits/${firstItem.outfitId}`);
+                                        }
+                                    }}
+                                    className="font-extrabold text-[#1A1A2E] text-lg leading-tight truncate hover:text-[#B8A9E8] transition-colors cursor-pointer decoration-[#B8A9E8] hover:underline underline-offset-4"
+                                >
+                                    {firstItem?.outfitName || "Mã đơn: #" + p.orderId.substring(0, 8)}
+                                </h3>
+
+
+                            </div>
+                            <div>
                                 {orderDetail?.childName && (
-                                    <span className="text-[#1A1A2E] font-black ml-1">• {orderDetail.childName}</span>
+                                    <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#6B7280]">
+                                        <User className="w-3 h-3 text-[#1A1A2E]" />
+                                        <span> <span className="text-[#1A1A2E] font-gray">{orderDetail.childName}</span></span>
+                                    </div>
                                 )}
                             </div>
 
-                            <h3 className="font-extrabold text-[#1A1A2E] text-lg leading-tight">
-                                {firstItem?.outfitName || "Mã đơn: #" + p.orderId.substring(0, 8)}
-                            </h3>
-
-                            <div className="flex items-center gap-4 text-[12px] font-bold text-[#6B7280]">
-                                <span>Size: <span className="text-[#1A1A2E]">{firstItem?.size || "-"}</span></span>
+                            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] font-bold text-[#9CA3AF]">
+                                <span className="flex items-center gap-1">
+                                    <Calendar className="w-3 h-3" />
+                                    {fmtDate(p.timestamp)}
+                                </span>
                                 <span className="text-[#D1D5DB]">|</span>
-                                <span>Số lượng: <span className="text-[#1A1A2E]">{firstItem?.quantity || "-"}</span></span>
-                                {orderDetail && orderDetail.items.length > 1 && (
-                                    <>
-                                        <span className="text-[#D1D5DB]">|</span>
-                                        <span className="text-[#B8A9E8]">+{orderDetail.items.length - 1} sp khác</span>
-                                    </>
-                                )}
+                                <span>Size: <span className="text-[#6B7280] font-extrabold">{firstItem?.size || "-"}</span></span>
+                                <span className="text-[#D1D5DB]">|</span>
+                                <span>SL: <span className="text-[#6B7280] font-extrabold">{firstItem?.quantity || "-"}</span></span>
                             </div>
                         </div>
                     </div>
 
-                    {/* Right: Informative Summary Box */}
-                    <div className="flex flex-col justify-between p-4 bg-[#E9D5FF] border-2 border-[#1A1A2E] rounded-[20px] shadow-[4px_4px_0_#1A1A2E] min-w-[210px]">
-                        <div className="space-y-4">
-                            <div className="flex justify-between items-start border-b border-[#1A1A2E]/10 pb-3">
-                                <div>
-                                    <p className="text-[9px] text-[#1A1A2E] font-black uppercase tracking-widest mb-1.5 opacity-60">Thanh toán</p>
-                                    <div className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg border-2 font-black text-[9px] uppercase ${badge.bg === 'bg-white' ? 'bg-white' : badge.bg} ${badge.text} border-[#1A1A2E]`}>
-                                        {badge.label}
-                                    </div>
-                                </div>
-                                <div className="text-right">
-                                    <p className="text-[9px] text-[#1A1A2E] font-black uppercase tracking-widest mb-1.5 opacity-60">Sản phẩm</p>
-                                    <span className="font-black text-[#1A1A2E] text-xs">x{orderDetail?.items.length || 0}</span>
-                                </div>
+                    {/* Right: Modern Summary Box */}
+                    <div className="flex flex-col justify-between p-4 bg-[#F9F7FF] border-2 border-[#1A1A2E] rounded-[15px] shadow-[2px_2px_0_#1A1A2E] min-w-[220px]">
+                        <div className="flex justify-between items-start mb-4">
+                            <div>
+                                <p className="text-[8px] text-[#9CA3AF] font-black uppercase tracking-widest mb-1">Tổng thanh toán</p>
+                                <p className="font-black text-xl text-[#1A1A2E] leading-none mb-1">{fmt(p.amount)}</p>
+                                {orderDetail && (
+                                    <p className="text-[10px] font-bold text-[#6B7280]">
+                                        {orderDetail.items.reduce((sum, item) => sum + item.quantity, 0)} sản phẩm
+                                    </p>
+                                )}
                             </div>
-
-                            <div className="flex justify-between items-end">
-                                <div>
-                                    <p className="text-[9px] text-[#1A1A2E] font-black uppercase tracking-widest mb-1 opacity-60">Tổng tiền</p>
-                                    <p className="font-black text-xl text-[#1A1A2E] leading-none">{fmt(p.amount)}</p>
-                                </div>
-                                <div className="flex flex-col gap-2">
-                                    <button
-                                        onClick={() => onNavigateDetail()}
-                                        className="text-[10px] font-black text-[#1A1A2E] flex items-center justify-end gap-1 hover:text-[#B8A9E8] transition-colors uppercase"
-                                    >
-                                        Chi tiết <ChevronRight className="w-3.5 h-3.5" />
-                                    </button>
+                            <div className="text-right">
+                                <p className="text-[8px] text-[#9CA3AF] font-black uppercase tracking-widest mb-1">Thanh toán</p>
+                                <div className={`text-[10px] font-black ${p.paymentStatus === 'Paid' || p.paymentStatus === 'Completed' ? 'text-green-600' : p.paymentStatus === 'Cancelled' ? 'text-red-500' : 'text-orange-500'}`}>
+                                    {p.paymentStatus === 'Paid' || p.paymentStatus === 'Completed' ? 'Đã xong' : p.paymentStatus === 'Pending' ? 'Chờ xử lý' : 'Đã hủy'}
                                 </div>
                             </div>
                         </div>
 
-                        <div className="mt-4 pt-4 border-t border-[#1A1A2E]/10">
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={(e) => { e.stopPropagation(); onNavigateDetail(); }}
+                                className="flex-1 py-1.5 bg-white hover:bg-gray-50 text-[9px] font-black text-[#1A1A2E] uppercase tracking-widest rounded-lg border-2 border-[#1A1A2E] shadow-[1px_1px_0_#1A1A2E] transition-all active:translate-y-[1px] active:shadow-none"
+                            >
+                                Chi tiết
+                            </button>
                             {p.orderStatus === "Delivered" && (
                                 <button
                                     onClick={(e) => { e.stopPropagation(); onNavigateFeedback(); }}
-                                    className="nb-btn nb-btn-purple w-full text-[10px] py-2 font-black shadow-[3px_3px_0_#1A1A2E] bg-white text-[#1A1A2E]"
+                                    className="flex-1 py-1.5 bg-[#1A1A2E] text-white text-[9px] font-black uppercase tracking-widest rounded-lg border-2 border-[#1A1A2E] shadow-[1px_1px_0_#B8A9E8] hover:scale-[1.02] transition-all"
                                 >
-                                    ĐÁNH GIÁ NGAY
+                                    Đánh giá
                                 </button>
                             )}
-
                             {isPending && (
                                 <button
                                     onClick={(e) => { e.stopPropagation(); onPay(); }}
                                     disabled={payingId === p.orderId}
-                                    className="nb-btn nb-btn-purple w-full text-[10px] py-2 font-black shadow-[3px_3px_0_#1A1A2E]"
+                                    className="flex-1 nb-btn nb-btn-purple !py-1.5 !text-[9px] !rounded-lg !shadow-[1px_1px_0_#1A1A2E] hover:!shadow-[2px_2px_0_#1A1A2E] !font-black uppercase tracking-widest"
                                 >
-                                    THANH TOÁN NGAY
+                                    Thanh toán
                                 </button>
                             )}
                         </div>
@@ -504,14 +522,14 @@ export const OrdersTab = (): JSX.Element => {
                             <ShoppingBag className="w-8 h-8 text-[#9CA3AF]" />
                         </div>
                         <p className="font-bold text-[#6B7280] text-sm text-center">
-                            {(startDate || endDate || selectedStatus) 
+                            {(startDate || endDate || selectedStatus)
                                 ? "Không tìm thấy đơn hàng nào khớp với bộ lọc."
                                 : "Bạn chưa có đơn hàng nào."}
                         </p>
                     </div>
                 ) : (
                     payments.map((p) => {
-                        const badge = statusBadge(p.status);
+                        const badge = statusBadge(p.paymentStatus);
                         const isExpanded = expandedId === p.paymentId;
                         const showStepper = p.orderStatus && p.orderStatus !== "Pending";
 

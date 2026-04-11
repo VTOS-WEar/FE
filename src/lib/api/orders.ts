@@ -47,6 +47,7 @@ export type OrderDetailDto = {
   orderStatus: string;
   orderDate: string;
   shippingAddress: string;
+  campaignId: string;
   campaignName: string;
   items: OrderItemDto[];
 };
