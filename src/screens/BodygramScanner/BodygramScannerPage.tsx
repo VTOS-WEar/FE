@@ -85,7 +85,7 @@ export const BodygramScannerPage = (): JSX.Element => {
             window.clearInterval(intervalId);
             setError(
               status.message ||
-              `Khong nhan duoc ket qua scan sau ${status.timeoutMinutes} phut. Vui long tao phien quet moi.`
+              `Không nhận được kết quả quét sau ${status.timeoutMinutes} phút. Vui lòng tạo phiên quét mới.`
             );
             return;
           }
