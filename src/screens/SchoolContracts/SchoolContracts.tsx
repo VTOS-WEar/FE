@@ -10,23 +10,37 @@ import { useSidebarConfig } from "../../hooks/useSidebarConfig";
 import { ChatWidget, type ChatContextInfo } from "../../components/ChatWidget/ChatWidget";
 import {
     getSchoolContracts, getSchoolContractDetail, createContract, cancelSchoolContract,
+    signSchoolContract, requestSchoolSignOTP,
     type ContractDto, type CreateContractRequest, type CreateContractItemRequest,
 } from "../../lib/api/contracts";
+import { ContractTemplate, type ContractTemplateData } from "../../components/ContractTemplate";
 
 type ProviderOption = { id: string; name: string };
 type OutfitOption = { id: string; name: string; price: number };
 
 const STATUS_BADGE: Record<string, string> = {
     Pending: "nb-badge nb-badge-yellow",
-    Approved: "nb-badge nb-badge-green",
+    PendingSchoolSign: "nb-badge bg-[#FEF3C7] text-[#92400E] border-[#1A1A2E]",
+    PendingProviderSign: "nb-badge bg-[#E0E7FF] text-[#3730A3] border-[#1A1A2E]",
+    Active: "nb-badge bg-[#D1FAE5] text-[#065F46] border-[#1A1A2E]",
     InUse: "nb-badge bg-[#DBEAFE] text-[#1D4ED8] border-[#1A1A2E]",
     Fulfilled: "nb-badge bg-[#D1FAE5] text-[#065F46] border-[#1A1A2E]",
     Rejected: "nb-badge nb-badge-red",
     Expired: "nb-badge bg-[#F3F4F6] text-[#6B7280]",
     Cancelled: "nb-badge bg-[#FEE2E2] text-[#991B1B] border-[#1A1A2E]",
 };
-const STATUS_LABELS: Record<string, string> = { Pending: "Chờ duyệt", Approved: "Đã duyệt", InUse: "Đang dùng", Fulfilled: "Hoàn thành", Rejected: "Từ chối", Expired: "Hết hạn", Cancelled: "Đã hủy" };
-const STATUS_COLORS: Record<string, string> = { Pending: "#f59e0b", Approved: "#10b981", InUse: "#3b82f6", Fulfilled: "#059669", Rejected: "#ef4444", Expired: "#6b7280" };
+const STATUS_LABELS: Record<string, string> = {
+    Pending: "Chờ duyệt",
+    PendingSchoolSign: "✍️ Chờ trường ký",
+    PendingProviderSign: "Chờ NCC ký",
+    Active: "Đang hiệu lực",
+    InUse: "Đang dùng",
+    Fulfilled: "Hoàn thành",
+    Rejected: "Từ chối",
+    Expired: "Hết hạn",
+    Cancelled: "Đã hủy",
+};
+const STATUS_COLORS: Record<string, string> = { Pending: "#f59e0b", PendingSchoolSign: "#92400e", PendingProviderSign: "#3730a3", Active: "#059669", InUse: "#3b82f6", Fulfilled: "#059669", Rejected: "#ef4444", Expired: "#6b7280" };
 
 export function SchoolContracts() {
     const sidebarConfig = useSidebarConfig();
@@ -66,6 +80,30 @@ export function SchoolContracts() {
             subtitle: `Nhà Cung Cấp: ${c.providerName || "—"} · ${c.items.length} mục`,
         });
         setChatOpen(true);
+    };
+
+    // Contract Template (full document view + signing)
+    const [templateContract, setTemplateContract] = useState<ContractTemplateData | null>(null);
+    const [templateLoading, setTemplateLoading] = useState(false);
+
+    const openContractTemplate = async (id: string) => {
+        setTemplateLoading(true);
+        try {
+            const c = await getSchoolContractDetail(id);
+            setTemplateContract(c as ContractTemplateData);
+        } catch (e: any) { console.error(e); }
+        finally { setTemplateLoading(false); }
+    };
+
+    const handleSchoolSign = async (sigData: string, otpCode: string, pdfBase64?: string) => {
+        if (!templateContract) return;
+        await signSchoolContract(templateContract.contractId, sigData, otpCode, pdfBase64);
+        fetchContracts();
+    };
+
+    const handleRequestSchoolOTP = async () => {
+        if (!templateContract) return;
+        await requestSchoolSignOTP(templateContract.contractId);
     };
 
     // Detail modal
@@ -163,7 +201,7 @@ export function SchoolContracts() {
 
                         {/* Status tabs — NB */}
                         <div className="nb-tabs w-fit">
-                            {["", "Pending", "Approved", "InUse", "Fulfilled", "Rejected", "Expired", "Cancelled"].map(s => (
+                            {["", "Pending", "PendingSchoolSign", "PendingProviderSign", "Active", "InUse", "Fulfilled", "Rejected", "Expired", "Cancelled"].map(s => (
                                 <button key={s} onClick={() => { setStatusFilter(s); setPage(1); }}
                                     className={`nb-tab ${statusFilter === s ? "nb-tab-active" : ""}`}>
                                     {s ? STATUS_LABELS[s] || s : "Tất cả"}
@@ -204,6 +242,11 @@ export function SchoolContracts() {
                                                             className="nb-btn nb-btn-sm nb-btn-red text-xs disabled:opacity-50"
                                                         >{cancelling === c.contractId ? "Đang hủy..." : "✕ Hủy"}</button>
                                                     )}
+                                                    <button
+                                                        onClick={(e) => { e.stopPropagation(); openContractTemplate(c.contractId); }}
+                                                        disabled={templateLoading}
+                                                        className="nb-btn nb-btn-sm text-xs bg-[#EDE9FE] border-[#1A1A2E] disabled:opacity-50"
+                                                    >📄 Xem HĐ</button>
                                                     <button onClick={(e) => { e.stopPropagation(); openContractChat(c); }}
                                                         className="nb-btn nb-btn-sm text-xs bg-[#3B82F6] text-white border-[#1A1A2E]">💬 Chat</button>
                                                 </div>
@@ -266,15 +309,19 @@ export function SchoolContracts() {
                                 {selected.rejectionReason && (
                                     <div className="nb-alert nb-alert-error text-sm mb-4"><span>❌</span><span><strong>Lý do từ chối:</strong> {selected.rejectionReason}</span></div>
                                 )}
-                                <div className="flex gap-3">
-                                    <button onClick={() => { setShowDetail(false); setSelected(null); }} className="flex-1 nb-btn nb-btn-outline text-sm">Đóng</button>
+                                <div className="flex gap-3 flex-wrap">
+                                    <button onClick={() => { setShowDetail(false); setSelected(null); }} className="nb-btn nb-btn-outline text-sm">Đóng</button>
+                                    <button
+                                        onClick={() => { openContractTemplate(selected.contractId); setShowDetail(false); }}
+                                        className="flex-1 nb-btn text-sm bg-[#EDE9FE] border-[#1A1A2E]"
+                                    >📄 Xem & Ký HĐ</button>
                                     {selected.status === "Pending" && (
                                         <button onClick={(e) => handleCancel(e, selected.contractId)}
                                             disabled={cancelling === selected.contractId}
-                                            className="flex-1 nb-btn nb-btn-red text-sm disabled:opacity-50"
-                                        >{cancelling === selected.contractId ? "Đang hủy..." : "✕ Hủy hợp đồng"}</button>
+                                            className="nb-btn nb-btn-red text-sm disabled:opacity-50"
+                                        >{cancelling === selected.contractId ? "Đang hủy..." : "✕ Hủy"}</button>
                                     )}
-                                    <button onClick={() => openContractChat(selected)} className="flex-1 nb-btn text-sm bg-[#3B82F6] text-white border-[#1A1A2E]">💬 Chat</button>
+                                    <button onClick={() => openContractChat(selected)} className="nb-btn text-sm bg-[#3B82F6] text-white border-[#1A1A2E]">💬 Chat</button>
                                 </div>
                             </>
                         )}
@@ -347,6 +394,25 @@ export function SchoolContracts() {
                         </div>
                     </div>
                 </div>
+            )}
+
+            {/* Contract Template full-document viewer */}
+            {templateLoading && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50">
+                    <div className="bg-white rounded-md border-2 border-[#1A1A2E] px-8 py-5 shadow-[4px_4px_0_#1A1A2E] flex items-center gap-3">
+                        <div className="w-5 h-5 border-3 border-[#6938EF] border-t-transparent rounded-full animate-spin" />
+                        <span className="font-bold text-[#1A1A2E]">Đang tải hợp đồng...</span>
+                    </div>
+                </div>
+            )}
+            {templateContract && !templateLoading && (
+                <ContractTemplate
+                    contract={templateContract}
+                    viewerRole="school"
+                    onRequestSchoolOTP={handleRequestSchoolOTP}
+                    onSchoolSign={handleSchoolSign}
+                    onClose={() => setTemplateContract(null)}
+                />
             )}
 
             <ChatWidget channelType="contract" channelId={chatContractId} isOpen={chatOpen} onClose={() => setChatOpen(false)} contextInfo={chatContext} />
