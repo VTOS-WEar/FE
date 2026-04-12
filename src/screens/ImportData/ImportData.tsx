@@ -27,14 +27,14 @@ import { useEffect } from "react";
 
 
 
-/* ── Helper: format ISO date to readable Vietnamese format ── */
+/* ── Helper: format ISO date to readable Vietnamese format (UTC+7) ── */
 function formatDate(isoDate: string): string {
     const d = new Date(isoDate);
-    const hh = d.getHours().toString().padStart(2, "0");
-    const mm = d.getMinutes().toString().padStart(2, "0");
-    const dd = d.getDate().toString().padStart(2, "0");
-    const mo = (d.getMonth() + 1).toString().padStart(2, "0");
-    return `${hh}:${mm}, ${dd}/${mo}/${d.getFullYear()}`;
+    const opts: Intl.DateTimeFormatOptions = { timeZone: "Asia/Ho_Chi_Minh", hour: "2-digit", minute: "2-digit", hour12: false };
+    const dateOpts: Intl.DateTimeFormatOptions = { timeZone: "Asia/Ho_Chi_Minh", day: "2-digit", month: "2-digit", year: "numeric" };
+    const time = d.toLocaleTimeString("vi-VN", opts);
+    const date = d.toLocaleDateString("vi-VN", dateOpts);
+    return `${time}, ${date}`;
 }
 
 export const ImportData = (): JSX.Element => {

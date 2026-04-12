@@ -620,22 +620,6 @@
       }
     },
     {
-      "id": "src\\components\\layout\\DashboardSidebar.tsx:59:8-to-src\\components\\guards\\RoleGuard.tsx",
-      "source": "src\\screens\\AccountSetting\\AccountSetting.tsx",
-      "target": "src\\components\\guards\\RoleGuard.tsx",
-      "data": {
-        "viaRoute": "/signin",
-        "trigger": {
-          "element": "navigate(\"/signin\", { replace: true })",
-          "line": 59,
-          "endLine": 59,
-          "column": 8,
-          "endColumn": 46,
-          "sourceFile": "src\\components\\layout\\DashboardSidebar.tsx"
-        }
-      }
-    },
-    {
       "id": "src\\components\\layout\\NavbarGuest.tsx:266:20-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\FillInformation\\FillInformation.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
