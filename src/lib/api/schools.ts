@@ -441,6 +441,23 @@ export type ProductVariantDto = {
     materialType: string | null;
     skuCode: string | null;
     variantImageURL: string | null;
+    measurements: VariantMeasurementDto[];
+};
+
+export type VariantMeasurementDto = {
+    fieldKey: string;
+    displayName: string;
+    unit: string;
+    minCm: number | null;
+    maxCm: number | null;
+};
+
+export type VariantMeasurementInputDto = {
+    fieldKey: string;
+    displayName: string;
+    unit?: string | null;
+    minCm?: number | null;
+    maxCm?: number | null;
 };
 
 export type CreateVariantRequest = {
@@ -448,6 +465,7 @@ export type CreateVariantRequest = {
     colorVariant?: string | null;
     materialType?: string | null;
     skuCode?: string | null;
+    measurements?: VariantMeasurementInputDto[];
 };
 
 export type UpdateVariantRequest = {
@@ -455,6 +473,7 @@ export type UpdateVariantRequest = {
     colorVariant?: string | null;
     materialType?: string | null;
     skuCode?: string | null;
+    measurements?: VariantMeasurementInputDto[];
 };
 
 /** Get all variants for an outfit */
@@ -767,12 +786,15 @@ export type OutfitVariantDto = {
 
 export type SizeChartDetailDto = {
     sizeLabel: string;
-    chestMin: number | null;
-    chestMax: number | null;
-    waistMin: number | null;
-    waistMax: number | null;
-    heightMin: number | null;
-    heightMax: number | null;
+    measurements: SizeChartMeasurementDto[];
+};
+
+export type SizeChartMeasurementDto = {
+    fieldKey: string;
+    displayName: string;
+    unit: string;
+    minValue: number | null;
+    maxValue: number | null;
 };
 
 export type SizeChartDto = {

@@ -2,11 +2,12 @@ import { useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { ChevronRight, ArrowLeft, Calendar, Package, ShoppingCart, X, Minus, Plus, User, ChevronDown } from "lucide-react";
 import { GuestLayout } from "../../components/layout/GuestLayout";
-import { getPublicCampaignDetail, getPublicOutfitDetail, type PublicCampaignDetailDto, type CampaignOutfitDetailDto, type OutfitVariantDto } from "../../lib/api/schools";
+import { getPublicCampaignDetail, getPublicOutfitDetail, type PublicCampaignDetailDto, type CampaignOutfitDetailDto, type OutfitVariantDto, type SizeChartDto } from "../../lib/api/schools";
 import { getMyChildren, type ChildProfileDto } from "../../lib/api/users";
+import { getBodygramScanDetail, getChildBodygramScans, type BodygramHistoryItem, type BodygramScanDetail } from "../../lib/api/bodygram";
 import { useCart } from "../../contexts/CartContext";
 import { useToast } from "../../contexts/ToastContext";
-import { recommendSize, type SizeRecommendation } from "../../lib/utils/sizeRecommendation";
+import { recommendSize, recommendSizeFromBodygram, type SizeRecommendation } from "../../lib/utils/sizeRecommendation";
 
 const STATUS_LABEL: Record<string, { label: string; badge: string }> = {
   Active:   { label: "Đang diễn ra", badge: "nb-badge nb-badge-green"  },
@@ -20,6 +21,7 @@ type OrderModalState = {
   open: boolean;
   outfit: CampaignOutfitDetailDto | null;
   variants: OutfitVariantDto[];
+  sizeChart: SizeChartDto | null;
   loadingVariants: boolean;
 };
 
@@ -33,12 +35,18 @@ export const CampaignDetail = (): JSX.Element => {
   const [error, setError] = useState<string | null>(null);
 
   /* ── Order modal state ── */
-  const [modal, setModal] = useState<OrderModalState>({ open: false, outfit: null, variants: [], loadingVariants: false });
+  const [modal, setModal] = useState<OrderModalState>({ open: false, outfit: null, variants: [], sizeChart: null, loadingVariants: false });
   const [children, setChildren] = useState<ChildProfileDto[]>([]);
   const [selectedChild, setSelectedChild] = useState<string>("");
   const [selectedVariant, setSelectedVariant] = useState<string>("");
   const [orderQty, setOrderQty] = useState(1);
   const [childDropOpen, setChildDropOpen] = useState(false);
+  const [scanDropOpen, setScanDropOpen] = useState(false);
+  const [bodygramScans, setBodygramScans] = useState<BodygramHistoryItem[]>([]);
+  const [loadingScans, setLoadingScans] = useState(false);
+  const [selectedScanRecordId, setSelectedScanRecordId] = useState<string>("");
+  const [selectedScanDetail, setSelectedScanDetail] = useState<BodygramScanDetail | null>(null);
+  const [loadingScanDetail, setLoadingScanDetail] = useState(false);
 
   /* Auth is handled by RoleGuard in App.tsx — no need for duplicate check here */
 
@@ -57,27 +65,115 @@ export const CampaignDetail = (): JSX.Element => {
 
   /* ── Open order modal ── */
   const openOrderModal = async (outfit: CampaignOutfitDetailDto) => {
-    setModal({ open: true, outfit, variants: [], loadingVariants: true });
+    setModal({ open: true, outfit, variants: [], sizeChart: null, loadingVariants: true });
     const schoolChildren = children.filter(c => c.school?.schoolId === campaign?.school.id);
     setSelectedChild(schoolChildren.length > 0 ? schoolChildren[0].childId : "");
     setSelectedVariant("");
     setOrderQty(1);
+    setBodygramScans([]);
+    setSelectedScanRecordId("");
+    setSelectedScanDetail(null);
+    setScanDropOpen(false);
     try {
       const detail = await getPublicOutfitDetail(outfit.outfitId);
-      setModal(prev => ({ ...prev, variants: detail.variants, loadingVariants: false }));
+      setModal(prev => ({ ...prev, variants: detail.variants, sizeChart: detail.sizeChart, loadingVariants: false }));
     } catch {
       setModal(prev => ({ ...prev, loadingVariants: false }));
     }
   };
 
   /* ── Size recommendation ── */
+  useEffect(() => {
+    if (!modal.open || !selectedChild) {
+      setBodygramScans([]);
+      setSelectedScanRecordId("");
+      setSelectedScanDetail(null);
+      return;
+    }
+
+    let disposed = false;
+    setLoadingScans(true);
+
+    getChildBodygramScans(selectedChild, 1, 10)
+      .then(response => {
+        if (disposed) return;
+        const scans = [...response.items].sort((a, b) => new Date(b.scannedAt).getTime() - new Date(a.scannedAt).getTime());
+        setBodygramScans(scans);
+        setSelectedScanRecordId(scans[0]?.scanRecordId ?? "");
+      })
+      .catch(() => {
+        if (disposed) return;
+        setBodygramScans([]);
+        setSelectedScanRecordId("");
+      })
+      .finally(() => {
+        if (!disposed) setLoadingScans(false);
+      });
+
+    return () => {
+      disposed = true;
+    };
+  }, [modal.open, selectedChild]);
+
+  useEffect(() => {
+    if (!selectedScanRecordId) {
+      setSelectedScanDetail(null);
+      return;
+    }
+
+    let disposed = false;
+    setLoadingScanDetail(true);
+
+    getBodygramScanDetail(selectedScanRecordId)
+      .then(detail => {
+        if (!disposed) setSelectedScanDetail(detail);
+      })
+      .catch(() => {
+        if (!disposed) setSelectedScanDetail(null);
+      })
+      .finally(() => {
+        if (!disposed) setLoadingScanDetail(false);
+      });
+
+    return () => {
+      disposed = true;
+    };
+  }, [selectedScanRecordId]);
+
   const sizeRec: SizeRecommendation = useMemo(() => {
     const child = children.find(c => c.childId === selectedChild);
     if (!child || modal.variants.length === 0) {
       return { recommendedVariantId: null, recommendedSize: "", confidence: "low" as const, reason: "" };
     }
+
+    if (selectedScanDetail && modal.sizeChart?.details?.length) {
+      const bodygramRec = recommendSizeFromBodygram(selectedScanDetail, modal.variants, modal.sizeChart.details);
+      if (bodygramRec?.recommendedVariantId) {
+        return bodygramRec;
+      }
+
+      const fallback = recommendSize(child.heightCm, child.weightKg, modal.variants);
+      if (bodygramRec?.reason) {
+        return {
+          ...fallback,
+          confidence: fallback.confidence === "high" ? "medium" : fallback.confidence,
+          reason: `${bodygramRec.reason}. ${fallback.reason}`,
+        };
+      }
+      return fallback;
+    }
+
+    if (bodygramScans.length > 0) {
+      const fallback = recommendSize(child.heightCm, child.weightKg, modal.variants);
+      return {
+        ...fallback,
+        confidence: fallback.confidence === "high" ? "medium" : fallback.confidence,
+        reason: `Outfit chua co size chart theo Bodygram. ${fallback.reason}`,
+      };
+    }
+
     return recommendSize(child.heightCm, child.weightKg, modal.variants);
-  }, [selectedChild, children, modal.variants]);
+  }, [selectedChild, children, modal.variants, modal.sizeChart, selectedScanDetail, bodygramScans]);
 
   /* Auto-select recommended variant when it changes */
   useEffect(() => {
@@ -114,7 +210,7 @@ export const CampaignDetail = (): JSX.Element => {
     });
 
     showToast({ title: "Thành công", message: `Đã thêm "${modal.outfit.outfitName}" vào giỏ hàng`, variant: "success" });
-    setModal({ open: false, outfit: null, variants: [], loadingVariants: false });
+    setModal({ open: false, outfit: null, variants: [], sizeChart: null, loadingVariants: false });
   };
 
   if (loading) return (
@@ -335,12 +431,12 @@ export const CampaignDetail = (): JSX.Element => {
 
       {/* ───── Order Modal — NB Style ───── */}
       {modal.open && modal.outfit && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 nb-backdrop-enter" onClick={() => setModal({ open: false, outfit: null, variants: [], loadingVariants: false })}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 nb-backdrop-enter" onClick={() => setModal({ open: false, outfit: null, variants: [], sizeChart: null, loadingVariants: false })}>
           <div className="bg-white rounded-[8px] border-[3px] border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E] w-full max-w-md mx-4 overflow-hidden nb-modal-enter" onClick={e => e.stopPropagation()}>
             {/* Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b-[3px] border-[#1A1A2E] bg-[#EDE9FE]">
               <h3 className="font-black text-lg text-[#1A1A2E]">Đặt hàng</h3>
-              <button onClick={() => setModal({ open: false, outfit: null, variants: [], loadingVariants: false })} className="w-8 h-8 flex items-center justify-center rounded-[4px] border-[2px] border-[#1A1A2E] bg-white shadow-[2px_2px_0_#1A1A2E] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
+              <button onClick={() => setModal({ open: false, outfit: null, variants: [], sizeChart: null, loadingVariants: false })} className="w-8 h-8 flex items-center justify-center rounded-[4px] border-[2px] border-[#1A1A2E] bg-white shadow-[2px_2px_0_#1A1A2E] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
                 <X className="w-4 h-4 text-[#1A1A2E]" />
               </button>
             </div>
@@ -410,6 +506,55 @@ export const CampaignDetail = (): JSX.Element => {
                   </div>
                 )}
               </div>
+
+              {selectedChild && (
+                <div>
+                  <label className="font-bold text-sm text-[#1A1A2E] mb-2 block">Lan scan Bodygram</label>
+                  {loadingScans ? (
+                    <div className="flex items-center gap-2 text-[#97A3B6] text-sm font-semibold">
+                      <div className="w-4 h-4 border-2 border-[#E5E7EB] border-t-[#B8A9E8] rounded-full animate-spin" />
+                      Dang tai lich su scan...
+                    </div>
+                  ) : bodygramScans.length === 0 ? (
+                    <div className="nb-alert nb-alert-warning text-sm"><span>⚠️</span><span>Chua co lich su Bodygram, he thong se fallback theo chieu cao va can nang.</span></div>
+                  ) : (
+                    <div className="relative">
+                      <button
+                        onClick={() => setScanDropOpen(!scanDropOpen)}
+                        className="w-full flex items-center justify-between nb-input py-3"
+                      >
+                        <span className="font-semibold text-sm">
+                          {(() => {
+                            const selectedScan = bodygramScans.find(scan => scan.scanRecordId === selectedScanRecordId);
+                            if (!selectedScan) return "Chon lan scan...";
+                            return `${new Date(selectedScan.scannedAt).toLocaleDateString("vi-VN")} • ${selectedScan.heightCm}cm • ${selectedScan.weightKg}kg`;
+                          })()}
+                        </span>
+                        <ChevronDown className={`w-4 h-4 text-[#97A3B6] transition-transform ${scanDropOpen ? "rotate-180" : ""}`} />
+                      </button>
+                      {scanDropOpen && (
+                        <div className="absolute top-full left-0 right-0 mt-1 bg-white border-[2px] border-[#1A1A2E] rounded-[4px] shadow-[4px_4px_0_#1A1A2E] z-10 max-h-48 overflow-y-auto">
+                          {bodygramScans.map(scan => (
+                            <button
+                              key={scan.scanRecordId}
+                              onClick={() => { setSelectedScanRecordId(scan.scanRecordId); setScanDropOpen(false); }}
+                              className={`w-full text-left px-4 py-3 text-sm font-semibold hover:bg-[#EDE9FE] transition-colors ${
+                                selectedScanRecordId === scan.scanRecordId ? "bg-[#EDE9FE] text-[#7C3AED]" : "text-[#1A1A2E]"
+                              }`}
+                            >
+                              <span className="font-bold">{new Date(scan.scannedAt).toLocaleDateString("vi-VN")}</span>
+                              <span className="text-xs text-[#97A3B6] ml-2">{scan.heightCm}cm • {scan.weightKg}kg</span>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                      {loadingScanDetail && (
+                        <p className="mt-2 text-xs font-semibold text-[#97A3B6]">Dang tai chi tiet scan...</p>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Size selector — NB pill buttons */}
               <div>
@@ -489,7 +634,7 @@ export const CampaignDetail = (): JSX.Element => {
               {/* Action buttons — NB */}
               <div className="flex gap-3">
                 <button
-                  onClick={() => setModal({ open: false, outfit: null, variants: [], loadingVariants: false })}
+                  onClick={() => setModal({ open: false, outfit: null, variants: [], sizeChart: null, loadingVariants: false })}
                   className="flex-1 nb-btn nb-btn-outline text-sm"
                 >
                   Huỷ

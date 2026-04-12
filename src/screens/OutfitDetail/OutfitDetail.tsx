@@ -51,7 +51,7 @@ const formatDate = (dateString: string): string => {
   const now = new Date();
   const diffMs = now.getTime() - date.getTime();
   const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-  
+
   if (diffDays === 0) return "Hôm nay";
   if (diffDays === 1) return "Hôm qua";
   if (diffDays < 7) return `${diffDays} ngày trước`;
@@ -219,8 +219,8 @@ function TryOnModal({
                     onDragLeave={() => setDragOver(false)}
                     onClick={() => fileRef.current?.click()}
                     className={`rounded-[14px] border-[2px] border-dashed p-6 flex flex-col items-center justify-center cursor-pointer transition-all aspect-[3/4] ${dragOver
-                        ? "border-[#8B6BFF] bg-[#F2ECFF]"
-                        : "border-[#19182B] bg-[#F6F1E8] hover:border-[#8B6BFF] hover:bg-[#F2ECFF]"
+                      ? "border-[#8B6BFF] bg-[#F2ECFF]"
+                      : "border-[#19182B] bg-[#F6F1E8] hover:border-[#8B6BFF] hover:bg-[#F2ECFF]"
                       }`}
                   >
                     <div className="flex h-16 w-16 items-center justify-center rounded-[12px] border-[2px] border-[#19182B] bg-white shadow-[3px_3px_0_#19182B] mb-4">
@@ -354,8 +354,8 @@ function TryOnModal({
                 onClick={handleTryOn}
                 disabled={!photo || processing}
                 className={`flex items-center gap-2 rounded-[10px] border-[3px] border-[#19182B] px-5 py-2.5 text-[13px] font-extrabold transition-all ${!photo || processing
-                    ? "bg-[#ECEAF2] text-[#9A95A8] shadow-[2px_2px_0_#19182B] cursor-not-allowed"
-                    : "bg-[#8B6BFF] text-white shadow-[4px_4px_0_#19182B] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B]"
+                  ? "bg-[#ECEAF2] text-[#9A95A8] shadow-[2px_2px_0_#19182B] cursor-not-allowed"
+                  : "bg-[#8B6BFF] text-white shadow-[4px_4px_0_#19182B] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B]"
                   }`}
               >
                 {processing ? (
@@ -581,7 +581,7 @@ export const OutfitDetail = (): JSX.Element => {
                 }}
                 className="flex items-center gap-2 mb-6 px-4 py-2.5 rounded-xl border-2 border-gray-200 bg-gray-50 text-[13px] font-bold text-gray-600 hover:border-[#0ea5e9] hover:text-[#0ea5e9] hover:bg-sky-50 transition-all"
               >
-                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>
                 Xem mô tả chi tiết
               </button>
             )}
@@ -620,8 +620,8 @@ export const OutfitDetail = (): JSX.Element => {
                         key={size}
                         onClick={() => handleSizeSelect(size)}
                         className={`min-w-[56px] h-10 px-4 rounded-xl font-bold text-[13px] border-2 transition-all flex items-center justify-center ${isSelected
-                            ? "border-[#0ea5e9] bg-[#0ea5e9]/10 text-[#0ea5e9]"
-                            : "border-gray-200 bg-white text-gray-600 hover:border-gray-300 hover:bg-gray-50"
+                          ? "border-[#0ea5e9] bg-[#0ea5e9]/10 text-[#0ea5e9]"
+                          : "border-gray-200 bg-white text-gray-600 hover:border-gray-300 hover:bg-gray-50"
                           }`}
                       >
                         {size}
@@ -635,20 +635,20 @@ export const OutfitDetail = (): JSX.Element => {
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-3 mt-auto pt-4">
               {isParent && (
-              <button
-                onClick={() => {
-                  showToast({
-                    title: "Thông báo",
-                    message: "Đơn hàng chỉ có thể đặt mua ở trang chiến dịch",
-                    variant: "info",
-                  });
-                  navigate(`/schools/${outfit.school.schoolId}`);
-                }}
-                className="flex-1 min-h-[44px] flex items-center justify-center gap-2 bg-[#0ea5e9] text-white font-bold text-[14px] rounded-xl shadow-[0_4px_12px_rgb(14,165,233,0.2)] hover:bg-[#0284c7] hover:shadow-[0_8px_16px_rgb(14,165,233,0.3)] transition-all hover:-translate-y-0.5 active:translate-y-0"
-              >
-                <ShoppingBag className="w-[16px] h-[16px]" />
-                Thêm vào giỏ hàng
-              </button>
+                <button
+                  onClick={() => {
+                    showToast({
+                      title: "Thông báo",
+                      message: "Đơn hàng chỉ có thể đặt mua ở trang chiến dịch",
+                      variant: "info",
+                    });
+                    navigate(`/schools/${outfit.school.schoolId}`);
+                  }}
+                  className="flex-1 min-h-[44px] flex items-center justify-center gap-2 bg-[#0ea5e9] text-white font-bold text-[14px] rounded-xl shadow-[0_4px_12px_rgb(14,165,233,0.2)] hover:bg-[#0284c7] hover:shadow-[0_8px_16px_rgb(14,165,233,0.3)] transition-all hover:-translate-y-0.5 active:translate-y-0"
+                >
+                  <ShoppingBag className="w-[16px] h-[16px]" />
+                  Thêm vào giỏ hàng
+                </button>
               )}
 
               <button
@@ -744,32 +744,59 @@ export const OutfitDetail = (): JSX.Element => {
                 <h3 className="font-baloo tracking-tight font-extrabold text-2xl text-gray-900 mb-6">
                   Bảng kích thước
                 </h3>
-                {outfit.sizeChart ? (
-                  <div className="overflow-hidden border border-gray-100 rounded-2xl shadow-[0_2px_10px_rgb(0,0,0,0.02)] max-w-4xl">
-                    <table className="w-full text-sm">
-                      <thead>
-                        <tr className="bg-gray-50/80 border-b border-gray-100">
-                          <th className="font-bold text-left px-5 py-4 text-gray-700">Kích thước</th>
-                          <th className="font-bold text-center px-4 py-4 text-gray-700">Ngực ({outfit.sizeChart.unit})</th>
-                          <th className="font-bold text-center px-4 py-4 text-gray-700">Eo ({outfit.sizeChart.unit})</th>
-                          <th className="font-bold text-center px-4 py-4 text-gray-700">Chiều cao ({outfit.sizeChart.unit})</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {outfit.sizeChart.details.map((d, i) => (
-                          <tr key={d.sizeLabel} className={`border-b border-gray-50/50 hover:bg-sky-50/30 transition-colors bg-white`}>
-                            <td className="font-extrabold px-5 py-4 text-gray-900">{d.sizeLabel}</td>
-                            <td className="text-center px-4 py-4 font-medium text-gray-600">{d.chestMin && d.chestMax ? `${d.chestMin} - ${d.chestMax}` : "-"}</td>
-                            <td className="text-center px-4 py-4 font-medium text-gray-600">{d.waistMin && d.waistMax ? `${d.waistMin} - ${d.waistMax}` : "-"}</td>
-                            <td className="text-center px-4 py-4 font-medium text-gray-600">{d.heightMin && d.heightMax ? `${d.heightMin} - ${d.heightMax}` : "-"}</td>
+                {(() => {
+                  if (!outfit.sizeChart || outfit.sizeChart.details.length === 0) {
+                    return <p className="text-sm font-medium text-gray-400">Chưa có bảng kích thước.</p>;
+                  }
+                  // Collect all unique measurement fields across all size details
+                  const allFields: { fieldKey: string; displayName: string; unit: string }[] = [];
+                  const seenKeys = new Set<string>();
+                  for (const d of outfit.sizeChart.details) {
+                    for (const m of d.measurements) {
+                      if (!seenKeys.has(m.fieldKey)) {
+                        seenKeys.add(m.fieldKey);
+                        allFields.push({ fieldKey: m.fieldKey, displayName: m.displayName, unit: m.unit });
+                      }
+                    }
+                  }
+                  if (allFields.length === 0) {
+                    return <p className="text-sm font-medium text-gray-400">Chưa có số đo nào được cấu hình.</p>;
+                  }
+                  return (
+                    <div className="overflow-x-auto border border-gray-100 rounded-2xl shadow-[0_2px_10px_rgb(0,0,0,0.02)] max-w-4xl">
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="bg-gray-50/80 border-b border-gray-100">
+                            <th className="font-bold text-left px-5 py-4 text-gray-700 whitespace-nowrap">Kích thước</th>
+                            {allFields.map((f) => (
+                              <th key={f.fieldKey} className="font-bold text-center px-4 py-4 text-gray-700 whitespace-nowrap">
+                                {f.displayName} ({f.unit})
+                              </th>
+                            ))}
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                ) : (
-                  <p className="text-sm font-medium text-gray-400">Chưa có bảng kích thước.</p>
-                )}
+                        </thead>
+                        <tbody>
+                          {outfit.sizeChart.details.map((d) => (
+                            <tr key={d.sizeLabel} className="border-b border-gray-50/50 hover:bg-sky-50/30 transition-colors bg-white">
+                              <td className="font-extrabold px-5 py-4 text-gray-900">{d.sizeLabel}</td>
+                              {allFields.map((f) => {
+                                const m = d.measurements.find((item) => item.fieldKey === f.fieldKey);
+                                const display = m
+                                  ? [m.minValue, m.maxValue].filter((v) => v != null).join(" - ") || "-"
+                                  : "-";
+                                return (
+                                  <td key={f.fieldKey} className="text-center px-4 py-4 font-medium text-gray-600">
+                                    {display}
+                                  </td>
+                                );
+                              })}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  );
+                })()}
               </motion.div>
             )}
 
@@ -801,11 +828,10 @@ export const OutfitDetail = (): JSX.Element => {
                         setSelectedRatingFilter("all");
                         setReviewPage(1);
                       }}
-                      className={`px-4 py-2 rounded-full font-bold text-[13px] transition-all border-2 ${
-                        selectedRatingFilter === "all"
+                      className={`px-4 py-2 rounded-full font-bold text-[13px] transition-all border-2 ${selectedRatingFilter === "all"
                           ? "border-[#0ea5e9] bg-[#0ea5e9]/10 text-[#0ea5e9]"
                           : "border-gray-200 bg-white text-gray-600 hover:border-gray-300"
-                      }`}
+                        }`}
                     >
                       Tất cả ({outfit.feedbackCount})
                     </button>
@@ -820,22 +846,20 @@ export const OutfitDetail = (): JSX.Element => {
                             setSelectedRatingFilter(rating);
                             setReviewPage(1);
                           }}
-                          className={`px-4 py-2 rounded-full font-bold text-[13px] transition-all border-2 flex items-center gap-1.5 ${
-                            selectedRatingFilter === rating
+                          className={`px-4 py-2 rounded-full font-bold text-[13px] transition-all border-2 flex items-center gap-1.5 ${selectedRatingFilter === rating
                               ? "border-[#0ea5e9] bg-[#0ea5e9]/10 text-[#0ea5e9]"
                               : "border-gray-200 bg-white text-gray-600 hover:border-gray-300"
-                          } ${count === 0 ? "opacity-50 cursor-not-allowed" : ""}`}
+                            } ${count === 0 ? "opacity-50 cursor-not-allowed" : ""}`}
                           disabled={count === 0}
                         >
                           <div className="flex items-center gap-0.5">
                             {[1, 2, 3, 4, 5].map((s) => (
                               <Star
                                 key={s}
-                                className={`w-3.5 h-3.5 ${
-                                  s <= rating
+                                className={`w-3.5 h-3.5 ${s <= rating
                                     ? "fill-yellow-400 text-yellow-400"
                                     : "fill-gray-200 text-gray-200"
-                                }`}
+                                  }`}
                               />
                             ))}
                           </div>
@@ -853,7 +877,7 @@ export const OutfitDetail = (): JSX.Element => {
                   const filteredReviews = selectedRatingFilter === "all"
                     ? outfit.reviews
                     : outfit.reviews?.filter((r) => r.rating === selectedRatingFilter);
-                  
+
                   const totalReviewPages = Math.ceil((filteredReviews?.length || 0) / REVIEW_PAGE_SIZE);
                   const startIdx = (reviewPage - 1) * REVIEW_PAGE_SIZE;
                   const paginatedReviews = filteredReviews?.slice(startIdx, startIdx + REVIEW_PAGE_SIZE);
@@ -899,11 +923,10 @@ export const OutfitDetail = (): JSX.Element => {
                                   {[1, 2, 3, 4, 5].map((s) => (
                                     <Star
                                       key={s}
-                                      className={`w-4 h-4 ${
-                                        s <= review.rating
+                                      className={`w-4 h-4 ${s <= review.rating
                                           ? "fill-yellow-400 text-yellow-400"
                                           : "fill-gray-200 text-gray-200"
-                                      }`}
+                                        }`}
                                     />
                                   ))}
                                 </div>
@@ -930,22 +953,20 @@ export const OutfitDetail = (): JSX.Element => {
                             <button
                               onClick={() => setReviewPage(Math.max(1, reviewPage - 1))}
                               disabled={reviewPage === 1}
-                              className={`px-3 py-2 rounded-lg font-bold text-[13px] border-2 transition-all ${
-                                reviewPage === 1
+                              className={`px-3 py-2 rounded-lg font-bold text-[13px] border-2 transition-all ${reviewPage === 1
                                   ? "border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed"
                                   : "border-[#0ea5e9] bg-white text-[#0ea5e9] hover:bg-[#0ea5e9]/5"
-                              }`}
+                                }`}
                             >
                               ← Trước
                             </button>
                             <button
                               onClick={() => setReviewPage(Math.min(totalReviewPages, reviewPage + 1))}
                               disabled={reviewPage === totalReviewPages}
-                              className={`px-3 py-2 rounded-lg font-bold text-[13px] border-2 transition-all ${
-                                reviewPage === totalReviewPages
+                              className={`px-3 py-2 rounded-lg font-bold text-[13px] border-2 transition-all ${reviewPage === totalReviewPages
                                   ? "border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed"
                                   : "border-[#0ea5e9] bg-white text-[#0ea5e9] hover:bg-[#0ea5e9]/5"
-                              }`}
+                                }`}
                             >
                               Tiếp →
                             </button>
