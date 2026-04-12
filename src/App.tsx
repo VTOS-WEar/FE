@@ -53,8 +53,10 @@ import { OrdersTab } from "./screens/ParentProfile/tabs/OrdersTab";
 import { HistoryTab } from "./screens/ParentProfile/tabs/HistoryTab";
 import { ReviewsTab } from "./screens/ParentProfile/tabs/ReviewsTab";
 import { SettingsTab } from "./screens/ParentProfile/tabs/SettingsTab";
+import { BodygramHistoryTab } from "./screens/ParentProfile/tabs/BodygramHistoryTab";
 import { FeedbackPage } from "./screens/ParentProfile/pages/FeedbackPage";
 import { OrderDetailPage } from "./screens/ParentProfile/pages/OrderDetailPage";
+import { BodygramScanComparePage } from "./screens/ParentProfile/pages/BodygramScanComparePage";
 import SchoolWallet from "./screens/SchoolWallet/SchoolWallet";
 import ProviderRevenue from "./screens/ProviderRevenue/ProviderRevenue";
 import ProviderWallet from "./screens/ProviderWallet/ProviderWallet";
@@ -71,19 +73,21 @@ import { SchoolAccountSettings } from "./screens/SchoolProfile/SchoolAccountSett
 import { HowItWorks } from "./screens/HowItWorks/HowItWorks";
 import { SearchPage } from "./screens/Search/SearchPage";
 import { useEffect, useRef } from "react";
+import { BodygramScannerPage } from "./screens/BodygramScanner/BodygramScannerPage";
+import { BodygramScanDetailPage } from "./screens/ParentProfile/pages/BodygramScanDetailPage";
 
 /** Smart root redirect: School→dashboard, others→homepage */
 function RootRedirect() {
-    const raw = localStorage.getItem("user") || sessionStorage.getItem("user");
-    if (raw) {
-        try {
-            const user = JSON.parse(raw);
-            if (user.role === "Admin") return <Navigate to="/admin/dashboard" replace />;
-            if (user.role === "School") return <Navigate to="/school/dashboard" replace />;
-            if (user.role === "Provider") return <Navigate to="/provider/dashboard" replace />;
-        } catch { /* ignore */ }
-    }
-    return <Navigate to="/homepage" replace />;
+  const raw = localStorage.getItem("user") || sessionStorage.getItem("user");
+  if (raw) {
+    try {
+      const user = JSON.parse(raw);
+      if (user.role === "Admin") return <Navigate to="/admin/dashboard" replace />;
+      if (user.role === "School") return <Navigate to="/school/dashboard" replace />;
+      if (user.role === "Provider") return <Navigate to="/provider/dashboard" replace />;
+    } catch { /* ignore */ }
+  }
+  return <Navigate to="/homepage" replace />;
 }
 
 const router = createBrowserRouter([
@@ -140,15 +144,22 @@ const router = createBrowserRouter([
     element: <RoleGuard allowedRoles={["Parent"]}><ParentProfile /></RoleGuard>,
     children: [
       { index: true, element: <Navigate to="account" replace /> },
-      { path: "account",  element: <AccountTab /> },
+      { path: "account", element: <AccountTab /> },
       { path: "students", element: <StudentsTab /> },
-      { path: "orders",   element: <OrdersTab /> },
-      { path: "history",  element: <HistoryTab /> },
-      { path: "reviews",  element: <ReviewsTab /> },
+      { path: "orders", element: <OrdersTab /> },
+      { path: "history", element: <HistoryTab /> },
+      { path: "bodygram-history", element: <BodygramHistoryTab /> },
+      { path: "reviews", element: <ReviewsTab /> },
       { path: "settings", element: <SettingsTab /> },
       { path: "feedback", element: <FeedbackPage /> },
       { path: "orders/:orderId", element: <OrderDetailPage /> },
+      { path: "bodygram-history/:childId/compare", element: <BodygramScanComparePage /> },
+      { path: "bodygram-history/:childId/scans/:scanId", element: <BodygramScanDetailPage /> },
     ],
+  },
+  {
+    path: "/children/:childId/scan",
+    element: <RoleGuard allowedRoles={["Parent"]}><BodygramScannerPage /></RoleGuard>,
   },
   {
     path: "/verify-otp",

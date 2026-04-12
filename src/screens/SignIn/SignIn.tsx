@@ -7,12 +7,13 @@ import { useGoogleLogin } from "@react-oauth/google";
 import { getSchoolProfile } from "../../lib/api/schools";
 import { getProviderProfile } from "../../lib/api/providers";
 import { Notify } from "../../components/ui/notify";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { GuestLayout } from "../../components/layout/GuestLayout";
 import { useToast } from "../../contexts/ToastContext";
 export const SignIn = (): JSX.Element => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { showToast } = useToast();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -35,11 +36,13 @@ export const SignIn = (): JSX.Element => {
   useEffect(() => {
     const token = localStorage.getItem("access_token") || sessionStorage.getItem("access_token");
     const userRaw = localStorage.getItem("user") || sessionStorage.getItem("user");
+    const redirect = searchParams.get("redirect");
     if (token && userRaw) {
       try {
         const u = JSON.parse(userRaw);
         const role = u.role as string;
-        if (role === "Admin") navigate("/admin/dashboard", { replace: true });
+        if (redirect && role === "Parent") navigate(redirect, { replace: true });
+        else if (role === "Admin") navigate("/admin/dashboard", { replace: true });
         else if (role === "School") navigate("/school/dashboard", { replace: true });
         else if (role === "Provider") navigate("/provider/dashboard", { replace: true });
         else navigate("/homepage", { replace: true });
@@ -47,7 +50,7 @@ export const SignIn = (): JSX.Element => {
         // Invalid user JSON — let them re-login
       }
     }
-  }, [navigate]);
+  }, [navigate, searchParams]);
 
   // Google Login
   const handleGoogleLogin = useGoogleLogin({
@@ -115,6 +118,7 @@ export const SignIn = (): JSX.Element => {
     localStorage.setItem("expires_in", String(data.expiresIn));
 
     let redirectTo = "/homepage";
+    const redirect = searchParams.get("redirect");
     if (data.user.role === "Admin") {
       redirectTo = "/admin/dashboard";
     } else if (data.user.role === "School") {
@@ -125,6 +129,8 @@ export const SignIn = (): JSX.Element => {
       getProviderProfile().then(p => { if (p.providerName) localStorage.setItem("vtos_org_name", p.providerName); }).catch(() => {});
     } else if (data.user.role === "Parent" && !data.user.phone) {
       redirectTo = "/fillphonenumber";
+    } else if (data.user.role === "Parent" && redirect) {
+      redirectTo = redirect;
     }
 
     showToast({ title: "Đăng nhập thành công! 🎉", message: `Xin chào, ${data.user.fullName}`, variant: "success" });

@@ -104,42 +104,69 @@ export const StudentsTab = (): JSX.Element => {
               </p>
             </div>
           ) : (
-            <div className="grid gap-3">
-              {children.map(child => (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {children.map((child) => (
                 <div
                   key={child.childId}
                   onClick={() => setSelectedChildId(child.childId)}
-                  className="nb-card flex items-center gap-4 p-4 cursor-pointer group hover:shadow-[4px_4px_0_#1A1A2E] hover:-translate-y-1 transition-all"
+                  className="group relative flex cursor-pointer flex-col overflow-hidden rounded-2xl border-2 border-[#1A1A2E] bg-white transition-all duration-300 hover:shadow-[5px_5px_0_#1A1A2E] hover:-translate-y-1"
                 >
-                  <div className="w-12 h-12 bg-[#B8A9E8] rounded-xl flex items-center justify-center flex-shrink-0 border-2 border-[#1A1A2E] shadow-[3px_3px_0_#1A1A2E] overflow-hidden">
-                    {child.avatarUrl ? (
-                      <img
-                        src={child.avatarUrl}
-                        alt={child.fullName}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <span className="font-extrabold text-[#1A1A2E] text-base">
-                        {child.fullName.split(" ").map(w => w[0]).join("").slice(-2).toUpperCase()}
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-extrabold text-[#1A1A2E] text-base truncate group-hover:text-[#B8A9E8] transition-colors">{child.fullName}</p>
-                    <div className="flex items-center gap-3 mt-0.5 flex-wrap">
-                      <span className="font-medium text-[#6B7280] text-sm">{child.grade || "—"}</span>
-                      <span className="text-[#1A1A2E]/20 text-xs">•</span>
-                      <span className="font-medium text-[#6B7280] text-sm">{child.school?.schoolName || "—"}</span>
-                      <span className="text-[#1A1A2E]/20 text-xs">•</span>
-                      <span className="font-medium text-[#6B7280] text-sm">
-                        {getVietnamseGender(child.gender)}
-                      </span>
+                  <div className="h-2 bg-[#B8A9E8]/30 w-full" />
+                  <div className="p-5 flex gap-4 items-start">
+                    <div className="relative flex-shrink-0">
+                      <div className="w-16 h-16 rounded-2xl border-2 border-[#1A1A2E] bg-[#D8B4E2] flex items-center justify-center shadow-[3px_3px_0_#1A1A2E] overflow-hidden">
+                        {child.avatarUrl ? (
+                          <img
+                            src={child.avatarUrl}
+                            alt={child.fullName}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <span className="font-black text-[#1A1A2E] text-xl">
+                            {child.fullName.charAt(0)}
+                          </span>
+                        )}
+                      </div>
+                      <div className="absolute -bottom-1 -right-1 w-7 h-7 bg-white rounded-lg border-[1.5px] border-[#1A1A2E] shadow-[1.5px_1.5px_0_#1A1A2E] flex items-center justify-center">
+                        <span className="text-[10px] font-black text-[#1A1A2E]">
+                          {child.gender === "Male" ? "♂" : "♀"}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex-1 min-w-0">
+                      <div className="flex justify-between items-start gap-2">
+                        <h3 className="font-extrabold text-[#1A1A2E] text-lg leading-tight truncate group-hover:text-[#581C87] transition-colors" title={child.fullName}>
+                          {child.fullName}
+                        </h3>
+                        {child.school?.logoURL && (
+                          <img
+                            src={child.school.logoURL}
+                            alt={child.school.schoolName}
+                            className="w-8 h-8 rounded-md object-cover flex-shrink-0 border border-[#1A1A2E]/10"
+                          />
+                        )}
+                      </div>
+                      
+                      <div className="mt-2 space-y-1">
+                        <div className="flex items-center gap-1.5 text-xs font-bold text-[#6B7280]">
+                          <span className="bg-[#F3F4F6] px-2 py-0.5 rounded-full border border-[#E5E7EB]">Lớp {child.grade || "—"}</span>
+                          <span className="text-[#1A1A2E]/10">•</span>
+                          <span>{getVietnamseGender(child.gender)}</span>
+                        </div>
+                        <p className="text-[11px] font-bold text-[#4C5769] truncate" title={child.school?.schoolName}>
+                          {child.school?.schoolName || "Chưa cập nhật trường học"}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                  {child.school?.logoURL && (
-                    <img src={child.school.logoURL} alt={child.school.schoolName}
-                      className="w-10 h-10 rounded-lg object-cover flex-shrink-0 border-2 border-[#1A1A2E]" />
-                  )}
+                  
+                  <div className="mt-auto border-t-[1.5px] border-[#1A1A2E]/5 bg-[#FAFAF5]/50 px-5 py-3 flex items-center justify-between">
+                    <span className="text-[11px] font-bold text-[#6B7280] uppercase tracking-wider">Thông tin chi tiết</span>
+                    <div className="w-6 h-6 rounded-full bg-[#1A1A2E] flex items-center justify-center transition-transform group-hover:translate-x-1">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>

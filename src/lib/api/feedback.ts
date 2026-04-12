@@ -27,6 +27,7 @@ export type ParentFeedbackDto = {
   rating: number | null;
   comment: string | null;
   feedbackTimestamp: string | null;
+  orderDate: string;
   outfitPrice: number;
   outfitType: string;
   size: string;

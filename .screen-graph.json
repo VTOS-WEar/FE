@@ -10,6 +10,8 @@
         "/homepage",
         "/huong-dan-try-on",
         "/parentprofile",
+        "/children/:childId/scan",
+        "/children/:childId/bodygram-scans/:scanId",
         "/verify-otp",
         "/school/students/import/confirm-save",
         "/school/students/import/confirm-reimport",
@@ -83,33 +85,17 @@
   ],
   "edges": [
     {
-      "id": "src\\components\\guards\\RoleGuard.tsx:60:15-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\components\\guards\\RoleGuard.tsx:63:15-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\components\\guards\\RoleGuard.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/school/dashboard",
         "trigger": {
           "element": "<Navigate to=\"/school/dashboard\" replace />",
-          "line": 60,
-          "endLine": 60,
-          "column": 15,
-          "endColumn": 58,
-          "sourceFile": "src\\components\\guards\\RoleGuard.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\guards\\RoleGuard.tsx:63:15-to-src\\components\\guards\\RoleGuard.tsx",
-      "source": "src\\components\\guards\\RoleGuard.tsx",
-      "target": "src\\components\\guards\\RoleGuard.tsx",
-      "data": {
-        "viaRoute": "/admin/dashboard",
-        "trigger": {
-          "element": "<Navigate to=\"/admin/dashboard\" replace />",
           "line": 63,
           "endLine": 63,
           "column": 15,
-          "endColumn": 57,
+          "endColumn": 58,
           "sourceFile": "src\\components\\guards\\RoleGuard.tsx"
         }
       }
@@ -119,11 +105,27 @@
       "source": "src\\components\\guards\\RoleGuard.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
+        "viaRoute": "/admin/dashboard",
+        "trigger": {
+          "element": "<Navigate to=\"/admin/dashboard\" replace />",
+          "line": 66,
+          "endLine": 66,
+          "column": 15,
+          "endColumn": 57,
+          "sourceFile": "src\\components\\guards\\RoleGuard.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\guards\\RoleGuard.tsx:69:15-to-src\\components\\guards\\RoleGuard.tsx",
+      "source": "src\\components\\guards\\RoleGuard.tsx",
+      "target": "src\\components\\guards\\RoleGuard.tsx",
+      "data": {
         "viaRoute": "/provider/dashboard",
         "trigger": {
           "element": "<Navigate to=\"/provider/dashboard\" replace />",
-          "line": 66,
-          "endLine": 66,
+          "line": 69,
+          "endLine": 69,
           "column": 15,
           "endColumn": 60,
           "sourceFile": "src\\components\\guards\\RoleGuard.tsx"
@@ -131,15 +133,15 @@
       }
     },
     {
-      "id": "src\\components\\guards\\RoleGuard.tsx:68:11-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\components\\guards\\RoleGuard.tsx:71:11-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\components\\guards\\RoleGuard.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/homepage",
         "trigger": {
           "element": "<Navigate to=\"/homepage\" replace />",
-          "line": 68,
-          "endLine": 68,
+          "line": 71,
+          "endLine": 71,
           "column": 11,
           "endColumn": 46,
           "sourceFile": "src\\components\\guards\\RoleGuard.tsx"

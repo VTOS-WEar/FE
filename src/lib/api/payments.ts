@@ -69,7 +69,7 @@ export type ParentPaymentDto = {
     paymentId: string;
     orderId: string;
     amount: number;
-    status: string;
+    paymentStatus: string;
     orderStatus: string;
     timestamp: string;
 };
@@ -140,11 +140,13 @@ export async function payOrder(orderId: string): Promise<PayOrderResponse> {
     });
 }
 
-export async function getParentPaymentHistory(page = 1, pageSize = 20): Promise<ParentPaymentHistoryResponse> {
-    return api<ParentPaymentHistoryResponse>(
-        `${endpoints.payments.parentHistory}?page=${page}&pageSize=${pageSize}`,
-        { auth: true }
-    );
+export async function getParentPaymentHistory(page = 1, pageSize = 20, startDate?: string, endDate?: string, status?: string): Promise<ParentPaymentHistoryResponse> {
+    let url = `${endpoints.payments.parentHistory}?page=${page}&pageSize=${pageSize}`;
+    if (startDate) url += `&startDate=${startDate}`;
+    if (endDate) url += `&endDate=${endDate}`;
+    if (status) url += `&status=${status}`;
+    
+    return api<ParentPaymentHistoryResponse>(url, { auth: true });
 }
 //#endregion
 
