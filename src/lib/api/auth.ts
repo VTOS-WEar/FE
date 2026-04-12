@@ -57,6 +57,7 @@ export type UserInfo = {
     role: string;
     phone?: string | null;
     providerId?: string | null;
+    twoFactorEnabled?: boolean;
 };
 
 export type LoginResponse = {

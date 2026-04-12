@@ -23,6 +23,8 @@ export interface DashboardSidebarProps {
     iconType?: "school" | "provider";
     greeting?: string;
     name: string;
+    /** Organization name (school name / provider name) — shown as secondary line below name */
+    orgName?: string;
     navSections: NavSection[];
     topNavItems?: NavItem[];
     onLogout?: () => void;
@@ -43,11 +45,12 @@ function getStoredOrgName(): string {
 
 export const DashboardSidebar = ({
     isCollapsed, onToggle, iconType = "school",
-    name, navSections, topNavItems = [], onLogout,
+    name, orgName, navSections, topNavItems = [], onLogout,
 }: DashboardSidebarProps): JSX.Element => {
     const navigate = useNavigate();
-    const displayName = useMemo(() => name || getStoredOrgName() || getStoredUserName(), [name]);
     const personName = useMemo(() => getStoredUserName(), []);
+    // Primary display: orgName (school/provider name) → name prop (passed from parent) → localStorage org → localStorage user
+    const displayOrg = useMemo(() => orgName || getStoredOrgName() || name, [orgName, name]);
 
     const handleLogout = onLogout ?? (() => {
         localStorage.removeItem("access_token"); localStorage.removeItem("user"); localStorage.removeItem("expires_in");
@@ -73,8 +76,8 @@ export const DashboardSidebar = ({
                 </div>
                 {!isCollapsed && (
                     <div className="flex-1 min-w-0">
-                        <p className="font-bold text-white text-sm leading-tight">{displayName}</p>
-                        {displayName !== personName && personName && (
+                        <p className="font-bold text-white text-sm leading-tight">{displayOrg}</p>
+                        {displayOrg !== personName && personName && (
                             <p className="font-medium text-[#9CA3AF] text-xs">{personName}</p>
                         )}
                     </div>

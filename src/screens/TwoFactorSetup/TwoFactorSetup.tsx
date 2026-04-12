@@ -91,6 +91,15 @@ export const TwoFactorSetup = (): JSX.Element => {
             setIsLoading(true);
             const token = localStorage.getItem("access_token")!;
             const result = await confirm2FA(code, token);
+            // Update cache immediately so AccountSettings shows correct status
+            // even if user navigates there before clicking "Đã lưu"
+            localStorage.setItem("vtos_2fa_enabled", "true");
+            const userRaw = localStorage.getItem("user");
+            if (userRaw) {
+                const u = JSON.parse(userRaw);
+                u.twoFactorEnabled = true;
+                localStorage.setItem("user", JSON.stringify(u));
+            }
             setRecoveryCodes(result.recoveryCodes);
             setStep("recovery");
         } catch (e: any) {
@@ -104,10 +113,12 @@ export const TwoFactorSetup = (): JSX.Element => {
 
     const handleFinish = () => {
         localStorage.removeItem("vtos_should_setup_2fa");
-        showToast({ title: "2FA đã bật thành công! 🔐", message: "Tài khoản của bạn đã được bảo vệ.", variant: "success" });
+        // Update stored user so all pages know 2FA is enabled
         const userRaw = localStorage.getItem("user");
         if (userRaw) {
             const u = JSON.parse(userRaw);
+            u.twoFactorEnabled = true;
+            localStorage.setItem("user", JSON.stringify(u));
             if (u.role === "Admin") navigate("/admin/dashboard", { replace: true });
             else if (u.role === "School") navigate("/school/dashboard", { replace: true });
             else if (u.role === "Provider") navigate("/provider/dashboard", { replace: true });

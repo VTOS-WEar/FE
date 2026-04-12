@@ -116,6 +116,10 @@ export const SignIn = (): JSX.Element => {
     localStorage.setItem("access_token", data.accessToken);
     localStorage.setItem("user", JSON.stringify(data.user));
     localStorage.setItem("expires_in", String(data.expiresIn));
+    // Cache 2FA status so AccountSecuritySettings shows correct status immediately on page load
+    if (data.user.twoFactorEnabled !== undefined) {
+        localStorage.setItem("vtos_2fa_enabled", data.user.twoFactorEnabled ? "true" : "false");
+    }
 
     let redirectTo = "/homepage";
     const redirect = searchParams.get("redirect");

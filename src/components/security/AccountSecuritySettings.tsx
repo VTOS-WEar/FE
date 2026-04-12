@@ -1,7 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Shield, ShieldCheck } from "lucide-react";
 import { getParentProfile } from "../../lib/api/users";
+import { getSchoolProfile } from "../../lib/api/schools";
+import { getProviderProfile } from "../../lib/api/providers";
 import { disable2FA, requestChangePasswordOtp, changePassword } from "../../lib/api/auth";
 
 export const AccountSecuritySettings = (): JSX.Element => {
@@ -9,8 +11,10 @@ export const AccountSecuritySettings = (): JSX.Element => {
   const getToken = () =>
     localStorage.getItem("access_token") || sessionStorage.getItem("access_token") || "";
 
-  // 2FA state
-  const [is2FAEnabled, setIs2FAEnabled] = useState(false);
+  // 2FA state — start with cached value so UI is instant, then revalidate with API
+  const [is2FAEnabled, setIs2FAEnabled] = useState<boolean | null>(
+    localStorage.getItem("vtos_2fa_enabled") === "true"
+  );
   const [showDisable2FA, setShowDisable2FA] = useState(false);
   const [disable2FACode, setDisable2FACode] = useState("");
   const [disabling2FA, setDisabling2FA] = useState(false);
@@ -27,11 +31,31 @@ export const AccountSecuritySettings = (): JSX.Element => {
   const [changePasswordMsg, setChangePasswordMsg] = useState("");
 
   useEffect(() => {
-    // Load 2FA status from API (authoritative source)
+    // Load 2FA status from API — endpoint depends on current user's role
     const fetchProfile = async () => {
       try {
-        const data = await getParentProfile();
-        const twoFAEnabled = data.twoFactorEnabled ?? false;
+        // Read role from stored user JWT payload
+        const raw = localStorage.getItem("user") || sessionStorage.getItem("user");
+        let twoFAEnabled = false;
+        try {
+          const user = raw ? JSON.parse(raw) : {};
+          if (user.role === "School") {
+            const profile = await getSchoolProfile();
+            // Handle both camelCase (FE type) and PascalCase (ASP.NET response)
+            twoFAEnabled = !!(profile.twoFactorEnabled ?? (profile as any).TwoFactorEnabled);
+          } else if (user.role === "Provider") {
+            const profile = await getProviderProfile();
+            twoFAEnabled = !!(profile.twoFactorEnabled ?? (profile as any).TwoFactorEnabled);
+          } else {
+            // Parent / other roles
+            const profile = await getParentProfile();
+            twoFAEnabled = profile.twoFactorEnabled ?? false;
+          }
+        } catch {
+          // Fallback to localStorage if user parse fails
+          const twoFA = localStorage.getItem("vtos_2fa_enabled");
+          twoFAEnabled = twoFA === "true";
+        }
         setIs2FAEnabled(twoFAEnabled);
         localStorage.setItem("vtos_2fa_enabled", twoFAEnabled ? "true" : "false");
       } catch {
@@ -167,8 +191,10 @@ export const AccountSecuritySettings = (): JSX.Element => {
       <div className="nb-card-static p-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className={`w-10 h-10 rounded-lg flex items-center justify-center border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E] ${is2FAEnabled ? 'bg-[#C8E44D]' : 'bg-[#EDE9FE]'}`}>
-              {is2FAEnabled ? <ShieldCheck className="w-5 h-5 text-[#1A1A2E]" /> : <Shield className="w-5 h-5 text-[#1A1A2E]" />}
+            <div className={`w-10 h-10 rounded-lg flex items-center justify-center border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E] ${
+              is2FAEnabled === true ? 'bg-[#C8E44D]' : is2FAEnabled === false ? 'bg-[#EDE9FE]' : 'bg-[#F3F4F6] animate-pulse'
+            }`}>
+              {is2FAEnabled === true ? <ShieldCheck className="w-5 h-5 text-[#1A1A2E]" /> : <Shield className="w-5 h-5 text-[#6B7280]" />}
             </div>
             <div>
               <h3 className="font-extrabold text-[#1A1A2E] text-base">Xác thực 2 bước (2FA)</h3>
@@ -178,25 +204,31 @@ export const AccountSecuritySettings = (): JSX.Element => {
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <span className={`px-3 py-1 rounded-lg text-xs font-bold border-2 ${
-              is2FAEnabled ? 'bg-[#C8E44D] text-[#1A1A2E] border-[#1A1A2E]' : 'bg-[#F3F4F6] text-[#6B7280] border-transparent'
-            }`}>
-              {is2FAEnabled ? 'Đang bật' : 'Đang tắt'}
-            </span>
-            {is2FAEnabled ? (
-              <button
-                onClick={() => setShowDisable2FA(true)}
-                className="nb-btn nb-btn-outline text-sm !text-[#991B1B] !border-[#FCA5A5] hover:!bg-[#FEE2E2]"
-              >
-                Tắt 2FA
-              </button>
+            {is2FAEnabled === null ? (
+              <div className="h-7 w-20 bg-[#F3F4F6] rounded-lg animate-pulse" />
             ) : (
-              <button
-                onClick={() => navigate('/2fa-setup')}
-                className="nb-btn nb-btn-purple text-sm"
-              >
-                Bật 2FA ✦
-              </button>
+              <>
+                <span className={`px-3 py-1 rounded-lg text-xs font-bold border-2 ${
+                  is2FAEnabled ? 'bg-[#C8E44D] text-[#1A1A2E] border-[#1A1A2E]' : 'bg-[#F3F4F6] text-[#6B7280] border-transparent'
+                }`}>
+                  {is2FAEnabled ? 'Đang bật' : 'Đang tắt'}
+                </span>
+                {is2FAEnabled ? (
+                  <button
+                    onClick={() => setShowDisable2FA(true)}
+                    className="nb-btn nb-btn-outline text-sm !text-[#991B1B] !border-[#FCA5A5] hover:!bg-[#FEE2E2]"
+                  >
+                    Tắt 2FA
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => navigate('/2fa-setup')}
+                    className="nb-btn nb-btn-purple text-sm"
+                  >
+                    Bật 2FA ✦
+                  </button>
+                )}
+              </>
             )}
           </div>
         </div>
