@@ -542,6 +542,13 @@ export type CampaignOutfitInput = {
     maxQuantity?: number | null;
 };
 
+export type CampaignOutfitRequestItem = {
+    outfitId: string;
+    providerId?: string | null;
+    campaignPrice: number;
+    maxQuantity?: number | null;
+};
+
 export type PublishCampaignRequest = {
     campaignName: string;
     description?: string | null;
@@ -587,6 +594,39 @@ export async function publishCampaign(data: PublishCampaignRequest): Promise<Pub
 export async function lockCampaign(id: string): Promise<{ message: string }> {
     return api<{ message: string }>(`${endpoints.schools.campaigns}/${id}/lock`, {
         method: "POST",
+        auth: true,
+    });
+}
+
+/** Edit a draft campaign */
+export type UpdateCampaignPayload = {
+    campaignName: string;
+    description?: string | null;
+    startDate: string;
+    endDate: string;
+    outfits: CampaignOutfitRequestItem[];
+};
+
+export async function updateCampaign(id: string, payload: UpdateCampaignPayload): Promise<CampaignDetailDto> {
+    return api<CampaignDetailDto>(`${endpoints.schools.campaigns}/${id}`, {
+        method: "PUT",
+        auth: true,
+        body: payload,
+    });
+}
+
+/** Publish a draft campaign (Draft → Active) */
+export async function publishDraftCampaign(id: string): Promise<PublishCampaignResponse> {
+    return api<PublishCampaignResponse>(`${endpoints.schools.campaigns}/${id}/publish`, {
+        method: "POST",
+        auth: true,
+    });
+}
+
+/** Delete a draft campaign (no orders only) */
+export async function deleteCampaign(id: string): Promise<void> {
+    await api<void>(`${endpoints.schools.campaigns}/${id}`, {
+        method: "DELETE",
         auth: true,
     });
 }
