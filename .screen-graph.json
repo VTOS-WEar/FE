@@ -348,15 +348,15 @@
       }
     },
     {
-      "id": "src\\screens\\TwoFactorSetup\\TwoFactorSetup.tsx:111:36-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\screens\\TwoFactorSetup\\TwoFactorSetup.tsx:122:36-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\TwoFactorSetup\\TwoFactorSetup.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/admin/dashboard",
         "trigger": {
           "element": "navigate(\"/admin/dashboard\", { replace: true })",
-          "line": 111,
-          "endLine": 111,
+          "line": 122,
+          "endLine": 122,
           "column": 36,
           "endColumn": 83,
           "sourceFile": "src\\screens\\TwoFactorSetup\\TwoFactorSetup.tsx"
@@ -364,15 +364,15 @@
       }
     },
     {
-      "id": "src\\screens\\TwoFactorSetup\\TwoFactorSetup.tsx:112:42-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\screens\\TwoFactorSetup\\TwoFactorSetup.tsx:123:42-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\TwoFactorSetup\\TwoFactorSetup.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/school/dashboard",
         "trigger": {
           "element": "navigate(\"/school/dashboard\", { replace: true })",
-          "line": 112,
-          "endLine": 112,
+          "line": 123,
+          "endLine": 123,
           "column": 42,
           "endColumn": 90,
           "sourceFile": "src\\screens\\TwoFactorSetup\\TwoFactorSetup.tsx"
@@ -380,15 +380,15 @@
       }
     },
     {
-      "id": "src\\screens\\TwoFactorSetup\\TwoFactorSetup.tsx:113:44-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\screens\\TwoFactorSetup\\TwoFactorSetup.tsx:124:44-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\TwoFactorSetup\\TwoFactorSetup.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/provider/dashboard",
         "trigger": {
           "element": "navigate(\"/provider/dashboard\", { replace: true })",
-          "line": 113,
-          "endLine": 113,
+          "line": 124,
+          "endLine": 124,
           "column": 44,
           "endColumn": 94,
           "sourceFile": "src\\screens\\TwoFactorSetup\\TwoFactorSetup.tsx"
@@ -396,15 +396,15 @@
       }
     },
     {
-      "id": "src\\screens\\TwoFactorSetup\\TwoFactorSetup.tsx:114:17-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\screens\\TwoFactorSetup\\TwoFactorSetup.tsx:125:17-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\TwoFactorSetup\\TwoFactorSetup.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/homepage",
         "trigger": {
           "element": "navigate(\"/homepage\", { replace: true })",
-          "line": 114,
-          "endLine": 114,
+          "line": 125,
+          "endLine": 125,
           "column": 17,
           "endColumn": 57,
           "sourceFile": "src\\screens\\TwoFactorSetup\\TwoFactorSetup.tsx"
@@ -588,15 +588,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\DashboardSidebar.tsx:56:8-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\components\\layout\\DashboardSidebar.tsx:59:8-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\AccountSetting\\AccountSetting.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
           "element": "navigate(\"/signin\", { replace: true })",
-          "line": 56,
-          "endLine": 56,
+          "line": 59,
+          "endLine": 59,
           "column": 8,
           "endColumn": 46,
           "sourceFile": "src\\components\\layout\\DashboardSidebar.tsx"
@@ -604,15 +604,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\DashboardSidebar.tsx:56:8-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\components\\layout\\DashboardSidebar.tsx:59:8-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\AccountSetting\\AccountSetting.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
           "element": "navigate(\"/signin\", { replace: true })",
-          "line": 56,
-          "endLine": 56,
+          "line": 59,
+          "endLine": 59,
           "column": 8,
           "endColumn": 46,
           "sourceFile": "src\\components\\layout\\DashboardSidebar.tsx"
@@ -620,15 +620,15 @@
       }
     },
     {
-      "id": "src\\components\\layout\\DashboardSidebar.tsx:56:8-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\components\\layout\\DashboardSidebar.tsx:59:8-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\AccountSetting\\AccountSetting.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/signin",
         "trigger": {
           "element": "navigate(\"/signin\", { replace: true })",
-          "line": 56,
-          "endLine": 56,
+          "line": 59,
+          "endLine": 59,
           "column": 8,
           "endColumn": 46,
           "sourceFile": "src\\components\\layout\\DashboardSidebar.tsx"

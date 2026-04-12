@@ -11,6 +11,7 @@ export type SchoolProfileDto = {
     catalogID: string | null;
     createdAt: string;
     updatedAt: string | null;
+    twoFactorEnabled?: boolean;
 };
 
 export type UpdateSchoolProfileRequest = {

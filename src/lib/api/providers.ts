@@ -11,6 +11,7 @@ export type ProviderProfileDto = {
     email?: string | null;
     address?: string | null;
     status: string;
+    twoFactorEnabled?: boolean;
 };
 
 export async function getProviderProfile(): Promise<ProviderProfileDto> {

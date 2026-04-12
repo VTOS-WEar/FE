@@ -16,11 +16,16 @@ function getDisplayName(): string {
     } catch { return ""; }
 }
 
+function getOrgName(): string {
+    try { return localStorage.getItem("vtos_org_name") || ""; } catch { return ""; }
+}
+
 export const SchoolAccountSettings = (): JSX.Element => {
     const navigate = useNavigate();
     const sidebarConfig = useSidebarConfig();
     const [isCollapsed, toggle] = useSidebarCollapsed();
     const displayName = getDisplayName();
+    const orgName = getOrgName();
 
     const handleLogout = () => {
         localStorage.removeItem("access_token"); localStorage.removeItem("user"); localStorage.removeItem("expires_in");
@@ -32,7 +37,7 @@ export const SchoolAccountSettings = (): JSX.Element => {
         <div className="nb-page flex flex-col">
             <div className="flex flex-1 flex-col lg:flex-row">
                 <div className={`${isCollapsed ? "lg:w-16" : "lg:w-[16rem]"} flex-shrink-0 lg:sticky lg:top-0 lg:h-screen transition-all duration-300`}>
-                    <DashboardSidebar {...sidebarConfig} name={displayName} isCollapsed={isCollapsed} onToggle={toggle} onLogout={handleLogout} />
+                    <DashboardSidebar {...sidebarConfig} name={displayName} orgName={orgName} isCollapsed={isCollapsed} onToggle={toggle} onLogout={handleLogout} />
                 </div>
 
                 <div className="flex-1 flex flex-col min-w-0">
