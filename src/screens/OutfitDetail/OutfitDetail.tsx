@@ -64,15 +64,22 @@ const fmt = (n: number) =>
 const formatDate = (dateString: string): string => {
   const date = new Date(dateString);
   const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+  // Use timezone-aware comparison
+  const vnFmt = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Ho_Chi_Minh", year: "numeric", month: "2-digit", day: "2-digit" });
+  const dateParts = vnFmt.format(date);
+  const nowParts = vnFmt.format(now);
+  const dDate = new Date(dateParts + "T00:00:00");
+  const dNow = new Date(nowParts + "T00:00:00");
+  const diffMs = dNow.getTime() - dDate.getTime();
+  const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
 
   if (diffDays === 0) return "Hôm nay";
   if (diffDays === 1) return "Hôm qua";
   if (diffDays < 7) return `${diffDays} ngày trước`;
   if (diffDays < 30) return `${Math.floor(diffDays / 7)} tuần trước`;
   if (diffDays < 365) return `${Math.floor(diffDays / 30)} tháng trước`;
-  return date.toLocaleDateString("vi-VN");
+  return date.toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" });
 };
 
 const OUTFIT_TYPE_LABEL: Record<string, string> = {

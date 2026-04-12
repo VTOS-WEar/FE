@@ -65,6 +65,7 @@ const CustomLegend = (props: any) => {
 function formatDateTime(value: string, includeTime: boolean = false) {
   const date = new Date(value);
   const dateStr = date.toLocaleDateString("vi-VN", {
+    timeZone: "Asia/Ho_Chi_Minh",
     day: "2-digit",
     month: "2-digit",
     year: "numeric"
@@ -72,6 +73,7 @@ function formatDateTime(value: string, includeTime: boolean = false) {
   if (!includeTime) return dateStr;
 
   const timeStr = date.toLocaleTimeString("vi-VN", {
+    timeZone: "Asia/Ho_Chi_Minh",
     hour: "2-digit",
     minute: "2-digit",
   });

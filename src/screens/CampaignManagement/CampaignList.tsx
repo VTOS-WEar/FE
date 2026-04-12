@@ -33,7 +33,7 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 function formatDate(iso: string) {
-    return new Date(iso).toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric" });
+    return new Date(iso).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh", day: "2-digit", month: "2-digit", year: "numeric" });
 }
 
 /* ── Campaign Card (Neubrutalism) ── */
