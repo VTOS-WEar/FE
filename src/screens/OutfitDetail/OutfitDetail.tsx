@@ -47,6 +47,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Badge } from "@/components/ui/badge";
+import { OutfitOrderModal } from "../../components/outfits/OutfitOrderModal";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
@@ -426,6 +427,7 @@ export const OutfitDetail = (): JSX.Element => {
   const [recommendation, setRecommendation] = useState<SizeRecommendation | null>(null);
   const [recommendationLoading, setRecommendationLoading] = useState(false);
   const [showSizeGuide, setShowSizeGuide] = useState(false);
+  const [showOrderModal, setShowOrderModal] = useState(false);
 
   /* ── Fetch outfit ── */
   useEffect(() => {
@@ -793,10 +795,8 @@ export const OutfitDetail = (): JSX.Element => {
                     {isParent && (
                       <button
                         onClick={() => {
-                          showToast({ title: "Thông báo", message: "Đơn hàng phải đặt qua trang chiến dịch của trường", variant: "info" });
-                          navigate(`/schools/${outfit.school.schoolId}`);
+                          setShowOrderModal(true);
                         }}
-                        disabled={!selectedVariant || selectedVariant.stockQuantity <= 0 || schoolChildren.length === 0}
                         className={`h-9 rounded-md font-black text-[10px] flex items-center justify-center gap-1.5 transition-all uppercase border-[1.5px] border-[#1A1A2E] ${schoolChildren.length === 0
                           ? "bg-gray-200 text-gray-400 shadow-[1px_1px_0_#1A1A2E] cursor-not-allowed opacity-60"
                           : "bg-[#0ea5e9] text-white shadow-[2px_2px_0_#1A1A2E] hover:translate-x-[0.5px] hover:translate-y-[0.5px] hover:shadow-[1px_1px_0_#1A1A2E]"
@@ -1234,6 +1234,12 @@ export const OutfitDetail = (): JSX.Element => {
         outfitId={id || ""}
         outfitImage={mainImage}
         outfitName={outfit.outfitName}
+      />
+      <OutfitOrderModal
+        open={showOrderModal}
+        onClose={() => setShowOrderModal(false)}
+        outfitId={outfit.outfitId}
+        preloadedOutfit={outfit}
       />
     </GuestLayout>
   );

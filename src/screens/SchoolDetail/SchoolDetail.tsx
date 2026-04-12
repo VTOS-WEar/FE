@@ -5,6 +5,7 @@ import { GuestLayout } from "../../components/layout/GuestLayout";
 import { PublicPageBreadcrumb } from "@/components/PublicPageBreadcrumb";
 import { getPublicSchoolDetail, getSchoolUniforms, parseContactInfo, type PublicSchoolDetailDto } from "../../lib/api/schools";
 import { motion, AnimatePresence, useInView } from "framer-motion";
+import { OutfitOrderModal } from "../../components/outfits/OutfitOrderModal";
 
 type UniformItem = {
   outfitId: string;
@@ -108,6 +109,7 @@ export const SchoolDetail = (): JSX.Element => {
   const [error, setError] = useState<string | null>(null);
   const [toast, setToast] = useState({ show: false, message: "" });
   const [uniforms, setUniforms] = useState<UniformItem[]>([]);
+  const [selectedOutfitId, setSelectedOutfitId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -387,6 +389,17 @@ export const SchoolDetail = (): JSX.Element => {
                           <ArrowRight className="w-4 h-4 text-[#1A1A2E]" />
                         </div>
                       </div>
+                      {isParent && (
+                        <button
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            setSelectedOutfitId(u.outfitId);
+                          }}
+                          className="mt-3 nb-btn nb-btn-purple text-sm"
+                        >
+                          Đặt hàng
+                        </button>
+                      )}
                     </div>
                   </div>
                 </motion.div>
@@ -395,6 +408,11 @@ export const SchoolDetail = (): JSX.Element => {
           )}
         </ScrollSection>
       </div>
+      <OutfitOrderModal
+        open={selectedOutfitId !== null}
+        onClose={() => setSelectedOutfitId(null)}
+        outfitId={selectedOutfitId}
+      />
     </GuestLayout>
   );
 };

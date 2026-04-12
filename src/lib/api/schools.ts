@@ -813,6 +813,17 @@ export type ReviewDto = {
     userAvatarUrl: string | null;
 };
 
+export type OutfitCampaignOptionDto = {
+    campaignId: string;
+    campaignName: string;
+    status: string;
+    startDate: string;
+    endDate: string;
+    campaignOutfitId: string;
+    campaignPrice: number;
+    maxQuantity: number | null;
+};
+
 export type OutfitDetailDto = {
     outfitId: string;
     outfitName: string;
@@ -825,6 +836,7 @@ export type OutfitDetailDto = {
     school: { schoolId: string; schoolName: string; logoURL: string | null };
     variants: OutfitVariantDto[];
     sizeChart: SizeChartDto | null;
+    campaignOptions: OutfitCampaignOptionDto[];
     categories: string[];
     averageRating: number;
     feedbackCount: number;
