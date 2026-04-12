@@ -17,14 +17,45 @@ export type ContractDto = {
     schoolId: string;
     providerId: string;
     contractName: string;
-    status: string; // Pending | Approved | InUse | Fulfilled | Rejected | Expired
+    contractNumber: string;
+    status: string; // Pending | PendingSchoolSign | PendingProviderSign | Active | InUse | Fulfilled | Rejected | Expired | Cancelled
     createdAt: string;
     approvedAt?: string | null;
     rejectedAt?: string | null;
     rejectionReason?: string | null;
+    expiresAt: string;
+
+    // Party names
     schoolName?: string | null;
     providerName?: string | null;
-    expiresAt: string;
+
+    // School extended info (for contract template auto-fill)
+    schoolAddress?: string | null;
+    schoolTaxCode?: string | null;
+    schoolRepName?: string | null;
+    schoolRepTitle?: string | null;
+    schoolPhone?: string | null;
+
+    // Provider extended info (for contract template auto-fill)
+    providerAddress?: string | null;
+    providerTaxCode?: string | null;
+    providerRepName?: string | null;
+    providerRepTitle?: string | null;
+    providerPhone?: string | null;
+    providerEmail?: string | null;
+
+    // Digital signatures
+    schoolSignature?: string | null;
+    schoolSignedAt?: string | null;
+    providerSignature?: string | null;
+    providerSignedAt?: string | null;
+
+    // Generated contract PDF URL (e.g. "/contracts/{id}.pdf")
+    contractPdfUrl?: string | null;
+
+    // Masked contact of the CURRENT viewer (for OTP display)
+    viewerMaskedContact?: string | null;
+
     items: ContractItemDto[];
 };
 
@@ -40,6 +71,13 @@ export type CreateContractRequest = {
     providerId: string;
     expiresAt: string;
     items: CreateContractItemRequest[];
+};
+
+export type SignContractRequest = {
+    signatureData: string;
+    otpCode: string;
+    /** Base64-encoded PDF generated client-side. Optional. */
+    pdfBase64?: string;
 };
 
 // ── School Contract APIs ──
@@ -61,10 +99,33 @@ export async function createContract(payload: CreateContractRequest): Promise<Co
     });
 }
 
-/** School cancels a Pending contract (before Provider accepts). */
-export async function cancelSchoolContract(id: string): Promise<void> {
-    return api<void>(`${endpoints.schools.me}/contracts/${id}/cancel`, {
+/** School cancels a Pending or PendingSchoolSign contract. */
+export async function cancelSchoolContract(id: string): Promise<ContractDto> {
+    return api<ContractDto>(`${endpoints.schools.me}/contracts/${id}/cancel`, {
         method: "PUT",
+        auth: true,
+    });
+}
+
+/** Request a 6-digit OTP to be sent to the school's registered email for contract signing. */
+export async function requestSchoolSignOTP(id: string): Promise<{ success: boolean }> {
+    return api<{ success: boolean }>(`${endpoints.schools.me}/contracts/${id}/request-sign-otp`, {
+        method: "POST",
+        auth: true,
+    });
+}
+
+/** School digitally signs a contract with OTP + base64 signature image + optional PDF. */
+export async function signSchoolContract(
+    id: string,
+    signatureData: string,
+    otpCode: string,
+    pdfBase64?: string
+): Promise<ContractDto> {
+    const body: SignContractRequest = { signatureData, otpCode, pdfBase64 };
+    return api<ContractDto>(`${endpoints.schools.me}/contracts/${id}/sign`, {
+        method: "PUT",
+        body: JSON.stringify(body),
         auth: true,
     });
 }
@@ -91,6 +152,29 @@ export async function rejectContract(id: string, reason: string): Promise<Contra
     return api<ContractDto>(`${endpoints.providers.contracts}/${id}/reject`, {
         method: "PUT",
         body: JSON.stringify({ reason }),
+        auth: true,
+    });
+}
+
+/** Request a 6-digit OTP to be sent to the provider's registered email for contract signing. */
+export async function requestProviderSignOTP(id: string): Promise<{ success: boolean }> {
+    return api<{ success: boolean }>(`${endpoints.providers.contracts}/${id}/request-sign-otp`, {
+        method: "POST",
+        auth: true,
+    });
+}
+
+/** Provider digitally signs a contract with OTP + base64 signature image + optional PDF. */
+export async function signProviderContract(
+    id: string,
+    signatureData: string,
+    otpCode: string,
+    pdfBase64?: string
+): Promise<ContractDto> {
+    const body: SignContractRequest = { signatureData, otpCode, pdfBase64 };
+    return api<ContractDto>(`${endpoints.providers.contracts}/${id}/sign`, {
+        method: "PUT",
+        body: JSON.stringify(body),
         auth: true,
     });
 }

@@ -9,12 +9,16 @@ import {
     getProviderContractDetail,
     approveContract,
     rejectContract,
+    signProviderContract, requestProviderSignOTP,
     type ContractDto,
 } from "../../lib/api/contracts";
+import { ContractTemplate, type ContractTemplateData } from "../../components/ContractTemplate";
 
 const STATUS_MAP: Record<string, { label: string; badge: string }> = {
     Pending: { label: "Chờ duyệt", badge: "nb-badge nb-badge-yellow" },
-    Approved: { label: "Đã duyệt", badge: "nb-badge nb-badge-green" },
+    PendingSchoolSign: { label: "Chờ trường ký", badge: "nb-badge bg-[#FEF3C7] text-[#92400E] border-[#1A1A2E]" },
+    PendingProviderSign: { label: "✍️ Chờ bạn ký", badge: "nb-badge bg-[#E0E7FF] text-[#3730A3] border-[#1A1A2E]" },
+    Active: { label: "Đang hiệu lực", badge: "nb-badge bg-[#D1FAE5] text-[#065F46] border-[#1A1A2E]" },
     InUse: { label: "Đang dùng", badge: "nb-badge bg-[#DBEAFE] text-[#1D4ED8] border-[#1A1A2E]" },
     Fulfilled: { label: "Hoàn thành", badge: "nb-badge bg-[#D1FAE5] text-[#065F46] border-[#1A1A2E]" },
     Rejected: { label: "Từ chối", badge: "nb-badge nb-badge-red" },
@@ -36,6 +40,31 @@ export function ProviderContracts() {
     const [showReject, setShowReject] = useState(false);
     const [rejectReason, setRejectReason] = useState("");
     const [error, setError] = useState("");
+
+    // Contract Template (full document view + signing)
+    const [templateContract, setTemplateContract] = useState<ContractTemplateData | null>(null);
+    const [templateLoading, setTemplateLoading] = useState(false);
+
+    const openContractTemplate = async (id: string) => {
+        setTemplateLoading(true);
+        try {
+            const c = await getProviderContractDetail(id);
+            setTemplateContract(c as ContractTemplateData);
+        } catch (e: any) { console.error(e); }
+        finally { setTemplateLoading(false); }
+    };
+
+    const handleProviderSign = async (sigData: string, otpCode: string, pdfBase64?: string) => {
+        if (!templateContract) return;
+        await signProviderContract(templateContract.contractId, sigData, otpCode, pdfBase64);
+        fetchContracts();
+    };
+
+    const handleRequestProviderOTP = async () => {
+        if (!templateContract) return;
+        await requestProviderSignOTP(templateContract.contractId);
+    };
+
     // Chat
     const [chatOpen, setChatOpen] = useState(false);
     const [chatContractId, setChatContractId] = useState("");
@@ -116,7 +145,9 @@ export function ProviderContracts() {
     const filterTabs = [
         { value: "", label: "Tất cả" },
         { value: "Pending", label: "Chờ duyệt" },
-        { value: "Approved", label: "Đã duyệt" },
+        { value: "PendingSchoolSign", label: "Chờ trường ký" },
+        { value: "PendingProviderSign", label: "✍️ Chờ bạn ký" },
+        { value: "Active", label: "Đang hiệu lực" },
         { value: "InUse", label: "Đang dùng" },
         { value: "Fulfilled", label: "Hoàn thành" },
         { value: "Rejected", label: "Từ chối" },
@@ -183,6 +214,11 @@ export function ProviderContracts() {
                                                         <span className={STATUS_MAP[c.status]?.badge || "nb-badge"}>
                                                             {STATUS_MAP[c.status]?.label || c.status}
                                                         </span>
+                                                        <button
+                                                            onClick={(e) => { e.stopPropagation(); openContractTemplate(c.contractId); }}
+                                                            disabled={templateLoading}
+                                                            className="nb-btn nb-btn-sm text-xs bg-[#EDE9FE] border-[#1A1A2E] disabled:opacity-50"
+                                                        >📄 Xem HĐ</button>
                                                         <button
                                                             onClick={(e) => { e.stopPropagation(); openContractChat(c); }}
                                                             className="nb-btn nb-btn-sm nb-btn-purple"
@@ -272,12 +308,15 @@ export function ProviderContracts() {
 
                                     {/* Actions for Pending contracts */}
                                     {selected.status === "Pending" && !showReject && (
-                                        <div className="flex gap-3 mt-6">
+                                        <div className="flex gap-3 mt-6 flex-wrap">
                                             <button onClick={() => { setShowReject(true); setError(""); }} className="nb-btn nb-btn-red flex-1">
                                                 ❌ Từ chối
                                             </button>
-                                            <button onClick={handleApprove} disabled={actionLoading} className="nb-btn nb-btn-green flex-1">
-                                                {actionLoading ? "Đang xử lý..." : "✅ Duyệt hợp đồng"}
+                                            <button
+                                                onClick={() => { openContractTemplate(selected.contractId); setShowDetail(false); setSelected(null); }}
+                                                className="nb-btn flex-1 text-sm bg-[#EDE9FE] border-[#1A1A2E]"
+                                            >
+                                                ✍️ Xem & Ký HĐ
                                             </button>
                                         </div>
                                     )}
@@ -330,6 +369,25 @@ export function ProviderContracts() {
                     </main>
                 </div>
             </div>
+
+            {/* Contract Template full-document viewer */}
+            {templateLoading && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50">
+                    <div className="bg-white rounded-md border-2 border-[#1A1A2E] px-8 py-5 shadow-[4px_4px_0_#1A1A2E] flex items-center gap-3">
+                        <div className="w-5 h-5 border-3 border-[#6938EF] border-t-transparent rounded-full animate-spin" />
+                        <span className="font-bold text-[#1A1A2E]">Đang tải hợp đồng...</span>
+                    </div>
+                </div>
+            )}
+            {templateContract && !templateLoading && (
+                <ContractTemplate
+                    contract={templateContract}
+                    viewerRole="provider"
+                    onRequestProviderOTP={handleRequestProviderOTP}
+                    onProviderSign={handleProviderSign}
+                    onClose={() => setTemplateContract(null)}
+                />
+            )}
         </div>
     );
 }

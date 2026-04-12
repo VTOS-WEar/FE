@@ -40,6 +40,7 @@ import { RoleGuard } from "./components/guards/RoleGuard";
 import { ProviderDashboard } from "./screens/ProviderDashboard/ProviderDashboard";
 import { SchoolContracts } from "./screens/SchoolContracts/SchoolContracts";
 import { ProviderContracts } from "./screens/ProviderContracts/ProviderContracts";
+import { ContractPreview } from "./screens/ContractPreview/ContractPreview";
 import { SchoolProductionOrders } from "./screens/SchoolProductionOrders/SchoolProductionOrders";
 import SchoolProductionOrderDetail from "./screens/SchoolProductionOrders/SchoolProductionOrderDetail";
 import SchoolProductionOrdersLayout from "./screens/SchoolProductionOrders/SchoolProductionOrdersLayout";
@@ -94,6 +95,11 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <RootRedirect />,
+  },
+  {
+    // PREVIEW ONLY — remove after BE is connected
+    path: "/contract-preview",
+    element: <ContractPreview />,
   },
   {
     path: "/signup",

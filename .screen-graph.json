@@ -1,6 +1,13 @@
 {
   "nodes": [
     {
+      "id": "src/screens/ContractPreview/ContractPreview.tsx",
+      "label": "ContractPreview",
+      "routes": [
+        "/contract-preview"
+      ]
+    },
+    {
       "id": "src/components/guards/RoleGuard.tsx",
       "label": "RoleGuard",
       "routes": [
