@@ -428,6 +428,13 @@ export const OutfitDetail = (): JSX.Element => {
   const [recommendationLoading, setRecommendationLoading] = useState(false);
   const [showSizeGuide, setShowSizeGuide] = useState(false);
   const [showOrderModal, setShowOrderModal] = useState(false);
+  const tabsRef = useRef<HTMLDivElement>(null);
+
+  const scrollToTabs = () => {
+    if (tabsRef.current) {
+      tabsRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
 
   /* ── Fetch outfit ── */
   useEffect(() => {
@@ -713,7 +720,15 @@ export const OutfitDetail = (): JSX.Element => {
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <h4 className="text-[9px] font-black text-gray-900 uppercase tracking-widest">Kích cỡ</h4>
-                      <button onClick={() => setShowSizeGuide(true)} className="text-[8px] font-black text-[#0ea5e9] uppercase hover:underline">Hướng dẫn size</button>
+                      <button
+                        onClick={() => {
+                          setActiveTab("size");
+                          setTimeout(scrollToTabs, 100);
+                        }}
+                        className="text-[8px] font-black text-[#0ea5e9] uppercase hover:underline"
+                      >
+                        Hướng dẫn size
+                      </button>
                     </div>
 
                     {/* Smart Recommendation Integration */}
@@ -722,8 +737,8 @@ export const OutfitDetail = (): JSX.Element => {
                         {schoolChildren.length > 0 ? (
                           <>
                             <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-1">
-                                <Zap className="w-2.5 h-2.5 text-gray-900 fill-gray-900" />
+                              <div className="flex items-center gap-1.5">
+                                <div className="w-5 h-5 bg-white border-[1.5px] border-[#1A1A2E] rounded flex items-center justify-center text-[10px]">🤖</div>
                                 <span className="text-[8px] font-black text-gray-900 uppercase">Cố vấn AI</span>
                               </div>
                               {recommendationLoading && <div className="w-2 h-2 border-2 border-[#1A1A2E] border-t-transparent rounded-full animate-spin" />}
@@ -835,7 +850,11 @@ export const OutfitDetail = (): JSX.Element => {
 
         {/* ───── Detail Content Sections ───── */}
         <motion.div custom={3} variants={fadeUp} initial="hidden" animate="visible" className="mt-8">
-          <div id="outfit-tabs" className="flex items-center gap-6 border-b-[2px] border-[#1A1A2E] mb-4 overflow-x-auto scrollbar-hide">
+          <div
+            ref={tabsRef}
+            id="outfit-tabs"
+            className="flex items-center gap-6 border-b-[2px] border-[#1A1A2E] mb-4 overflow-x-auto scrollbar-hide"
+          >
             {(
               [
                 { key: "desc", label: "MIÊU TẢ" },

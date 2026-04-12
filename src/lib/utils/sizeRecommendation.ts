@@ -230,12 +230,12 @@ export function recommendSizeFromBodygram(
 
     let bestMatch:
         | {
-              variant: OutfitVariantDto;
-              matchedCount: number;
-              totalCount: number;
-              mismatchedFields: string[];
-              missingFields: string[];
-          }
+            variant: OutfitVariantDto;
+            matchedCount: number;
+            totalCount: number;
+            mismatchedFields: string[];
+            missingFields: string[];
+        }
         | null = null;
 
     for (const entry of measuredVariants) {
@@ -319,7 +319,7 @@ export function recommendSizeFromBodygram(
         recommendedVariantId: bestMatch.variant.productVariantId,
         recommendedSize: bestMatch.variant.size,
         confidence: fitPercentage >= 60 ? "medium" : "low",
-        reason: `Gợi ý kích cỡ ${bestMatch.variant.size}, độ chuẩn xác ${fitPercentage}% (${bestMatch.matchedCount}/${bestMatch.totalCount} chỉ số) theo dữ liệu quét ngày ${scanDate}${issueText}`,
+        reason: `Gợi ý kích cỡ ${bestMatch.variant.size}, độ phù hợp ${fitPercentage}% (${bestMatch.matchedCount}/${bestMatch.totalCount} chỉ số) theo dữ liệu quét ngày ${scanDate}${issueText}`,
         source: "bodygram",
         fitPercentage,
     };

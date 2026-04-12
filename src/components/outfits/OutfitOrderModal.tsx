@@ -50,7 +50,7 @@ export function OutfitOrderModal({
   const [campaignDropOpen, setCampaignDropOpen] = useState(false);
   const [scanDropOpen, setScanDropOpen] = useState(false);
   const [bodygramScans, setBodygramScans] = useState<BodygramHistoryItem[]>([]);
-  const [loadingScans, setLoadingScans] = useState(false);
+  const [loadingScans, setLoadingScans] = useState(true);
   const [selectedScanRecordId, setSelectedScanRecordId] = useState("");
   const [selectedScanDetail, setSelectedScanDetail] = useState<BodygramScanDetail | null>(null);
   const [loadingScanDetail, setLoadingScanDetail] = useState(false);
@@ -139,8 +139,9 @@ export function OutfitOrderModal({
   );
 
   useEffect(() => {
-    if (selectedCampaign?.maxQuantity != null) {
-      setOrderQty((current) => Math.min(current, Math.max(1, selectedCampaign.maxQuantity)));
+    const maxQty = selectedCampaign?.maxQuantity;
+    if (maxQty != null) {
+      setOrderQty((current) => Math.min(current, Math.max(1, maxQty)));
     }
   }, [selectedCampaign?.maxQuantity]);
 
@@ -149,6 +150,8 @@ export function OutfitOrderModal({
       setBodygramScans([]);
       setSelectedScanRecordId("");
       setSelectedScanDetail(null);
+      // Keep loading as true so it doesn't flash "no data" message before we even start loading for a child
+      setLoadingScans(true);
       return;
     }
 
@@ -212,12 +215,12 @@ export function OutfitOrderModal({
 
     if (selectedScanDetail && outfit.sizeChart?.details?.length) {
       const bodygramRec = recommendSizeFromBodygram(selectedScanDetail, outfit.variants, outfit.sizeChart.details);
-      if (bodygramRec.recommendedVariantId) {
+      if (bodygramRec?.recommendedVariantId) {
         return bodygramRec;
       }
 
       const fallback = recommendSize(selectedChild.heightCm, selectedChild.weightKg, outfit.variants);
-      if (bodygramRec.reason) {
+      if (bodygramRec?.reason) {
         return {
           ...fallback,
           confidence: fallback.confidence === "high" ? "medium" : fallback.confidence,
@@ -290,11 +293,11 @@ export function OutfitOrderModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={onClose}>
       <div
-        className="bg-white rounded-[8px] border-[3px] border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E] w-full max-w-[700px] mx-4 overflow-hidden max-h-[90vh] flex flex-col"
+        className="bg-white rounded-[8px] border-[2px] border-[#1A1A2E] shadow-[3px_3px_0_#1A1A2E] w-full max-w-[640px] mx-4 overflow-hidden max-h-[90vh] flex flex-col"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="flex items-center justify-between px-6 py-4 border-b-[3px] border-[#1A1A2E] bg-[#EDE9FE]">
-          <h3 className="font-black text-lg text-[#1A1A2E]">Thêm vào giỏ hàng</h3>
+        <div className="flex items-center justify-between px-5 py-3.5 border-b-[2px] border-[#1A1A2E] bg-[#F1F5F9]">
+          <h3 className="font-black text-base text-[#1A1A2E] uppercase tracking-wide">Thêm vào giỏ hàng</h3>
           <button
             onClick={onClose}
             className="w-8 h-8 flex items-center justify-center rounded-[4px] border-[2px] border-[#1A1A2E] bg-white shadow-[2px_2px_0_#1A1A2E] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
@@ -303,285 +306,301 @@ export function OutfitOrderModal({
           </button>
         </div>
 
-        <div className="p-6 space-y-5 overflow-y-auto">
+        <div className="p-0 flex flex-col overflow-hidden">
           {loadingOutfit || !outfit ? (
-            <div className="flex items-center gap-2 text-[#97A3B6] text-sm font-semibold">
-              <div className="w-4 h-4 border-2 border-[#E5E7EB] border-t-[#B8A9E8] rounded-full animate-spin" />
-              Đang tải thông tin đồng phục...
+            <div className="flex items-center justify-center p-12 gap-3 text-[#97A3B6] text-sm font-bold">
+              <div className="w-5 h-5 border-3 border-[#E5E7EB] border-t-[#8B6BFF] rounded-full animate-spin" />
+              Đang tải dữ liệu...
             </div>
           ) : (
             <>
-              <div className="flex gap-4">
-                <div className="w-20 h-20 rounded-[8px] overflow-hidden bg-[#F6F1E8] flex-shrink-0 border-[2px] border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E]">
-                  {outfit.mainImageURL ? (
-                    <img src={outfit.mainImageURL} alt={outfit.outfitName} className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <Package className="w-8 h-8 text-[#CBCAD7]" />
-                    </div>
-                  )}
-                </div>
-                <div className="min-w-0">
-                  <h4 className="font-bold text-base text-[#1A1A2E] mb-1">{outfit.outfitName}</h4>
-                  <p className="text-sm font-semibold text-[#6B7280]">{outfit.school.schoolName}</p>
-                  <p className="font-black text-lg text-[#8B6BFF] mt-1">
-                    {(selectedCampaign?.campaignPrice ?? outfit.price).toLocaleString("vi-VN")}₫
-                  </p>
-                </div>
-              </div>
-
-              <div>
-                <label className="font-bold text-sm text-[#1A1A2E] mb-2 block">Chọn chiến dịch</label>
-                {outfit.campaignOptions.length === 0 ? (
-                  <div className="nb-alert nb-alert-warning text-sm">
-                    <span>⚠️</span>
-                    <span>Hiện chưa có chiến dịch đang mở cho đồng phục này.</span>
+              <div className="overflow-y-auto overflow-x-hidden p-5 space-y-5 max-h-[calc(90vh-140px)]">
+                {/* 1. Product Summary Block */}
+                <div className="flex gap-4 p-3 bg-[#F8F9FA] rounded-[8px] border-[2px] border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E]">
+                  <div className="w-20 h-20 rounded-[6px] overflow-hidden bg-white border-[2px] border-[#1A1A2E] flex-shrink-0">
+                    {outfit.mainImageURL ? (
+                      <img src={outfit.mainImageURL} alt={outfit.outfitName} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <Package className="w-8 h-8 text-[#CBCAD7]" />
+                      </div>
+                    )}
                   </div>
-                ) : (
-                  <div className="relative">
-                    <button
-                      onClick={() => setCampaignDropOpen((value) => !value)}
-                      className="w-full flex items-center justify-between nb-input py-3"
-                    >
-                      <span className="text-left">
-                        <span className="block font-semibold text-sm">
-                          {selectedCampaign?.campaignName || "Chọn chiến dịch..."}
-                        </span>
-                        {selectedCampaign && (
-                          <span className="text-xs text-[#97A3B6]">
-                            Giá {(selectedCampaign.campaignPrice).toLocaleString("vi-VN")}₫
-                          </span>
-                        )}
+                  <div className="flex-1 min-w-0 py-0.5">
+                    <div className="flex items-center gap-2 mb-0.5">
+                      <span className="px-1.5 py-0.5 bg-[#1A1A2E] text-white text-[8px] font-black rounded uppercase tracking-wider">Xác thực</span>
+                      <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter truncate">{outfit.school.schoolName}</span>
+                    </div>
+                    <h4 className="font-black text-base text-[#1A1A2E] line-clamp-1 mb-1 leading-tight uppercase">{outfit.outfitName}</h4>
+                    <div className="flex items-baseline gap-2">
+                      <span className="font-black text-xl text-[#8B6BFF]">
+                        {(selectedCampaign?.campaignPrice ?? outfit.price).toLocaleString("vi-VN")}₫
                       </span>
-                      <ChevronDown className={`w-4 h-4 text-[#97A3B6] transition-transform ${campaignDropOpen ? "rotate-180" : ""}`} />
-                    </button>
-                    {campaignDropOpen && (
-                      <div className="absolute top-full left-0 right-0 mt-1 bg-white border-[2px] border-[#1A1A2E] rounded-[4px] shadow-[4px_4px_0_#1A1A2E] z-10 max-h-56 overflow-y-auto">
-                        {outfit.campaignOptions.map((option) => (
-                          <button
-                            key={option.campaignOutfitId}
-                            onClick={() => {
-                              setSelectedCampaignId(option.campaignId);
-                              setCampaignDropOpen(false);
-                            }}
-                            className={`w-full text-left px-4 py-3 text-sm font-semibold hover:bg-[#EDE9FE] transition-colors ${
-                              option.campaignId === selectedCampaignId ? "bg-[#EDE9FE] text-[#7C3AED]" : "text-[#1A1A2E]"
-                            }`}
-                          >
-                            <span className="font-bold block">{option.campaignName}</span>
-                            <span className="text-xs text-[#97A3B6]">
-                              {(option.campaignPrice).toLocaleString("vi-VN")}₫ • đến {new Date(option.endDate).toLocaleDateString("vi-VN")}
+                      {selectedCampaign && selectedCampaign.campaignPrice !== outfit.price && (
+                        <span className="text-[10px] text-gray-400 line-through font-bold">
+                          {outfit.price.toLocaleString("vi-VN")}₫
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* 2. Core Selection Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Campaign Card */}
+                  <div className="space-y-2">
+                    <label className="flex items-center gap-1.5 font-bold text-[11px] text-gray-500 uppercase tracking-wider ml-1">
+                      <Package className="w-3 h-3" />
+                      Chiến dịch đặt hàng
+                    </label>
+                    {outfit.campaignOptions.length === 0 ? (
+                      <div className="nb-alert nb-alert-warning p-3 text-xs">
+                        Hiện chưa có chiến dịch đang mở.
+                      </div>
+                    ) : (
+                      <div className="relative">
+                        <button
+                          onClick={() => setCampaignDropOpen((v) => !v)}
+                          className="w-full flex items-center justify-between bg-white border-[2px] border-[#1A1A2E] rounded-[6px] px-3.5 py-2.5 shadow-[2px_2px_0_#1A1A2E] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#1A1A2E] transition-all"
+                        >
+                          <div className="text-left truncate">
+                            <span className="block font-black text-[12px] text-[#1A1A2E]">
+                              {selectedCampaign?.campaignName || "Chọn chiến dịch..."}
                             </span>
-                          </button>
-                        ))}
+                          </div>
+                          <ChevronDown className={`w-3.5 h-3.5 text-[#1A1A2E] transition-transform flex-shrink-0 ${campaignDropOpen ? "rotate-180" : ""}`} />
+                        </button>
+                        {campaignDropOpen && (
+                          <div className="absolute top-full left-0 right-0 mt-2 bg-white border-[2px] border-[#1A1A2E] rounded-[8px] shadow-[4px_4px_0_#1A1A2E] z-30 max-h-56 overflow-y-auto py-1">
+                            {outfit.campaignOptions.map((option) => (
+                              <button
+                                key={option.campaignOutfitId}
+                                onClick={() => { setSelectedCampaignId(option.campaignId); setCampaignDropOpen(false); }}
+                                className={`w-full text-left px-4 py-3 hover:bg-[#F2ECFF] transition-colors border-b last:border-none border-gray-100 ${option.campaignId === selectedCampaignId ? "bg-[#EDE9FE]" : ""}`}
+                              >
+                                <span className="font-black text-[13px] block text-[#1A1A2E]">{option.campaignName}</span>
+                                <span className="text-[10px] font-bold text-gray-400 mt-0.5 block italic truncate">
+                                  Hạn chót: {new Date(option.endDate).toLocaleDateString("vi-VN")}
+                                </span>
+                              </button>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
-                )}
-              </div>
 
-              <div>
-                <label className="font-bold text-sm text-[#1A1A2E] mb-2 block">Chọn học sinh</label>
-                {!isParent || children.length === 0 ? (
-                  <div className="nb-alert nb-alert-warning text-sm">
-                    <span>⚠️</span>
-                    <span>Bạn hiện chưa liên kết với hồ sơ học sinh nào. Hãy liên kết học sinh để tiếp tục đặt đồng phục.</span>
-                  </div>
-                ) : schoolChildren.length === 0 ? (
-                  <div className="nb-alert nb-alert-warning text-sm">
-                    <span>⚠️</span>
-                    <span>
-                      Học sinh của bạn không thuộc trường <strong>{outfit.school.schoolName}</strong>. Chỉ học sinh của trường này mới có thể đặt đồng phục.
-                    </span>
-                  </div>
-                ) : (
-                  <div className="relative">
-                    <button
-                      onClick={() => setChildDropOpen((value) => !value)}
-                      className="w-full flex items-center justify-between nb-input py-3"
-                    >
-                      <span className="flex items-center gap-2">
-                        <User className="w-4 h-4 text-[#B8A9E8]" />
-                        <span className="font-semibold text-sm">{selectedChild?.fullName || "Chọn học sinh..."}</span>
-                        {selectedChild && selectedChild.heightCm > 0 ? (
-                          <span className="text-xs text-[#97A3B6]">
-                            ({selectedChild.heightCm}cm{selectedChild.weightKg > 0 ? `, ${selectedChild.weightKg}kg` : ""})
-                          </span>
-                        ) : null}
-                      </span>
-                      <ChevronDown className={`w-4 h-4 text-[#97A3B6] transition-transform ${childDropOpen ? "rotate-180" : ""}`} />
-                    </button>
-                    {childDropOpen && (
-                      <div className="absolute top-full left-0 right-0 mt-1 bg-white border-[2px] border-[#1A1A2E] rounded-[4px] shadow-[4px_4px_0_#1A1A2E] z-10 max-h-48 overflow-y-auto">
-                        {schoolChildren.map((child) => (
-                          <button
-                            key={child.childId}
-                            onClick={() => {
-                              setSelectedChildId(child.childId);
-                              setChildDropOpen(false);
-                            }}
-                            className={`w-full text-left px-4 py-3 text-sm font-semibold hover:bg-[#EDE9FE] transition-colors ${
-                              selectedChildId === child.childId ? "bg-[#EDE9FE] text-[#7C3AED]" : "text-[#1A1A2E]"
-                            }`}
-                          >
-                            <span className="font-bold">{child.fullName}</span>
-                            <span className="text-xs text-[#97A3B6] ml-2">{child.grade} • {child.school.schoolName}</span>
-                          </button>
-                        ))}
+                  {/* Student Card */}
+                  <div className="space-y-2">
+                    <label className="flex items-center gap-1.5 font-bold text-[11px] text-gray-500 uppercase tracking-wider ml-1">
+                      <User className="w-3 h-3" />
+                      Thông tin học sinh
+                    </label>
+                    {!isParent || children.length === 0 ? (
+                      <div className="nb-alert nb-alert-warning p-3 text-xs leading-snug">
+                        Chưa có hồ sơ học sinh liên kết.
+                      </div>
+                    ) : schoolChildren.length === 0 ? (
+                      <div className="nb-alert nb-alert-warning p-3 text-xs leading-snug">
+                        Học sinh không thuộc trường này.
+                      </div>
+                    ) : (
+                      <div className="relative">
+                        <button
+                          onClick={() => setChildDropOpen((v) => !v)}
+                          className="w-full flex items-center justify-between bg-white border-[2px] border-[#1A1A2E] rounded-[6px] px-3.5 py-2.5 shadow-[2px_2px_0_#1A1A2E] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#1A1A2E] transition-all"
+                        >
+                          <div className="text-left truncate">
+                            <span className="block font-black text-[12px] text-[#1A1A2E]">
+                              {selectedChild?.fullName || "Chọn học sinh..."}
+                            </span>
+                          </div>
+                          <ChevronDown className={`w-3.5 h-3.5 text-[#1A1A2E] transition-transform flex-shrink-0 ${childDropOpen ? "rotate-180" : ""}`} />
+                        </button>
+                        {childDropOpen && (
+                          <div className="absolute top-full left-0 right-0 mt-2 bg-white border-[2px] border-[#1A1A2E] rounded-[8px] shadow-[4px_4px_0_#1A1A2E] z-30 max-h-56 overflow-y-auto py-1">
+                            {schoolChildren.map((child) => (
+                              <button
+                                key={child.childId}
+                                onClick={() => { setSelectedChildId(child.childId); setChildDropOpen(false); }}
+                                className={`w-full text-left px-4 py-3 hover:bg-[#F2ECFF] transition-colors border-b last:border-none border-gray-100 ${selectedChildId === child.childId ? "bg-[#EDE9FE]" : ""}`}
+                              >
+                                <span className="font-black text-[13px] block text-[#1A1A2E]">{child.fullName}</span>
+                                <span className="text-[10px] font-bold text-gray-400 mt-0.5 block italic truncate">
+                                  {child.grade} • {child.school.schoolName}
+                                </span>
+                              </button>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
-                )}
-              </div>
+                </div>
 
-              {selectedChild && (
-                <div>
-                  <label className="font-bold text-sm text-[#1A1A2E] mb-2 block">Lần scan Bodygram</label>
-                  {loadingScans ? (
-                    <div className="flex items-center gap-2 text-[#97A3B6] text-sm font-semibold">
-                      <div className="w-4 h-4 border-2 border-[#E5E7EB] border-t-[#B8A9E8] rounded-full animate-spin" />
-                      Đang tải lịch sử scan...
+                {/* 3. Smart Advisor (Bodygram) Section */}
+                {selectedChild && (
+                  <div className="bg-[#E0F2FE] border-[2px] border-[#1A1A2E] rounded-[10px] p-4 shadow-[3px_3px_0_#1A1A2E] relative z-20">
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="w-8 h-8 bg-white border-[2px] border-[#1A1A2E] rounded-md flex items-center justify-center">
+                        <span className="text-sm">🤖</span>
+                      </div>
+                      <div className="flex-1">
+                        <h5 className="font-black text-[12px] text-[#1A1A2E] leading-tight uppercase">Cố vấn kích cỡ AI</h5>
+                        <p className="text-[9px] font-extrabold text-[#0369A1] uppercase tracking-tighter">Từ Bodygram</p>
+                      </div>
                     </div>
-                  ) : bodygramScans.length === 0 ? (
-                    <div className="nb-alert nb-alert-warning text-sm">
-                      <span>⚠️</span>
-                      <span>Chưa có dữ liệu số đo Bodygram, hệ thống sẽ tự động đề xuất dựa trên chiều cao và cân nặng của bé.</span>
-                    </div>
-                  ) : (
-                    <div className="relative">
-                      <button
-                        onClick={() => setScanDropOpen((value) => !value)}
-                        className="w-full flex items-center justify-between nb-input py-3"
-                      >
-                        <span className="font-semibold text-sm">
-                          {(() => {
-                            const scan = bodygramScans.find((item) => item.scanRecordId === selectedScanRecordId);
-                            if (!scan) return "Chọn lần scan...";
-                            return `${new Date(scan.scannedAt).toLocaleDateString("vi-VN")} • ${scan.heightCm}cm • ${scan.weightKg}kg`;
-                          })()}
-                        </span>
-                        <ChevronDown className={`w-4 h-4 text-[#97A3B6] transition-transform ${scanDropOpen ? "rotate-180" : ""}`} />
-                      </button>
-                      {scanDropOpen && (
-                        <div className="absolute top-full left-0 right-0 mt-1 bg-white border-[2px] border-[#1A1A2E] rounded-[4px] shadow-[4px_4px_0_#1A1A2E] z-10 max-h-48 overflow-y-auto">
-                          {bodygramScans.map((scan) => (
+
+                    <div className="space-y-4">
+                      {loadingScans || (bodygramScans.length > 0 && !selectedScanRecordId) ? (
+                        <div className="flex items-center gap-2 py-3 text-[#0369A1] text-xs font-bold italic">
+                          <div className="w-3 h-3 border-2 border-white/50 border-t-[#0369A1] rounded-full animate-spin" />
+                          Đang tìm kiếm dữ liệu đo lường...
+                        </div>
+                      ) : bodygramScans.length === 0 ? (
+                        <div className="bg-white/60 border border-[#1A1A2E] rounded-lg p-3 flex gap-2 items-start">
+                          <span className="text-amber-500 text-sm mt-0.5">⚠️</span>
+                          <p className="text-[11px] font-bold text-[#1A1A2E] leading-relaxed italic">
+                            Chưa có dữ liệu từ Bodygram. Hệ thống sẽ đề xuất dựa trên chiều cao ({selectedChild.heightCm}cm) và cân nặng ({selectedChild.weightKg}kg) đã đăng ký.
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="space-y-3">
+                          <div className="relative">
+                            <label className="block text-[9px] font-black text-[#0369A1] uppercase mb-1.5 ml-1 italic tracking-widest">Chọn phiên bản đo lường</label>
                             <button
-                              key={scan.scanRecordId}
-                              onClick={() => {
-                                setSelectedScanRecordId(scan.scanRecordId);
-                                setScanDropOpen(false);
-                              }}
-                              className={`w-full text-left px-4 py-3 text-sm font-semibold hover:bg-[#EDE9FE] transition-colors ${
-                                selectedScanRecordId === scan.scanRecordId ? "bg-[#EDE9FE] text-[#7C3AED]" : "text-[#1A1A2E]"
-                              }`}
+                              onClick={() => setScanDropOpen((v) => !v)}
+                              className="w-full flex items-center justify-between bg-white border-[2px] border-[#1A1A2E] rounded-[6px] px-3 py-2 shadow-[1px_1px_0_#1A1A2E] transition-all"
                             >
-                              <span className="font-bold">{new Date(scan.scannedAt).toLocaleDateString("vi-VN")}</span>
-                              <span className="text-xs text-[#97A3B6] ml-2">{scan.heightCm}cm • {scan.weightKg}kg</span>
+                              <span className="font-black text-[11px] text-[#1A1A2E]">
+                                {(() => {
+                                  const scan = bodygramScans.find((item) => item.scanRecordId === selectedScanRecordId);
+                                  return scan ? `${new Date(scan.scannedAt).toLocaleDateString("vi-VN")} — ${scan.heightCm}cm / ${scan.weightKg}kg` : "Chọn ngày quét...";
+                                })()}
+                              </span>
+                              <ChevronDown className={`w-3 h-3 text-[#1A1A2E] transition-transform ${scanDropOpen ? "rotate-180" : ""}`} />
                             </button>
-                          ))}
+                            {scanDropOpen && (
+                              <div className="absolute top-full left-0 right-0 mt-1 bg-white border-[2px] border-[#1A1A2E] rounded-[8px] shadow-[4px_4px_0_#1A1A2E] z-50 max-h-40 overflow-y-auto py-1">
+                                {bodygramScans.map((scan) => (
+                                  <button
+                                    key={scan.scanRecordId}
+                                    onClick={() => { setSelectedScanRecordId(scan.scanRecordId); setScanDropOpen(false); }}
+                                    className={`w-full text-left px-3 py-2 text-[12px] font-bold hover:bg-sky-50 transition-colors ${selectedScanRecordId === scan.scanRecordId ? "bg-sky-100 text-[#0369A1]" : "text-[#1A1A2E]"}`}
+                                  >
+                                    Ngày {new Date(scan.scannedAt).toLocaleDateString("vi-VN")} • {scan.heightCm}cm
+                                  </button>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                          {loadingScanDetail && <p className="text-[10px] font-bold text-[#0369A1] animate-pulse">Đang nạp dữ liệu phân tích...</p>}
                         </div>
                       )}
-                      {loadingScanDetail && (
-                        <p className="mt-2 text-xs font-semibold text-[#97A3B6]">Đang tải chi tiết scan...</p>
+
+                      {recommendation.reason && (
+                        <div className="bg-[#B9E6FE] border border-[#1A1A2E] rounded-lg p-3 flex gap-2 items-start shadow-[inset_1px_1px_3px_rgba(0,0,0,0.1)]">
+                          <span className="text-sm mt-0.5">💡</span>
+                          <p className="text-[11px] font-bold text-[#1A1A2E] leading-relaxed">
+                            {recommendation.reason}
+                          </p>
+                        </div>
                       )}
                     </div>
-                  )}
-                </div>
-              )}
-
-              <div>
-                <label className="font-bold text-sm text-[#1A1A2E] mb-2 block">Chọn size</label>
-                {outfit.variants.length === 0 ? (
-                  <div className="nb-alert nb-alert-error text-sm">
-                    <span>❌</span>
-                    <span>Chưa có size cho sản phẩm này.</span>
                   </div>
-                ) : (
-                  <>
-                    <div className="flex flex-wrap gap-2">
+                )}
+
+                {/* 4. Size Selection Block */}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between ml-1">
+                    <label className="font-black text-[12px] text-[#1A1A2E] uppercase tracking-widest">Kích cỡ đề xuất</label>
+                    <span className="text-[10px] font-bold text-gray-400 italic">
+                      {recommendation.source === "bodygram" ? "Dựa trên Bodygram" : "Dựa trên cân nặng & chiều cao"}
+                    </span>
+                  </div>
+
+                  {outfit.variants.length === 0 ? (
+                    <div className="nb-alert nb-alert-error py-3 text-xs">Chưa có thông tin kích cỡ.</div>
+                  ) : (
+                    <div className="grid grid-cols-4 sm:grid-cols-6 gap-3">
                       {outfit.variants.map((variant) => {
+                        const isSelected = selectedVariantId === variant.productVariantId;
                         const isRecommended = variant.productVariantId === recommendation.recommendedVariantId;
                         return (
                           <button
                             key={variant.productVariantId}
                             onClick={() => setSelectedVariantId(variant.productVariantId)}
-                            className={`relative px-4 py-2.5 rounded-[4px] border-[2px] font-bold text-sm transition-all ${
-                              selectedVariantId === variant.productVariantId
-                                ? "border-[#1A1A2E] bg-[#B8A9E8] text-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E]"
-                                : isRecommended
-                                  ? "border-[#B8A9E8] bg-[#EDE9FE] text-[#7C3AED]"
-                                  : "border-[#E5E7EB] text-[#6B7280] hover:border-[#B8A9E8]"
-                            }`}
+                            className={`h-10 rounded-[6px] border-[2px] font-black text-[12px] transition-all relative flex items-center justify-center ${isSelected
+                              ? "border-[#1A1A2E] bg-[#8B6BFF] text-white shadow-[2px_2px_0_#1A1A2E]"
+                              : isRecommended
+                                ? "border-[#8B6BFF] bg-white text-[#8B6BFF] shadow-[1.5px_1.5px_0_#8B6BFF]"
+                                : "border-gray-200 text-gray-400 hover:border-[#1A1A2E] hover:text-[#1A1A2E]"
+                              }`}
                           >
-                            {isRecommended && <span className="absolute -top-2 -right-1 text-xs">⭐</span>}
+                            {isRecommended && (
+                              <div className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 bg-amber-400 border-[1.5px] border-[#1A1A2E] rounded-full flex items-center justify-center">
+                                <span className="text-[7px]">⭐</span>
+                              </div>
+                            )}
                             {variant.size}
                           </button>
                         );
                       })}
                     </div>
-                    {recommendation.reason && (
-                      <p
-                        className={`mt-2 text-xs font-semibold flex items-center gap-1 ${
-                          recommendation.confidence === "low" ? "text-[#D97706]" : "text-[#7C3AED]"
-                        }`}
-                      >
-                        <span>{recommendation.confidence === "low" ? "⚠️" : "⭐"}</span>
-                        {recommendation.reason}
-                      </p>
-                    )}
-                  </>
-                )}
-              </div>
-
-              <div>
-                <label className="font-bold text-sm text-[#1A1A2E] mb-2 block">Số lượng</label>
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => setOrderQty((value) => Math.max(1, value - 1))}
-                    className="w-9 h-9 flex items-center justify-center rounded-[4px] border-[2px] border-[#1A1A2E] bg-white shadow-[2px_2px_0_#1A1A2E] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
-                  >
-                    <Minus className="w-4 h-4 text-[#1A1A2E]" />
-                  </button>
-                  <span className="font-black text-lg w-8 text-center text-[#1A1A2E]">{orderQty}</span>
-                  <button
-                    onClick={() =>
-                      setOrderQty((value) => {
-                        const next = value + 1;
-                        if (selectedCampaign?.maxQuantity != null) {
-                          return Math.min(next, selectedCampaign.maxQuantity);
-                        }
-                        return next;
-                      })
-                    }
-                    className="w-9 h-9 flex items-center justify-center rounded-[4px] border-[2px] border-[#1A1A2E] bg-white shadow-[2px_2px_0_#1A1A2E] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
-                  >
-                    <Plus className="w-4 h-4 text-[#1A1A2E]" />
-                  </button>
-                  {selectedCampaign?.maxQuantity != null && (
-                    <span className="text-xs font-semibold text-[#97A3B6]">Tối đa {selectedCampaign.maxQuantity}</span>
                   )}
+                </div>
+
+                {/* 5. Quantity Adjustment */}
+                <div className="flex items-center justify-between p-3.5 bg-[#F1F5F9] rounded-[8px] border-[2px] border-[#1A1A2E]">
+                  <div className="space-y-0.5">
+                    <span className="block font-black text-[11px] text-[#1A1A2E] uppercase">Số lượng</span>
+                    {selectedCampaign?.maxQuantity != null && (
+                      <span className="text-[9px] font-bold text-amber-600 uppercase italic">Tối đa {selectedCampaign.maxQuantity} bộ</span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => setOrderQty((v) => Math.max(1, v - 1))}
+                      className="w-9 h-9 flex items-center justify-center rounded-[6px] border-[2px] border-[#1A1A2E] bg-white shadow-[1.5px_1.5px_0_#1A1A2E] hover:bg-gray-50 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all"
+                    >
+                      <Minus className="w-3.5 h-3.5 text-[#1A1A2E]" />
+                    </button>
+                    <span className="font-black text-lg min-w-[25px] text-center text-[#1A1A2E]">{orderQty}</span>
+                    <button
+                      onClick={() => setOrderQty((v) => {
+                        const next = v + 1;
+                        const max = selectedCampaign?.maxQuantity;
+                        return (max != null) ? Math.min(next, max) : next;
+                      })}
+                      className="w-9 h-9 flex items-center justify-center rounded-[6px] border-[2px] border-[#1A1A2E] bg-white shadow-[1.5px_1.5px_0_#1A1A2E] hover:bg-gray-50 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all"
+                    >
+                      <Plus className="w-3.5 h-3.5 text-[#1A1A2E]" />
+                    </button>
+                  </div>
                 </div>
               </div>
 
-              <div className="flex justify-between items-center pt-3 border-t-[2px] border-[#E5E7EB]">
-                <span className="font-semibold text-sm text-[#6B7280]">Tạm tính</span>
-                <span className="font-black text-xl text-[#8B6BFF]">
-                  {((selectedCampaign?.campaignPrice ?? 0) * orderQty).toLocaleString("vi-VN")}₫
-                </span>
-              </div>
-
-              <div className="flex gap-3">
-                <button onClick={onClose} className="flex-1 nb-btn nb-btn-outline text-sm">
-                  Huỷ
-                </button>
-                <button
-                  onClick={handleAddToCart}
-                  disabled={!canOrder}
-                  className="flex-1 nb-btn nb-btn-purple text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <ShoppingCart className="w-4 h-4" />
-                  Thêm vào giỏ
-                </button>
+              {/* 6. Pinned Footer Actions */}
+              <div className="mt-auto p-5 bg-white border-t-[2px] border-[#1A1A2E] flex flex-col sm:flex-row items-center gap-4">
+                <div className="flex-1 text-center sm:text-left">
+                  <span className="block text-[9px] font-black text-gray-400 uppercase tracking-widest mb-0.5">Tổng cộng</span>
+                  <span className="font-black text-2xl text-[#8B6BFF]">
+                    {((selectedCampaign?.campaignPrice ?? outfit.price) * orderQty).toLocaleString("vi-VN")}₫
+                  </span>
+                </div>
+                <div className="flex items-center gap-2.5 w-full sm:w-auto">
+                  <button onClick={onClose} className="px-5 py-2.5 rounded-[6px] border-[2px] border-[#1A1A2E] font-black text-[12px] text-gray-500 uppercase hover:bg-gray-50 transition-all">
+                    Đóng
+                  </button>
+                  <button
+                    onClick={handleAddToCart}
+                    disabled={!canOrder}
+                    className="flex-1 sm:flex-none px-7 py-2.5 rounded-[6px] border-[2px] border-[#1A1A2E] bg-[#8B6BFF] text-white font-black text-[12px] uppercase shadow-[3px_3px_0_#1A1A2E] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#1A1A2E] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <ShoppingCart className="w-3.5 h-3.5" />
+                    Thêm vào giỏ
+                  </button>
+                </div>
               </div>
             </>
           )}
