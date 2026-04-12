@@ -42,6 +42,7 @@
         "/school/uniforms",
         "/school/campaigns",
         "/school/campaigns/new",
+        "/school/campaigns/:id/edit",
         "/school/campaigns/:id",
         "/forgot-password",
         "/forgot-password/sent",

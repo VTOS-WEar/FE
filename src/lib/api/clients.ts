@@ -70,11 +70,14 @@ export async function api<T>(
     if (!headers.has("Content-Type") && body) {
         if (typeof body === "string") {
             headers.set("Content-Type", "application/json");
-        } else if (typeof body === "object" && body !== null) {
+        } else if (typeof body === "object" && body !== null && !(body instanceof FormData)) {
             // Plain objects must be stringified; set Content-Type so backend parses as JSON
+            // Skip FormData — browsers set multipart/form-data automatically and
+            // JSON.stringify(FormData) produces an empty object "{}", breaking file uploads.
             body = JSON.stringify(body);
             headers.set("Content-Type", "application/json");
         }
+        // FormData: do NOT set Content-Type — browser sets it with correct boundary
     }
 
     if (options.auth && token) headers.set("Authorization", `Bearer ${token}`);
