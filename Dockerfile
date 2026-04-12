@@ -4,7 +4,9 @@ WORKDIR /app
 
 # Copy package files first (layer caching for npm install)
 COPY package.json package-lock.json ./
-RUN npm install
+# Remove Windows-generated lockfile so npm resolves correct platform-specific
+# optional deps (e.g. @rollup/rollup-linux-x64-musl for Alpine)
+RUN rm -f package-lock.json && npm install
 
 # Copy source and build
 COPY . .
