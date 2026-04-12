@@ -24,6 +24,7 @@ export const endpoints = {
         categories: "/api/public/categories",
         outfits: "/api/public/outfits",
         search: "/api/public/search",
+        uniformWarehouse: "/api/public/uniform-warehouse",
     },
     tryOn: {
         request: "/api/tryOn/request",

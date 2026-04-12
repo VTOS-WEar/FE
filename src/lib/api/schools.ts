@@ -441,6 +441,23 @@ export type ProductVariantDto = {
     materialType: string | null;
     skuCode: string | null;
     variantImageURL: string | null;
+    measurements: VariantMeasurementDto[];
+};
+
+export type VariantMeasurementDto = {
+    fieldKey: string;
+    displayName: string;
+    unit: string;
+    minCm: number | null;
+    maxCm: number | null;
+};
+
+export type VariantMeasurementInputDto = {
+    fieldKey: string;
+    displayName: string;
+    unit?: string | null;
+    minCm?: number | null;
+    maxCm?: number | null;
 };
 
 export type CreateVariantRequest = {
@@ -448,6 +465,7 @@ export type CreateVariantRequest = {
     colorVariant?: string | null;
     materialType?: string | null;
     skuCode?: string | null;
+    measurements?: VariantMeasurementInputDto[];
 };
 
 export type UpdateVariantRequest = {
@@ -455,6 +473,7 @@ export type UpdateVariantRequest = {
     colorVariant?: string | null;
     materialType?: string | null;
     skuCode?: string | null;
+    measurements?: VariantMeasurementInputDto[];
 };
 
 /** Get all variants for an outfit */
@@ -760,6 +779,7 @@ export type OutfitVariantDto = {
     size: string;
     colorVariant: string | null;
     materialType: string | null;
+    stockQuantity: number;
     price: number;
     skuCode: string | null;
     variantImageURL: string | null;
@@ -767,12 +787,15 @@ export type OutfitVariantDto = {
 
 export type SizeChartDetailDto = {
     sizeLabel: string;
-    chestMin: number | null;
-    chestMax: number | null;
-    waistMin: number | null;
-    waistMax: number | null;
-    heightMin: number | null;
-    heightMax: number | null;
+    measurements: SizeChartMeasurementDto[];
+};
+
+export type SizeChartMeasurementDto = {
+    fieldKey: string;
+    displayName: string;
+    unit: string;
+    minValue: number | null;
+    maxValue: number | null;
 };
 
 export type SizeChartDto = {
@@ -791,6 +814,17 @@ export type ReviewDto = {
     userAvatarUrl: string | null;
 };
 
+export type OutfitCampaignOptionDto = {
+    campaignId: string;
+    campaignName: string;
+    status: string;
+    startDate: string;
+    endDate: string;
+    campaignOutfitId: string;
+    campaignPrice: number;
+    maxQuantity: number | null;
+};
+
 export type OutfitDetailDto = {
     outfitId: string;
     outfitName: string;
@@ -803,10 +837,48 @@ export type OutfitDetailDto = {
     school: { schoolId: string; schoolName: string; logoURL: string | null };
     variants: OutfitVariantDto[];
     sizeChart: SizeChartDto | null;
+    campaignOptions: OutfitCampaignOptionDto[];
     categories: string[];
     averageRating: number;
     feedbackCount: number;
     reviews: ReviewDto[];
+};
+
+export type CampaignSummaryDto = {
+    campaignId: string;
+    campaignName: string;
+    schoolId: string;
+    schoolName: string;
+    schoolLogoUrl: string | null;
+    startDate: string;
+    endDate: string;
+    status: string;
+};
+
+export type FeaturedOutfitDto = {
+    outfitId: string;
+    outfitName: string;
+    price: number;
+    mainImageUrl: string | null;
+    schoolName: string;
+    schoolId: string;
+    averageRating: number;
+};
+
+export type UniformSearchResult = {
+    id: string;
+    outfitName: string;
+    mainImageUrl: string | null;
+    price: number;
+    schoolName: string;
+    schoolId: string;
+};
+
+export type UniformWarehouseResponse = {
+    activeCampaigns: CampaignSummaryDto[];
+    featuredOutfits: FeaturedOutfitDto[];
+    allOutfits: UniformSearchResult[];
+    totalOutfits: number;
 };
 
 /** Guest & Parent: outfit detail */
@@ -820,6 +892,11 @@ export async function getSchoolUniforms(schoolId: string, page = 1, pageSize = 1
         `${endpoints.public.schools}/${schoolId}/uniforms?page=${page}&pageSize=${pageSize}`,
         { method: "GET" }
     );
+}
+
+/** Guest & Parent: uniform warehouse (summary data) */
+export async function getUniformWarehouse(pageSize = 12): Promise<UniformWarehouseResponse> {
+    return api<UniformWarehouseResponse>(`${endpoints.public.uniformWarehouse}?pageSize=${pageSize}`, { method: "GET" });
 }
 
 //#endregion
