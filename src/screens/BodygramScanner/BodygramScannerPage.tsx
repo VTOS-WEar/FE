@@ -70,14 +70,27 @@ export const BodygramScannerPage = (): JSX.Element => {
   }, [mobile, result, session]);
 
   useEffect(() => {
-    if (!session || mobile || result || !childId) return;
+    if (!session || mobile || result || !childId || error) return;
 
     let cancelled = false;
-    const intervalId = window.setInterval(() => {
+    let intervalId = 0;
+    intervalId = window.setInterval(() => {
       void (async () => {
         try {
           const status = await getScanStatus(session.customScanId);
-          if (cancelled || status.status !== "Completed") return;
+          if (cancelled) return;
+
+          if (status.status === "Failed") {
+            cancelled = true;
+            window.clearInterval(intervalId);
+            setError(
+              status.message ||
+              `Khong nhan duoc ket qua scan sau ${status.timeoutMinutes} phut. Vui long tao phien quet moi.`
+            );
+            return;
+          }
+
+          if (status.status !== "Completed") return;
 
           const [child, history] = await Promise.all([
             getChildProfile(childId),
@@ -97,7 +110,7 @@ export const BodygramScannerPage = (): JSX.Element => {
       cancelled = true;
       window.clearInterval(intervalId);
     };
-  }, [childId, mobile, result, session]);
+  }, [childId, error, mobile, result, session]);
 
   const handleCopyLink = async () => {
     if (!session?.scannerUrl) return;
