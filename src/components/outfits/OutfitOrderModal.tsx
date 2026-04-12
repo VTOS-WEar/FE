@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { ChevronDown, Minus, Package, Plus, ShoppingCart, User, X } from "lucide-react";
 import {
   getPublicOutfitDetail,
@@ -465,11 +466,20 @@ export function OutfitOrderModal({
                           Đang tìm kiếm dữ liệu đo lường...
                         </div>
                       ) : (bodygramScans?.length ?? 0) === 0 ? (
-                        <div className="bg-white/60 border border-[#1A1A2E] rounded-lg p-3 flex gap-2 items-start">
-                          <span className="text-amber-500 text-sm mt-0.5">⚠️</span>
-                          <p className="text-[11px] font-bold text-[#1A1A2E] leading-relaxed italic">
-                            Chưa có dữ liệu từ Bodygram. Hệ thống sẽ đề xuất dựa trên chiều cao ({selectedChild.heightCm}cm) và cân nặng ({selectedChild.weightKg}kg) đã đăng ký.
-                          </p>
+                        <div className="bg-white/60 border-2 border-dashed border-[#1A1A2E]/30 rounded-lg p-4 flex flex-col gap-3">
+                          <div className="flex gap-2 items-start">
+                            <span className="text-amber-500 text-sm mt-0.5">⚠️</span>
+                            <p className="text-[11px] font-bold text-[#1A1A2E] leading-relaxed italic">
+                              Chưa có dữ liệu từ Bodygram. Hệ thống sẽ đề xuất dựa trên chiều cao ({selectedChild.heightCm}cm) và cân nặng ({selectedChild.weightKg}kg) đã đăng ký.
+                            </p>
+                          </div>
+                          <Link
+                            to={`/children/${selectedChild.childId}/scan`}
+                            className="flex items-center justify-center gap-2 w-full py-2 bg-white border-[2px] border-[#1A1A2E] rounded-md shadow-[2px_2px_0_#1A1A2E] text-[10px] font-black uppercase tracking-wider hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#1A1A2E] transition-all"
+                          >
+                            <span className="text-xs">📸</span>
+                            Quét ngay với Bodygram
+                          </Link>
                         </div>
                       ) : (
                         <div className="space-y-3">
