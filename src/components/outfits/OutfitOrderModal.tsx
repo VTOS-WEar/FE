@@ -49,8 +49,8 @@ export function OutfitOrderModal({
   const [childDropOpen, setChildDropOpen] = useState(false);
   const [campaignDropOpen, setCampaignDropOpen] = useState(false);
   const [scanDropOpen, setScanDropOpen] = useState(false);
-  const [bodygramScans, setBodygramScans] = useState<BodygramHistoryItem[]>([]);
-  const [loadingScans, setLoadingScans] = useState(true);
+  const [bodygramScans, setBodygramScans] = useState<BodygramHistoryItem[] | null>(null);
+  const [loadingScans, setLoadingScans] = useState(false);
   const [selectedScanRecordId, setSelectedScanRecordId] = useState("");
   const [selectedScanDetail, setSelectedScanDetail] = useState<BodygramScanDetail | null>(null);
   const [loadingScanDetail, setLoadingScanDetail] = useState(false);
@@ -115,7 +115,7 @@ export function OutfitOrderModal({
 
     setSelectedVariantId("");
     setOrderQty(1);
-    setBodygramScans([]);
+    setBodygramScans(null);
     setSelectedScanRecordId("");
     setSelectedScanDetail(null);
     setChildDropOpen(false);
@@ -147,11 +147,10 @@ export function OutfitOrderModal({
 
   useEffect(() => {
     if (!open || !selectedChildId) {
-      setBodygramScans([]);
+      setBodygramScans(null);
       setSelectedScanRecordId("");
       setSelectedScanDetail(null);
-      // Keep loading as true so it doesn't flash "no data" message before we even start loading for a child
-      setLoadingScans(true);
+      setLoadingScans(false);
       return;
     }
 
@@ -213,6 +212,14 @@ export function OutfitOrderModal({
       return emptyRecommendation;
     }
 
+    if (loadingScans || bodygramScans === null) {
+      return emptyRecommendation;
+    }
+
+    if (selectedScanRecordId && (loadingScanDetail || !selectedScanDetail)) {
+      return emptyRecommendation;
+    }
+
     if (selectedScanDetail && outfit.sizeChart?.details?.length) {
       const bodygramRec = recommendSizeFromBodygram(selectedScanDetail, outfit.variants, outfit.sizeChart.details);
       if (bodygramRec?.recommendedVariantId) {
@@ -241,7 +248,7 @@ export function OutfitOrderModal({
     }
 
     return recommendSize(selectedChild.heightCm, selectedChild.weightKg, outfit.variants);
-  }, [bodygramScans.length, outfit, selectedChild, selectedScanDetail]);
+  }, [bodygramScans, loadingScans, loadingScanDetail, outfit, selectedChild, selectedScanDetail, selectedScanRecordId]);
 
   useEffect(() => {
     if (!outfit) return;
@@ -452,12 +459,12 @@ export function OutfitOrderModal({
                     </div>
 
                     <div className="space-y-4">
-                      {loadingScans || (bodygramScans.length > 0 && !selectedScanRecordId) ? (
+                      {loadingScans || ((bodygramScans?.length ?? 0) > 0 && !selectedScanRecordId) ? (
                         <div className="flex items-center gap-2 py-3 text-[#0369A1] text-xs font-bold italic">
                           <div className="w-3 h-3 border-2 border-white/50 border-t-[#0369A1] rounded-full animate-spin" />
                           Đang tìm kiếm dữ liệu đo lường...
                         </div>
-                      ) : bodygramScans.length === 0 ? (
+                      ) : (bodygramScans?.length ?? 0) === 0 ? (
                         <div className="bg-white/60 border border-[#1A1A2E] rounded-lg p-3 flex gap-2 items-start">
                           <span className="text-amber-500 text-sm mt-0.5">⚠️</span>
                           <p className="text-[11px] font-bold text-[#1A1A2E] leading-relaxed italic">
@@ -474,7 +481,7 @@ export function OutfitOrderModal({
                             >
                               <span className="font-black text-[11px] text-[#1A1A2E]">
                                 {(() => {
-                                  const scan = bodygramScans.find((item) => item.scanRecordId === selectedScanRecordId);
+                                  const scan = bodygramScans?.find((item) => item.scanRecordId === selectedScanRecordId);
                                   return scan ? `${new Date(scan.scannedAt).toLocaleDateString("vi-VN")} — ${scan.heightCm}cm / ${scan.weightKg}kg` : "Chọn ngày quét...";
                                 })()}
                               </span>
@@ -482,7 +489,7 @@ export function OutfitOrderModal({
                             </button>
                             {scanDropOpen && (
                               <div className="absolute top-full left-0 right-0 mt-1 bg-white border-[2px] border-[#1A1A2E] rounded-[8px] shadow-[4px_4px_0_#1A1A2E] z-50 max-h-40 overflow-y-auto py-1">
-                                {bodygramScans.map((scan) => (
+                                {(bodygramScans ?? []).map((scan) => (
                                   <button
                                     key={scan.scanRecordId}
                                     onClick={() => { setSelectedScanRecordId(scan.scanRecordId); setScanDropOpen(false); }}

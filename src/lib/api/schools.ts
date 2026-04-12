@@ -844,6 +844,43 @@ export type OutfitDetailDto = {
     reviews: ReviewDto[];
 };
 
+export type CampaignSummaryDto = {
+    campaignId: string;
+    campaignName: string;
+    schoolId: string;
+    schoolName: string;
+    schoolLogoUrl: string | null;
+    startDate: string;
+    endDate: string;
+    status: string;
+};
+
+export type FeaturedOutfitDto = {
+    outfitId: string;
+    outfitName: string;
+    price: number;
+    mainImageUrl: string | null;
+    schoolName: string;
+    schoolId: string;
+    averageRating: number;
+};
+
+export type UniformSearchResult = {
+    id: string;
+    outfitName: string;
+    mainImageUrl: string | null;
+    price: number;
+    schoolName: string;
+    schoolId: string;
+};
+
+export type UniformWarehouseResponse = {
+    activeCampaigns: CampaignSummaryDto[];
+    featuredOutfits: FeaturedOutfitDto[];
+    allOutfits: UniformSearchResult[];
+    totalOutfits: number;
+};
+
 /** Guest & Parent: outfit detail */
 export async function getPublicOutfitDetail(id: string): Promise<OutfitDetailDto> {
     return api<OutfitDetailDto>(`${endpoints.public.outfits}/${id}`, { method: "GET" });
@@ -855,6 +892,11 @@ export async function getSchoolUniforms(schoolId: string, page = 1, pageSize = 1
         `${endpoints.public.schools}/${schoolId}/uniforms?page=${page}&pageSize=${pageSize}`,
         { method: "GET" }
     );
+}
+
+/** Guest & Parent: uniform warehouse (summary data) */
+export async function getUniformWarehouse(pageSize = 12): Promise<UniformWarehouseResponse> {
+    return api<UniformWarehouseResponse>(`${endpoints.public.uniformWarehouse}?pageSize=${pageSize}`, { method: "GET" });
 }
 
 //#endregion
