@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
-import { History, Camera, X, Download } from "lucide-react";
+import { createPortal } from "react-dom";
+import { History, Camera, X, Download, Share2 } from "lucide-react";
 import { getTryOnHistory, type TryOnHistoryDto } from "../../../lib/api/tryOn";
 
 export const HistoryTab = (): JSX.Element => {
@@ -159,24 +160,32 @@ export const HistoryTab = (): JSX.Element => {
       )}
 
       {/* Lightbox */}
-      {lightbox && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => setLightbox(null)}>
+      {lightbox && createPortal(
+        <div
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40"
+          onClick={() => setLightbox(null)}
+        >
           <div
-            className="bg-white rounded-xl border-2 border-[#1A1A2E] shadow-[6px_6px_0_#1A1A2E] max-w-md w-full max-h-[90vh] overflow-auto"
+            className="relative bg-[#FFFDF9] rounded-[14px] border-[3px] border-[#19182B] shadow-[4px_4px_0_#19182B] w-full max-w-[340px] max-h-[90vh] overflow-y-auto"
             onClick={e => e.stopPropagation()}
           >
             {/* Lightbox header */}
-            <div className="flex items-center justify-between px-5 py-4 border-b-2 border-[#1A1A2E]">
-              <h3 className="font-extrabold text-[#1A1A2E] text-base truncate flex-1 mr-3">{lightbox.outfitName}</h3>
+            <div className="flex items-center justify-between px-4 py-3 border-b-[2px] border-[#19182B]">
+              <div className="flex items-center gap-2 min-w-0 flex-1 mr-2">
+                <div className="flex-shrink-0 w-8 h-8 rounded-[8px] border-[2px] border-[#19182B] bg-[#E9E1FF] shadow-[2px_2px_0_#19182B] flex items-center justify-center">
+                  <Camera className="w-3.5 h-3.5 text-[#7C56FF]" />
+                </div>
+                <h3 className="font-extrabold text-[#19182B] text-sm truncate">{lightbox.outfitName}</h3>
+              </div>
               <button onClick={() => setLightbox(null)}
-                className="w-8 h-8 rounded-lg border-2 border-[#1A1A2E] bg-white flex items-center justify-center shadow-[2px_2px_0_#1A1A2E] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all">
-                <X className="w-4 h-4" />
+                className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-[7px] border-[2px] border-[#19182B] bg-white shadow-[2px_2px_0_#19182B] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all">
+                <X className="w-3.5 h-3.5 text-[#19182B]" />
               </button>
             </div>
 
             {/* Result image */}
-            <div className="p-5">
-              <div className="rounded-xl overflow-hidden border-2 border-[#1A1A2E] shadow-[3px_3px_0_#1A1A2E]">
+            <div className="p-4">
+              <div className="rounded-lg overflow-hidden border-[3px] border-[#19182B] shadow-[3px_3px_0_#19182B]">
                 <img
                   src={lightbox.resultPhotoUrl || lightbox.outfitImage || ""}
                   alt="Try-on result"
@@ -185,34 +194,54 @@ export const HistoryTab = (): JSX.Element => {
               </div>
 
               {/* Info */}
-              <div className="mt-4 grid grid-cols-2 gap-3">
-                <div className="nb-card-static p-3">
-                  <p className="text-[10px] text-[#9CA3AF] font-bold uppercase mb-1">Đồng phục</p>
-                  <p className="text-sm font-bold text-[#1A1A2E] truncate">{lightbox.outfitName}</p>
+              <div className="mt-3 grid grid-cols-2 gap-2">
+                <div className="nb-card-static p-2.5">
+                  <p className="text-[10px] text-[#9CA3AF] font-bold uppercase mb-0.5">Đồng phục</p>
+                  <p className="text-xs font-bold text-[#19182B] truncate">{lightbox.outfitName}</p>
                 </div>
-                <div className="nb-card-static p-3">
-                  <p className="text-[10px] text-[#9CA3AF] font-bold uppercase mb-1">Thời gian</p>
-                  <p className="text-sm font-bold text-[#1A1A2E]">{timeAgo(lightbox.tryOnTimestamp)}</p>
+                <div className="nb-card-static p-2.5">
+                  <p className="text-[10px] text-[#9CA3AF] font-bold uppercase mb-0.5">Thời gian</p>
+                  <p className="text-xs font-bold text-[#19182B]">{timeAgo(lightbox.tryOnTimestamp)}</p>
                 </div>
               </div>
 
               {/* Actions */}
-              <div className="flex gap-3 mt-4">
+              <div className="flex gap-2 mt-3 bg-[#F6F1E8] rounded-b-[11px] -mx-4 -mb-4 px-4 py-3 border-t-[2px] border-[#19182B]">
                 {lightbox.resultPhotoUrl && (
                   <button
                     onClick={() => handleDownload(lightbox.resultPhotoUrl!, lightbox.outfitName)}
-                    className="flex-1 nb-btn nb-btn-purple text-sm flex items-center justify-center gap-2"
+                    className="flex-1 nb-btn nb-btn-purple text-xs py-2 flex items-center justify-center gap-1.5"
                   >
-                    <Download className="w-4 h-4" /> Tải ảnh
+                    <Download className="w-3.5 h-3.5" /> Tải ảnh
                   </button>
                 )}
-                <button onClick={() => setLightbox(null)} className="flex-1 nb-btn nb-btn-outline text-sm">
+                {lightbox.resultPhotoUrl && (
+                  <button
+                    onClick={async () => {
+                      try {
+                        if (navigator.share) {
+                          await navigator.share({ title: lightbox.outfitName, url: lightbox.resultPhotoUrl! });
+                        } else {
+                          await navigator.clipboard.writeText(lightbox.resultPhotoUrl!);
+                          alert("Đã sao chép link ảnh!");
+                        }
+                      } catch {
+                        // User cancelled or share failed silently
+                      }
+                    }}
+                    className="flex-1 nb-btn nb-btn-outline text-xs py-2 flex items-center justify-center gap-1.5"
+                  >
+                    <Share2 className="w-3.5 h-3.5" /> Chia sẻ
+                  </button>
+                )}
+                <button onClick={() => setLightbox(null)} className="flex-1 nb-btn nb-btn-outline text-xs py-2">
                   Đóng
                 </button>
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.getElementById("modal-root") as HTMLElement
       )}
     </div>
   );

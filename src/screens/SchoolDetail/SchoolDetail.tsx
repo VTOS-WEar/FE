@@ -17,10 +17,9 @@ type UniformItem = {
 const fmt = (n: number) => n.toLocaleString("vi-VN", { maximumFractionDigits: 0 }) + " VNĐ";
 
 const STATUS_LABEL: Record<string, { label: string; badge: string }> = {
-  Active: { label: "Đang diễn ra", badge: "nb-badge-green" },
-  Draft: { label: "Bản nháp", badge: "nb-badge-yellow" },
-  Locked: { label: "Đã khoá", badge: "nb-badge-red" },
-  Ended: { label: "Đã kết thúc", badge: "nb-badge-yellow" },
+  Active:    { label: "Đang diễn ra", badge: "nb-badge-green" },
+  Completed: { label: "Hoàn thành",   badge: "nb-badge-blue" },
+  Locked:    { label: "Đã khóa",      badge: "nb-badge-red" },
 };
 
 /* ═══════════════════════════════════════════════════════

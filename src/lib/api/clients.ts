@@ -66,14 +66,22 @@ export async function api<T>(
     const headers = new Headers(options.headers);
 
     // chỉ set Content-Type khi body là JSON string
-    if (!headers.has("Content-Type") && options.body && typeof options.body === "string") {
-        headers.set("Content-Type", "application/json");
+    let body = options.body;
+    if (!headers.has("Content-Type") && body) {
+        if (typeof body === "string") {
+            headers.set("Content-Type", "application/json");
+        } else if (typeof body === "object" && body !== null) {
+            // Plain objects must be stringified; set Content-Type so backend parses as JSON
+            body = JSON.stringify(body);
+            headers.set("Content-Type", "application/json");
+        }
     }
 
     if (options.auth && token) headers.set("Authorization", `Bearer ${token}`);
 
     const res = await fetch(`${API_BASE}${path}`, {
         ...options,
+        body,
         headers,
         // Nếu backend dùng cookie auth:
         // credentials: "include",

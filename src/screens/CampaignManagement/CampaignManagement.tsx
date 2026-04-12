@@ -1,6 +1,6 @@
 import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -16,8 +16,11 @@ import {
     getSchoolProfile,
     getSchoolOutfits,
     publishCampaign,
+    getCampaignDetail,
+    updateCampaign,
     type OutfitDto,
     type CampaignOutfitInput,
+    type CampaignDetailDto,
 } from "../../lib/api/schools";
 import {
     getContractedProvidersForOutfits,
@@ -132,6 +135,8 @@ function OutfitSelectCard({
 /* ────────────────────────────────────────────────────────────────────── */
 export const CampaignManagement = (): JSX.Element => {
     const navigate = useNavigate();
+    const { id: campaignId } = useParams<{ id: string }>();
+    const isEditMode = Boolean(campaignId);
     const [isCollapsed, toggle] = useSidebarCollapsed();
     const sidebarConfig = useSidebarConfig();
     const [schoolName, setSchoolName] = useState("");
@@ -157,6 +162,7 @@ export const CampaignManagement = (): JSX.Element => {
 
     /* ── Submission ── */
     const [submitting, setSubmitting] = useState(false);
+    const [loadingDetail, setLoadingDetail] = useState(false);
     const [showPreview, setShowPreview] = useState(false);
     const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
     const showToast = useCallback((message: string, type: "success" | "error") => {
@@ -183,6 +189,36 @@ export const CampaignManagement = (): JSX.Element => {
         getContractedProvidersForOutfits()
             .then((res) => setContractedProviders(res.outfitProviders || {}))
             .catch(() => setContractedProviders({}));
+
+        // Pre-fill form when editing
+        if (isEditMode && campaignId) {
+            setLoadingDetail(true);
+            getCampaignDetail(campaignId)
+                .then((detail: CampaignDetailDto) => {
+                    setCampaignName(detail.campaignName);
+                    setDescription(detail.description || "");
+                    setStartDate(detail.startDate.split("T")[0]);
+                    setEndDate(detail.endDate.split("T")[0]);
+                    // Pre-select existing outfits
+                    const map = new Map<string, { outfit: OutfitDto; campaignPrice: number; providerId?: string | null }>();
+                    detail.outfits.forEach((o) => {
+                        map.set(o.outfitId, {
+                            outfit: {
+                                outfitId: o.outfitId,
+                                outfitName: o.outfitName,
+                                mainImageURL: o.mainImageUrl || null,
+                                price: o.campaignPrice,
+                                outfitType: 1,
+                            } as OutfitDto,
+                            campaignPrice: o.campaignPrice,
+                            providerId: o.providerId?.toString() ?? null,
+                        });
+                    });
+                    setSelectedOutfits(map);
+                })
+                .catch(() => showToast("Không thể tải chi tiết chiến dịch", "error"))
+                .finally(() => setLoadingDetail(false));
+        }
     }, []);
 
     /* ── Toggle outfit selection ── */
@@ -237,17 +273,28 @@ export const CampaignManagement = (): JSX.Element => {
                 providerId: s.providerId || null,
             }));
 
-            await publishCampaign({
-                campaignName: campaignName.trim(),
-                description: description.trim() || null,
-                startDate: new Date(startDate).toISOString(),
-                endDate: new Date(endDate).toISOString(),
-                saveAsDraft,
-                outfits: outfitInputs,
-            });
-
-            showToast(saveAsDraft ? "Đã lưu bản nháp!" : "Đã xuất bản chiến dịch!", "success");
-            setTimeout(() => navigate("/school/campaigns"), 1500);
+            if (isEditMode && campaignId) {
+                await updateCampaign(campaignId, {
+                    campaignName: campaignName.trim(),
+                    description: description.trim() || null,
+                    startDate: new Date(startDate).toISOString(),
+                    endDate: new Date(endDate).toISOString(),
+                    outfits: outfitInputs,
+                });
+                showToast("Đã lưu thay đổi!", "success");
+                setTimeout(() => navigate("/school/campaigns"), 1500);
+            } else {
+                await publishCampaign({
+                    campaignName: campaignName.trim(),
+                    description: description.trim() || null,
+                    startDate: new Date(startDate).toISOString(),
+                    endDate: new Date(endDate).toISOString(),
+                    saveAsDraft,
+                    outfits: outfitInputs,
+                });
+                showToast(saveAsDraft ? "Đã lưu bản nháp!" : "Đã xuất bản chiến dịch!", "success");
+                setTimeout(() => navigate("/school/campaigns"), 1500);
+            }
         } catch (err: unknown) {
             showToast(err instanceof Error ? err.message : "Có lỗi xảy ra", "error");
         } finally {
@@ -275,7 +322,7 @@ export const CampaignManagement = (): JSX.Element => {
                             <BreadcrumbList>
                                 <BreadcrumbItem><BreadcrumbLink href="/school/dashboard" className="font-bold text-[#6F6A7D] text-sm">Trang chủ</BreadcrumbLink></BreadcrumbItem>
                                 <BreadcrumbSeparator className="text-[#6F6A7D] font-black">/</BreadcrumbSeparator>
-                                <BreadcrumbItem><BreadcrumbPage className="font-black text-[#19182B] text-sm">Tạo đơn đặt trước</BreadcrumbPage></BreadcrumbItem>
+                                <BreadcrumbItem><BreadcrumbPage className="font-black text-[#19182B] text-sm">{isEditMode ? "Chỉnh sửa chiến dịch" : "Tạo đơn đặt trước"}</BreadcrumbPage></BreadcrumbItem>
                             </BreadcrumbList>
                         </Breadcrumb>
                     </TopNavBar>
@@ -284,27 +331,43 @@ export const CampaignManagement = (): JSX.Element => {
                         {/* ── Header + Actions ── */}
                         <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between mb-8">
                             <div className="max-w-3xl">
-                                <h1 className="text-[32px] font-black leading-none text-[#19182B] lg:text-[38px]">Tạo đợt đặt hàng mới</h1>
+                                <h1 className="text-[32px] font-black leading-none text-[#19182B] lg:text-[38px]">{isEditMode ? "Chỉnh sửa chiến dịch" : "Tạo đợt đặt hàng mới"}</h1>
                             </div>
                             <div className="flex flex-wrap gap-3 flex-shrink-0">
-                                <button
-                                    type="button"
-                                    onClick={() => setShowPreview(true)}
-                                    className="rounded-[10px] border-[3px] border-[#19182B] bg-white px-5 py-3 text-[14px] font-extrabold text-[#19182B] shadow-[4px_4px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
-                                >
-                                    👁 Xem trước
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => handleSubmit(false)}
-                                    disabled={submitting}
-                                    className="flex items-center gap-2 rounded-[10px] border-[3px] border-[#19182B] bg-[#8B6BFF] px-5 py-3 text-[14px] font-extrabold text-white shadow-[4px_4px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                    {submitting && (
-                                        <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" strokeOpacity="0.25" /><path d="M4 12a8 8 0 018-8" strokeLinecap="round" /></svg>
-                                    )}
-                                    🚀 Xuất bản ngay
-                                </button>
+                                {!isEditMode ? (
+                                    <>
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowPreview(true)}
+                                            className="rounded-[10px] border-[3px] border-[#19182B] bg-white px-5 py-3 text-[14px] font-extrabold text-[#19182B] shadow-[4px_4px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+                                        >
+                                            👁 Xem trước
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => handleSubmit(false)}
+                                            disabled={submitting}
+                                            className="flex items-center gap-2 rounded-[10px] border-[3px] border-[#19182B] bg-[#8B6BFF] px-5 py-3 text-[14px] font-extrabold text-white shadow-[4px_4px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed"
+                                        >
+                                            {submitting && (
+                                                <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" strokeOpacity="0.25" /><path d="M4 12a8 8 0 018-8" strokeLinecap="round" /></svg>
+                                            )}
+                                            🚀 Xuất bản ngay
+                                        </button>
+                                    </>
+                                ) : (
+                                    <button
+                                        type="button"
+                                        onClick={() => handleSubmit(false)}
+                                        disabled={submitting}
+                                        className="flex items-center gap-2 rounded-[10px] border-[3px] border-[#19182B] bg-[#8B6BFF] px-5 py-3 text-[14px] font-extrabold text-white shadow-[4px_4px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        {submitting && (
+                                            <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" strokeOpacity="0.25" /><path d="M4 12a8 8 0 018-8" strokeLinecap="round" /></svg>
+                                        )}
+                                        💾 Lưu thay đổi
+                                    </button>
+                                )}
                             </div>
                         </div>
 
@@ -611,19 +674,6 @@ export const CampaignManagement = (): JSX.Element => {
                                         </div>
                                     </section>
                                 )}
-
-                                {/* Save Draft */}
-                                <button
-                                    type="button"
-                                    onClick={() => handleSubmit(true)}
-                                    disabled={submitting}
-                                    className="w-full rounded-[10px] border-[3px] border-[#19182B] bg-white px-5 py-3 text-[14px] font-extrabold text-[#19182B] shadow-[4px_4px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                    {submitting && (
-                                        <svg className="w-4 h-4 animate-spin inline mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" strokeOpacity="0.25" /><path d="M4 12a8 8 0 018-8" strokeLinecap="round" /></svg>
-                                    )}
-                                    📝 Lưu bản nháp
-                                </button>
 
 
                             </div>

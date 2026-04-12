@@ -1,5 +1,5 @@
 import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
     Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator,
@@ -7,7 +7,7 @@ import {
 import { DashboardSidebar } from "../../components/layout";
 import { TopNavBar } from "../../components/layout/TopNavBar";
 import { useSidebarConfig } from "../../hooks/useSidebarConfig";
-import { getSchoolProfile, getCampaigns, type CampaignListItemDto } from "../../lib/api/schools";
+import { getSchoolProfile, getCampaigns, publishDraftCampaign, deleteCampaign, type CampaignListItemDto } from "../../lib/api/schools";
 
 /* ── Status config → nb-badge variants ── */
 const STATUS_CONFIG: Record<string, { label: string; badge: string }> = {
@@ -37,8 +37,21 @@ function formatDate(iso: string) {
 }
 
 /* ── Campaign Card (Neubrutalism) ── */
-function CampaignCard({ campaign, onClick }: { campaign: CampaignListItemDto; onClick: () => void }) {
+function CampaignCard({
+    campaign,
+    onClick,
+    onEdit,
+    onPublish,
+    onDelete,
+}: {
+    campaign: CampaignListItemDto;
+    onClick: () => void;
+    onEdit: () => void;
+    onPublish: () => void;
+    onDelete: () => void;
+}) {
     const isActive = campaign.status === "Active";
+    const isDraft = campaign.status === "Draft";
     const daysLeft = isActive ? Math.max(0, Math.ceil((new Date(campaign.endDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24))) : 0;
 
     return (
@@ -69,6 +82,35 @@ function CampaignCard({ campaign, onClick }: { campaign: CampaignListItemDto; on
                     <span className="font-semibold text-[#4C5769] text-sm">{campaign.orderCount} đơn hàng</span>
                 </div>
             </div>
+
+            {/* Draft action buttons */}
+            {isDraft && (
+                <div className="flex items-center gap-2 mt-3 pt-3 border-t-2 border-[#E5E7EB]"
+                    onClick={(e) => e.stopPropagation()}
+                >
+                    <button
+                        onClick={onEdit}
+                        className="flex items-center gap-1.5 rounded-[8px] border-[2px] border-[#19182B] bg-white px-3 py-1.5 text-xs font-extrabold text-[#19182B] shadow-[2px_2px_0_#19182B] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#19182B] transition-all"
+                    >
+                        <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" /></svg>
+                        Sửa
+                    </button>
+                    <button
+                        onClick={onPublish}
+                        className="flex items-center gap-1.5 rounded-[8px] border-[2px] border-[#19182B] bg-[#D9F8E8] px-3 py-1.5 text-xs font-extrabold text-[#166534] shadow-[2px_2px_0_#19182B] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#19182B] transition-all"
+                    >
+                        <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" /></svg>
+                        Công khai
+                    </button>
+                    <button
+                        onClick={onDelete}
+                        className="flex items-center gap-1.5 rounded-[8px] border-[2px] border-[#19182B] bg-[#FEE2E2] px-3 py-1.5 text-xs font-extrabold text-[#991B1B] shadow-[2px_2px_0_#19182B] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#19182B] transition-all"
+                    >
+                        <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" /></svg>
+                        Xóa
+                    </button>
+                </div>
+            )}
         </div>
     );
 }
@@ -84,6 +126,23 @@ export const CampaignList = (): JSX.Element => {
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("");
     const [activeTab, setActiveTab] = useState("all");
+
+    /* ── Draft action state (per L007: useRef, not useState, for spam guards) ── */
+    const actionLoadingRef = useRef<string | null>(null);
+    const [actionLoading, setActionLoading] = useState<string | null>(null);
+
+    /* ── Confirm dialog ── */
+    const [confirm, setConfirm] = useState<{
+        type: "publish" | "delete";
+        campaign: CampaignListItemDto;
+    } | null>(null);
+
+    /* ── Toast ── */
+    const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
+    const showToast = useCallback((message: string, type: "success" | "error") => {
+        setToast({ message, type });
+        setTimeout(() => setToast(null), 3500);
+    }, []);
 
     useEffect(() => { getSchoolProfile().then((p) => setSchoolName(p.schoolName || "")).catch(() => {}); }, []);
 
@@ -113,8 +172,89 @@ export const CampaignList = (): JSX.Element => {
         navigate("/signin", { replace: true });
     };
 
+    /* ── Publish draft ── */
+    const handlePublish = async (campaign: CampaignListItemDto) => {
+        if (actionLoadingRef.current) return;
+        actionLoadingRef.current = campaign.campaignId;
+        setActionLoading(campaign.campaignId);
+        try {
+            await publishDraftCampaign(campaign.campaignId);
+            showToast(`"${campaign.campaignName}" đã được công khai!`, "success");
+            fetchCampaigns();
+        } catch (err: unknown) {
+            showToast(err instanceof Error ? err.message : "Có lỗi xảy ra", "error");
+        } finally {
+            actionLoadingRef.current = null;
+            setActionLoading(null);
+            setConfirm(null);
+        }
+    };
+
+    /* ── Delete draft ── */
+    const handleDelete = async (campaign: CampaignListItemDto) => {
+        if (actionLoadingRef.current) return;
+        actionLoadingRef.current = campaign.campaignId;
+        setActionLoading(campaign.campaignId);
+        try {
+            await deleteCampaign(campaign.campaignId);
+            showToast(`Đã xóa "${campaign.campaignName}"`, "success");
+            fetchCampaigns();
+        } catch (err: unknown) {
+            showToast(err instanceof Error ? err.message : "Có lỗi xảy ra", "error");
+        } finally {
+            actionLoadingRef.current = null;
+            setActionLoading(null);
+            setConfirm(null);
+        }
+    };
+
     return (
         <div className="nb-page flex flex-col">
+            {/* Toast */}
+            {toast && (
+                <div className={`fixed top-6 right-6 z-[99999] flex items-center gap-3 rounded-[12px] border-[3px] border-[#19182B] px-5 py-3 text-sm font-extrabold shadow-[4px_4px_0_#19182B] ${
+                    toast.type === "success" ? "bg-[#D9F8E8] text-[#166534]" : "bg-[#FEE2E2] text-[#991B1B]"
+                }`}>
+                    {toast.type === "success"
+                        ? <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" /></svg>
+                        : <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" /></svg>}
+                    {toast.message}
+                </div>
+            )}
+
+            {/* Confirm Publish / Delete Dialog */}
+            {confirm && (
+                <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/50 p-4">
+                    <div className="bg-white rounded-[14px] border-[3px] border-[#19182B] shadow-[6px_6px_0_#19182B] w-full max-w-sm p-6">
+                        <h3 className="font-extrabold text-[#19182B] text-lg mb-2">
+                            {confirm.type === "publish" ? "Công khai chiến dịch?" : "Xóa chiến dịch?"}
+                        </h3>
+                        <p className="text-[#6B7280] text-sm mb-6">
+                            {confirm.type === "publish"
+                                ? `"${confirm.campaign.campaignName}" sẽ được công khai và phụ huynh có thể đặt hàng.`
+                                : `Bạn có chắc muốn xóa "${confirm.campaign.campaignName}"? Không thể hoàn tác.`}
+                        </p>
+                        <div className="flex justify-end gap-3">
+                            <button onClick={() => setConfirm(null)} className="rounded-[10px] border-[3px] border-[#19182B] bg-white px-4 py-2 text-sm font-extrabold text-[#19182B] shadow-[3px_3px_0_#19182B] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] transition-all">
+                                Hủy
+                            </button>
+                            <button
+                                onClick={() => {
+                                    const c = confirm.campaign;
+                                    if (confirm.type === "publish") handlePublish(c);
+                                    else handleDelete(c);
+                                }}
+                                className={`rounded-[10px] border-[3px] border-[#19182B] px-4 py-2 text-sm font-extrabold text-white shadow-[3px_3px_0_#19182B] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] transition-all disabled:opacity-50 ${
+                                    confirm.type === "publish" ? "bg-[#16A34A] hover:bg-[#15803D]" : "bg-[#DC2626] hover:bg-[#B91C1C]"
+                                }`}
+                            >
+                                {confirm.type === "publish" ? "Công khai" : "Xóa"}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <div className="flex flex-1 flex-col lg:flex-row">
                 <div className={`${isCollapsed ? "lg:w-16" : "lg:w-[16rem]"} flex-shrink-0 lg:sticky lg:top-0 lg:h-screen transition-all duration-300`}>
                     <DashboardSidebar {...sidebarConfig} name={schoolName} isCollapsed={isCollapsed} onToggle={toggle} onLogout={handleLogout} />
@@ -172,7 +312,16 @@ export const CampaignList = (): JSX.Element => {
                         {/* Cards */}
                         {!loading && filteredCampaigns.length > 0 && (
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                                {filteredCampaigns.map((c) => <CampaignCard key={c.campaignId} campaign={c} onClick={() => navigate(`/school/campaigns/${c.campaignId}`)} />)}
+                                {filteredCampaigns.map((c) => (
+                                    <CampaignCard
+                                        key={c.campaignId}
+                                        campaign={c}
+                                        onClick={() => navigate(`/school/campaigns/${c.campaignId}`)}
+                                        onEdit={() => navigate(`/school/campaigns/${c.campaignId}/edit`)}
+                                        onPublish={() => setConfirm({ type: "publish", campaign: c })}
+                                        onDelete={() => setConfirm({ type: "delete", campaign: c })}
+                                    />
+                                ))}
                             </div>
                         )}
 

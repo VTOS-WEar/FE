@@ -293,6 +293,10 @@ const router = createBrowserRouter([
     element: <RoleGuard allowedRoles={["School"]}><CampaignManagement /></RoleGuard>,
   },
   {
+    path: "/school/campaigns/:id/edit",
+    element: <RoleGuard allowedRoles={["School"]}><CampaignManagement /></RoleGuard>,
+  },
+  {
     path: "/school/campaigns/:id",
     element: <RoleGuard allowedRoles={["School"]}><CampaignDetail /></RoleGuard>,
   },
