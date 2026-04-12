@@ -53,7 +53,7 @@ export default function SchoolProductionOrderDetail() {
     const [shipForm, setShipForm] = useState({ shippingCompany: "", trackingCode: "", proofImageUrl: "", note: "" });
     const [schedules, setSchedules] = useState<DistributionScheduleDto[]>([]);
     const [showScheduleModal, setShowScheduleModal] = useState(false);
-    const [scheduleForm, setScheduleForm] = useState({ scheduledDate: "", method: "AtSchool", timeSlot: "", note: "" });
+    const [scheduleForm, setScheduleForm] = useState({ scheduledDate: "", method: "AtSchool", startTime: "", endTime: "", note: "" });
     const [distSearch, setDistSearch] = useState("");
 
     const [defectForm, setDefectForm] = useState({ title: "", description: "", proofImageUrls: [""] as string[] });
@@ -110,9 +110,10 @@ export default function SchoolProductionOrderDetail() {
         } catch (e: any) { alert(e.message || "Lỗi"); } finally { setActionLoading(false); }
     };
     const handleCreateSchedule = async () => {
-        if (!batchId || !scheduleForm.scheduledDate || !scheduleForm.timeSlot) return;
+        if (!batchId || !scheduleForm.scheduledDate || !scheduleForm.startTime || !scheduleForm.endTime) return;
+        const timeSlot = `${scheduleForm.startTime} - ${scheduleForm.endTime}`;
         setActionLoading(true);
-        try { await createDistributionSchedule(batchId, scheduleForm); setShowScheduleModal(false); setScheduleForm({ scheduledDate: "", method: "AtSchool", timeSlot: "", note: "" }); loadDistributionData(); }
+        try { await createDistributionSchedule(batchId, { ...scheduleForm, timeSlot }); setShowScheduleModal(false); setScheduleForm({ scheduledDate: "", method: "AtSchool", startTime: "", endTime: "", note: "" }); loadDistributionData(); }
         catch (e: any) { alert(e.message || "Lỗi"); } finally { setActionLoading(false); }
     };
     const handleCompleteSchedule = async (scheduleId: string) => {
@@ -548,7 +549,7 @@ export default function SchoolProductionOrderDetail() {
 
             {/* Schedule creation modal */}
             {showScheduleModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => { setShowScheduleModal(false); setScheduleForm({ scheduledDate: "", method: "AtSchool", timeSlot: "", note: "" }); }}>
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => { setShowScheduleModal(false); setScheduleForm({ scheduledDate: "", method: "AtSchool", startTime: "", endTime: "", note: "" }); }}>
                     <div className="bg-white rounded-md w-full max-w-md mx-4 p-6 border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E]" onClick={e => e.stopPropagation()}>
                         <h3 className="font-extrabold text-lg text-[#1A1A2E] mb-4">📅 Tạo lịch phân phối</h3>
                         <div className="space-y-3">
@@ -565,7 +566,23 @@ export default function SchoolProductionOrderDetail() {
                             </div>
                             <div>
                                 <label className="block text-xs font-bold text-[#6B7280] mb-1">Khung giờ *</label>
-                                <input value={scheduleForm.timeSlot} onChange={e => setScheduleForm(f => ({ ...f, timeSlot: e.target.value }))} placeholder="VD: 8:00 - 11:00" maxLength={50} className="nb-input w-full" />
+                                <div className="flex items-center gap-2">
+                                    <select value={scheduleForm.startTime} onChange={e => setScheduleForm(f => ({ ...f, startTime: e.target.value }))} className="nb-select flex-1">
+                                        <option value="">Giờ bắt đầu</option>
+                                        {Array.from({ length: 24 }, (_, i) => i).map(h => {
+                                            const hh = h.toString().padStart(2, "0");
+                                            return <option key={h} value={`${hh}:00`}>{`${hh}:00`}</option>;
+                                        })}
+                                    </select>
+                                    <span className="text-[#6B7280] font-medium shrink-0">—</span>
+                                    <select value={scheduleForm.endTime} onChange={e => setScheduleForm(f => ({ ...f, endTime: e.target.value }))} className="nb-select flex-1">
+                                        <option value="">Giờ kết thúc</option>
+                                        {Array.from({ length: 24 }, (_, i) => i).map(h => {
+                                            const hh = h.toString().padStart(2, "0");
+                                            return <option key={h} value={`${hh}:00`}>{`${hh}:00`}</option>;
+                                        })}
+                                    </select>
+                                </div>
                             </div>
                             <div>
                                 <label className="block text-xs font-bold text-[#6B7280] mb-1">Ghi chú</label>
@@ -574,9 +591,9 @@ export default function SchoolProductionOrderDetail() {
                             </div>
                         </div>
                         <div className="flex gap-3 mt-4">
-                            <button onClick={() => { setShowScheduleModal(false); setScheduleForm({ scheduledDate: "", method: "AtSchool", timeSlot: "", note: "" }); }}
+                            <button onClick={() => { setShowScheduleModal(false); setScheduleForm({ scheduledDate: "", method: "AtSchool", startTime: "", endTime: "", note: "" }); }}
                                 className="flex-1 nb-btn nb-btn-outline text-sm">Hủy</button>
-                            <button onClick={handleCreateSchedule} disabled={actionLoading || !scheduleForm.scheduledDate || !scheduleForm.timeSlot.trim()}
+                            <button onClick={handleCreateSchedule} disabled={actionLoading || !scheduleForm.scheduledDate || !scheduleForm.startTime || !scheduleForm.endTime}
                                 className="flex-1 nb-btn nb-btn-purple text-sm disabled:opacity-50">
                                 {actionLoading ? "Đang tạo..." : "📅 Tạo lịch"}
                             </button>
