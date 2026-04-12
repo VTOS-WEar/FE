@@ -12,7 +12,14 @@ import {
   Camera,
   ShoppingBag,
   Box,
-  CheckCircle2
+  CheckCircle2,
+  Info,
+  Minus,
+  Plus,
+  Zap,
+  ShieldCheck,
+  Truck,
+  Home
 } from "lucide-react";
 import { GuestLayout } from "../../components/layout/GuestLayout";
 import {
@@ -22,8 +29,15 @@ import {
   type OutfitVariantDto,
 } from "../../lib/api/schools";
 import { guestTryOn, type GuestTryOnResponse } from "../../lib/api/tryOn";
+import { getMyChildren, type ChildProfileDto } from "../../lib/api/users";
+import { getChildBodygramScans, getBodygramScanDetail, type BodygramScanDetail } from "../../lib/api/bodygram";
+import {
+  recommendSize,
+  recommendSizeFromBodygram,
+  type SizeRecommendation
+} from "../../lib/utils/sizeRecommendation";
 import { useToast } from "../../contexts/ToastContext";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -397,13 +411,21 @@ export const OutfitDetail = (): JSX.Element => {
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [selectedVariant, setSelectedVariant] = useState<OutfitVariantDto | null>(null);
   const [liked, setLiked] = useState(false);
-  const [activeTab, setActiveTab] = useState<"desc" | "care" | "reviews">("desc");
+  const [activeTab, setActiveTab] = useState<"desc" | "size" | "reviews">("desc");
   const [related, setRelated] = useState<RelatedOutfit[]>([]);
   const [relatedScroll, setRelatedScroll] = useState(0);
   const [selectedRatingFilter, setSelectedRatingFilter] = useState<number | "all">("all");
   const [reviewPage, setReviewPage] = useState(1);
   const REVIEW_PAGE_SIZE = 5;
   const { showToast } = useToast();
+
+  // New states for enhanced UI
+  const [quantity, setQuantity] = useState(1);
+  const [children, setChildren] = useState<ChildProfileDto[]>([]);
+  const [selectedChildId, setSelectedChildId] = useState<string | "none">("none");
+  const [recommendation, setRecommendation] = useState<SizeRecommendation | null>(null);
+  const [recommendationLoading, setRecommendationLoading] = useState(false);
+  const [showSizeGuide, setShowSizeGuide] = useState(false);
 
   /* ── Fetch outfit ── */
   useEffect(() => {
@@ -421,6 +443,85 @@ export const OutfitDetail = (): JSX.Element => {
       .catch(() => setError("Không tìm thấy đồng phục."))
       .finally(() => setLoading(false));
   }, [id]);
+
+  /* ── Fetch children if Parent ── */
+  /* ── Filtered children for this school ── */
+  const schoolChildren = children.filter(c => c.school?.schoolId === outfit?.school?.schoolId);
+
+  useEffect(() => {
+    if (isParent) {
+      getMyChildren()
+        .then((data) => {
+          setChildren(data);
+          // If only 1 child matches this school, auto-select them
+          const matching = data.filter(c => c.school?.schoolId === outfit?.school?.schoolId);
+          if (matching.length === 1) {
+            setSelectedChildId(matching[0].childId);
+          }
+        })
+        .catch(() => { });
+    }
+  }, [isParent, outfit?.school?.schoolId]);
+
+  /* ── Smart Recommendation Logic ── */
+  useEffect(() => {
+    if (!outfit) return;
+
+    if (selectedChildId === "none") {
+      setRecommendation(null);
+      return;
+    }
+
+    const child = children.find(c => c.childId === selectedChildId);
+    if (!child) return;
+
+    const runRecommendation = async () => {
+      setRecommendationLoading(true);
+      try {
+        // 1. Try Bodygram scan first
+        const scansRes = await getChildBodygramScans(child.childId, 1, 1);
+        if (scansRes.items.length > 0) {
+          const latestScan = await getBodygramScanDetail(scansRes.items[0].scanRecordId);
+          const rec = recommendSizeFromBodygram(
+            latestScan,
+            outfit.variants,
+            outfit.sizeChart?.details || []
+          );
+          if (rec && rec.recommendedVariantId) {
+            setRecommendation(rec);
+            setRecommendationLoading(false);
+            return;
+          }
+        }
+
+        // 2. Fallback to basic measurements
+        const rec = recommendSize(
+          child.heightCm,
+          child.weightKg,
+          outfit.variants.map(v => ({ productVariantId: v.productVariantId, size: v.size }))
+        );
+        setRecommendation(rec);
+      } catch (err) {
+        console.error("Recommendation error:", err);
+      } finally {
+        setRecommendationLoading(false);
+      }
+    };
+
+    runRecommendation();
+  }, [selectedChildId, children, outfit]);
+
+  // Auto-select size when recommendation changes
+  useEffect(() => {
+    if (recommendation?.recommendedSize) {
+      handleSizeSelect(recommendation.recommendedSize);
+      showToast({
+        title: "Gợi ý kích cỡ",
+        message: `Chúng tôi gợi ý size ${recommendation.recommendedSize} cho bé ${children.find(c => c.childId === selectedChildId)?.fullName}`,
+        variant: "success"
+      });
+    }
+  }, [recommendation]);
 
   /* ── Fetch related outfits from same school ── */
   useEffect(() => {
@@ -478,203 +579,268 @@ export const OutfitDetail = (): JSX.Element => {
   const mainImage = (selectedVariant?.variantImageURL || outfit.mainImageURL) ?? "https://placehold.co/500x600?text=No+Image";
 
   return (
-    <GuestLayout bgColor="#FFF8F0">
-      {/* NB decorative shapes */}
+    <GuestLayout bgColor="#FAFAF9">
+      {/* ── Background Decorative Elements ── */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-blue-100/30 rounded-full blur-[120px]" />
+        <div className="absolute top-[20%] -right-[5%] w-[30%] h-[30%] bg-purple-100/20 rounded-full blur-[100px]" />
+        <div className="absolute bottom-[5%] left-[15%] w-[25%] h-[25%] bg-amber-100/20 rounded-full blur-[80px]" />
+      </div>
+      <div className="max-w-[1050px] mx-auto px-4 py-4 lg:py-6">
+        {/* Breadcrumbs - Exact style from Reference */}
+        <nav className="flex items-center gap-1.5 text-[13px] font-medium text-gray-500 mb-6 overflow-x-auto scrollbar-hide">
+          <Link to="/" className="flex items-center gap-1.5 hover:text-gray-900 transition-colors whitespace-nowrap">
+            <Home className="w-3.5 h-3.5 mb-0.5" />
+            Trang chủ
+          </Link>
+          <ChevronRight className="w-3 h-3 flex-shrink-0 text-gray-400" />
+          <Link to="/outfits" className="hover:text-gray-900 transition-colors whitespace-nowrap">
+            Danh sách đồng phục
+          </Link>
+          <ChevronRight className="w-3 h-3 flex-shrink-0 text-gray-400" />
+          <span className="px-3 py-0.5 bg-indigo-100 text-gray-900 font-extrabold rounded-full whitespace-nowrap truncate max-w-[250px]">
+            {outfit.outfitName}
+          </span>
+        </nav>
 
-      <div className="relative z-10 max-w-[1200px] mx-auto px-4 lg:px-8 py-8 xl:py-12">
-        {/* ───── Breadcrumb ───── */}
-        <motion.div custom={0} variants={fadeUp} initial="hidden" animate="visible" className="mb-8">
-          <Breadcrumb>
-            <BreadcrumbList className="text-[13px] sm:text-[14px]">
-              <BreadcrumbItem>
-                <BreadcrumbLink href="/" className="text-gray-500 hover:text-purple-600 font-medium transition-colors">Trang chủ</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbLink href={`/schools/${outfit.school.schoolId}`} className="text-gray-500 hover:text-purple-600 font-medium transition-colors line-clamp-1 max-w-[150px] sm:max-w-none">{outfit.school.schoolName}</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <span className="text-gray-500 font-medium">{OUTFIT_TYPE_LABEL[outfit.outfitType] ?? outfit.outfitType}</span>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage className="text-gray-900 font-bold line-clamp-1 max-w-[150px] sm:max-w-[300px]">{outfit.outfitName}</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-        </motion.div>
-
-        {/* ───── Hero: Image + Info ───── */}
-        <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 mb-16">
-          {/* Left: Image gallery */}
-          <motion.div custom={1} variants={fadeUp} initial="hidden" animate="visible" className="lg:w-[400px] flex-shrink-0">
-            <div className="relative bg-white rounded-2xl overflow-hidden border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E] aspect-square group md:aspect-[4/5]">
-              <img src={mainImage} alt={outfit.outfitName} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-              <button
-                onClick={() => setLiked(!liked)}
-                className="absolute top-4 left-4 w-10 h-10 bg-white shadow-[3px_3px_0_#1A1A2E] border-2 border-[#1A1A2E] rounded-lg flex items-center justify-center hover:scale-110 transition-transform duration-300 z-10"
+        <div className="flex flex-col lg:flex-row gap-8 items-start">
+          {/* Left Side: Sticky Image Gallery - Better Proportions */}
+          <div className="w-full lg:w-[45%] xl:w-[48%] lg:sticky lg:top-24">
+            <div className="space-y-4">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="aspect-[4/5] rounded-xl overflow-hidden bg-white border-[2px] border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E] relative group"
               >
-                <Heart className={`w-[20px] h-[20px] ${liked ? "fill-red-500 text-red-500" : "text-gray-400"}`} />
-              </button>
-            </div>
+                <img
+                  src={mainImage}
+                  alt={outfit.outfitName}
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
 
-            {/* Thumbnail gallery */}
-            {outfit.variants.filter((v) => v.variantImageURL).length > 0 && (
-              <div className="flex gap-3 mt-4 overflow-x-auto pb-2 scrollbar-hide">
+                {/* Float Action: Like */}
                 <button
-                  onClick={() => { setSelectedVariant(null); setSelectedSize(null); }}
-                  className={`w-[85px] h-[85px] rounded-xl overflow-hidden border-2 flex-shrink-0 transition-all ${!selectedVariant ? "border-blue-500 p-0.5" : "border-transparent hover:border-gray-200"
-                    }`}
+                  onClick={() => setLiked(!liked)}
+                  className="absolute top-2 left-2 w-7 h-7 bg-white border-[1.5px] border-[#1A1A2E] rounded-md flex items-center justify-center shadow-[1.5px_1.5px_0_#1A1A2E] hover:translate-x-[0.5px] hover:translate-y-[0.5px] hover:shadow-[0.5px_0.5px_0_#1A1A2E] transition-all z-10"
                 >
-                  <img src={outfit.mainImageURL ?? ""} alt="main" className="w-full h-full object-cover rounded-lg" />
+                  <Heart className={`w-3 h-3 ${liked ? "fill-red-500 text-red-500" : "text-gray-400"}`} />
                 </button>
-                {outfit.variants.filter((v) => v.variantImageURL).map((v) => (
+
+                {/* Badge: Type */}
+                <div className="absolute top-3 right-3 px-3 py-1 bg-[#FFF1BF] border-[2px] border-[#1A1A2E] rounded-lg text-gray-900 text-[10px] font-black uppercase tracking-widest z-10 shadow-[2px_2px_0_#1A1A2E]">
+                  {OUTFIT_TYPE_LABEL[outfit.outfitType] ?? outfit.outfitType}
+                </div>
+              </motion.div>
+
+              {/* Thumbnail gallery - Nano */}
+              {outfit.variants.filter((v) => v.variantImageURL).length > 0 && (
+                <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
                   <button
-                    key={v.productVariantId}
-                    onClick={() => { setSelectedVariant(v); setSelectedSize(v.size); }}
-                    className={`w-[85px] h-[85px] rounded-xl overflow-hidden border-2 flex-shrink-0 transition-all ${selectedVariant?.productVariantId === v.productVariantId ? "border-blue-500 p-0.5" : "border-transparent hover:border-gray-200"
-                      }`}
+                    onClick={() => { setSelectedVariant(null); setSelectedSize(null); }}
+                    className={`w-10 h-10 rounded-md overflow-hidden border-[1px] flex-shrink-0 transition-all ${!selectedVariant ? "border-[#0ea5e9] shadow-[1.5px_1.5px_0_#0ea5e9]" : "border-[#1A1A2E] bg-white"}`}
                   >
-                    <img src={v.variantImageURL!} alt={v.size} className="w-full h-full object-cover rounded-lg" />
+                    <img src={outfit.mainImageURL ?? ""} alt="main" className="w-full h-full object-cover" />
                   </button>
-                ))}
-              </div>
-            )}
-          </motion.div>
+                  {outfit.variants.filter((v) => v.variantImageURL).map((v) => (
+                    <button
+                      key={v.productVariantId}
+                      onClick={() => { setSelectedVariant(v); setSelectedSize(v.size); }}
+                      className={`w-10 h-10 rounded-md overflow-hidden border-[1px] flex-shrink-0 transition-all ${selectedVariant?.productVariantId === v.productVariantId ? "border-[#0ea5e9] shadow-[1.5px_1.5px_0_#0ea5e9]" : "border-[#1A1A2E] bg-white"}`}
+                    >
+                      <img src={v.variantImageURL!} alt={v.size} className="w-full h-full object-cover" />
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
 
-          {/* Right: Info */}
-          <motion.div custom={2} variants={fadeUp} initial="hidden" animate="visible" className="flex-1 min-w-0 flex flex-col pt-2">
-            <h1 className="font-baloo font-extrabold text-2xl lg:text-3xl leading-[1.2] text-gray-900 mb-3 tracking-tight">
-              {outfit.outfitName}
-            </h1>
-
-            {/* Rating */}
-            <div className="flex items-center gap-2 mb-4">
-              <div className="flex items-center gap-0.5">
-                {[1, 2, 3, 4, 5].map((s) => (
-                  <Star key={s} className={`w-[16px] h-[16px] ${s <= Math.round(outfit.averageRating) ? "fill-yellow-400 text-yellow-400" : "fill-gray-200 text-gray-200"}`} />
-                ))}
+          {/* Right Side: Product Details & Purchase Card */}
+          <div className="lg:w-[58%] xl:w-[56%] flex flex-col gap-5">
+            <motion.div
+              custom={1} variants={fadeUp} initial="hidden" animate="visible"
+              className="space-y-4"
+            >
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <Badge className="bg-[#1A1A2E] text-white border-none px-2.5 py-0.5 font-black text-[9px] uppercase rounded-md shadow-[2px_2px_0_#94a3b8]">Verified</Badge>
+                  <span className="text-[11px] font-bold text-gray-400 tracking-widest uppercase">SKU: {selectedVariant?.skuCode || 'OFF-DEF'}</span>
+                </div>
+                <h1 className="font-baloo font-black text-2xl lg:text-3xl text-gray-900 leading-[1.2]">
+                  {outfit.outfitName}
+                </h1>
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center bg-[#FFF1BF] px-2 py-1 rounded-md border-[2px] border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E]">
+                    <div className="flex items-center gap-0.5 mr-1.5">
+                      {[1, 2, 3, 4, 5].map((s) => {
+                        const diff = (outfit.averageRating || 0) - s + 1;
+                        return (
+                          <div key={s} className="relative w-3 h-3">
+                            <Star className="absolute inset-0 w-3 h-3 fill-gray-200 text-gray-200" />
+                            <div className="absolute inset-0 overflow-hidden" style={{ width: `${Math.max(0, Math.min(100, diff * 100))}%` }}>
+                              <Star className="w-3 h-3 fill-gray-900 text-gray-900" />
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                    <span className="font-black text-gray-900 text-[11px]">{outfit.averageRating?.toFixed(1) || "5.0"}</span>
+                  </div>
+                  <span className="text-gray-400 font-bold text-[10px] uppercase tracking-tighter">({outfit.feedbackCount} Phản hồi)</span>
+                </div>
               </div>
-              <span className="font-bold text-[13px] text-gray-900 mt-0.5">
-                {outfit.averageRating > 0 ? (
-                  <span className="flex items-center gap-1">
-                    {outfit.averageRating} <span className="font-medium text-gray-500">({outfit.feedbackCount} đánh giá)</span>
-                  </span>
-                ) : (
-                  <span className="font-medium text-gray-400">Chưa có đánh giá</span>
+
+              {/* Price & School Duo Block */}
+              <div className="grid grid-cols-2 gap-3 xl:gap-4">
+                <div className="p-3.5 bg-white rounded-xl border-[2.5px] border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E]">
+                  <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Giá bán</p>
+                  <p className="font-baloo font-black text-[22px] text-[#0ea5e9]">
+                    {fmt(displayPrice)}
+                  </p>
+                </div>
+                <Link to={`/schools/${outfit.school.schoolId}`} className="p-3.5 bg-gray-50 rounded-xl border-[2.5px] border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#1A1A2E] transition-all">
+                  <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Cung cấp bởi</p>
+                  <p className="font-extrabold text-[13px] text-gray-900 line-clamp-1 truncate uppercase">{outfit.school.schoolName}</p>
+                </Link>
+              </div>
+
+              {/* Selection Options (The Card) */}
+              <div className="bg-white rounded-[12px] p-3 lg:p-4 border-[1.5px] border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E] space-y-3">
+                {/* Size Selection */}
+                {sizes.length > 0 && (
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <h4 className="text-[9px] font-black text-gray-900 uppercase tracking-widest">Kích cỡ</h4>
+                      <button onClick={() => setShowSizeGuide(true)} className="text-[8px] font-black text-[#0ea5e9] uppercase hover:underline">Hướng dẫn size</button>
+                    </div>
+
+                    {/* Smart Recommendation Integration */}
+                    {isParent && (
+                      <div className="p-2 bg-[#DCEBFF] border-[1px] border-[#1A1A2E] shadow-[1.5px_1.5px_0_#1A1A2E] rounded-md space-y-1.5">
+                        {schoolChildren.length > 0 ? (
+                          <>
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-1">
+                                <Zap className="w-2.5 h-2.5 text-gray-900 fill-gray-900" />
+                                <span className="text-[8px] font-black text-gray-900 uppercase">Cố vấn AI</span>
+                              </div>
+                              {recommendationLoading && <div className="w-2 h-2 border-2 border-[#1A1A2E] border-t-transparent rounded-full animate-spin" />}
+                            </div>
+                            <select
+                              value={selectedChildId}
+                              onChange={(e) => setSelectedChildId(e.target.value)}
+                              className="w-full h-7 bg-white border-[1px] border-[#1A1A2E] rounded-sm px-1.5 text-[9px] font-bold text-gray-900 focus:shadow-[1px_1px_0_#1A1A2E] outline-none transition-all"
+                            >
+                              {schoolChildren.length > 1 && <option value="none">-- CHỌN BÉ --</option>}
+                              {schoolChildren.map(c => <option key={c.childId} value={c.childId}>{c.fullName.toUpperCase()}</option>)}
+                            </select>
+                            {recommendation && (
+                              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-start gap-1 bg-white/40 p-1 rounded-sm border border-white/50">
+                                <CheckCircle2 className="w-2 h-2 text-emerald-600 mt-0.5 flex-shrink-0" />
+                                <p className="text-[7.5px] font-bold text-gray-900 leading-tight">{recommendation.reason}</p>
+                              </motion.div>
+                            )}
+                          </>
+                        ) : (
+                          <div className="flex gap-1.5">
+                            <Info className="w-3 h-3 text-gray-900 flex-shrink-0" />
+                            <p className="text-[7.5px] font-bold text-gray-700 leading-snug uppercase">
+                              KHÔNG CÓ CON TẠI TRƯỜNG {outfit.school.schoolName.toUpperCase()}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    <div className="flex flex-wrap gap-1">
+                      {sizes.map((size) => {
+                        const isSelected = selectedSize === size;
+                        const isRecommended = recommendation?.recommendedSize === size;
+                        return (
+                          <button
+                            key={size}
+                            onClick={() => handleSizeSelect(size)}
+                            className={`min-w-[36px] h-7 rounded-sm font-black text-[10px] transition-all relative border-[1px] ${isSelected
+                              ? "bg-[#0ea5e9] text-white border-[#1A1A2E] shadow-[1.5px_1.5px_0_#1A1A2E]"
+                              : "bg-white text-gray-900 border-[#1A1A2E] shadow-[1.5px_1.5px_0_#1A1A2E] hover:translate-x-[0.5px] hover:translate-y-[0.5px] hover:shadow-[0.5px_0.5px_0_#1A1A2E]"}`}
+                          >
+                            {size}
+                            {isRecommended && <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-amber-400 rounded-full border-[0.5px] border-[#1A1A2E]" />}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
                 )}
-              </span>
-            </div>
 
-            {/* Price */}
-            <p className="font-baloo font-bold text-[28px] lg:text-[32px] text-[#0ea5e9] mb-4 tracking-tight leading-none drop-shadow-sm">
-              {fmt(displayPrice)}
-            </p>
+                {/* Quantity & Action */}
+                <div className="space-y-2">
+                  <h4 className="text-[9px] font-black text-gray-900 uppercase tracking-widest">Số lượng</h4>
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center bg-gray-50 rounded-md p-0.5 border-[1px] border-[#1A1A2E] shadow-[1.5px_1.5px_0_#1A1A2E]">
+                      <button onClick={() => setQuantity(q => Math.max(1, q - 1))} className="w-5 h-5 rounded-sm bg-white border border-[#1A1A2E] flex items-center justify-center hover:bg-gray-50 transition-all text-gray-900"><Minus className="w-2.5 h-2.5" /></button>
+                      <span className="w-7 text-center font-black text-[11px]">{quantity}</span>
+                      <button onClick={() => setQuantity(q => q + 1)} className="w-5 h-5 rounded-sm bg-white border border-[#1A1A2E] flex items-center justify-center hover:bg-gray-50 transition-all text-gray-900"><Plus className="w-2.5 h-2.5" /></button>
+                    </div>
+                    {selectedVariant && (
+                      <p className={`text-[8px] font-black uppercase tracking-tighter ${selectedVariant.stockQuantity < 10 ? 'text-amber-600' : 'text-emerald-600'}`}>
+                        {selectedVariant.stockQuantity > 0 ? `CÒN: ${selectedVariant.stockQuantity}` : "HẾT HÀNG"}
+                      </p>
+                    )}
+                  </div>
 
-            {/* Description — show preview button instead of raw render */}
-            {outfit.description && (
-              <button
-                onClick={() => {
-                  setActiveTab("desc");
-                  document.getElementById("outfit-tabs")?.scrollIntoView({ behavior: "smooth" });
-                }}
-                className="flex items-center gap-2 mb-6 px-4 py-2.5 rounded-xl border-2 border-gray-200 bg-gray-50 text-[13px] font-bold text-gray-600 hover:border-[#0ea5e9] hover:text-[#0ea5e9] hover:bg-sky-50 transition-all"
-              >
-                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>
-                Xem mô tả chi tiết
-              </button>
-            )}
-
-            {/* School Info Block */}
-            <div className="mb-6 space-y-1">
-              <span className="text-xs font-bold text-gray-900 uppercase tracking-wider">Trường học</span>
-              <div className="flex items-center justify-between p-3.5 bg-white rounded-2xl border border-gray-100 shadow-[0_2px_8px_rgb(0,0,0,0.02)] transition-all hover:border-blue-100">
-                <div className="flex items-center gap-3 min-w-0">
-                  {outfit.school.logoURL ? (
-                    <img src={outfit.school.logoURL} alt="" className="w-9 h-9 rounded-full object-cover border border-gray-100 shadow-sm" />
-                  ) : (
-                    <div className="w-9 h-9 rounded-full bg-gray-50 flex items-center justify-center border border-gray-100"><GraduationCap className="w-5 h-5 text-gray-400" /></div>
-                  )}
-                  <Link to={`/schools/${outfit.school.schoolId}`} className="font-bold text-[15px] text-gray-900 hover:text-[#0ea5e9] truncate transition-colors">
-                    {outfit.school.schoolName}
-                  </Link>
-                </div>
-                <div className="flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-600 rounded-full flex-shrink-0">
-                  <CheckCircle2 className="w-3.5 h-3.5" />
-                  <span className="font-bold text-[11px] uppercase tracking-wide">Đã xác thực</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Size Selector */}
-            {sizes.length > 0 && (
-              <div className="mb-8 space-y-2">
-                <span className="text-xs font-bold text-gray-900 uppercase tracking-wider">Chọn kích thước</span>
-                <div className="flex flex-wrap gap-2">
-                  {/* For mockup purposes, we can simulate a disabled size by rendering a fake one if sizes are small, but we stick to real data */}
-                  {sizes.map((size) => {
-                    const isSelected = selectedSize === size;
-                    return (
+                  <div className="grid grid-cols-2 gap-2 pt-0.5">
+                    {isParent && (
                       <button
-                        key={size}
-                        onClick={() => handleSizeSelect(size)}
-                        className={`min-w-[56px] h-10 px-4 rounded-xl font-bold text-[13px] border-2 transition-all flex items-center justify-center ${isSelected
-                          ? "border-[#0ea5e9] bg-[#0ea5e9]/10 text-[#0ea5e9]"
-                          : "border-gray-200 bg-white text-gray-600 hover:border-gray-300 hover:bg-gray-50"
+                        onClick={() => {
+                          showToast({ title: "Thông báo", message: "Đơn hàng phải đặt qua trang chiến dịch của trường", variant: "info" });
+                          navigate(`/schools/${outfit.school.schoolId}`);
+                        }}
+                        disabled={!selectedVariant || selectedVariant.stockQuantity <= 0 || schoolChildren.length === 0}
+                        className={`h-9 rounded-md font-black text-[10px] flex items-center justify-center gap-1.5 transition-all uppercase border-[1.5px] border-[#1A1A2E] ${schoolChildren.length === 0
+                          ? "bg-gray-200 text-gray-400 shadow-[1px_1px_0_#1A1A2E] cursor-not-allowed opacity-60"
+                          : "bg-[#0ea5e9] text-white shadow-[2px_2px_0_#1A1A2E] hover:translate-x-[0.5px] hover:translate-y-[0.5px] hover:shadow-[1px_1px_0_#1A1A2E]"
                           }`}
                       >
-                        {size}
+                        {schoolChildren.length === 0 ? <ShieldCheck className="w-3 h-3" /> : <ShoppingBag className="w-3 h-3" />}
+                        GIỎ HÀNG
                       </button>
-                    );
-                  })}
+                    )}
+
+                    <button
+                      onClick={() => setShowTryOn(true)}
+                      className="h-9 rounded-md border-[1.5px] border-[#1A1A2E] font-black text-[10px] text-gray-900 flex items-center justify-center gap-1.5 bg-[#F2ECFF] shadow-[2px_2px_0_#1A1A2E] hover:translate-x-[0.5px] hover:translate-y-[0.5px] hover:shadow-[1px_1px_0_#1A1A2E] transition-all uppercase"
+                    >
+                      <Sparkles className="w-3 h-3 text-gray-900 fill-amber-400" />
+                      THỬ ĐỒ VR
+                    </button>
+                  </div>
+                </div>
+
+                {/* Trust Signals - compact but readable */}
+                <div className="pt-4 border-t-[2px] border-[#1A1A2E] grid grid-cols-2 gap-4">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-[#D9F8E8] border-[1.5px] border-[#1A1A2E] flex items-center justify-center shadow-[2px_2px_0_#1A1A2E]"><ShieldCheck className="w-3.5 h-3.5 text-gray-900" /></div>
+                    <span className="text-[9px] font-black text-gray-500 uppercase tracking-tighter leading-tight">Chính hãng</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-[#DCEBFF] border-[1.5px] border-[#1A1A2E] flex items-center justify-center shadow-[2px_2px_0_#1A1A2E]"><Truck className="w-3.5 h-3.5 text-gray-900" /></div>
+                    <span className="text-[9px] font-black text-gray-500 uppercase tracking-tighter leading-tight">Hỏa tốc</span>
+                  </div>
                 </div>
               </div>
-            )}
-
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-3 mt-auto pt-4">
-              {isParent && (
-                <button
-                  onClick={() => {
-                    showToast({
-                      title: "Thông báo",
-                      message: "Đơn hàng chỉ có thể đặt mua ở trang chiến dịch",
-                      variant: "info",
-                    });
-                    navigate(`/schools/${outfit.school.schoolId}`);
-                  }}
-                  className="flex-1 min-h-[44px] flex items-center justify-center gap-2 bg-[#0ea5e9] text-white font-bold text-[14px] rounded-xl shadow-[0_4px_12px_rgb(14,165,233,0.2)] hover:bg-[#0284c7] hover:shadow-[0_8px_16px_rgb(14,165,233,0.3)] transition-all hover:-translate-y-0.5 active:translate-y-0"
-                >
-                  <ShoppingBag className="w-[16px] h-[16px]" />
-                  Thêm vào giỏ hàng
-                </button>
-              )}
-
-              <button
-                onClick={() => setShowTryOn(true)}
-                className="flex-1 min-h-[44px] flex items-center justify-center gap-2 bg-white text-[#0ea5e9] font-bold text-[14px] rounded-xl border-2 border-[#0ea5e9] hover:bg-[#f0f9ff] transition-all hover:-translate-y-0.5 active:translate-y-0"
-              >
-                <Box className="w-[16px] h-[16px]" />
-                Thử Ảo (VR)
-              </button>
-            </div>
-            {!isParent && (
-              <p className="text-[13px] font-medium text-gray-400 mt-4 text-center">
-                Để đặt hàng, vui lòng đăng nhập vào tài khoản phụ huynh.
-              </p>
-            )}
-          </motion.div>
+            </motion.div>
+          </div>
         </div>
 
-        {/* ───── Tabs Section ───── */}
-        <motion.div custom={3} variants={fadeUp} initial="hidden" animate="visible" className="mb-16">
-          <div id="outfit-tabs" className="flex gap-8 border-b border-gray-200/60 overflow-x-auto scrollbar-hide">
+        {/* ───── Detail Content Sections ───── */}
+        <motion.div custom={3} variants={fadeUp} initial="hidden" animate="visible" className="mt-8">
+          <div id="outfit-tabs" className="flex items-center gap-6 border-b-[2px] border-[#1A1A2E] mb-4 overflow-x-auto scrollbar-hide">
             {(
               [
-                { key: "desc", label: "Mô tả chi tiết" },
-                { key: "care", label: "Chất liệu & Bảo quản" },
-                { key: "reviews", label: `Đánh giá (${outfit.feedbackCount})` },
+                { key: "desc", label: "MIÊU TẢ" },
+                { key: "size", label: "KÍCH THƯỚC" },
+                { key: "reviews", label: `ĐÁNH GIÁ (${outfit.feedbackCount})` },
               ] as const
             ).map((tab) => {
               const isActive = activeTab === tab.key;
@@ -682,31 +848,34 @@ export const OutfitDetail = (): JSX.Element => {
                 <button
                   key={tab.key}
                   onClick={() => setActiveTab(tab.key)}
-                  className={`relative py-4 font-bold text-[15px] whitespace-nowrap transition-colors ${isActive ? "text-[#0ea5e9]" : "text-gray-400 hover:text-gray-600"
+                  className={`group relative pb-2 text-[10px] font-black transition-all whitespace-nowrap tracking-wider ${isActive ? "text-[#0ea5e9]" : "text-gray-400 hover:text-gray-600"
                     }`}
                 >
                   {tab.label}
                   {isActive && (
-                    <motion.div layoutId="tab-indicator" className="absolute bottom-0 left-0 right-0 h-[3px] bg-[#0ea5e9] rounded-t-full" />
+                    <motion.div
+                      layoutId="activeTabUnderline"
+                      className="absolute bottom-[-2px] left-0 right-0 h-[3px] bg-[#0ea5e9] rounded-t-full z-10"
+                    />
                   )}
                 </button>
               );
             })}
           </div>
 
-          <div className="py-8 min-h-[300px]">
+          <div className="py-6 min-h-[300px]">
             {activeTab === "desc" && (
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
-                <h3 className="font-baloo tracking-tight font-extrabold text-2xl text-gray-900 mb-6">
+                <h3 className="font-baloo tracking-tight font-black text-xl text-gray-900 mb-4 uppercase">
                   Chi tiết sản phẩm
                 </h3>
                 {outfit.description ? (
                   <div
-                    className="prose-detail-content text-[15px] text-gray-600 leading-relaxed max-w-4xl"
+                    className="prose-detail-content text-[15px] text-gray-600 leading-relaxed max-w-3xl"
                     dangerouslySetInnerHTML={{ __html: outfit.description }}
                   />
                 ) : (
-                  <p className="text-sm font-medium text-gray-400">Chưa có mô tả chi tiết.</p>
+                  <p className="text-sm font-medium text-gray-400 uppercase">CHƯA CÓ MÔ TẢ.</p>
                 )}
                 <style>{`
                   .prose-detail-content h2 { font-size: 1.3rem; font-weight: 800; margin: 1rem 0 0.5rem; color: #111827; }
@@ -739,16 +908,15 @@ export const OutfitDetail = (): JSX.Element => {
               </motion.div>
             )}
 
-            {activeTab === "care" && (
+            {activeTab === "size" && (
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
-                <h3 className="font-baloo tracking-tight font-extrabold text-2xl text-gray-900 mb-6">
-                  Bảng kích thước
+                <h3 className="font-baloo tracking-tight font-black text-lg text-gray-900 mb-3 uppercase">
+                  Bảng kích thước chuẩn
                 </h3>
                 {(() => {
                   if (!outfit.sizeChart || outfit.sizeChart.details.length === 0) {
-                    return <p className="text-sm font-medium text-gray-400">Chưa có bảng kích thước.</p>;
+                    return <p className="text-[10px] font-medium text-gray-400">CHƯA CÓ DỮ LIỆU.</p>;
                   }
-                  // Collect all unique measurement fields across all size details
                   const allFields: { fieldKey: string; displayName: string; unit: string }[] = [];
                   const seenKeys = new Set<string>();
                   for (const d of outfit.sizeChart.details) {
@@ -760,16 +928,16 @@ export const OutfitDetail = (): JSX.Element => {
                     }
                   }
                   if (allFields.length === 0) {
-                    return <p className="text-sm font-medium text-gray-400">Chưa có số đo nào được cấu hình.</p>;
+                    return <p className="text-[10px] font-medium text-gray-400">CHƯA CÓ SỐ ĐO.</p>;
                   }
                   return (
-                    <div className="overflow-x-auto border border-gray-100 rounded-2xl shadow-[0_2px_10px_rgb(0,0,0,0.02)] max-w-4xl">
-                      <table className="w-full text-sm">
+                    <div className="overflow-x-auto border-[2px] border-[#1A1A2E] rounded-xl shadow-[3px_3px_0_#1A1A2E] max-w-2xl bg-white">
+                      <table className="w-full text-[10px] border-collapse">
                         <thead>
-                          <tr className="bg-gray-50/80 border-b border-gray-100">
-                            <th className="font-bold text-left px-5 py-4 text-gray-700 whitespace-nowrap">Kích thước</th>
+                          <tr className="bg-[#FFF1BF] border-b-[2px] border-[#1A1A2E]">
+                            <th className="font-black text-left px-3 py-2 text-gray-900 whitespace-nowrap uppercase">SIZE</th>
                             {allFields.map((f) => (
-                              <th key={f.fieldKey} className="font-bold text-center px-4 py-4 text-gray-700 whitespace-nowrap">
+                              <th key={f.fieldKey} className="font-black text-center px-2 py-2 text-gray-900 whitespace-nowrap uppercase">
                                 {f.displayName} ({f.unit})
                               </th>
                             ))}
@@ -777,15 +945,15 @@ export const OutfitDetail = (): JSX.Element => {
                         </thead>
                         <tbody>
                           {outfit.sizeChart.details.map((d) => (
-                            <tr key={d.sizeLabel} className="border-b border-gray-50/50 hover:bg-sky-50/30 transition-colors bg-white">
-                              <td className="font-extrabold px-5 py-4 text-gray-900">{d.sizeLabel}</td>
+                            <tr key={d.sizeLabel} className="border-b border-[#1A1A2E]/10 hover:bg-sky-50 transition-colors">
+                              <td className="font-black px-3 py-2 text-gray-900 bg-gray-50/50">{d.sizeLabel}</td>
                               {allFields.map((f) => {
                                 const m = d.measurements.find((item) => item.fieldKey === f.fieldKey);
                                 const display = m
                                   ? [m.minValue, m.maxValue].filter((v) => v != null).join(" - ") || "-"
                                   : "-";
                                 return (
-                                  <td key={f.fieldKey} className="text-center px-4 py-4 font-medium text-gray-600">
+                                  <td key={f.fieldKey} className="text-center px-2 py-2 font-bold text-gray-600">
                                     {display}
                                   </td>
                                 );
@@ -802,38 +970,49 @@ export const OutfitDetail = (): JSX.Element => {
 
             {activeTab === "reviews" && (
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
-                {/* Rating Summary */}
-                <div className="flex items-center gap-5 p-6 bg-white border border-gray-100 rounded-3xl max-w-max shadow-[0_4px_20px_rgb(0,0,0,0.02)] mb-8">
-                  <span className="font-baloo font-extrabold text-[56px] leading-none text-gray-900">
-                    {outfit.averageRating}
+                {/* Rating Summary Card */}
+                <div className="flex items-center gap-4 p-4 bg-white border-[2.5px] border-[#1A1A2E] rounded-xl shadow-[3px_3px_0_#1A1A2E] max-w-max mb-6">
+                  <span className="font-baloo font-black text-4xl leading-none text-gray-900">
+                    {outfit.averageRating?.toFixed(1) || "0.0"}
                   </span>
                   <div>
-                    <div className="flex items-center gap-1 mb-1">
-                      {[1, 2, 3, 4, 5].map((s) => (
-                        <Star key={s} className={`w-5 h-5 ${s <= Math.round(outfit.averageRating) ? "fill-yellow-400 text-yellow-400" : "fill-gray-200 text-gray-200"}`} />
-                      ))}
+                    <div className="flex items-center gap-0.5 mb-0.5">
+                      {[1, 2, 3, 4, 5].map((s) => {
+                        const diff = (outfit.averageRating || 0) - s + 1;
+                        return (
+                          <div key={s} className="relative w-3.5 h-3.5">
+                            <Star className="absolute inset-0 w-3.5 h-3.5 fill-gray-200 text-gray-200" />
+                            <div
+                              className="absolute inset-0 overflow-hidden"
+                              style={{ width: `${Math.max(0, Math.min(100, diff * 100))}%` }}
+                            >
+                              <Star className="w-3.5 h-3.5 fill-gray-900 text-gray-900" />
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
-                    <p className="font-bold text-[13px] text-gray-400">
-                      {outfit.feedbackCount} đánh giá
+                    <p className="font-black text-[9px] text-gray-400 uppercase tracking-wider">
+                      {outfit.feedbackCount} phụ huynh đánh giá
                     </p>
                   </div>
                 </div>
 
                 {/* Rating Badges Filter */}
                 {outfit.feedbackCount > 0 && (
-                  <div className="flex flex-wrap gap-3 mb-8">
+                  <div className="flex flex-wrap gap-2 mb-6">
                     {/* All badge */}
                     <button
                       onClick={() => {
                         setSelectedRatingFilter("all");
                         setReviewPage(1);
                       }}
-                      className={`px-4 py-2 rounded-full font-bold text-[13px] transition-all border-2 ${selectedRatingFilter === "all"
-                          ? "border-[#0ea5e9] bg-[#0ea5e9]/10 text-[#0ea5e9]"
-                          : "border-gray-200 bg-white text-gray-600 hover:border-gray-300"
+                      className={`px-2.5 py-1 rounded-lg font-black text-[10px] transition-all border-[1.5px] uppercase tracking-widest ${selectedRatingFilter === "all"
+                        ? "border-[#1A1A2E] bg-[#0ea5e9] text-white shadow-[1.5px_1.5px_0_#1A1A2E]"
+                        : "border-[#1A1A2E] bg-white text-gray-600 hover:translate-x-[0.5px] hover:translate-y-[0.5px] hover:shadow-[0.5px_0.5px_0_#1A1A2E]"
                         }`}
                     >
-                      Tất cả ({outfit.feedbackCount})
+                      TẤT CẢ ({outfit.feedbackCount})
                     </button>
 
                     {/* Rating-specific badges */}
@@ -846,24 +1025,14 @@ export const OutfitDetail = (): JSX.Element => {
                             setSelectedRatingFilter(rating);
                             setReviewPage(1);
                           }}
-                          className={`px-4 py-2 rounded-full font-bold text-[13px] transition-all border-2 flex items-center gap-1.5 ${selectedRatingFilter === rating
-                              ? "border-[#0ea5e9] bg-[#0ea5e9]/10 text-[#0ea5e9]"
-                              : "border-gray-200 bg-white text-gray-600 hover:border-gray-300"
+                          className={`px-2 py-1 rounded-lg font-black text-[10px] transition-all border-[1.5px] flex items-center gap-1 uppercase ${selectedRatingFilter === rating
+                            ? "border-[#1A1A2E] bg-[#0ea5e9] text-white shadow-[1.5px_1.5px_0_#1A1A2E]"
+                            : "border-[#1A1A2E] bg-white text-gray-600 hover:translate-x-[0.5px] hover:translate-y-[0.5px] hover:shadow-[0.5px_0.5px_0_#1A1A2E]"
                             } ${count === 0 ? "opacity-50 cursor-not-allowed" : ""}`}
                           disabled={count === 0}
                         >
-                          <div className="flex items-center gap-0.5">
-                            {[1, 2, 3, 4, 5].map((s) => (
-                              <Star
-                                key={s}
-                                className={`w-3.5 h-3.5 ${s <= rating
-                                    ? "fill-yellow-400 text-yellow-400"
-                                    : "fill-gray-200 text-gray-200"
-                                  }`}
-                              />
-                            ))}
-                          </div>
-                          <span>({count})</span>
+                          <Star className="w-2.5 h-2.5 fill-gray-900 text-gray-900" />
+                          <span>{rating} ({count})</span>
                         </button>
                       );
                     })}
@@ -892,40 +1061,40 @@ export const OutfitDetail = (): JSX.Element => {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.2 }}
-                            className="bg-white border border-gray-100 rounded-2xl p-5 shadow-[0_2px_8px_rgb(0,0,0,0.03)] hover:shadow-[0_4px_12px_rgb(0,0,0,0.06)] transition-shadow"
+                            className="bg-white border-[1.5px] border-[#1A1A2E] rounded-xl p-3 shadow-[2px_2px_0_#1A1A2E] hover:translate-x-[0.5px] hover:translate-y-[0.5px] hover:shadow-[1px_1px_0_#1A1A2E] transition-all"
                           >
                             {/* Header: Avatar, name, rating */}
-                            <div className="flex items-start gap-4 mb-3">
+                            <div className="flex items-start gap-3 mb-2">
                               <div className="flex-shrink-0">
                                 {review.userAvatarUrl ? (
                                   <img
                                     src={review.userAvatarUrl}
                                     alt={review.userName}
-                                    className="w-12 h-12 rounded-full object-cover border-2 border-gray-100"
+                                    className="w-8 h-8 rounded-full object-cover border border-[#1A1A2E]"
                                   />
                                 ) : (
-                                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#0ea5e9] to-[#06b6d4] flex items-center justify-center text-white font-bold text-lg border-2 border-gray-100">
+                                  <div className="w-8 h-8 rounded-full bg-sky-100 flex items-center justify-center text-sky-600 font-black text-[10px] border border-[#1A1A2E]">
                                     {review.userName.charAt(0).toUpperCase()}
                                   </div>
                                 )}
                               </div>
                               <div className="flex-1 min-w-0">
-                                <div className="flex items-center justify-between gap-2 mb-2">
-                                  <p className="font-bold text-[14px] text-gray-900 truncate">
+                                <div className="flex items-center justify-between gap-2 mb-0.5">
+                                  <p className="font-black text-[11px] text-gray-900 truncate uppercase">
                                     {review.userName}
                                   </p>
-                                  <span className="text-xs font-medium text-gray-400 flex-shrink-0">
+                                  <span className="text-[9px] font-bold text-gray-400 flex-shrink-0">
                                     {formatDate(review.timestamp)}
                                   </span>
                                 </div>
                                 {/* Rating stars */}
-                                <div className="flex items-center gap-1">
+                                <div className="flex items-center gap-0.5">
                                   {[1, 2, 3, 4, 5].map((s) => (
                                     <Star
                                       key={s}
-                                      className={`w-4 h-4 ${s <= review.rating
-                                          ? "fill-yellow-400 text-yellow-400"
-                                          : "fill-gray-200 text-gray-200"
+                                      className={`w-2.5 h-2.5 ${s <= review.rating
+                                        ? "fill-gray-900 text-gray-900"
+                                        : "fill-gray-200 text-gray-200"
                                         }`}
                                     />
                                   ))}
@@ -935,7 +1104,7 @@ export const OutfitDetail = (): JSX.Element => {
 
                             {/* Comment */}
                             {review.comment && (
-                              <p className="text-[14px] text-gray-600 leading-relaxed line-clamp-4">
+                              <p className="text-[11px] text-gray-600 leading-normal line-clamp-3 font-medium">
                                 {review.comment}
                               </p>
                             )}
@@ -945,30 +1114,30 @@ export const OutfitDetail = (): JSX.Element => {
 
                       {/* Pagination Controls */}
                       {totalReviewPages > 1 && (
-                        <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                          <div className="text-sm font-medium text-gray-500">
+                        <div className="flex items-center justify-between pt-3 border-t-[1.5px] border-[#1A1A2E] mt-4">
+                          <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
                             Trang {reviewPage} / {totalReviewPages}
                           </div>
                           <div className="flex items-center gap-2">
                             <button
                               onClick={() => setReviewPage(Math.max(1, reviewPage - 1))}
                               disabled={reviewPage === 1}
-                              className={`px-3 py-2 rounded-lg font-bold text-[13px] border-2 transition-all ${reviewPage === 1
-                                  ? "border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed"
-                                  : "border-[#0ea5e9] bg-white text-[#0ea5e9] hover:bg-[#0ea5e9]/5"
+                              className={`px-2.5 py-1 rounded-lg font-black text-[10px] border-[1.5px] uppercase transition-all ${reviewPage === 1
+                                ? "border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed"
+                                : "border-[#1A1A2E] bg-white text-gray-900 shadow-[2px_2px_0_#1A1A2E] hover:translate-x-[0.5px] hover:translate-y-[0.5px] hover:shadow-[1px_1px_0_#1A1A2E]"
                                 }`}
                             >
-                              ← Trước
+                              Trước
                             </button>
                             <button
                               onClick={() => setReviewPage(Math.min(totalReviewPages, reviewPage + 1))}
                               disabled={reviewPage === totalReviewPages}
-                              className={`px-3 py-2 rounded-lg font-bold text-[13px] border-2 transition-all ${reviewPage === totalReviewPages
-                                  ? "border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed"
-                                  : "border-[#0ea5e9] bg-white text-[#0ea5e9] hover:bg-[#0ea5e9]/5"
+                              className={`px-2.5 py-1 rounded-lg font-black text-[10px] border-[1.5px] uppercase transition-all ${reviewPage === totalReviewPages
+                                ? "border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed"
+                                : "border-[#1A1A2E] bg-white text-gray-900 shadow-[2px_2px_0_#1A1A2E] hover:translate-x-[0.5px] hover:translate-y-[0.5px] hover:shadow-[1px_1px_0_#1A1A2E]"
                                 }`}
                             >
-                              Tiếp →
+                              Tiếp
                             </button>
                           </div>
                         </div>
@@ -983,13 +1152,13 @@ export const OutfitDetail = (): JSX.Element => {
 
         {/* ───── Related Products ───── */}
         {related.length > 0 && (
-          <motion.div custom={4} variants={fadeUp} initial="hidden" animate="visible" className="mb-12 pt-8 border-t border-gray-200/50">
-            <div className="flex items-end justify-between mb-8">
-              <h2 className="font-baloo font-extrabold text-[28px] text-gray-900 tracking-tight">
-                Có thể bạn cũng thích
+          <motion.div custom={4} variants={fadeUp} initial="hidden" animate="visible" className="mt-10 pt-6 border-t-[2.5px] border-[#1A1A2E]">
+            <div className="flex items-end justify-between mb-6">
+              <h2 className="font-baloo font-black text-xl text-gray-900 tracking-tight uppercase">
+                Gợi ý cho bạn
               </h2>
-              <Link to={`/schools/${outfit.school.schoolId}`} className="font-bold text-[14px] text-[#0ea5e9] hover:text-[#0284c7] flex items-center gap-1.5 transition-colors">
-                Xem tất cả <ChevronRight className="w-4 h-4" />
+              <Link to={`/schools/${outfit.school.schoolId}`} className="font-black text-[11px] text-[#0ea5e9] hover:underline flex items-center gap-1 uppercase tracking-widest">
+                XEM THÊM <ChevronRight className="w-3 h-3" />
               </Link>
             </div>
 
@@ -1004,36 +1173,35 @@ export const OutfitDetail = (): JSX.Element => {
               )}
 
               <div className="overflow-hidden py-4 -my-4 px-2 -mx-2">
-                <div className="flex gap-4 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]" style={{ transform: `translateX(-${relatedScroll * 280}px)` }}>
+                <div className="flex gap-4 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]" style={{ transform: `translateX(-${relatedScroll * 206}px)` }}>
                   {related.map((item) => (
                     <div
                       key={item.outfitId}
                       onClick={() => navigate(`/outfits/${item.outfitId}`)}
-                      className="w-[264px] flex-shrink-0 bg-white rounded-3xl p-3 shadow-[0_2px_12px_rgb(0,0,0,0.02)] border border-gray-100/60 hover:shadow-[0_8px_24px_rgb(0,0,0,0.06)] hover:border-gray-200 transition-all duration-300 hover:-translate-y-1 cursor-pointer group flex flex-col"
+                      className="w-[190px] flex-shrink-0 bg-white rounded-lg p-2 border-[1.5px] border-[#1A1A2E] shadow-[2.5px_2.5px_0_#1A1A2E] hover:translate-x-[0.5px] hover:translate-y-[0.5px] hover:shadow-[1px_1px_0_#1A1A2E] transition-all cursor-pointer group flex flex-col"
                     >
-                      <div className="w-full aspect-square bg-gray-50 rounded-2xl overflow-hidden relative border border-gray-100/50">
+                      <div className="w-full aspect-[4/5] bg-gray-50 rounded-md overflow-hidden relative border border-gray-100/50">
                         {item.mainImageURL ? (
-                          <img src={item.mainImageURL} alt={item.outfitName} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                          <img src={item.mainImageURL} alt={item.outfitName} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">
-                            <GraduationCap className="w-10 h-10 text-gray-300" />
+                            <GraduationCap className="w-7 h-7 text-gray-300" />
                           </div>
                         )}
-                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/[0.03] transition-colors duration-300" />
                       </div>
 
-                      <div className="px-1 pt-4 pb-1 flex flex-col gap-0.5">
-                        <div className="flex items-start justify-between gap-3">
-                          <h4 className="font-baloo tracking-tight font-extrabold text-[17px] text-gray-800 line-clamp-1 group-hover:text-[#0ea5e9] transition-colors leading-snug">
-                            {item.outfitName}
-                          </h4>
-                          <p className="font-extrabold text-[14px] text-gray-900 whitespace-nowrap leading-snug drop-shadow-sm mt-1">
+                      <div className="px-0.5 pt-2 pb-0 flex flex-col gap-0.5">
+                        <h4 className="font-baloo tracking-tight font-black text-[11px] text-gray-900 line-clamp-1 uppercase leading-snug">
+                          {item.outfitName}
+                        </h4>
+                        <div className="flex items-center justify-between">
+                          <p className="font-black text-[10px] text-[#0ea5e9]">
                             {fmt(item.price)}
                           </p>
+                          <p className="font-bold text-[8px] text-gray-400 uppercase">
+                            {item.outfitType === 'Female' ? 'Nữ' : item.outfitType === 'Male' ? 'Nam' : 'Unisex'}
+                          </p>
                         </div>
-                        <p className="font-medium text-[13px] text-gray-400">
-                          {outfit.school?.schoolName ?? "THPT"} - {item.outfitType === 'Female' ? 'Nữ' : item.outfitType === 'Male' ? 'Nam' : 'Unisex'}
-                        </p>
                       </div>
                     </div>
                   ))}

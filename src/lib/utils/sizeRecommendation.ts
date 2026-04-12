@@ -29,6 +29,7 @@ export type SizeRecommendation = {
     confidence: "high" | "medium" | "low";
     reason: string;
     source?: "bodygram" | "fallback";
+    fitPercentage?: number;
 };
 
 function normalizeToken(value: string): string {
@@ -81,8 +82,9 @@ export function recommendSize(
             recommendedVariantId: null,
             recommendedSize: "",
             confidence: "low",
-            reason: "Chua cap nhat chieu cao cua con",
+            reason: "Chưa cập nhật chiều cao của trẻ",
             source: "fallback",
+            fitPercentage: 0,
         };
     }
 
@@ -91,8 +93,9 @@ export function recommendSize(
             recommendedVariantId: null,
             recommendedSize: "",
             confidence: "low",
-            reason: "Chua co kich co nao",
+            reason: "Hiện chưa có thông tin kích cỡ cho sản phẩm này",
             source: "fallback",
+            fitPercentage: 0,
         };
     }
 
@@ -100,13 +103,14 @@ export function recommendSize(
     const matched = matchVariant(label, aliases, variants);
 
     if (matched) {
-        const weightNote = weightKg > 0 ? `, can nang ${weightKg}kg` : "";
+        const weightNote = weightKg > 0 ? `, cân nặng ${weightKg}kg` : "";
         return {
             recommendedVariantId: matched.productVariantId,
             recommendedSize: matched.size,
             confidence: "high",
-            reason: `Phu hop chieu cao ${heightCm}cm${weightNote}`,
+            reason: `Phù hợp với chiều cao ${heightCm}cm${weightNote}`,
             source: "fallback",
+            fitPercentage: 100,
         };
     }
 
@@ -114,8 +118,9 @@ export function recommendSize(
         recommendedVariantId: null,
         recommendedSize: label,
         confidence: "medium",
-        reason: `Goi y size ${label} theo chieu cao ${heightCm}cm, nhung khong tim thay trong danh sach`,
+        reason: `Gợi ý kích cỡ ${label} căn cứ theo chiều cao ${heightCm}cm, nhưng không tìm thấy kích cỡ tương ứng trong danh sách`,
         source: "fallback",
+        fitPercentage: 100,
     };
 }
 
@@ -217,62 +222,105 @@ export function recommendSizeFromBodygram(
             recommendedVariantId: null,
             recommendedSize: "",
             confidence: "medium",
-            reason: "Outfit chua cau hinh so do Bodygram",
+            reason: "Sản phẩm chưa được cấu hình bảng số đo chi tiết từ Bodygram",
             source: "bodygram",
+            fitPercentage: 0,
         };
     }
 
-    const missingFieldNames = new Set<string>();
+    let bestMatch:
+        | {
+              variant: OutfitVariantDto;
+              matchedCount: number;
+              totalCount: number;
+              mismatchedFields: string[];
+              missingFields: string[];
+          }
+        | null = null;
 
     for (const entry of measuredVariants) {
         const measurements = getEffectiveMeasurements(entry.detail);
-        const fitsAllFields = measurements.every((measurement) => {
+        let matchedCount = 0;
+        const mismatchedFields: string[] = [];
+        const missingFields: string[] = [];
+
+        for (const measurement of measurements) {
             const value = getBodygramMeasurementValue(scan, measurement.fieldKey, measurement.unit);
             const range = getMeasurementRange(measurement);
 
             if (value == null) {
-                missingFieldNames.add(measurement.displayName);
-                return false;
+                missingFields.push(measurement.displayName);
+                continue;
             }
 
             if (range.min != null && value < range.min) {
-                return false;
+                mismatchedFields.push(measurement.displayName);
+                continue;
             }
 
             if (range.max != null && value > range.max) {
-                return false;
+                mismatchedFields.push(measurement.displayName);
+                continue;
             }
 
-            return true;
-        });
+            matchedCount++;
+        }
 
-        if (fitsAllFields) {
-            const scanDate = new Date(scan.scannedAt).toLocaleDateString("vi-VN");
-            return {
-                recommendedVariantId: entry.variant.productVariantId,
-                recommendedSize: entry.variant.size,
-                confidence: "high",
-                reason: `Goi y theo scan Bodygram ngay ${scanDate}`,
-                source: "bodygram",
-            }
+        if (
+            bestMatch == null ||
+            matchedCount > bestMatch.matchedCount ||
+            (matchedCount == bestMatch.matchedCount && measurements.length > bestMatch.totalCount)
+        ) {
+            bestMatch = {
+                variant: entry.variant,
+                matchedCount,
+                totalCount: measurements.length,
+                mismatchedFields,
+                missingFields,
+            };
         }
     }
 
-    if (missingFieldNames.size > 0) {
+    if (bestMatch == null || bestMatch.totalCount === 0) {
         return {
             recommendedVariantId: null,
             recommendedSize: "",
             confidence: "low",
-            reason: `Thieu so do Bodygram cho ${Array.from(missingFieldNames).join(", ")}`,
+            reason: "Thiếu dữ liệu số đo cơ thể để thực hiện phân tích theo Bodygram",
             source: "bodygram",
+            fitPercentage: 0,
+        };
+    }
+
+    const fitPercentage = Math.round((bestMatch.matchedCount / bestMatch.totalCount) * 100);
+    const issueParts: string[] = [];
+    if (bestMatch.mismatchedFields.length > 0) {
+        issueParts.push(`không vừa tại: ${bestMatch.mismatchedFields.join(", ")}`);
+    }
+    if (bestMatch.missingFields.length > 0) {
+        issueParts.push(`thiếu số đo: ${bestMatch.missingFields.join(", ")}`);
+    }
+
+    const scanDate = new Date(scan.scannedAt).toLocaleDateString("vi-VN");
+    const issueText = issueParts.length > 0 ? `. (Lưu ý: ${issueParts.join(", ")})` : "";
+
+    if (fitPercentage === 100) {
+        return {
+            recommendedVariantId: bestMatch.variant.productVariantId,
+            recommendedSize: bestMatch.variant.size,
+            confidence: "high",
+            reason: `Gợi ý kích cỡ ${bestMatch.variant.size}, khớp hoàn toàn (100%) theo dữ liệu quét ngày ${scanDate}`,
+            source: "bodygram",
+            fitPercentage,
         };
     }
 
     return {
-        recommendedVariantId: null,
-        recommendedSize: "",
-        confidence: "medium",
-        reason: "Khong co size nao fit toan bo so do da cau hinh, da fallback theo chieu cao/can nang",
+        recommendedVariantId: bestMatch.variant.productVariantId,
+        recommendedSize: bestMatch.variant.size,
+        confidence: fitPercentage >= 60 ? "medium" : "low",
+        reason: `Gợi ý kích cỡ ${bestMatch.variant.size}, độ chuẩn xác ${fitPercentage}% (${bestMatch.matchedCount}/${bestMatch.totalCount} chỉ số) theo dữ liệu quét ngày ${scanDate}${issueText}`,
         source: "bodygram",
+        fitPercentage,
     };
 }

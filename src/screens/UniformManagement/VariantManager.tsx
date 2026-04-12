@@ -212,7 +212,7 @@ export default function VariantManager({
                         <div className="mb-2 inline-flex items-center gap-2 rounded-[8px] border-[2px] border-[#19182B] bg-[#FFD978] px-3 py-1 text-[12px] font-black shadow-[2px_2px_0_#19182B]">
                             QUAN LY KICH CO
                         </div>
-                        <h2 className="text-[24px] font-black leading-none text-[#19182B]">Kich co san pham</h2>
+                        <h2 className="text-[24px] font-black leading-none text-[#19182B]">Kích cỡ sản phẩm</h2>
                         <p className="mt-2 text-[14px] font-semibold text-[#6F6A7D]">{outfitName}</p>
                     </div>
                     <button
@@ -250,7 +250,7 @@ export default function VariantManager({
 
                             <div>
                                 <label className="mb-2 block text-[14px] font-extrabold text-[#19182B]">
-                                    Kich co
+                                    Kích cỡ
                                 </label>
                                 <div className="flex flex-wrap gap-2 mb-3">
                                     {COMMON_SIZES.map((size) => (
@@ -396,7 +396,7 @@ export default function VariantManager({
                                     disabled={saving || !form.size.trim()}
                                     className="rounded-[8px] border-[3px] border-[#19182B] bg-[#8B6BFF] px-5 py-3 text-[15px] font-extrabold text-white disabled:opacity-50"
                                 >
-                                    {saving ? "Dang luu..." : editingId ? "Luu" : "Them"}
+                                    {saving ? "Đang lưu..." : editingId ? "Lưu" : "Thêm"}
                                 </button>
                             </div>
                         </form>
@@ -415,7 +415,7 @@ export default function VariantManager({
                             <table className="w-full">
                                 <thead>
                                     <tr className="bg-[#F2ECFF] border-b-[3px] border-[#19182B]">
-                                        <th className="px-5 py-3.5 text-left text-[12px] font-black text-[#19182B] uppercase tracking-wider">Kich co</th>
+                                        <th className="px-5 py-3.5 text-left text-[12px] font-black text-[#19182B] uppercase tracking-wider">Kích cỡ</th>
                                         <th className="px-5 py-3.5 text-left text-[12px] font-black text-[#19182B] uppercase tracking-wider">So do</th>
                                         <th className="px-5 py-3.5 text-right text-[12px] font-black text-[#19182B] uppercase tracking-wider">Thao tac</th>
                                     </tr>
@@ -430,7 +430,7 @@ export default function VariantManager({
                                             </td>
                                             <td className="px-5 py-3.5">
                                                 {variant.measurements.length === 0 ? (
-                                                    <span className="text-[13px] font-semibold text-[#6F6A7D]">Chua co so do, se fallback</span>
+                                                    <span className="text-[13px] font-semibold text-[#6F6A7D]">Chưa có số đo, sẽ fallback</span>
                                                 ) : (
                                                     <div className="flex flex-wrap gap-2">
                                                         {variant.measurements.map((measurement) => (
@@ -460,7 +460,7 @@ export default function VariantManager({
 
                     {!loading && variants.length === 0 && (
                         <div className="rounded-[14px] border-[2px] border-dashed border-[#8B6BFF] bg-[#F2ECFF]/50 py-12 text-center">
-                            <p className="font-extrabold text-[#19182B] text-[15px]">Chua co kich co nao</p>
+                            <p className="font-extrabold text-[#19182B] text-[15px]">Chưa có kích cỡ nào</p>
                             <p className="font-semibold text-[#6F6A7D] text-[13px] mt-1">Nhan Them kich co de bat dau</p>
                         </div>
                     )}
@@ -476,14 +476,14 @@ export default function VariantManager({
                         </div>
                         <div className="px-6 py-5">
                             <p className="font-semibold text-[#6F6A7D] text-[15px] mb-5">
-                                Kich co va cac chi so da cau hinh se bi xoa.
+                                Kích cỡ và các chỉ số đã cấu hình sẽ bị xoá.
                             </p>
                             <div className="flex justify-end gap-3">
                                 <button onClick={() => setDeletingId(null)} className="rounded-[8px] border-[3px] border-[#19182B] bg-white px-5 py-3 text-[15px] font-extrabold text-[#19182B]">
                                     Huy
                                 </button>
                                 <button onClick={handleDelete} disabled={saving} className="rounded-[8px] border-[3px] border-[#19182B] bg-[#FF6B57] px-5 py-3 text-[15px] font-extrabold text-white disabled:opacity-50">
-                                    {saving ? "Dang xoa..." : "Xoa"}
+                                    {saving ? "Đang xoá..." : "Xoá"}
                                 </button>
                             </div>
                         </div>

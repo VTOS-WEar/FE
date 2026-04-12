@@ -165,12 +165,12 @@ export const CampaignDetail = (): JSX.Element => {
 
     if (bodygramScans.length > 0) {
       const fallback = recommendSize(child.heightCm, child.weightKg, modal.variants);
-      return {
-        ...fallback,
-        confidence: fallback.confidence === "high" ? "medium" : fallback.confidence,
-        reason: `Outfit chua co size chart theo Bodygram. ${fallback.reason}`,
-      };
-    }
+        return {
+          ...fallback,
+          confidence: fallback.confidence === "high" ? "medium" : fallback.confidence,
+          reason: `Outfit chưa có size chart theo Bodygram. ${fallback.reason}`,
+        };
+      }
 
     return recommendSize(child.heightCm, child.weightKg, modal.variants);
   }, [selectedChild, children, modal.variants, modal.sizeChart, selectedScanDetail, bodygramScans]);
@@ -509,14 +509,14 @@ export const CampaignDetail = (): JSX.Element => {
 
               {selectedChild && (
                 <div>
-                  <label className="font-bold text-sm text-[#1A1A2E] mb-2 block">Lan scan Bodygram</label>
+                  <label className="font-bold text-sm text-[#1A1A2E] mb-2 block">Lần scan Bodygram</label>
                   {loadingScans ? (
                     <div className="flex items-center gap-2 text-[#97A3B6] text-sm font-semibold">
                       <div className="w-4 h-4 border-2 border-[#E5E7EB] border-t-[#B8A9E8] rounded-full animate-spin" />
-                      Dang tai lich su scan...
+                      Đang tải lịch sử scan...
                     </div>
                   ) : bodygramScans.length === 0 ? (
-                    <div className="nb-alert nb-alert-warning text-sm"><span>⚠️</span><span>Chua co lich su Bodygram, he thong se fallback theo chieu cao va can nang.</span></div>
+                    <div className="nb-alert nb-alert-warning text-sm"><span>⚠️</span><span>Chưa có lịch sử Bodygram, hệ thống sẽ fallback theo chiều cao và cân nặng.</span></div>
                   ) : (
                     <div className="relative">
                       <button
@@ -526,7 +526,7 @@ export const CampaignDetail = (): JSX.Element => {
                         <span className="font-semibold text-sm">
                           {(() => {
                             const selectedScan = bodygramScans.find(scan => scan.scanRecordId === selectedScanRecordId);
-                            if (!selectedScan) return "Chon lan scan...";
+                            if (!selectedScan) return "Chọn lần scan...";
                             return `${new Date(selectedScan.scannedAt).toLocaleDateString("vi-VN")} • ${selectedScan.heightCm}cm • ${selectedScan.weightKg}kg`;
                           })()}
                         </span>
@@ -549,7 +549,7 @@ export const CampaignDetail = (): JSX.Element => {
                         </div>
                       )}
                       {loadingScanDetail && (
-                        <p className="mt-2 text-xs font-semibold text-[#97A3B6]">Dang tai chi tiet scan...</p>
+                        <p className="mt-2 text-xs font-semibold text-[#97A3B6]">Đang tải chi tiết scan...</p>
                       )}
                     </div>
                   )}
