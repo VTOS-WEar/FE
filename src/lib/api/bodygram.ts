@@ -20,6 +20,8 @@ export interface ScanStatusResponse {
   bodygramScanId: string | null;
   heightCm?: number | null;
   weightKg?: number | null;
+  message?: string | null;
+  timeoutMinutes: number;
 }
 
 export interface BodygramHistoryItem {
