@@ -779,6 +779,7 @@ export type OutfitVariantDto = {
     size: string;
     colorVariant: string | null;
     materialType: string | null;
+    stockQuantity: number;
     price: number;
     skuCode: string | null;
     variantImageURL: string | null;
