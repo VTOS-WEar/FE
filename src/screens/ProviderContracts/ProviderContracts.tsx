@@ -314,9 +314,16 @@ export function ProviderContracts() {
                                             </button>
                                             <button
                                                 onClick={() => { openContractTemplate(selected.contractId); setShowDetail(false); setSelected(null); }}
-                                                className="nb-btn flex-1 text-sm bg-[#EDE9FE] border-[#1A1A2E]"
+                                                className="nb-btn flex-1 bg-[#EDE9FE] border-[#1A1A2E]"
                                             >
-                                                ✍️ Xem & Ký HĐ
+                                                📄 Xem HĐ
+                                            </button>
+                                            <button
+                                                onClick={handleApprove}
+                                                disabled={actionLoading}
+                                                className="nb-btn nb-btn-green flex-1"
+                                            >
+                                                {actionLoading ? "Đang xử lý..." : "✅ Duyệt"}
                                             </button>
                                         </div>
                                     )}
