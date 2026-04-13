@@ -242,8 +242,8 @@ export function ContractTemplate({
 
     const bothSigned = !!localSchoolSig && !!localProviderSig;
 
-    // ── Sign button logic — only show when it's this party's turn ──
-    const canSchoolSign = viewerRole === "school" && contract.status === "PendingSchoolSign" && !localSchoolSig;
+    // ── Sign button logic — School can sign at Pending or PendingSchoolSign ──
+    const canSchoolSign = viewerRole === "school" && (contract.status === "Pending" || contract.status === "PendingSchoolSign") && !localSchoolSig;
     const canProviderSign = viewerRole === "provider" && contract.status === "PendingProviderSign" && !localProviderSig;
 
     return (
@@ -263,11 +263,10 @@ export function ContractTemplate({
 
                     <div className="flex items-center gap-2 flex-shrink-0">
                         {successMsg && (
-                            <span className={`text-xs font-bold px-3 py-1 rounded border ${
-                                successMsg.startsWith("❌")
-                                    ? "text-[#991B1B] bg-[#FEE2E2] border-[#FECACA]"
-                                    : "text-[#059669] bg-[#D1FAE5] border-[#059669]"
-                            }`}>
+                            <span className={`text-xs font-bold px-3 py-1 rounded border ${successMsg.startsWith("❌")
+                                ? "text-[#991B1B] bg-[#FEE2E2] border-[#FECACA]"
+                                : "text-[#059669] bg-[#D1FAE5] border-[#059669]"
+                                }`}>
                                 {successMsg}
                             </span>
                         )}
@@ -391,16 +390,16 @@ export function ContractTemplate({
                                         ["Chức vụ:", contract.schoolRepTitle],
                                         ["Điện thoại:", contract.schoolPhone],
                                     ].filter(([, value]) => value != null && value !== "")
-                                    .map(([label, value]) => (
-                                        <tr key={label}>
-                                            <td style={{ paddingLeft: "20px", paddingRight: "8px", width: "160px", verticalAlign: "top", color: "#4B5563" }}>
-                                                {label}
-                                            </td>
-                                            <td style={{ fontWeight: "600", color: "#1A1A2E" }}>
-                                                {value}
-                                            </td>
-                                        </tr>
-                                    ))}
+                                        .map(([label, value]) => (
+                                            <tr key={label}>
+                                                <td style={{ paddingLeft: "20px", paddingRight: "8px", width: "160px", verticalAlign: "top", color: "#4B5563" }}>
+                                                    {label}
+                                                </td>
+                                                <td style={{ fontWeight: "600", color: "#1A1A2E" }}>
+                                                    {value}
+                                                </td>
+                                            </tr>
+                                        ))}
                                 </tbody>
                             </table>
                         </div>
@@ -421,16 +420,16 @@ export function ContractTemplate({
                                         ["Điện thoại:", contract.providerPhone],
                                         ["Email:", contract.providerEmail],
                                     ].filter(([, value]) => value != null && value !== "")
-                                    .map(([label, value]) => (
-                                        <tr key={label}>
-                                            <td style={{ paddingLeft: "20px", paddingRight: "8px", width: "160px", verticalAlign: "top", color: "#4B5563" }}>
-                                                {label}
-                                            </td>
-                                            <td style={{ fontWeight: "600", color: "#1A1A2E" }}>
-                                                {value}
-                                            </td>
-                                        </tr>
-                                    ))}
+                                        .map(([label, value]) => (
+                                            <tr key={label}>
+                                                <td style={{ paddingLeft: "20px", paddingRight: "8px", width: "160px", verticalAlign: "top", color: "#4B5563" }}>
+                                                    {label}
+                                                </td>
+                                                <td style={{ fontWeight: "600", color: "#1A1A2E" }}>
+                                                    {value}
+                                                </td>
+                                            </tr>
+                                        ))}
                                 </tbody>
                             </table>
                         </div>
