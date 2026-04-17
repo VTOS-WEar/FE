@@ -7,7 +7,7 @@ export const AccountSetting = (): JSX.Element => {
     <div className="bg-white w-full min-h-screen flex flex-col">
       <Navbar />
 
-      <main className="flex-1 bg-[#FFF8F0] py-12 px-4 lg:px-8 relative overflow-hidden">
+      <main className="flex-1 bg-gray-50 py-12 px-4 lg:px-8 relative overflow-hidden">
         {/* NB decorative shapes */}
 
         <div className="max-w-7xl mx-auto relative z-10">

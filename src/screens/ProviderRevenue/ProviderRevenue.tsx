@@ -67,8 +67,8 @@ export default function ProviderRevenue() {
 
                 <div className="flex-1 flex flex-col min-w-0">
                     <TopNavBar>
-                        <h1 className="font-extrabold text-[#1A1A2E] text-2xl">📊 Doanh thu</h1>
-                        <p className="font-medium text-[#6B7280] text-sm mt-1">Theo dõi thu nhập và thanh toán</p>
+                        <h1 className="font-extrabold text-gray-900 text-2xl">📊 Doanh thu</h1>
+                        <p className="font-medium text-gray-500 text-sm mt-1">Theo dõi thu nhập và thanh toán</p>
                     </TopNavBar>
 
                     <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-6">
@@ -94,17 +94,17 @@ export default function ProviderRevenue() {
                                     </div>
                                     <div className="nb-stat-card">
                                         <p className="nb-stat-label">Số tiền chờ</p>
-                                        <p className="nb-stat-value text-[#EF4444] mt-2">{fmt(revenue?.pendingAmount ?? 0)}</p>
+                                        <p className="nb-stat-value text-red-500 mt-2">{fmt(revenue?.pendingAmount ?? 0)}</p>
                                     </div>
                                 </div>
 
                                 {/* Payment History — NB table */}
                                 <div className="nb-card-static overflow-hidden">
-                                    <div className="px-6 py-4 border-b-2 border-[#1A1A2E]">
-                                        <h2 className="font-extrabold text-[#1A1A2E] text-lg">💸 Lịch sử nhận tiền</h2>
+                                    <div className="px-6 py-4 border-b border-gray-200">
+                                        <h2 className="font-extrabold text-gray-900 text-lg">💸 Lịch sử nhận tiền</h2>
                                     </div>
                                     {payments.length === 0 ? (
-                                        <p className="text-center py-10 text-[#9CA3AF] font-medium">Chưa nhận thanh toán nào</p>
+                                        <p className="text-center py-10 text-gray-400 font-medium">Chưa nhận thanh toán nào</p>
                                     ) : (
                                         <>
                                             <div className="overflow-x-auto">
@@ -120,8 +120,8 @@ export default function ProviderRevenue() {
                                                     <tbody>
                                                         {payments.map(p => (
                                                             <tr key={p.paymentId}>
-                                                                <td className="text-[#4C5769]">{fmtDate(p.timestamp)}</td>
-                                                                <td className="font-bold text-[#1A1A2E]">{p.description || `Đơn #${p.orderId?.slice(0, 8)}`}</td>
+                                                                <td className="text-gray-600">{fmtDate(p.timestamp)}</td>
+                                                                <td className="font-bold text-gray-900">{p.description || `Đơn #${p.orderId?.slice(0, 8)}`}</td>
                                                                 <td className="text-right font-extrabold text-[#10B981]">+{fmt(p.amount)}</td>
                                                                 <td className="text-center">
                                                                     <span className="nb-badge nb-badge-green">
@@ -134,9 +134,9 @@ export default function ProviderRevenue() {
                                                 </table>
                                             </div>
                                             {totalPages > 1 && (
-                                                <div className="flex justify-center gap-2 px-6 py-4 border-t-2 border-[#1A1A2E] bg-[#F9FAFB]">
+                                                <div className="flex justify-center gap-2 px-6 py-4 border-t border-gray-200 bg-gray-50">
                                                     <button disabled={page <= 1} onClick={() => setPage(p => p - 1)} className="nb-btn nb-btn-outline nb-btn-sm text-sm">← Trước</button>
-                                                    <span className="flex items-center text-sm text-[#6B7280] px-2 font-bold">{page}/{totalPages}</span>
+                                                    <span className="flex items-center text-sm text-gray-500 px-2 font-bold">{page}/{totalPages}</span>
                                                     <button disabled={page >= totalPages} onClick={() => setPage(p => p + 1)} className="nb-btn nb-btn-outline nb-btn-sm text-sm">Sau →</button>
                                                 </div>
                                             )}

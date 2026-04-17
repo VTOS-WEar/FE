@@ -44,15 +44,15 @@ export class ErrorBoundary extends Component<Props, State> {
                     className="min-h-screen flex items-center justify-center p-6"
                     style={{
                         fontFamily: "'Space Grotesk Variable', 'Space Grotesk', sans-serif",
-                        background: "#FFF8F0",
+                        background: "#f9fafb",
                     }}
                 >
                     <div
                         style={{
                             background: "white",
-                            border: "3px solid #1A1A2E",
-                            borderRadius: "6px",
-                            boxShadow: "4px 4px 0 #1A1A2E",
+                            border: "1px solid #e5e7eb",
+                            borderRadius: "12px",
+                            boxShadow: "0 4px 16px rgba(0,0,0,0.08)",
                             padding: "2.5rem",
                             maxWidth: "480px",
                             width: "100%",
@@ -65,8 +65,8 @@ export class ErrorBoundary extends Component<Props, State> {
                                 height: "64px",
                                 borderRadius: "50%",
                                 background: "#FEE2E2",
-                                border: "3px solid #1A1A2E",
-                                boxShadow: "3px 3px 0 #1A1A2E",
+                                border: "1px solid #e5e7eb",
+                                boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
                                 display: "flex",
                                 alignItems: "center",
                                 justifyContent: "center",
@@ -80,7 +80,7 @@ export class ErrorBoundary extends Component<Props, State> {
                             style={{
                                 fontWeight: 800,
                                 fontSize: "1.5rem",
-                                color: "#1A1A2E",
+                                color: "#111827",
                                 marginBottom: "0.5rem",
                             }}
                         >
@@ -101,7 +101,7 @@ export class ErrorBoundary extends Component<Props, State> {
                             <pre
                                 style={{
                                     background: "#F3F4F6",
-                                    border: "2px solid #1A1A2E",
+                                    border: "1px solid #e5e7eb",
                                     borderRadius: "4px",
                                     padding: "0.75rem",
                                     fontSize: "0.75rem",
@@ -124,12 +124,12 @@ export class ErrorBoundary extends Component<Props, State> {
                                     padding: "0.625rem 1.25rem",
                                     fontWeight: 700,
                                     fontSize: "0.875rem",
-                                    border: "3px solid #1A1A2E",
+                                    border: "1px solid #e5e7eb",
                                     borderRadius: "4px",
-                                    boxShadow: "2px 2px 0 #1A1A2E",
+                                    boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
                                     cursor: "pointer",
                                     background: "white",
-                                    color: "#1A1A2E",
+                                    color: "#111827",
                                     transition: "all 0.2s",
                                 }}
                             >
@@ -142,12 +142,12 @@ export class ErrorBoundary extends Component<Props, State> {
                                     padding: "0.625rem 1.25rem",
                                     fontWeight: 700,
                                     fontSize: "0.875rem",
-                                    border: "3px solid #1A1A2E",
+                                    border: "1px solid #e5e7eb",
                                     borderRadius: "4px",
-                                    boxShadow: "2px 2px 0 #1A1A2E",
+                                    boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
                                     cursor: "pointer",
-                                    background: "#B8A9E8",
-                                    color: "#1A1A2E",
+                                    background: "#8b7bc7",
+                                    color: "#111827",
                                     transition: "all 0.2s",
                                 }}
                             >

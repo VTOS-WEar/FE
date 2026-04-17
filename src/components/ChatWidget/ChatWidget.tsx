@@ -146,12 +146,12 @@ export function ChatWidget({ channelType, channelId, isOpen, onClose, contextInf
         if (msgType === "SystemNotification") {
             return (
                 <div key={m.messageId} className="flex justify-center my-2">
-                    <div className="px-3 py-2 rounded-lg bg-[#EDE9FE] border border-[#1A1A2E]/20 text-xs text-center max-w-[85%]">
+                    <div className="px-3 py-2 rounded-lg bg-violet-50 border border-gray-200/20 text-xs text-center max-w-[85%]">
                         {m.imageUrl && (
-                            <img src={m.imageUrl} alt="" className="w-16 h-16 rounded-lg object-cover mx-auto mb-2 border border-[#1A1A2E]/30" />
+                            <img src={m.imageUrl} alt="" className="w-16 h-16 rounded-lg object-cover mx-auto mb-2 border border-gray-200/30" />
                         )}
-                        <span className="font-semibold text-[#6938EF]">{m.content}</span>
-                        <p className="text-[10px] text-[#9CA3AF] mt-1">
+                        <span className="font-semibold text-violet-600">{m.content}</span>
+                        <p className="text-[10px] text-gray-400 mt-1">
                             {new Date(m.sentAt).toLocaleTimeString("vi", { hour: "2-digit", minute: "2-digit" })}
                         </p>
                     </div>
@@ -165,21 +165,21 @@ export function ChatWidget({ channelType, channelId, isOpen, onClose, contextInf
             const isAccepted = m.proposalStatus === "Accepted";
             return (
                 <div key={m.messageId} className={`max-w-[85%] ${m.isMe ? "self-end" : "self-start"}`}>
-                    {!m.isMe && <span className="text-[11px] text-[#6B7280] mb-0.5 block font-bold">{m.senderName}</span>}
-                    <div className={`rounded-xl border-2 border-[#1A1A2E] overflow-hidden shadow-[3px_3px_0_#1A1A2E] ${
+                    {!m.isMe && <span className="text-[11px] text-gray-500 mb-0.5 block font-bold">{m.senderName}</span>}
+                    <div className={`rounded-xl border border-gray-200 overflow-hidden shadow-soft-sm ${
                         m.isMe ? "bg-[#F3F0FF]" : "bg-white"
                     }`}>
                         {/* Proposal header */}
-                        <div className="px-3 py-2 bg-[#6938EF]/10 border-b border-[#1A1A2E]/20 flex items-center gap-2">
+                        <div className="px-3 py-2 bg-[#6938EF]/10 border-b border-gray-200/20 flex items-center gap-2">
                             <span className="text-sm">📋</span>
-                            <span className="text-[11px] font-extrabold text-[#6938EF] uppercase tracking-wider">Đề xuất đồng phục</span>
+                            <span className="text-[11px] font-extrabold text-violet-600 uppercase tracking-wider">Đề xuất đồng phục</span>
                             {isAccepted && (
-                                <span className="ml-auto text-[10px] font-bold bg-[#D1FAE5] text-[#065F46] px-2 py-0.5 rounded-full border border-[#065F46]/30">
+                                <span className="ml-auto text-[10px] font-bold bg-[#D1FAE5] text-emerald-800 px-2 py-0.5 rounded-full border border-[#065F46]/30">
                                     ✓ Đã chấp nhận
                                 </span>
                             )}
                             {isPending && (
-                                <span className="ml-auto text-[10px] font-bold bg-[#FEF3C7] text-[#92400E] px-2 py-0.5 rounded-full border border-[#92400E]/30">
+                                <span className="ml-auto text-[10px] font-bold bg-[#FEF3C7] text-amber-800 px-2 py-0.5 rounded-full border border-[#92400E]/30">
                                     Chờ duyệt
                                 </span>
                             )}
@@ -192,8 +192,8 @@ export function ChatWidget({ channelType, channelId, isOpen, onClose, contextInf
                         )}
                         {/* Info */}
                         <div className="px-3 py-2.5">
-                            <p className="font-bold text-[#1A1A2E] text-sm truncate">{m.proposalOutfitName || "N/A"}</p>
-                            <p className="text-[11px] text-[#6B7280] mt-0.5">{m.content}</p>
+                            <p className="font-bold text-gray-900 text-sm truncate">{m.proposalOutfitName || "N/A"}</p>
+                            <p className="text-[11px] text-gray-500 mt-0.5">{m.content}</p>
                         </div>
                         {/* Accept button (School only, Pending only) */}
                         {isSchool && isPending && !m.isMe && (
@@ -208,7 +208,7 @@ export function ChatWidget({ channelType, channelId, isOpen, onClose, contextInf
                             </div>
                         )}
                     </div>
-                    <span className={`text-[10px] text-[#9CA3AF] mt-0.5 block ${m.isMe ? "text-right" : "text-left"}`}>
+                    <span className={`text-[10px] text-gray-400 mt-0.5 block ${m.isMe ? "text-right" : "text-left"}`}>
                         {new Date(m.sentAt).toLocaleTimeString("vi", { hour: "2-digit", minute: "2-digit" })}
                     </span>
                 </div>
@@ -218,15 +218,15 @@ export function ChatWidget({ channelType, channelId, isOpen, onClose, contextInf
         // Normal text message
         return (
             <div key={m.messageId} className={`max-w-[80%] ${m.isMe ? "self-end" : "self-start"}`}>
-                {!m.isMe && <span className="text-[11px] text-[#6B7280] mb-0.5 block font-bold">{m.senderName}</span>}
-                <div className={`px-3.5 py-2.5 text-sm leading-relaxed border-2 border-[#1A1A2E] break-all ${
+                {!m.isMe && <span className="text-[11px] text-gray-500 mb-0.5 block font-bold">{m.senderName}</span>}
+                <div className={`px-3.5 py-2.5 text-sm leading-relaxed border border-gray-200 break-all ${
                     m.isMe
-                        ? "bg-[#6938EF] text-white rounded-xl rounded-br-sm shadow-[2px_2px_0_#1A1A2E]"
-                        : "bg-white text-[#1A1A2E] rounded-xl rounded-bl-sm shadow-[2px_2px_0_#1A1A2E]"
+                        ? "bg-[#6938EF] text-white rounded-xl rounded-br-sm shadow-sm"
+                        : "bg-white text-gray-900 rounded-xl rounded-bl-sm shadow-sm"
                 }`}>
                     {m.content}
                 </div>
-                <span className={`text-[10px] text-[#9CA3AF] mt-0.5 block ${m.isMe ? "text-right" : "text-left"}`}>
+                <span className={`text-[10px] text-gray-400 mt-0.5 block ${m.isMe ? "text-right" : "text-left"}`}>
                     {new Date(m.sentAt).toLocaleTimeString("vi", { hour: "2-digit", minute: "2-digit" })}
                 </span>
             </div>
@@ -234,9 +234,9 @@ export function ChatWidget({ channelType, channelId, isOpen, onClose, contextInf
     };
 
     return (
-        <div className="fixed bottom-6 right-6 w-[400px] h-[520px] flex flex-col z-[9999] border-2 border-[#1A1A2E] rounded-xl shadow-[6px_6px_0_#1A1A2E] bg-white overflow-hidden">
+        <div className="fixed bottom-6 right-6 w-[400px] h-[520px] flex flex-col z-[9999] border border-gray-200 rounded-xl shadow-soft-lg bg-white overflow-hidden">
             {/* Header — NB purple with border */}
-            <div className="px-5 py-4 bg-[#6938EF] border-b-2 border-[#1A1A2E] flex justify-between items-center">
+            <div className="px-5 py-4 bg-[#6938EF] border-b border-gray-200 flex justify-between items-center">
                 <div>
                     <h3 className="text-white font-extrabold text-base m-0">💬 Chat</h3>
                     <p className="text-white/80 text-xs mt-0.5 flex items-center gap-1.5">
@@ -253,29 +253,29 @@ export function ChatWidget({ channelType, channelId, isOpen, onClose, contextInf
 
             {/* Context Card — NB bordered */}
             {contextInfo && (
-                <div className="mx-3 mt-3 p-3 border-2 border-[#1A1A2E] rounded-lg shadow-[2px_2px_0_#1A1A2E] bg-[#EDE9FE] flex items-center gap-3">
+                <div className="mx-3 mt-3 p-3 border border-gray-200 rounded-lg shadow-sm bg-violet-50 flex items-center gap-3">
                     <span className="text-2xl leading-none">{contextInfo.icon}</span>
                     <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
-                            <span className="text-xs font-bold text-[#1A1A2E] truncate">{contextInfo.title}</span>
+                            <span className="text-xs font-bold text-gray-900 truncate">{contextInfo.title}</span>
                             <span className="nb-badge text-[10px] px-2 py-0.5"
                                 style={{ background: `${contextInfo.statusColor}18`, color: contextInfo.statusColor, borderColor: contextInfo.statusColor }}>
                                 {contextInfo.status}
                             </span>
                         </div>
-                        <p className="text-[11px] text-[#6B7280] mt-0.5 truncate">{contextInfo.subtitle}</p>
+                        <p className="text-[11px] text-gray-500 mt-0.5 truncate">{contextInfo.subtitle}</p>
                     </div>
                 </div>
             )}
 
             {/* Messages area */}
-            <div className="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-2 bg-[#FFF8F0]">
+            <div className="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-2 bg-gray-50">
                 {loading ? (
-                    <div className="text-center text-[#9CA3AF] py-10">Đang tải...</div>
+                    <div className="text-center text-gray-400 py-10">Đang tải...</div>
                 ) : messages.length === 0 ? (
                     <div className="text-center py-10">
                         <p className="text-4xl mb-2">💬</p>
-                        <p className="text-sm text-[#9CA3AF]">Chưa có tin nhắn nào. Gửi tin nhắn đầu tiên!</p>
+                        <p className="text-sm text-gray-400">Chưa có tin nhắn nào. Gửi tin nhắn đầu tiên!</p>
                     </div>
                 ) : (
                     messages.map(renderMessage)
@@ -285,11 +285,11 @@ export function ChatWidget({ channelType, channelId, isOpen, onClose, contextInf
 
             {/* Proposal form (Provider only, contract chats) */}
             {showProposalForm && isProvider && isContractChat && (
-                <div className="px-4 py-3 border-t-2 border-[#1A1A2E] bg-[#EDE9FE] space-y-2">
+                <div className="px-4 py-3 border-t border-gray-200 bg-violet-50 space-y-2">
                     <div className="flex items-center justify-between">
-                        <span className="text-xs font-extrabold text-[#6938EF]">📋 Gửi đề xuất đồng phục</span>
+                        <span className="text-xs font-extrabold text-violet-600">📋 Gửi đề xuất đồng phục</span>
                         <button onClick={() => { setShowProposalForm(false); setProposalName(""); setProposalImage(null); }}
-                            className="text-xs font-bold text-[#9CA3AF] hover:text-[#1A1A2E]">✕</button>
+                            className="text-xs font-bold text-gray-400 hover:text-gray-800">✕</button>
                     </div>
                     <input
                         value={proposalName}
@@ -318,7 +318,7 @@ export function ChatWidget({ channelType, channelId, isOpen, onClose, contextInf
             )}
 
             {/* Input — NB styled */}
-            <div className="px-4 py-3 border-t-2 border-[#1A1A2E] flex gap-2 bg-white">
+            <div className="px-4 py-3 border-t border-gray-200 flex gap-2 bg-white">
                 {isProvider && isContractChat && !showProposalForm && (
                     <button onClick={() => setShowProposalForm(true)}
                         className="nb-btn nb-btn-outline nb-btn-sm text-xs flex-shrink-0" title="Gửi đề xuất đồng phục">

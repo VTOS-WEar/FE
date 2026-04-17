@@ -49,7 +49,7 @@ function RatingStars({
             title={`Đánh giá ${star} sao`}
             className={`transition-all duration-200 ${
               isFilled
-                ? "text-[#C8E44D] drop-shadow-[2px_2px_0_#1A1A2E]"
+                ? "text-emerald-400 drop-shadow-sm"
                 : "text-[#D1D5DB]"
             } ${!readOnly && "cursor-pointer hover:scale-125"}`}
           >
@@ -100,7 +100,7 @@ function EditableFeedbackCard({
             <img
               src={feedback.outfitImageUrl || "/placeholder.svg"}
               alt={feedback.outfitName}
-              className="w-20 h-20 rounded-lg object-cover border-2 border-[#1A1A2E]"
+              className="w-20 h-20 rounded-lg object-cover border border-gray-200"
             />
           </div>
 
@@ -108,9 +108,9 @@ function EditableFeedbackCard({
           <div className="flex-1">
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1">
-                <p className="font-bold text-[#1A1A2E] text-sm">{feedback.outfitName}</p>
-                <p className="text-xs text-[#9CA3AF] mt-0.5">{feedback.campaignName}</p>
-                <p className="text-xs text-[#6B7280] font-medium mt-1">{fmt(feedback.outfitPrice)}</p>
+                <p className="font-bold text-gray-900 text-sm">{feedback.outfitName}</p>
+                <p className="text-xs text-gray-400 mt-0.5">{feedback.campaignName}</p>
+                <p className="text-xs text-gray-500 font-medium mt-1">{fmt(feedback.outfitPrice)}</p>
               </div>
 
               {hasRating && (
@@ -127,24 +127,24 @@ function EditableFeedbackCard({
                       />
                     ))}
                   </div>
-                  <span className="text-xs font-bold text-[#92400E]">{feedback.rating}</span>
+                  <span className="text-xs font-bold text-amber-800">{feedback.rating}</span>
                 </div>
               )}
             </div>
 
             {/* Comment / Placeholder */}
             {hasRating && feedback.comment && (
-              <p className="text-xs text-[#6B7280] mt-2 line-clamp-2">
+              <p className="text-xs text-gray-500 mt-2 line-clamp-2">
                 &ldquo;{feedback.comment}&rdquo;
               </p>
             )}
             {!hasRating && (
-              <p className="text-xs text-[#9CA3AF] italic mt-2">Chưa đánh giá sản phẩm này</p>
+              <p className="text-xs text-gray-400 italic mt-2">Chưa đánh giá sản phẩm này</p>
             )}
 
             {/* Timestamp */}
             {hasRating && feedback.feedbackTimestamp && (
-              <p className="text-xs text-[#9CA3AF] mt-2">
+              <p className="text-xs text-gray-400 mt-2">
                 {new Date(feedback.feedbackTimestamp).toLocaleDateString("vi-VN")}
               </p>
             )}
@@ -152,7 +152,7 @@ function EditableFeedbackCard({
             {/* Edit Button */}
             <button
               onClick={onToggleEdit}
-              className="mt-3 text-xs font-bold text-[#B8A9E8] hover:text-[#9680c5] transition-colors"
+              className="mt-3 text-xs font-bold text-purple-400 hover:text-[#9680c5] transition-colors"
             >
               Chỉnh sửa
             </button>
@@ -166,16 +166,16 @@ function EditableFeedbackCard({
   return (
     <div className="nb-card overflow-hidden">
       {/* Outfit Info */}
-      <div className="p-5 flex gap-4 border-b-2 border-[#1A1A2E]/10">
+      <div className="p-5 flex gap-4 border-b border-gray-200/10">
         <img
           src={feedback.outfitImageUrl || "/placeholder.svg"}
           alt={feedback.outfitName}
-          className="w-20 h-20 rounded-lg object-cover border-2 border-[#1A1A2E]"
+          className="w-20 h-20 rounded-lg object-cover border border-gray-200"
         />
         <div className="flex-1">
-          <p className="font-bold text-[#1A1A2E] text-sm">{feedback.outfitName}</p>
-          <p className="font-medium text-[#9CA3AF] text-xs mt-1">{feedback.campaignName}</p>
-          <p className="font-bold text-[#1A1A2E] text-sm mt-2">{fmt(feedback.outfitPrice)}</p>
+          <p className="font-bold text-gray-900 text-sm">{feedback.outfitName}</p>
+          <p className="font-medium text-gray-400 text-xs mt-1">{feedback.campaignName}</p>
+          <p className="font-bold text-gray-900 text-sm mt-2">{fmt(feedback.outfitPrice)}</p>
         </div>
       </div>
 
@@ -183,10 +183,10 @@ function EditableFeedbackCard({
       <div className="p-5 space-y-4">
         {/* Rating */}
         <div>
-          <p className="font-bold text-[#1A1A2E] text-sm mb-3">Đánh giá của bạn</p>
+          <p className="font-bold text-gray-900 text-sm mb-3">Đánh giá của bạn</p>
           <RatingStars value={formState.rating} onChange={onRatingChange} />
           {formState.rating > 0 && (
-            <p className="text-xs text-[#6B7280] mt-2">
+            <p className="text-xs text-gray-500 mt-2">
               {["", "Rất không tốt", "Không tốt", "Bình thường", "Tốt", "Rất tốt"][
                 formState.rating
               ]}
@@ -196,16 +196,16 @@ function EditableFeedbackCard({
 
         {/* Comment */}
         <div>
-          <p className="font-bold text-[#1A1A2E] text-sm mb-2">Bình luận (tuỳ chọn)</p>
+          <p className="font-bold text-gray-900 text-sm mb-2">Bình luận (tuỳ chọn)</p>
           <textarea
             value={formState.comment}
             onChange={(e) => onCommentChange(e.target.value)}
             placeholder="Chia sẻ trải nghiệm của bạn về sản phẩm này..."
             maxLength={500}
-            className="w-full p-3 border-2 border-[#1A1A2E] rounded-lg text-sm font-medium text-[#1A1A2E] placeholder-[#9CA3AF] focus:outline-none focus:bg-[#F3F4F6] resize-none"
+            className="w-full p-3 border border-gray-200 rounded-lg text-sm font-medium text-gray-900 placeholder-[#9CA3AF] focus:outline-none focus:bg-gray-100 resize-none"
             rows={4}
           />
-          <p className="text-xs text-[#9CA3AF] mt-1">
+          <p className="text-xs text-gray-400 mt-1">
             {formState.comment.length}/500
           </p>
         </div>
@@ -389,8 +389,8 @@ export function FeedbackPage(): JSX.Element {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center py-16 gap-4">
-        <div className="w-8 h-8 border-4 border-[#E5E7EB] border-t-[#B8A9E8] rounded-full animate-spin" />
-        <p className="text-sm text-[#6B7280] font-medium">Đang tải...</p>
+        <div className="w-8 h-8 border-4 border-gray-200 border-t-[#B8A9E8] rounded-full animate-spin" />
+        <p className="text-sm text-gray-500 font-medium">Đang tải...</p>
       </div>
     );
   }
@@ -398,7 +398,7 @@ export function FeedbackPage(): JSX.Element {
   if (!order) {
     return (
       <div className="flex flex-col items-center justify-center py-16 gap-4">
-        <p className="text-sm text-[#6B7280] font-medium">Không tìm thấy đơn hàng</p>
+        <p className="text-sm text-gray-500 font-medium">Không tìm thấy đơn hàng</p>
         <button
           onClick={() => navigate("/parentprofile/orders")}
           className="nb-btn nb-btn-outline text-sm"
@@ -410,20 +410,20 @@ export function FeedbackPage(): JSX.Element {
   }
 
   return (
-    <div className="min-h-screen bg-[#F9FAFB] p-4 md:p-6">
+    <div className="min-h-screen bg-gray-50 p-4 md:p-6">
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="mb-6 flex items-center gap-3">
           <button
             onClick={() => navigate("/parentprofile/orders")}
-            className="p-2 hover:bg-[#EDE9FE] rounded-lg transition-colors"
+            className="p-2 hover:bg-violet-50 rounded-lg transition-colors"
             title="Quay lại trang đơn hàng"
           >
-            <ArrowLeft className="w-5 h-5 text-[#1A1A2E]" />
+            <ArrowLeft className="w-5 h-5 text-gray-900" />
           </button>
           <div>
-            <p className="font-bold text-[#1A1A2E]">Đánh giá sản phẩm</p>
-            <p className="text-xs text-[#9CA3AF]">
+            <p className="font-bold text-gray-900">Đánh giá sản phẩm</p>
+            <p className="text-xs text-gray-400">
               Đơn #{order.orderId.slice(0, 8)} • {order.items.length} sản phẩm
             </p>
           </div>
@@ -436,20 +436,20 @@ export function FeedbackPage(): JSX.Element {
               <img
                 src={order.childAvatar}
                 alt={order.childName}
-                className="w-12 h-12 rounded-lg object-cover border-2 border-[#1A1A2E]"
+                className="w-12 h-12 rounded-lg object-cover border border-gray-200"
               />
             ) : (
-              <div className="w-12 h-12 rounded-lg bg-[#EDE9FE] border-2 border-[#1A1A2E] flex items-center justify-center">
+              <div className="w-12 h-12 rounded-lg bg-violet-50 border border-gray-200 flex items-center justify-center">
                 <span className="text-lg">👤</span>
               </div>
             )}
             <div className="flex-1">
-              <p className="font-bold text-[#1A1A2E] text-sm">{order.childName}</p>
-              <p className="text-xs text-[#9CA3AF]">
+              <p className="font-bold text-gray-900 text-sm">{order.childName}</p>
+              <p className="text-xs text-gray-400">
                 Đặt hàng: {new Date(order.orderDate).toLocaleDateString("vi-VN")}
               </p>
             </div>
-            <p className="font-bold text-[#1A1A2E]">
+            <p className="font-bold text-gray-900">
               {order.totalAmount.toLocaleString("vi-VN")} ₫
             </p>
           </div>
@@ -463,23 +463,23 @@ export function FeedbackPage(): JSX.Element {
             return (
               <div key={item.orderItemId} className="nb-card overflow-hidden">
                 {/* Outfit Info */}
-                <div className="p-5 flex gap-4 border-b-2 border-[#1A1A2E]/10">
+                <div className="p-5 flex gap-4 border-b border-gray-200/10">
                   {item.outfitImage ? (
                     <img
                       src={item.outfitImage}
                       alt={item.outfitName}
-                      className="w-20 h-20 rounded-lg object-cover border-2 border-[#1A1A2E]"
+                      className="w-20 h-20 rounded-lg object-cover border border-gray-200"
                     />
                   ) : (
-                    <div className="w-20 h-20 rounded-lg bg-[#EDE9FE] border-2 border-[#1A1A2E] flex items-center justify-center flex-shrink-0">
+                    <div className="w-20 h-20 rounded-lg bg-violet-50 border border-gray-200 flex items-center justify-center flex-shrink-0">
                       <span className="text-2xl">👔</span>
                     </div>
                   )}
                   <div className="flex-1">
-                    <p className="font-bold text-[#1A1A2E] text-sm">{item.outfitName}</p>
-                    <p className="font-medium text-[#9CA3AF] text-xs mt-1">Số lượng: {item.quantity}</p>
-                    <p className="font-medium text-[#9CA3AF] text-xs">Kích cỡ: {item.size}</p>
-                    <p className="font-bold text-[#1A1A2E] text-sm mt-2">{item.price.toLocaleString("vi-VN")} ₫</p>
+                    <p className="font-bold text-gray-900 text-sm">{item.outfitName}</p>
+                    <p className="font-medium text-gray-400 text-xs mt-1">Số lượng: {item.quantity}</p>
+                    <p className="font-medium text-gray-400 text-xs">Kích cỡ: {item.size}</p>
+                    <p className="font-bold text-gray-900 text-sm mt-2">{item.price.toLocaleString("vi-VN")} ₫</p>
                   </div>
                 </div>
 
@@ -487,10 +487,10 @@ export function FeedbackPage(): JSX.Element {
                 <div className="p-5 space-y-4">
                   {/* Rating */}
                   <div>
-                    <p className="font-bold text-[#1A1A2E] text-sm mb-3">Đánh giá của bạn</p>
+                    <p className="font-bold text-gray-900 text-sm mb-3">Đánh giá của bạn</p>
                     <RatingStars value={formState?.rating ?? 0} onChange={(val) => handleRatingChange(item.orderItemId, val)} />
                     {(formState?.rating ?? 0) > 0 && (
-                      <p className="text-xs text-[#6B7280] mt-2">
+                      <p className="text-xs text-gray-500 mt-2">
                         {["", "Rất không tốt", "Không tốt", "Bình thường", "Tốt", "Rất tốt"][
                           formState?.rating ?? 0
                         ]}
@@ -500,16 +500,16 @@ export function FeedbackPage(): JSX.Element {
 
                   {/* Comment */}
                   <div>
-                    <p className="font-bold text-[#1A1A2E] text-sm mb-2">Bình luận (tuỳ chọn)</p>
+                    <p className="font-bold text-gray-900 text-sm mb-2">Bình luận (tuỳ chọn)</p>
                     <textarea
                       value={formState?.comment ?? ""}
                       onChange={(e) => handleCommentChange(item.orderItemId, e.target.value)}
                       placeholder="Chia sẻ trải nghiệm của bạn về sản phẩm này..."
                       maxLength={500}
-                      className="w-full p-3 border-2 border-[#1A1A2E] rounded-lg text-sm font-medium text-[#1A1A2E] placeholder-[#9CA3AF] focus:outline-none focus:bg-[#F3F4F6] resize-none"
+                      className="w-full p-3 border border-gray-200 rounded-lg text-sm font-medium text-gray-900 placeholder-[#9CA3AF] focus:outline-none focus:bg-gray-100 resize-none"
                       rows={4}
                     />
-                    <p className="text-xs text-[#9CA3AF] mt-1">
+                    <p className="text-xs text-gray-400 mt-1">
                       {(formState?.comment ?? "").length}/500
                     </p>
                   </div>
@@ -530,8 +530,8 @@ export function FeedbackPage(): JSX.Element {
         </div>
 
         {/* Info Box */}
-        <div className="mt-6 p-4 bg-[#EDE9FE] border-2 border-[#1A1A2E] rounded-lg">
-          <p className="font-bold text-[#1A1A2E] text-xs">
+        <div className="mt-6 p-4 bg-violet-50 border border-gray-200 rounded-lg">
+          <p className="font-bold text-gray-900 text-xs">
             💡 Mẹo: Đánh giá của bạn sẽ giúp các phụ huynh khác chọn sản phẩm phù hợp!
           </p>
         </div>

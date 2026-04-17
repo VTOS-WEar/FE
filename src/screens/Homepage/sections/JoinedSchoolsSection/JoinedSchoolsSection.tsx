@@ -39,7 +39,7 @@ export const JoinedSchoolsSection = (): JSX.Element => {
       <div className="mx-auto max-w-[1100px] px-4 md:px-8">
         {/* Header */}
         <div className="flex items-end justify-between mb-12 nb-reveal">
-          <h2 className="text-3xl font-extrabold text-[#1A1A2E] md:text-4xl">
+          <h2 className="text-3xl font-extrabold text-gray-900 md:text-4xl">
             Trường học tham gia
           </h2>
 
@@ -60,7 +60,7 @@ export const JoinedSchoolsSection = (): JSX.Element => {
               className="nb-card group flex flex-col items-center p-8 cursor-pointer"
             >
               {/* Logo Container */}
-              <div className="relative flex h-44 w-full items-center justify-center rounded-xl bg-[#FAFAF5] p-6 mb-6 border-3 border-[#1A1A2E]/10">
+              <div className="relative flex h-44 w-full items-center justify-center rounded-xl bg-gray-50 p-6 mb-6 border-3 border-gray-200/10">
                 <img
                   src={school.logo}
                   alt={school.name}
@@ -80,11 +80,11 @@ export const JoinedSchoolsSection = (): JSX.Element => {
                   {school.type}
                 </span>
 
-                <h3 className="text-xl font-extrabold leading-tight text-[#1A1A2E]">
+                <h3 className="text-xl font-extrabold leading-tight text-gray-900">
                   {school.name}
                 </h3>
 
-                <div className="flex items-center justify-center gap-1.5 text-[#6B7280] text-sm">
+                <div className="flex items-center justify-center gap-1.5 text-gray-500 text-sm">
                   <MapPin className="w-3.5 h-3.5" />
                   <span className="font-medium">{school.location}</span>
                 </div>

@@ -50,13 +50,13 @@ const SECTION_ICONS_TONE: Record<string, string> = {
 
 function SectionIcon({ children, tone = "info" }: { children: React.ReactNode; tone?: string }) {
     return (
-        <div className={`flex h-11 w-11 items-center justify-center rounded-[10px] border-[3px] border-[#19182B] shadow-[3px_3px_0_#19182B] ${SECTION_ICONS_TONE[tone] || SECTION_ICONS_TONE.info}`}>
+        <div className={`flex h-11 w-11 items-center justify-center rounded-[10px] border border-gray-200 shadow-soft-sm ${SECTION_ICONS_TONE[tone] || SECTION_ICONS_TONE.info}`}>
             <span className="text-[18px]">{children}</span>
         </div>
     );
 }
 
-const brutalInputClass = "w-full rounded-[10px] border-[2px] border-[#19182B] bg-white px-4 py-3 text-[15px] font-semibold text-[#19182B] shadow-[3px_3px_0_#19182B] outline-none transition-all placeholder:text-[#9A95A8] focus:translate-x-[1px] focus:translate-y-[1px] focus:shadow-[2px_2px_0_#19182B]";
+const modernInputClass = "w-full rounded-[10px] border border-gray-200 bg-white px-4 py-3 text-[15px] font-medium text-gray-900 shadow-soft-sm outline-none transition-all placeholder:text-gray-400 focus:border-purple-400 focus:ring-2 focus:ring-purple-200/50";
 
 /* ────────────────────────────────────────────────────────────────────── */
 /* Outfit Selection Card — Brutal Concept                                */
@@ -77,17 +77,17 @@ function OutfitSelectCard({
     return (
         <button
             onClick={() => onToggle(item)}
-            className={`group w-full rounded-[14px] border-[3px] border-[#19182B] p-4 text-left transition-all ${
+            className={`group w-full rounded-[14px] border border-gray-200 p-4 text-left transition-all ${
                 isSelected
-                    ? "bg-[#F2ECFF] shadow-[5px_5px_0_#19182B]"
-                    : "bg-white shadow-[3px_3px_0_#19182B] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B]"
+                    ? "bg-violet-50 shadow-soft-md"
+                    : "bg-white shadow-soft-sm hover:scale-[0.99] hover:shadow-soft-sm"
             }`}
         >
             <div className="flex items-start gap-4">
                 {/* Outfit image */}
-                <div className={`flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-[12px] border-[2px] border-[#19182B] shadow-[2px_2px_0_#19182B] ${
-                    isSelected ? "ring-2 ring-[#8B6BFF] ring-offset-1" : ""
-                } ${item.mainImageURL ? "bg-white" : isSelected ? "bg-[#8B6BFF] text-white" : "bg-[#ECEAF2] text-[#7A7489]"}`}>
+                <div className={`flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-[12px] border border-gray-200 shadow-soft-sm ${
+                    isSelected ? "ring-2 ring-violet-400 ring-offset-1" : ""
+                } ${item.mainImageURL ? "bg-white" : isSelected ? "bg-violet-500 text-white" : "bg-violet-50 text-violet-400"}`}>
                     {item.mainImageURL ? (
                         <img src={item.mainImageURL} alt={item.outfitName} className="h-full w-full object-cover" />
                     ) : (
@@ -98,28 +98,28 @@ function OutfitSelectCard({
                 <div className="min-w-0 flex-1">
                     <div className="flex items-start justify-between gap-3">
                         <div>
-                            <h3 className="text-[16px] font-black leading-tight text-[#19182B]">{item.outfitName}</h3>
+                            <h3 className="text-[16px] font-black leading-tight text-gray-900">{item.outfitName}</h3>
                             <p className="mt-1 text-[13px] font-bold text-[#6F6A7D]">Mã: {item.outfitId.slice(0, 8)}</p>
                         </div>
-                        <div className="shrink-0 rounded-[10px] border-[2px] border-[#19182B] bg-white px-3 py-2 text-[14px] font-black text-[#7C56FF] shadow-[2px_2px_0_#19182B]">
+                        <div className="shrink-0 rounded-[10px] border border-gray-200 bg-white px-3 py-2 text-[14px] font-black text-violet-500 shadow-soft-sm">
                             {formattedPrice}
                         </div>
                     </div>
 
                     <div className="mt-3 flex items-center justify-between gap-3">
                         <div className="flex flex-wrap gap-2">
-                            <span className="rounded-full border-[2px] border-[#19182B] bg-white px-3 py-1 text-[12px] font-extrabold shadow-[2px_2px_0_#19182B]">
+                            <span className="rounded-full border border-gray-200 bg-white px-3 py-1 text-[12px] font-extrabold shadow-soft-sm">
                                 {typeLabel}
                             </span>
                             {hasVariants && (
-                                <span className="rounded-full border-[2px] border-[#19182B] bg-white px-3 py-1 text-[12px] font-extrabold shadow-[2px_2px_0_#19182B]">
+                                <span className="rounded-full border border-gray-200 bg-white px-3 py-1 text-[12px] font-extrabold shadow-soft-sm">
                                     Có sẵn size
                                 </span>
                             )}
                         </div>
 
-                        <div className={`flex h-8 w-8 items-center justify-center rounded-full border-[3px] border-[#19182B] shadow-[2px_2px_0_#19182B] ${
-                            isSelected ? "bg-[#8B6BFF] text-white" : "bg-white text-transparent"
+                        <div className={`flex h-8 w-8 items-center justify-center rounded-full border border-gray-200 shadow-soft-sm ${
+                            isSelected ? "bg-violet-500 text-white" : "bg-white text-transparent"
                         }`}>
                             ✓
                         </div>
@@ -322,7 +322,7 @@ export const CampaignManagement = (): JSX.Element => {
                             <BreadcrumbList>
                                 <BreadcrumbItem><BreadcrumbLink href="/school/dashboard" className="font-bold text-[#6F6A7D] text-sm">Trang chủ</BreadcrumbLink></BreadcrumbItem>
                                 <BreadcrumbSeparator className="text-[#6F6A7D] font-black">/</BreadcrumbSeparator>
-                                <BreadcrumbItem><BreadcrumbPage className="font-black text-[#19182B] text-sm">{isEditMode ? "Chỉnh sửa chiến dịch" : "Tạo đơn đặt trước"}</BreadcrumbPage></BreadcrumbItem>
+                                <BreadcrumbItem><BreadcrumbPage className="font-black text-gray-900 text-sm">{isEditMode ? "Chỉnh sửa chiến dịch" : "Tạo đơn đặt trước"}</BreadcrumbPage></BreadcrumbItem>
                             </BreadcrumbList>
                         </Breadcrumb>
                     </TopNavBar>
@@ -331,7 +331,7 @@ export const CampaignManagement = (): JSX.Element => {
                         {/* ── Header + Actions ── */}
                         <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between mb-8">
                             <div className="max-w-3xl">
-                                <h1 className="text-[32px] font-black leading-none text-[#19182B] lg:text-[38px]">{isEditMode ? "Chỉnh sửa chiến dịch" : "Tạo đợt đặt hàng mới"}</h1>
+                                <h1 className="text-[32px] font-black leading-none text-gray-900 lg:text-[38px]">{isEditMode ? "Chỉnh sửa chiến dịch" : "Tạo đợt đặt hàng mới"}</h1>
                             </div>
                             <div className="flex flex-wrap gap-3 flex-shrink-0">
                                 {!isEditMode ? (
@@ -339,7 +339,7 @@ export const CampaignManagement = (): JSX.Element => {
                                         <button
                                             type="button"
                                             onClick={() => setShowPreview(true)}
-                                            className="rounded-[10px] border-[3px] border-[#19182B] bg-white px-5 py-3 text-[14px] font-extrabold text-[#19182B] shadow-[4px_4px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+                                            className="rounded-[10px] border border-gray-200 bg-white px-5 py-3 text-[14px] font-extrabold text-gray-900 shadow-soft-sm transition-all hover:scale-[0.99] hover:shadow-soft-sm active:scale-[0.98] active:shadow-none"
                                         >
                                             👁 Xem trước
                                         </button>
@@ -347,7 +347,7 @@ export const CampaignManagement = (): JSX.Element => {
                                             type="button"
                                             onClick={() => handleSubmit(false)}
                                             disabled={submitting}
-                                            className="flex items-center gap-2 rounded-[10px] border-[3px] border-[#19182B] bg-[#8B6BFF] px-5 py-3 text-[14px] font-extrabold text-white shadow-[4px_4px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed"
+                                            className="flex items-center gap-2 rounded-[10px] border border-violet-500 bg-violet-500 px-5 py-3 text-[14px] font-extrabold text-white shadow-soft-sm transition-all hover:scale-[0.99] hover:shadow-soft-sm active:scale-[0.98] active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed"
                                         >
                                             {submitting && (
                                                 <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" strokeOpacity="0.25" /><path d="M4 12a8 8 0 018-8" strokeLinecap="round" /></svg>
@@ -360,7 +360,7 @@ export const CampaignManagement = (): JSX.Element => {
                                         type="button"
                                         onClick={() => handleSubmit(false)}
                                         disabled={submitting}
-                                        className="flex items-center gap-2 rounded-[10px] border-[3px] border-[#19182B] bg-[#8B6BFF] px-5 py-3 text-[14px] font-extrabold text-white shadow-[4px_4px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed"
+                                        className="flex items-center gap-2 rounded-[10px] border border-violet-500 bg-violet-500 px-5 py-3 text-[14px] font-extrabold text-white shadow-soft-sm transition-all hover:scale-[0.99] hover:shadow-soft-sm active:scale-[0.98] active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
                                         {submitting && (
                                             <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" strokeOpacity="0.25" /><path d="M4 12a8 8 0 018-8" strokeLinecap="round" /></svg>
@@ -377,20 +377,20 @@ export const CampaignManagement = (): JSX.Element => {
                             <div className="flex flex-col gap-6">
 
                                 {/* ═══ Thông tin chung — MainPanel ═══ */}
-                                <section className="rounded-[18px] border-[3px] border-[#19182B] bg-white shadow-[6px_6px_0_#19182B]">
+                                <section className="rounded-[18px] border border-gray-200 bg-white shadow-soft-lg">
                                     <div className="p-6 md:p-7">
                                         <div className="flex items-center gap-4">
                                             <SectionIcon tone="info">ℹ️</SectionIcon>
                                             <div>
-                                                <h2 className="text-[24px] font-black leading-none text-[#19182B]">Thông tin chung</h2>
+                                                <h2 className="text-[24px] font-black leading-none text-gray-900">Thông tin chung</h2>
                                             </div>
                                         </div>
 
                                         <div className="mt-6 grid gap-5">
                                             <div>
                                                 <label className="block">
-                                                    <div className="mb-2 text-[14px] font-extrabold text-[#19182B]">
-                                                        Tên đợt đặt hàng <span className="ml-1 text-[#FF6B57]">*</span>
+                                                    <div className="mb-2 text-[14px] font-extrabold text-gray-900">
+                                                        Tên đợt đặt hàng <span className="ml-1 text-red-500">*</span>
                                                     </div>
                                                 </label>
                                                 <input
@@ -398,14 +398,14 @@ export const CampaignManagement = (): JSX.Element => {
                                                     value={campaignName}
                                                     onChange={(e) => setCampaignName(e.target.value)}
                                                     placeholder="Đồng phục Hè 2026"
-                                                    className={brutalInputClass}
+                                                    className={modernInputClass}
                                                     required
                                                 />
                                             </div>
 
                                             <div>
                                                 <label className="block">
-                                                    <div className="mb-2 text-[14px] font-extrabold text-[#19182B]">Mô tả ngắn</div>
+                                                    <div className="mb-2 text-[14px] font-extrabold text-gray-900">Mô tả ngắn</div>
                                                     <p className="mb-2 text-[12px] font-bold text-[#8D879B]">Sẽ hiển thị trên trang đặt hàng trực tiếp trong ứng dụng phụ huynh.</p>
                                                 </label>
                                                 <textarea
@@ -413,7 +413,7 @@ export const CampaignManagement = (): JSX.Element => {
                                                     onChange={(e) => setDescription(e.target.value)}
                                                     placeholder="Thông tin hiển thị cho phụ huynh và học sinh, nêu rõ thời gian nhận đơn và cách thanh toán."
                                                     rows={4}
-                                                    className={`min-h-[112px] resize-none ${brutalInputClass}`}
+                                                    className={`min-h-[112px] resize-none ${modernInputClass}`}
                                                 />
                                             </div>
                                         </div>
@@ -421,34 +421,34 @@ export const CampaignManagement = (): JSX.Element => {
                                 </section>
 
                                 {/* ═══ Sản phẩm áp dụng — MainPanel ═══ */}
-                                <section className="rounded-[18px] border-[3px] border-[#19182B] bg-white shadow-[6px_6px_0_#19182B]">
+                                <section className="rounded-[18px] border border-gray-200 bg-white shadow-soft-lg">
                                     <div className="p-6 md:p-7">
                                         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                                             <div className="flex items-center gap-4">
                                                 <SectionIcon tone="warning">🛍️</SectionIcon>
                                                 <div>
-                                                    <h2 className="text-[24px] font-black leading-none text-[#19182B]">Sản phẩm áp dụng</h2>
+                                                    <h2 className="text-[24px] font-black leading-none text-gray-900">Sản phẩm áp dụng</h2>
                                                     <p className="mt-2 text-[14px] font-semibold text-[#6F6A7D]">
                                                         Chọn những sản phẩm sẽ xuất hiện trong đợt đặt hàng.
                                                     </p>
                                                 </div>
                                             </div>
-                                            <div className="inline-flex w-fit items-center gap-2 rounded-full border-[3px] border-[#19182B] bg-[#E9E1FF] px-4 py-2 text-[13px] font-black text-[#5E3FE0] shadow-[3px_3px_0_#19182B]">
+                                            <div className="inline-flex w-fit items-center gap-2 rounded-full border border-purple-200 bg-violet-50 px-4 py-2 text-[13px] font-black text-purple-600 shadow-soft-sm">
                                                 Đã chọn: {selectedOutfits.size}
                                             </div>
                                         </div>
 
                                         {/* Search + Filters */}
-                                        <div className="mt-6 rounded-[14px] border-[2px] border-[#19182B] bg-[#FFFDF9] p-4 shadow-[3px_3px_0_#19182B]">
+                                        <div className="mt-6 rounded-[14px] border border-gray-200 bg-[#FFFDF9] p-4 shadow-soft-sm">
                                             {/* Search input */}
                                             <div className="relative">
-                                                <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[16px] text-[#6F6A7D]">🔎</span>
+                                                <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[16px] text-gray-500">🔎</span>
                                                 <input
                                                     type="text"
                                                     value={outfitSearch}
                                                     onChange={(e) => setOutfitSearch(e.target.value)}
                                                     placeholder="Tìm kiếm sản phẩm..."
-                                                    className="w-full rounded-[10px] border-[2px] border-[#19182B] bg-white py-3 pl-12 pr-4 text-[15px] font-semibold text-[#19182B] shadow-[3px_3px_0_#19182B] outline-none transition-all placeholder:text-[#9A95A8] focus:translate-x-[1px] focus:translate-y-[1px] focus:shadow-[2px_2px_0_#19182B]"
+                                                    className="w-full rounded-[10px] border border-gray-200 bg-white py-3 pl-12 pr-4 text-[15px] font-semibold text-gray-900 shadow-soft-sm outline-none transition-all placeholder:text-gray-400 focus:border-purple-400 focus:ring-2 focus:ring-purple-200/50"
                                                 />
                                             </div>
 
@@ -456,8 +456,8 @@ export const CampaignManagement = (): JSX.Element => {
                                             <div className="mt-4 flex flex-wrap gap-2">
                                                 <button
                                                     onClick={() => setOutfitSearch("")}
-                                                    className={`rounded-full border-[2px] border-[#19182B] px-3 py-1 text-[12px] font-extrabold shadow-[2px_2px_0_#19182B] transition-all ${
-                                                        !outfitSearch.trim() ? "bg-[#8B6BFF] text-white" : "bg-white text-[#19182B] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#19182B]"
+                                                    className={`rounded-full border border-gray-200 px-3 py-1 text-[12px] font-extrabold shadow-soft-sm transition-all ${
+                                                        !outfitSearch.trim() ? "bg-violet-500 text-white" : "bg-white text-gray-900 hover:scale-[0.99] hover:shadow-soft-sm"
                                                     }`}
                                                 >
                                                     Tất cả
@@ -466,8 +466,8 @@ export const CampaignManagement = (): JSX.Element => {
                                                     <button
                                                         key={label}
                                                         onClick={() => setOutfitSearch(label)}
-                                                        className={`rounded-full border-[2px] border-[#19182B] px-3 py-1 text-[12px] font-extrabold shadow-[2px_2px_0_#19182B] transition-all ${
-                                                            outfitSearch === label ? "bg-[#8B6BFF] text-white" : "bg-white text-[#19182B] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#19182B]"
+                                                        className={`rounded-full border border-gray-200 px-3 py-1 text-[12px] font-extrabold shadow-soft-sm transition-all ${
+                                                            outfitSearch === label ? "bg-violet-500 text-white" : "bg-white text-gray-900 hover:scale-[0.99] hover:shadow-soft-sm"
                                                         }`}
                                                     >
                                                         {label}
@@ -480,12 +480,12 @@ export const CampaignManagement = (): JSX.Element => {
                                         {outfitsLoading ? (
                                             <div className="mt-4 grid grid-cols-1 xl:grid-cols-2 gap-4">
                                                 {[1, 2, 3, 4].map((i) => (
-                                                    <div key={i} className="h-[100px] rounded-[14px] border-[3px] border-[#19182B]/10 bg-[#F2ECFF] animate-pulse" />
+                                                    <div key={i} className="h-[100px] rounded-[14px] border border-gray-200 bg-violet-50 animate-pulse" />
                                                 ))}
                                             </div>
                                         ) : filteredOutfits.length === 0 ? (
                                             <div className="mt-6 rounded-[14px] border-[2px] border-dashed border-[#8B6BFF] bg-[#F2ECFF]/50 py-10 text-center">
-                                                <p className="text-[15px] font-extrabold text-[#19182B]">Chưa có đồng phục nào</p>
+                                                <p className="text-[15px] font-extrabold text-gray-900">Chưa có đồng phục nào</p>
                                                 <p className="mt-1 text-[13px] font-bold text-[#6F6A7D]">Hãy thêm đồng phục trước.</p>
                                             </div>
                                         ) : (
@@ -503,7 +503,7 @@ export const CampaignManagement = (): JSX.Element => {
                                                 {!showAllOutfits && remainingCount > 0 && (
                                                     <button
                                                         onClick={() => setShowAllOutfits(true)}
-                                                        className="mt-4 w-full rounded-[10px] border-[2px] border-[#19182B] bg-white py-2.5 text-center text-[14px] font-extrabold text-[#8B6BFF] shadow-[3px_3px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B]"
+                                                        className="mt-4 w-full rounded-[10px] border border-gray-200 bg-white py-2.5 text-center text-[14px] font-extrabold text-violet-500 shadow-soft-sm transition-all hover:scale-[0.99] hover:shadow-soft-sm"
                                                     >
                                                         Xem thêm {remainingCount} sản phẩm khác
                                                     </button>
@@ -511,7 +511,7 @@ export const CampaignManagement = (): JSX.Element => {
                                                 {showAllOutfits && filteredOutfits.length > 4 && (
                                                     <button
                                                         onClick={() => setShowAllOutfits(false)}
-                                                        className="mt-4 w-full rounded-[10px] border-[2px] border-[#19182B] bg-white py-2.5 text-center text-[14px] font-extrabold text-[#8B6BFF] shadow-[3px_3px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B]"
+                                                        className="mt-4 w-full rounded-[10px] border border-gray-200 bg-white py-2.5 text-center text-[14px] font-extrabold text-violet-500 shadow-soft-sm transition-all hover:scale-[0.99] hover:shadow-soft-sm"
                                                     >
                                                         Thu gọn
                                                     </button>
@@ -526,67 +526,67 @@ export const CampaignManagement = (): JSX.Element => {
                             <div className="flex flex-col gap-6">
 
                                 {/* ═══ Thời gian — SidePanel ═══ */}
-                                <section className="rounded-[18px] border-[3px] border-[#19182B] bg-white shadow-[4px_4px_0_#19182B]">
+                                <section className="rounded-[18px] border border-gray-200 bg-white shadow-soft-md">
                                     <div className="p-6">
                                         <div className="flex items-center gap-4">
                                             <SectionIcon tone="primary">⏰</SectionIcon>
                                             <div>
-                                                <h2 className="text-[22px] font-black leading-none text-[#19182B]">Thời gian</h2>
+                                                <h2 className="text-[22px] font-black leading-none text-gray-900">Thời gian</h2>
                                             </div>
                                         </div>
 
                                         <div className="mt-6 grid gap-4">
                                             <div>
-                                                <label className="mb-2 block text-[14px] font-extrabold text-[#19182B]">Mở đơn</label>
-                                                <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className={brutalInputClass} />
+                                                <label className="mb-2 block text-[14px] font-extrabold text-gray-900">Mở đơn</label>
+                                                <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className={modernInputClass} />
                                             </div>
                                             <div>
-                                                <label className="mb-2 block text-[14px] font-extrabold text-[#19182B]">Đóng đơn</label>
-                                                <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className={brutalInputClass} />
+                                                <label className="mb-2 block text-[14px] font-extrabold text-gray-900">Đóng đơn</label>
+                                                <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className={modernInputClass} />
                                             </div>
                                             <div>
-                                                <label className="mb-2 block text-[14px] font-extrabold text-[#19182B]">Ngày dự kiến trả hàng</label>
-                                                <input type="date" value={deliveryDate} onChange={(e) => setDeliveryDate(e.target.value)} className={brutalInputClass} />
+                                                <label className="mb-2 block text-[14px] font-extrabold text-gray-900">Ngày dự kiến trả hàng</label>
+                                                <input type="date" value={deliveryDate} onChange={(e) => setDeliveryDate(e.target.value)} className={modernInputClass} />
                                             </div>
                                         </div>
                                     </div>
                                 </section>
 
                                 {/* ═══ Quy định — SidePanel ═══ */}
-                                <section className="rounded-[18px] border-[3px] border-[#19182B] bg-white shadow-[4px_4px_0_#19182B]">
+                                <section className="rounded-[18px] border border-gray-200 bg-white shadow-soft-md">
                                     <div className="p-6">
                                         <div className="flex items-center gap-4">
                                             <SectionIcon tone="success">🛡️</SectionIcon>
                                             <div>
-                                                <h2 className="text-[22px] font-black leading-none text-[#19182B]">Quy định</h2>
+                                                <h2 className="text-[22px] font-black leading-none text-gray-900">Quy định</h2>
                                             </div>
                                         </div>
 
                                         <div className="mt-6 grid gap-3">
                                             {/* Thanh toán ngay */}
-                                            <label className="flex items-start gap-3 rounded-[12px] border-[2px] border-[#19182B] bg-white p-3 shadow-[2px_2px_0_#19182B] cursor-pointer">
-                                                <div className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-[6px] border-[2px] border-[#19182B] text-[12px] font-black shadow-[2px_2px_0_#19182B] ${
-                                                    requirePayment ? "bg-[#8B6BFF] text-white" : "bg-[#F6F1E8] text-transparent"
+                                            <label className="flex items-start gap-3 rounded-[12px] border border-gray-200 bg-white p-3 shadow-soft-sm cursor-pointer">
+                                                <div className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-[6px] border border-gray-200 text-[12px] font-black shadow-soft-sm ${
+                                                    requirePayment ? "bg-violet-500 text-white" : "bg-[#F6F1E8] text-transparent"
                                                 }`}>
                                                     ✓
                                                 </div>
                                                 <input type="checkbox" checked={requirePayment} onChange={(e) => setRequirePayment(e.target.checked)} className="hidden" />
                                                 <div>
-                                                    <div className="text-[15px] font-black text-[#19182B]">Thanh toán ngay</div>
+                                                    <div className="text-[15px] font-black text-gray-900">Thanh toán ngay</div>
                                                     <p className="mt-1 text-[13px] font-bold leading-5 text-[#8D879B]">Yêu cầu phụ huynh thanh toán khi đặt đơn để giảm đơn ảo.</p>
                                                 </div>
                                             </label>
 
                                             {/* Cho phép đổi size */}
-                                            <label className="flex items-start gap-3 rounded-[12px] border-[2px] border-[#19182B] bg-white p-3 shadow-[2px_2px_0_#19182B] cursor-pointer">
-                                                <div className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-[6px] border-[2px] border-[#19182B] text-[12px] font-black shadow-[2px_2px_0_#19182B] ${
-                                                    allowSizeExchange ? "bg-[#8B6BFF] text-white" : "bg-[#F6F1E8] text-transparent"
+                                            <label className="flex items-start gap-3 rounded-[12px] border border-gray-200 bg-white p-3 shadow-soft-sm cursor-pointer">
+                                                <div className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-[6px] border border-gray-200 text-[12px] font-black shadow-soft-sm ${
+                                                    allowSizeExchange ? "bg-violet-500 text-white" : "bg-[#F6F1E8] text-transparent"
                                                 }`}>
                                                     ✓
                                                 </div>
                                                 <input type="checkbox" checked={allowSizeExchange} onChange={(e) => setAllowSizeExchange(e.target.checked)} className="hidden" />
                                                 <div>
-                                                    <div className="text-[15px] font-black text-[#19182B]">Cho phép đổi size</div>
+                                                    <div className="text-[15px] font-black text-gray-900">Cho phép đổi size</div>
                                                     <p className="mt-1 text-[13px] font-bold leading-5 text-[#8D879B]">Được phép đổi size trong vòng 7 ngày sau khi nhận hàng.</p>
                                                 </div>
                                             </label>
@@ -596,13 +596,13 @@ export const CampaignManagement = (): JSX.Element => {
 
                                 {/* Nhà cung cấp (Contract-based) */}
                                 {selectedOutfits.size > 0 && (
-                                    <section className="rounded-[18px] border-[3px] border-[#19182B] bg-white shadow-[4px_4px_0_#19182B]">
+                                    <section className="rounded-[18px] border border-gray-200 bg-white shadow-soft-md">
                                         <div className="p-6">
                                             <div className="flex items-center gap-4">
                                                 <SectionIcon tone="blue">🚚</SectionIcon>
                                                 <div>
-                                                    <h2 className="text-[22px] font-black leading-none text-[#19182B]">Nhà cung cấp</h2>
-                                                    <p className="mt-2 text-[13px] font-bold text-[#6F6A7D]">Tự động gán từ hợp đồng đã duyệt.</p>
+                                                    <h2 className="text-[22px] font-black leading-none text-gray-900">Nhà cung cấp</h2>
+                                                    <p className="mt-2 text-[13px] font-bold text-gray-500">Tự động gán từ hợp đồng đã duyệt.</p>
                                                 </div>
                                             </div>
                                             <div className="mt-6 space-y-5">
@@ -611,25 +611,25 @@ export const CampaignManagement = (): JSX.Element => {
                                                     return (
                                                         <div key={s.outfit.outfitId} className="space-y-2">
                                                             <div className="flex items-center justify-between gap-2">
-                                                                <p className="text-[14px] font-black text-[#19182B] truncate">{s.outfit.outfitName}</p>
-                                                                <span className="flex-shrink-0 rounded-full border-[2px] border-[#19182B] bg-[#D9F8E8] px-2.5 py-0.5 text-[11px] font-extrabold text-[#065F46] shadow-[1px_1px_0_#19182B]">
+                                                                <p className="text-[14px] font-black text-gray-900 truncate">{s.outfit.outfitName}</p>
+                                                                <span className="flex-shrink-0 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-[11px] font-extrabold text-emerald-800 shadow-soft-sm">
                                                                     Giá bán: {s.campaignPrice.toLocaleString("vi-VN")}đ (cố định)
                                                                 </span>
                                                             </div>
                                                             {providers.length === 0 ? (
-                                                                <div className="flex items-center gap-2 rounded-[8px] border-[2px] border-dashed border-[#D1C9E0] bg-[#FAFAFA] px-3 py-2">
+                                                                <div className="flex items-center gap-2 rounded-[8px] border border-dashed border-gray-200 bg-gray-50 px-3 py-2">
                                                                     <span className="text-[13px]">⚠️</span>
-                                                                    <span className="text-[13px] font-bold text-[#8D879B]">Chưa có hợp đồng — sẽ gán NCC sau</span>
+                                                                    <span className="text-[13px] font-bold text-gray-400">Chưa có hợp đồng — sẽ gán NCC sau</span>
                                                                 </div>
                                                             ) : providers.length === 1 ? (
-                                                                <div className="flex items-center gap-2 rounded-[10px] border-[2px] border-[#19182B] bg-[#D9F8E8] px-3 py-2 shadow-[2px_2px_0_#19182B]">
+                                                                <div className="flex items-center gap-2 rounded-[10px] border border-emerald-200 bg-emerald-50 px-3 py-2 shadow-soft-sm">
                                                                     <span className="text-[13px]">✅</span>
                                                                     <div className="flex flex-col">
-                                                                        <span className="text-[13px] font-black text-[#19182B]">{providers[0].providerName}</span>
-                                                                        <span className="text-[10px] font-bold text-[#6F6A7D]">HĐ: {providers[0].contractName}</span>
+                                                                        <span className="text-[13px] font-black text-gray-900">{providers[0].providerName}</span>
+                                                                        <span className="text-[10px] font-bold text-gray-500">HĐ: {providers[0].contractName}</span>
                                                                     </div>
-                                                                    <span className="ml-auto text-[12px] font-bold text-[#6F6A7D]">
-                                                                        Giá SX: {providers[0].pricePerUnit.toLocaleString("vi-VN")}đ <span className="text-[10px] text-[#9A95A8]">(tham khảo)</span>
+                                                                    <span className="ml-auto text-[12px] font-bold text-gray-500">
+                                                                        Giá SX: {providers[0].pricePerUnit.toLocaleString("vi-VN")}đ <span className="text-[10px] text-gray-400">(tham khảo)</span>
                                                                     </span>
                                                                 </div>
                                                             ) : (
@@ -647,7 +647,7 @@ export const CampaignManagement = (): JSX.Element => {
                                                                                 return next;
                                                                             });
                                                                         }}
-                                                                        className={brutalInputClass}
+                                                                        className={modernInputClass}
                                                                     >
                                                                         <option value="">-- Chọn nhà cung cấp --</option>
                                                                         {providers.map((p) => (
@@ -660,7 +660,7 @@ export const CampaignManagement = (): JSX.Element => {
                                                                         const selected = providers.find(p => p.providerId === s.providerId);
                                                                         if (!selected) return null;
                                                                         return (
-                                                                            <p className="text-[11px] font-bold text-[#8D879B] px-1">
+                                                                            <p className="text-[11px] font-bold text-gray-400 px-1">
                                                                                 💡 Giá SX: {selected.pricePerUnit.toLocaleString("vi-VN")}đ (tham khảo) — Giá bán cho phụ huynh không đổi
                                                                             </p>
                                                                         );
@@ -682,22 +682,22 @@ export const CampaignManagement = (): JSX.Element => {
                 </div>
             </div>
 
-            {/* ── Preview Modal — NB Concept ── */}
+            {/* ── Preview Modal ── */}
             {showPreview && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center">
                     <div className="absolute inset-0 bg-black/50" onClick={() => setShowPreview(false)} />
-                    <div className="relative w-full max-w-[640px] mx-4 max-h-[85vh] overflow-y-auto rounded-[18px] border-[3px] border-[#19182B] bg-white shadow-[6px_6px_0_#19182B]">
+                    <div className="relative w-full max-w-[640px] mx-4 max-h-[85vh] overflow-y-auto rounded-[18px] border border-gray-200 bg-white shadow-soft-lg">
                         {/* Header */}
-                        <div className="flex items-start justify-between gap-4 border-b-[3px] border-[#19182B] bg-[#F2ECFF] px-6 py-5 sticky top-0 z-10">
+                        <div className="flex items-start justify-between gap-4 border-b border-gray-200 bg-violet-50 px-6 py-5 sticky top-0 z-10">
                             <div>
-                                <div className="mb-2 inline-flex items-center gap-2 rounded-[8px] border-[2px] border-[#19182B] bg-[#FFD978] px-3 py-1 text-[12px] font-black shadow-[2px_2px_0_#19182B]">
+                                <div className="mb-2 inline-flex items-center gap-2 rounded-[8px] border border-yellow-200 bg-yellow-50 px-3 py-1 text-[12px] font-black shadow-soft-sm">
                                     👁 XEM TRƯỚC
                                 </div>
-                                <h2 className="text-[24px] font-black leading-none text-[#19182B]">Xem trước chiến dịch</h2>
+                                <h2 className="text-[24px] font-black leading-none text-gray-900">Xem trước chiến dịch</h2>
                             </div>
                             <button
                                 onClick={() => setShowPreview(false)}
-                                className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-[10px] border-[3px] border-[#19182B] bg-white text-[22px] font-black shadow-[4px_4px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B]"
+                                className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-[10px] border border-gray-200 bg-white text-[22px] font-black shadow-soft-sm transition-all hover:scale-[0.99] hover:shadow-soft-sm"
                             >
                                 ×
                             </button>
@@ -705,48 +705,48 @@ export const CampaignManagement = (): JSX.Element => {
                         <div className="px-6 py-6 space-y-5">
                             {/* Name */}
                             <div>
-                                <p className="text-[12px] font-black text-[#6F6A7D] uppercase tracking-wider mb-1">Tên chiến dịch</p>
-                                <p className="text-[18px] font-black text-[#19182B]">{campaignName || "(Chưa nhập)"}</p>
+                                <p className="text-[12px] font-black text-gray-500 uppercase tracking-wider mb-1">Tên chiến dịch</p>
+                                <p className="text-[18px] font-black text-gray-900">{campaignName || "(Chưa nhập)"}</p>
                             </div>
                             {description && (
                                 <div>
-                                    <p className="text-[12px] font-black text-[#6F6A7D] uppercase tracking-wider mb-1">Mô tả</p>
-                                    <p className="text-[15px] font-semibold text-[#6F6A7D]">{description}</p>
+                                    <p className="text-[12px] font-black text-gray-500 uppercase tracking-wider mb-1">Mô tả</p>
+                                    <p className="text-[15px] font-semibold text-gray-500">{description}</p>
                                 </div>
                             )}
                             {/* Dates */}
                             <div className="grid grid-cols-3 gap-4">
-                                <div className="rounded-[10px] border-[2px] border-[#19182B] bg-[#FFFDF9] p-3 shadow-[2px_2px_0_#19182B]">
-                                    <p className="text-[11px] font-black text-[#6F6A7D] uppercase mb-1">Mở đơn</p>
-                                    <p className="text-[14px] font-black text-[#19182B]">{startDate ? new Date(startDate).toLocaleDateString("vi-VN") : "—"}</p>
+                                <div className="rounded-[10px] border border-gray-200 bg-[#FFFDF9] p-3 shadow-soft-sm">
+                                    <p className="text-[11px] font-black text-gray-500 uppercase mb-1">Mở đơn</p>
+                                    <p className="text-[14px] font-black text-gray-900">{startDate ? new Date(startDate).toLocaleDateString("vi-VN") : "—"}</p>
                                 </div>
-                                <div className="rounded-[10px] border-[2px] border-[#19182B] bg-[#FFFDF9] p-3 shadow-[2px_2px_0_#19182B]">
-                                    <p className="text-[11px] font-black text-[#6F6A7D] uppercase mb-1">Đóng đơn</p>
-                                    <p className="text-[14px] font-black text-[#19182B]">{endDate ? new Date(endDate).toLocaleDateString("vi-VN") : "—"}</p>
+                                <div className="rounded-[10px] border border-gray-200 bg-[#FFFDF9] p-3 shadow-soft-sm">
+                                    <p className="text-[11px] font-black text-gray-500 uppercase mb-1">Đóng đơn</p>
+                                    <p className="text-[14px] font-black text-gray-900">{endDate ? new Date(endDate).toLocaleDateString("vi-VN") : "—"}</p>
                                 </div>
-                                <div className="rounded-[10px] border-[2px] border-[#19182B] bg-[#FFFDF9] p-3 shadow-[2px_2px_0_#19182B]">
-                                    <p className="text-[11px] font-black text-[#6F6A7D] uppercase mb-1">Trả hàng</p>
-                                    <p className="text-[14px] font-black text-[#19182B]">{deliveryDate ? new Date(deliveryDate).toLocaleDateString("vi-VN") : "—"}</p>
+                                <div className="rounded-[10px] border border-gray-200 bg-[#FFFDF9] p-3 shadow-soft-sm">
+                                    <p className="text-[11px] font-black text-gray-500 uppercase mb-1">Trả hàng</p>
+                                    <p className="text-[14px] font-black text-gray-900">{deliveryDate ? new Date(deliveryDate).toLocaleDateString("vi-VN") : "—"}</p>
                                 </div>
                             </div>
                             {/* Products */}
                             <div>
-                                <p className="text-[12px] font-black text-[#6F6A7D] uppercase tracking-wider mb-2">Sản phẩm ({selectedOutfits.size})</p>
+                                <p className="text-[12px] font-black text-gray-500 uppercase tracking-wider mb-2">Sản phẩm ({selectedOutfits.size})</p>
                                 {selectedOutfits.size === 0 ? (
-                                    <p className="text-[14px] font-bold text-[#8D879B] italic">Chưa chọn sản phẩm nào</p>
+                                    <p className="text-[14px] font-bold text-gray-400 italic">Chưa chọn sản phẩm nào</p>
                                 ) : (
                                     <div className="space-y-2">
                                         {Array.from(selectedOutfits.values()).map((s) => (
-                                            <div key={s.outfit.outfitId} className="flex items-center gap-3 rounded-[10px] border-[2px] border-[#19182B] bg-white p-3 shadow-[2px_2px_0_#19182B]">
-                                                <div className="w-10 h-10 rounded-[8px] bg-[#ECEAF2] overflow-hidden flex-shrink-0 border-[2px] border-[#19182B]">
+                                            <div key={s.outfit.outfitId} className="flex items-center gap-3 rounded-[10px] border border-gray-200 bg-white p-3 shadow-soft-sm">
+                                                <div className="w-10 h-10 rounded-[8px] bg-violet-50 overflow-hidden flex-shrink-0 border border-gray-200">
                                                     {s.outfit.mainImageURL ? (
                                                         <img src={s.outfit.mainImageURL} alt="" className="w-full h-full object-cover" />
                                                     ) : (
                                                         <div className="w-full h-full flex items-center justify-center text-sm">👕</div>
                                                     )}
                                                 </div>
-                                                <span className="flex-1 text-[14px] font-black text-[#19182B]">{s.outfit.outfitName}</span>
-                                                <span className="text-[14px] font-black text-[#7C56FF]">{new Intl.NumberFormat("vi-VN").format(s.campaignPrice)}đ</span>
+                                                <span className="flex-1 text-[14px] font-black text-gray-900">{s.outfit.outfitName}</span>
+                                                <span className="text-[14px] font-black text-violet-500">{new Intl.NumberFormat("vi-VN").format(s.campaignPrice)}đ</span>
                                             </div>
                                         ))}
                                     </div>
@@ -754,26 +754,26 @@ export const CampaignManagement = (): JSX.Element => {
                             </div>
                             {/* Rules */}
                             <div className="flex items-center gap-3">
-                                <span className={`rounded-full border-[2px] border-[#19182B] px-3 py-1 text-[12px] font-extrabold shadow-[2px_2px_0_#19182B] ${requirePayment ? "bg-[#D9F8E8] text-[#065F46]" : "bg-[#F6F1E8] text-[#6F6A7D]"}`}>
+                                <span className={`rounded-full border px-3 py-1 text-[12px] font-extrabold shadow-soft-sm ${requirePayment ? "border-emerald-200 bg-emerald-50 text-emerald-800" : "border-gray-200 bg-gray-100 text-gray-500"}`}>
                                     {requirePayment ? "✓" : "✗"} Thanh toán ngay
                                 </span>
-                                <span className={`rounded-full border-[2px] border-[#19182B] px-3 py-1 text-[12px] font-extrabold shadow-[2px_2px_0_#19182B] ${allowSizeExchange ? "bg-[#D9F8E8] text-[#065F46]" : "bg-[#F6F1E8] text-[#6F6A7D]"}`}>
+                                <span className={`rounded-full border px-3 py-1 text-[12px] font-extrabold shadow-soft-sm ${allowSizeExchange ? "border-emerald-200 bg-emerald-50 text-emerald-800" : "border-gray-200 bg-gray-100 text-gray-500"}`}>
                                     {allowSizeExchange ? "✓" : "✗"} Cho phép đổi size
                                 </span>
                             </div>
                         </div>
                         {/* Footer */}
-                        <div className="flex flex-col-reverse gap-3 border-t-[3px] border-[#19182B] bg-[#FFFDF9] px-6 py-5 sm:flex-row sm:justify-end">
-                            <button onClick={() => setShowPreview(false)} className="rounded-[8px] border-[3px] border-[#19182B] bg-white px-5 py-3 text-[15px] font-extrabold text-[#19182B] shadow-[4px_4px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none">Đóng</button>
-                            <button onClick={() => { setShowPreview(false); handleSubmit(false); }} disabled={submitting} className="flex items-center justify-center gap-2 rounded-[8px] border-[3px] border-[#19182B] bg-[#8B6BFF] px-5 py-3 text-[15px] font-extrabold text-white shadow-[4px_4px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:opacity-50">🚀 Xuất bản ngay</button>
+                        <div className="flex flex-col-reverse gap-3 border-t border-gray-200 bg-[#FFFDF9] px-6 py-5 sm:flex-row sm:justify-end">
+                            <button onClick={() => setShowPreview(false)} className="rounded-[8px] border border-gray-200 bg-white px-5 py-3 text-[15px] font-extrabold text-gray-900 shadow-soft-sm transition-all hover:scale-[0.99] hover:shadow-soft-sm active:scale-[0.98] active:shadow-none">Đóng</button>
+                            <button onClick={() => { setShowPreview(false); handleSubmit(false); }} disabled={submitting} className="flex items-center justify-center gap-2 rounded-[8px] border border-violet-500 bg-violet-500 px-5 py-3 text-[15px] font-extrabold text-white shadow-soft-sm transition-all hover:scale-[0.99] hover:shadow-soft-sm active:scale-[0.98] active:shadow-none disabled:opacity-50">🚀 Xuất bản ngay</button>
                         </div>
                     </div>
                 </div>
             )}
 
-            {/* ── Toast — NB Concept ── */}
+            {/* ── Toast ── */}
             {toast && (
-                <div className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-3.5 rounded-[10px] border-[3px] border-[#19182B] shadow-[4px_4px_0_#19182B] animate-in slide-in-from-bottom-4 duration-300 ${toast.type === "success" ? "bg-[#10b981] text-white" : "bg-[#FF6B57] text-white"}`}>
+                <div className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-3.5 rounded-[10px] border border-gray-200 shadow-soft-md animate-in slide-in-from-bottom-4 duration-300 ${toast.type === "success" ? "bg-emerald-500 text-white" : "bg-red-500 text-white"}`}>
                     {toast.type === "success" ? "✅" : "❌"}
                     <span className="font-extrabold text-[15px]">{toast.message}</span>
                 </div>

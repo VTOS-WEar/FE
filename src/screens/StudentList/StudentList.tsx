@@ -88,14 +88,14 @@ function StudentFormModal({
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
             <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-            <div className="relative bg-white border-2 border-[#1A1A2E] rounded-md shadow-[4px_4px_0_#1A1A2E] w-full max-w-[560px] mx-4 max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-200">
+            <div className="relative bg-white border border-gray-200 rounded-md shadow-soft-md w-full max-w-[560px] mx-4 max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-200">
                 {/* Header */}
-                <div className="flex items-center justify-between px-6 py-5 border-b-2 border-[#1A1A2E]">
+                <div className="flex items-center justify-between px-6 py-5 border-b border-gray-200">
                     <h2 className="font-bold text-[#1a1a2e] text-xl">
                         {isEditing ? "Chỉnh sửa học sinh" : "Thêm học sinh mới"}
                     </h2>
-                    <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full border-2 border-[#1A1A2E] hover:bg-[#FFF5EB] shadow-[2px_2px_0_#1A1A2E] active:shadow-none active:translate-x-[2px] active:translate-y-[2px] transition-all">
-                        <svg className="w-4 h-4 text-[#1A1A2E]" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" /></svg>
+                    <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-200 hover:bg-[#FFF5EB] shadow-sm active:shadow-none active:scale-[0.98] transition-all">
+                        <svg className="w-4 h-4 text-gray-900" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" /></svg>
                     </button>
                 </div>
                 <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
@@ -182,9 +182,9 @@ function DeleteConfirmDialog({ isOpen, onClose, onConfirm, studentName, isLoadin
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
             <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-            <div className="relative bg-white border-2 border-[#1A1A2E] rounded-md shadow-[4px_4px_0_#1A1A2E] w-full max-w-[420px] mx-4 p-6 animate-in fade-in zoom-in-95 duration-200">
+            <div className="relative bg-white border border-gray-200 rounded-md shadow-soft-md w-full max-w-[420px] mx-4 p-6 animate-in fade-in zoom-in-95 duration-200">
                 <div className="flex flex-col items-center text-center">
-                    <div className="w-14 h-14 rounded-full bg-red-50 flex items-center justify-center mb-4 border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E]">
+                    <div className="w-14 h-14 rounded-full bg-red-50 flex items-center justify-center mb-4 border border-gray-200 shadow-sm">
                         <svg className="w-7 h-7 text-red-500" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" /></svg>
                     </div>
                     <h3 className="font-bold text-[#1a1a2e] text-lg mb-2">Xóa học sinh?</h3>
@@ -265,8 +265,8 @@ export const StudentListV2 = (): JSX.Element => {
 
     const SortIcon = ({ field }: { field: string }) => (
         <span className="ml-1 inline-flex flex-col leading-none text-[10px] opacity-60">
-            <span className={sortField === field && sortDir === "asc" ? "text-[#6938EF] opacity-100" : ""}>▲</span>
-            <span className={sortField === field && sortDir === "desc" ? "text-[#6938EF] opacity-100" : ""}>▼</span>
+            <span className={sortField === field && sortDir === "asc" ? "text-violet-600 opacity-100" : ""}>▲</span>
+            <span className={sortField === field && sortDir === "desc" ? "text-violet-600 opacity-100" : ""}>▼</span>
         </span>
     );
 
@@ -341,9 +341,9 @@ export const StudentListV2 = (): JSX.Element => {
                 <svg className={`w-4 h-4 text-[#97a3b6] transition-transform ${isOpen ? "rotate-180" : ""}`} viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5z" /></svg>
             </button>
             {isOpen && (
-                <div className="absolute top-full mt-1 left-0 bg-white border-2 border-[#1A1A2E] rounded-lg shadow-[4px_4px_0_#1A1A2E] z-10 py-1 min-w-[140px]">
+                <div className="absolute top-full mt-1 left-0 bg-white border border-gray-200 rounded-lg shadow-soft-md z-10 py-1 min-w-[140px]">
                     {options.map((opt) => (
-                        <button key={opt.value} onClick={() => { onSelect(opt.value); }} className={`w-full text-left px-3 py-2 text-sm hover:bg-[#FFF5EB] transition-colors ${value === opt.value ? "text-[#6938EF] font-bold" : "text-[#4C5769]"}`}>{opt.label}</button>
+                        <button key={opt.value} onClick={() => { onSelect(opt.value); }} className={`w-full text-left px-3 py-2 text-sm hover:bg-[#FFF5EB] transition-colors ${value === opt.value ? "text-violet-600 font-bold" : "text-gray-600"}`}>{opt.label}</button>
                     ))}
                 </div>
             )}
@@ -363,7 +363,7 @@ export const StudentListV2 = (): JSX.Element => {
                             <BreadcrumbList>
                                 <BreadcrumbItem><BreadcrumbLink href="/school/dashboard" className="font-semibold text-[#4c5769] text-base">Trang chủ</BreadcrumbLink></BreadcrumbItem>
                                 <BreadcrumbSeparator className="text-[#cbcad7]">/</BreadcrumbSeparator>
-                                <BreadcrumbItem><BreadcrumbPage className="font-bold text-[#1A1A2E] text-base">Danh sách học sinh</BreadcrumbPage></BreadcrumbItem>
+                                <BreadcrumbItem><BreadcrumbPage className="font-bold text-gray-900 text-base">Danh sách học sinh</BreadcrumbPage></BreadcrumbItem>
                             </BreadcrumbList>
                         </Breadcrumb>
                     </TopNavBar>
@@ -372,7 +372,7 @@ export const StudentListV2 = (): JSX.Element => {
                         {/* Header */}
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                             <div>
-                                <h1 className="font-extrabold text-[#1A1A2E] text-[28px] lg:text-[32px] leading-tight">Danh sách học sinh 📚</h1>
+                                <h1 className="font-extrabold text-gray-900 text-[28px] lg:text-[32px] leading-tight">Danh sách học sinh 📚</h1>
                                 <p className="mt-1 font-medium text-[#4c5769] text-sm lg:text-base">Quản lý thông tin học sinh, số đo ảo và tài khoản phụ huynh.</p>
                             </div>
                             <div className="flex items-center gap-3">
@@ -403,12 +403,12 @@ export const StudentListV2 = (): JSX.Element => {
                         {/* Student Table */}
                         <div className="nb-card-static overflow-hidden">
                             {/* Table Header */}
-                            <div className="bg-[#EDE9FE] border-b-2 border-[#1A1A2E]">
+                            <div className="bg-violet-50 border-b border-gray-200">
                                 <div className="hidden lg:grid grid-cols-[2fr_0.8fr_0.7fr_1.2fr_1.8fr_60px] items-center px-6 py-3.5 gap-4">
                                     {(["fullName", "grade", "gender", "measurement", "parent"] as const).map((field) => {
                                         const labels: Record<string, string> = { fullName: "Học sinh", grade: "Lớp", gender: "Giới tính", measurement: "Trạng thái", parent: "Phụ Huynh" };
                                         return (
-                                            <button key={field} type="button" onClick={() => handleSort(field)} className="font-bold text-[#1A1A2E] text-xs uppercase tracking-wider text-left flex items-center cursor-pointer hover:text-[#6938EF] transition-colors">
+                                            <button key={field} type="button" onClick={() => handleSort(field)} className="font-bold text-gray-900 text-xs uppercase tracking-wider text-left flex items-center cursor-pointer hover:text-violet-600 transition-colors">
                                                 {labels[field]}<SortIcon field={field} />
                                             </button>
                                         );
@@ -420,7 +420,7 @@ export const StudentListV2 = (): JSX.Element => {
                             {/* Loading */}
                             {loading && (
                                 <div className="px-6 py-12 text-center">
-                                    <div className="w-8 h-8 border-4 border-[#E5E7EB] border-t-[#6938ef] rounded-full animate-spin mx-auto mb-3" />
+                                    <div className="w-8 h-8 border-4 border-gray-200 border-t-[#6938ef] rounded-full animate-spin mx-auto mb-3" />
                                     <p className="font-medium text-[#97a3b6] text-sm">Đang tải danh sách học sinh...</p>
                                 </div>
                             )}
@@ -428,7 +428,7 @@ export const StudentListV2 = (): JSX.Element => {
                             {/* Error */}
                             {!loading && error && (
                                 <div className="px-6 py-12 text-center">
-                                    <div className="w-14 h-14 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-3 border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E]">
+                                    <div className="w-14 h-14 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-3 border border-gray-200 shadow-sm">
                                         <svg className="w-7 h-7 text-red-500" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" /></svg>
                                     </div>
                                     <p className="font-bold text-[#ef4444] text-base mb-2">{error}</p>
@@ -439,11 +439,11 @@ export const StudentListV2 = (): JSX.Element => {
                             {/* Empty */}
                             {!loading && !error && students.length === 0 && (
                                 <div className="px-6 py-12 text-center">
-                                    <div className="w-14 h-14 rounded-full bg-[#F3F4F6] flex items-center justify-center mx-auto mb-3 border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E]">
-                                        <svg className="w-7 h-7 text-[#9CA3AF]" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" /></svg>
+                                    <div className="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-3 border border-gray-200 shadow-sm">
+                                        <svg className="w-7 h-7 text-gray-400" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" /></svg>
                                     </div>
-                                    <p className="font-bold text-[#6B7280] text-base">Chưa có học sinh nào</p>
-                                    <p className="font-medium text-[#9CA3AF] text-sm mt-1">Nhập dữ liệu từ Excel hoặc thêm thủ công</p>
+                                    <p className="font-bold text-gray-500 text-base">Chưa có học sinh nào</p>
+                                    <p className="font-medium text-gray-400 text-sm mt-1">Nhập dữ liệu từ Excel hoặc thêm thủ công</p>
                                     <div className="flex items-center justify-center gap-3 mt-4">
                                         <button onClick={() => navigate("/school/students/import")} className="nb-btn nb-btn-outline text-sm">Nhập từ Excel</button>
                                         <button onClick={handleOpenCreate} className="nb-btn nb-btn-purple text-sm">Thêm học sinh</button>
@@ -458,8 +458,8 @@ export const StudentListV2 = (): JSX.Element => {
                                         <div key={student.id} className="grid grid-cols-1 lg:grid-cols-[2fr_0.8fr_0.7fr_1.2fr_1.8fr_60px] items-center px-6 py-4 gap-4 hover:bg-[#FFF5EB] transition-colors">
                                             {/* Name */}
                                             <div className="flex items-center gap-3">
-                                                <div className="w-9 h-9 rounded-full bg-[#EDE9FE] flex items-center justify-center flex-shrink-0 border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E]">
-                                                    <span className="font-bold text-[#6938EF] text-sm">{student.fullName.charAt(student.fullName.lastIndexOf(" ") + 1)}</span>
+                                                <div className="w-9 h-9 rounded-full bg-violet-50 flex items-center justify-center flex-shrink-0 border border-gray-200 shadow-sm">
+                                                    <span className="font-bold text-violet-600 text-sm">{student.fullName.charAt(student.fullName.lastIndexOf(" ") + 1)}</span>
                                                 </div>
                                                 <div>
                                                     <p className="font-semibold text-[#1a1a2e] text-sm">{student.fullName}</p>
@@ -469,7 +469,7 @@ export const StudentListV2 = (): JSX.Element => {
                                             {/* Grade */}
                                             <div><span className="nb-badge nb-badge-blue text-xs">{student.grade || "—"}</span></div>
                                             {/* Gender */}
-                                            <span className="font-medium text-[#1A1A2E] text-sm">{student.gender === "Male" ? "Nam" : student.gender === "Female" ? "Nữ" : student.gender}</span>
+                                            <span className="font-medium text-gray-900 text-sm">{student.gender === "Male" ? "Nam" : student.gender === "Female" ? "Nữ" : student.gender}</span>
                                             {/* Measurement */}
                                             <div>
                                                 {student.hasMeasurements ? (
@@ -490,23 +490,23 @@ export const StudentListV2 = (): JSX.Element => {
                                                     </div>
                                                 ) : (
                                                     <div>
-                                                        <p className="font-medium text-[#1A1A2E] text-sm opacity-60">Chưa liên kết</p>
-                                                        <button className="font-bold text-[#6938EF] text-xs mt-0.5 hover:underline">Gửi lời mời +</button>
+                                                        <p className="font-medium text-gray-900 text-sm opacity-60">Chưa liên kết</p>
+                                                        <button className="font-bold text-violet-600 text-xs mt-0.5 hover:underline">Gửi lời mời +</button>
                                                     </div>
                                                 )}
                                             </div>
                                             {/* Actions */}
                                             <div className="flex items-center justify-center gap-1">
-                                                <button onClick={() => handleOpenEdit(student.id)} title="Chỉnh sửa" className="w-8 h-8 flex items-center justify-center rounded-lg border-2 border-transparent hover:border-[#6938EF] hover:bg-[#EDE9FE] transition-all">
-                                                    <svg className="w-4 h-4 text-[#6938EF]" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" /></svg>
+                                                <button onClick={() => handleOpenEdit(student.id)} title="Chỉnh sửa" className="w-8 h-8 flex items-center justify-center rounded-lg border-2 border-transparent hover:border-violet-600 hover:bg-violet-50 transition-all">
+                                                    <svg className="w-4 h-4 text-violet-600" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" /></svg>
                                                 </button>
                                                 {student.isParentLinked ? (
                                                     <span title="Không thể xóa học sinh đã liên kết phụ huynh" className="w-8 h-8 flex items-center justify-center rounded-lg opacity-30 cursor-not-allowed">
-                                                        <svg className="w-4 h-4 text-[#9CA3AF]" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" /></svg>
+                                                        <svg className="w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" /></svg>
                                                     </span>
                                                 ) : (
-                                                    <button onClick={() => handleOpenDelete(student.id, student.fullName)} title="Xóa" className="w-8 h-8 flex items-center justify-center rounded-lg border-2 border-transparent hover:border-[#EF4444] hover:bg-[#FEE2E2] transition-all">
-                                                        <svg className="w-4 h-4 text-[#EF4444]" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" /></svg>
+                                                    <button onClick={() => handleOpenDelete(student.id, student.fullName)} title="Xóa" className="w-8 h-8 flex items-center justify-center rounded-lg border-2 border-transparent hover:border-[#EF4444] hover:bg-red-50 transition-all">
+                                                        <svg className="w-4 h-4 text-red-500" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" /></svg>
                                                     </button>
                                                 )}
                                             </div>
@@ -522,7 +522,7 @@ export const StudentListV2 = (): JSX.Element => {
                             {totalPages > 1 && (
                                 <div className="flex items-center gap-2">
                                     <button onClick={() => setPage(Math.max(1, page - 1))} disabled={page === 1} className="nb-btn nb-btn-sm nb-btn-outline disabled:opacity-40">←</button>
-                                    <span className="font-semibold text-[#1A1A2E] text-sm">Trang {page} / {totalPages}</span>
+                                    <span className="font-semibold text-gray-900 text-sm">Trang {page} / {totalPages}</span>
                                     <button onClick={() => setPage(Math.min(totalPages, page + 1))} disabled={page === totalPages} className="nb-btn nb-btn-sm nb-btn-outline disabled:opacity-40">→</button>
                                 </div>
                             )}
@@ -537,7 +537,7 @@ export const StudentListV2 = (): JSX.Element => {
 
             {/* Toast */}
             {toast && (
-                <div className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-3.5 border-2 border-[#1A1A2E] rounded-md shadow-[4px_4px_0_#1A1A2E] animate-in slide-in-from-bottom-4 duration-300 ${toast.type === "success" ? "bg-[#10b981] text-white" : "bg-[#ef4444] text-white"}`}>
+                <div className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-3.5 border border-gray-200 rounded-md shadow-soft-md animate-in slide-in-from-bottom-4 duration-300 ${toast.type === "success" ? "bg-[#10b981] text-white" : "bg-[#ef4444] text-white"}`}>
                     {toast.type === "success" ? (
                         <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" /></svg>
                     ) : (

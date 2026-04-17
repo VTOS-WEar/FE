@@ -32,10 +32,10 @@ function Toast({ message, show, onHide }: { message: string; show: boolean; onHi
             transition={{ type: "spring", stiffness: 400, damping: 25 }}
             className="fixed top-6 right-6 z-50 nb-card-static flex items-center gap-3 px-5 py-3 max-w-sm"
           >
-            <div className="p-1.5 bg-[#E8F5CC] rounded-lg border-2 border-[#1A1A2E]">
-              <CheckCircle className="w-4 h-4 text-[#1A1A2E]" />
+            <div className="p-1.5 bg-[#E8F5CC] rounded-lg border border-gray-200">
+              <CheckCircle className="w-4 h-4 text-gray-900" />
             </div>
-            <span className="text-sm font-bold text-[#1A1A2E]">{message}</span>
+            <span className="text-sm font-bold text-gray-900">{message}</span>
           </motion.div>
         )}
       </AnimatePresence>
@@ -87,18 +87,18 @@ function SearchableSelect({
           type="button"
           disabled={disabled}
           onClick={() => !disabled && setOpen(!open)}
-          className={`w-full h-9 px-3 rounded-lg border-2 border-[#1A1A2E] text-sm font-semibold flex items-center justify-between gap-2 transition-all shadow-[4px_4px_0_#1A1A2E] ${
+          className={`w-full h-9 px-3 rounded-lg border border-gray-200 text-sm font-semibold flex items-center justify-between gap-2 transition-all shadow-soft-md ${
             disabled
-              ? "bg-[#F3F4F6] text-[#9CA3AF] cursor-not-allowed"
-              : "bg-white text-[#1A1A2E] hover:shadow-[5px_5px_0_#1A1A2E] hover:-translate-y-[1px] cursor-pointer"
-          } ${open && !disabled ? "ring-2 ring-[#B8A9E8]/45 z-30" : ""}`}
+              ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+              : "bg-white text-gray-900 hover:shadow-soft-md hover:-translate-y-[1px] cursor-pointer"
+          } ${open && !disabled ? "ring-2 ring-purple-300/45 z-30" : ""}`}
         >
-          <span className={`truncate ${value === "all" && !disabled ? "text-[#6B7280]" : ""}`}>
+          <span className={`truncate ${value === "all" && !disabled ? "text-gray-500" : ""}`}>
             {selectedLabel}
           </span>
           <ChevronRight
             className={`w-3.5 h-3.5 shrink-0 transition-transform duration-200 ${open ? "rotate-90" : ""} ${
-              disabled ? "text-[#9CA3AF]" : "text-[#1A1A2E]"
+              disabled ? "text-gray-400" : "text-gray-900"
             }`}
           />
         </button>
@@ -110,24 +110,24 @@ function SearchableSelect({
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -4, scale: 0.98 }}
               transition={{ duration: 0.15 }}
-              className="absolute z-50 top-full mt-2 left-0 w-full min-w-[220px] bg-white rounded-xl border-3 border-[#1A1A2E] shadow-[6px_6px_0_#1A1A2E] overflow-hidden"
+              className="absolute z-50 top-full mt-2 left-0 w-full min-w-[220px] bg-white rounded-xl border-3 border-gray-200 shadow-soft-lg overflow-hidden"
             >
-              <div className="p-2 border-b-2 border-[#1A1A2E]/10">
+              <div className="p-2 border-b border-gray-200/10">
                 <div className="relative">
-                  <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#1A1A2E]" />
+                  <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-900" />
                   <input
                     ref={inputRef}
                     type="text"
                     placeholder="Tìm kiếm..."
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
-                    className="w-full h-8 pl-8 pr-3 text-sm font-semibold rounded-lg bg-[#FFF8F0] border-2 border-[#1A1A2E]/15 outline-none focus:border-[#B8A9E8] focus:ring-1 focus:ring-[#B8A9E8]/30 transition-colors placeholder:text-[#6B7280]"
+                    className="w-full h-8 pl-8 pr-3 text-sm font-semibold rounded-lg bg-gray-50 border border-gray-200/15 outline-none focus:border-purple-300 focus:ring-1 focus:ring-purple-300/30 transition-colors placeholder:text-gray-500"
                   />
                 </div>
               </div>
               <div className="max-h-[240px] overflow-y-auto py-1">
                 {filtered.length === 0 ? (
-                  <div className="px-3 py-6 text-center text-xs text-[#6B7280] font-bold">Không tìm thấy</div>
+                  <div className="px-3 py-6 text-center text-xs text-gray-500 font-bold">Không tìm thấy</div>
                 ) : (
                   filtered.map((opt) => (
                     <button
@@ -140,8 +140,8 @@ function SearchableSelect({
                       }}
                       className={`w-full text-left px-3 py-2 text-sm font-semibold transition-colors ${
                         opt.value === value
-                          ? "bg-[#EDE9FE] text-[#7C3AED]"
-                          : "text-[#1A1A2E] hover:bg-[#FFF8F0]"
+                          ? "bg-violet-50 text-[#7C3AED]"
+                          : "text-gray-900 hover:bg-gray-50"
                       }`}
                     >
                       {opt.label}
@@ -160,8 +160,8 @@ const SectionHeader = ({ title, icon: Icon, subtitle, badge }: { title: string; 
   <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
     <div className="space-y-1">
       <div className="flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl border-2 border-[#1A1A2E] bg-[#C8E44D] shadow-[3px_3px_0_#1A1A2E]">
-          <Icon className="h-5 w-5 text-[#1A1A2E]" />
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-emerald-400 shadow-soft-sm">
+          <Icon className="h-5 w-5 text-gray-900" />
         </div>
         <div className="space-y-0.5">
           {badge && (
@@ -169,12 +169,12 @@ const SectionHeader = ({ title, icon: Icon, subtitle, badge }: { title: string; 
               {badge}
             </span>
           )}
-          <h2 className="text-2xl font-black tracking-tight text-[#1A1A2E] lg:text-3xl uppercase">
+          <h2 className="text-2xl font-black tracking-tight text-gray-900 lg:text-3xl uppercase">
             {title}
           </h2>
         </div>
       </div>
-      {subtitle && <p className="text-sm font-medium text-[#4C5769] max-w-xl">{subtitle}</p>}
+      {subtitle && <p className="text-sm font-medium text-gray-600 max-w-xl">{subtitle}</p>}
     </div>
   </div>
 );
@@ -185,11 +185,11 @@ const CampaignCard = ({ campaign }: { campaign: CampaignSummaryDto }) => {
     <motion.div
       onClick={() => navigate(`/campaigns/${campaign.campaignId}`)}
       whileHover={{ y: -5, scale: 1.01 }}
-      className="group relative h-full flex flex-col rounded-2xl border-2 border-[#1A1A2E] bg-white p-5 shadow-[4px_4px_0_#1A1A2E] transition-all hover:shadow-[8px_8px_0_#1A1A2E] cursor-pointer"
+      className="group relative h-full flex flex-col rounded-2xl border border-gray-200 bg-white p-5 shadow-soft-md transition-all hover:shadow-soft-lg cursor-pointer"
     >
     <div className="mb-4 flex items-center justify-between">
       <div className="flex -space-x-2">
-        <div className="h-10 w-10 rounded-full border-2 border-[#1A1A2E] bg-white p-1 shadow-[2px_2px_0_#1A1A2E]">
+        <div className="h-10 w-10 rounded-full border border-gray-200 bg-white p-1 shadow-sm">
           {campaign.schoolLogoUrl ? (
             <img src={campaign.schoolLogoUrl} alt={campaign.schoolName} className="h-full w-full object-contain" />
           ) : (
@@ -197,32 +197,32 @@ const CampaignCard = ({ campaign }: { campaign: CampaignSummaryDto }) => {
           )}
         </div>
       </div>
-      <div className="rounded-full border-2 border-[#1A1A2E] bg-[#FFD700] px-2.5 py-0.5 text-[9px] font-black uppercase text-[#1A1A2E]">
+      <div className="rounded-full border border-gray-200 bg-[#FFD700] px-2.5 py-0.5 text-[9px] font-black uppercase text-gray-900">
         PRE-ORDER
       </div>
     </div>
 
-    <h3 className="mb-2 line-clamp-1 text-lg font-black text-[#1A1A2E] group-hover:text-[#7C3AED] transition-colors">
+    <h3 className="mb-2 line-clamp-1 text-lg font-black text-gray-900 group-hover:text-[#7C3AED] transition-colors">
       {campaign.campaignName}
     </h3>
-    <p className="mb-4 flex items-center gap-1.5 text-xs font-bold text-[#6B7280]">
+    <p className="mb-4 flex items-center gap-1.5 text-xs font-bold text-gray-500">
       <School className="h-3.5 w-3.5" />
       {campaign.schoolName}
     </p>
 
     <div className="mt-auto space-y-3">
-      <div className="rounded-lg border-[1.5px] border-dashed border-[#1A1A2E]/30 bg-[#FAFAF5] p-3">
-        <div className="flex items-center justify-between text-[10px] font-bold text-[#6B7280] uppercase tracking-wider">
+      <div className="rounded-lg border-[1.5px] border-dashed border-gray-200/30 bg-gray-50 p-3">
+        <div className="flex items-center justify-between text-[10px] font-bold text-gray-500 uppercase tracking-wider">
           <span>Kết thúc sau</span>
           <Calendar className="h-3 w-3" />
         </div>
-        <p className="mt-1 text-sm font-black text-[#1A1A2E]">
+        <p className="mt-1 text-sm font-black text-gray-900">
           {new Date(campaign.endDate).toLocaleDateString("vi-VN")}
         </p>
       </div>
 
       <div
-        className="nb-btn nb-btn-purple flex w-full items-center justify-center gap-2 py-2 text-xs font-black shadow-[3px_3px_0_#1A1A2E]"
+        className="nb-btn nb-btn-purple flex w-full items-center justify-center gap-2 py-2 text-xs font-black shadow-soft-sm"
       >
         MUA NGAY <ArrowRight className="h-3.5 w-3.5" />
       </div>
@@ -241,9 +241,9 @@ const ProductCard = ({ product }: { product: FeaturedOutfitDto | UniformSearchRe
     <motion.div
       onClick={() => navigate(`/outfits/${id}`)}
       whileHover={{ y: -4, rotate: -0.2 }}
-      className="group relative flex h-full flex-col rounded-xl border-2 border-[#1A1A2E] bg-white shadow-[3px_3px_0_#1A1A2E] transition-all hover:shadow-[6px_6px_0_#1A1A2E] cursor-pointer"
+      className="group relative flex h-full flex-col rounded-xl border border-gray-200 bg-white shadow-soft-sm transition-all hover:shadow-soft-md cursor-pointer"
     >
-      <div className="relative aspect-[4/4.5] overflow-hidden rounded-t-[10px] bg-[#F3F4F6]">
+      <div className="relative aspect-[4/4.5] overflow-hidden rounded-t-[10px] bg-gray-100">
         {imageUrl ? (
           <img
             src={imageUrl}
@@ -259,7 +259,7 @@ const ProductCard = ({ product }: { product: FeaturedOutfitDto | UniformSearchRe
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
         
         {'averageRating' in product && product.averageRating > 0 && (
-          <div className="absolute top-2 left-2 flex items-center gap-1 rounded-full border-2 border-[#1A1A2E] bg-white px-1.5 py-0.5 text-[8px] font-black shadow-[1px_1px_0_#1A1A2E]">
+          <div className="absolute top-2 left-2 flex items-center gap-1 rounded-full border border-gray-200 bg-white px-1.5 py-0.5 text-[8px] font-black shadow-sm">
             <StarFilledIcon className="h-2.5 w-2.5 text-[#FFD700]" />
             {product.averageRating}
           </div>
@@ -267,20 +267,20 @@ const ProductCard = ({ product }: { product: FeaturedOutfitDto | UniformSearchRe
       </div>
 
       <div className="flex flex-1 flex-col p-3">
-        <p className="mb-0.5 flex items-center gap-1 text-[9px] font-bold uppercase tracking-widest text-[#6B7280]">
+        <p className="mb-0.5 flex items-center gap-1 text-[9px] font-bold uppercase tracking-widest text-gray-500">
           <School className="h-2.5 w-2.5" />
           {product.schoolName}
         </p>
-        <h3 className="mb-2 line-clamp-2 text-xs font-black leading-snug text-[#1A1A2E] group-hover:text-[#7C3AED] transition-colors">
+        <h3 className="mb-2 line-clamp-2 text-xs font-black leading-snug text-gray-900 group-hover:text-[#7C3AED] transition-colors">
           {name}
         </h3>
         
-        <div className="mt-auto flex items-center justify-between border-t border-dashed border-[#1A1A2E]/10 pt-2">
+        <div className="mt-auto flex items-center justify-between border-t border-dashed border-gray-200/10 pt-2">
           <p className="text-sm font-black text-[#7C3AED]">{formatCurrency(product.price)}</p>
           <div 
-            className="rounded-lg border-2 border-[#1A1A2E] bg-white p-1 shadow-[1.5px_1.5px_0_#1A1A2E] transition-all"
+            className="rounded-lg border border-gray-200 bg-white p-1 shadow-sm transition-all"
           >
-            <ArrowRight className="h-3 w-3 text-[#1A1A2E]" />
+            <ArrowRight className="h-3 w-3 text-gray-900" />
           </div>
         </div>
       </div>
@@ -380,7 +380,7 @@ export default function ProductList() {
   // I will implement a note here. Since we are fetching a summary of 100 items, FE filtering is instant and better UX.
 
   return (
-    <GuestLayout bgColor="#FFF8F0">
+    <GuestLayout bgColor="#f9fafb">
       <Toast message={toast.message} show={toast.show} onHide={() => setToast(t => ({ ...t, show: false }))} />
 
       <div className="relative z-10 mx-auto max-w-[1100px] px-6 py-10 lg:px-8">
@@ -390,13 +390,13 @@ export default function ProductList() {
             </motion.div>
 
             <motion.h1 custom={1} variants={fadeUp} initial="hidden" animate="visible"
-                className="text-3xl font-extrabold text-[#1A1A2E] mb-2 leading-tight tracking-tight lg:text-4xl"
+                className="text-3xl font-extrabold text-gray-900 mb-2 leading-tight tracking-tight lg:text-4xl"
             >
-                Khám phá <span className="text-[#B8A9E8]">Kho đồng phục</span>
+                Khám phá <span className="text-purple-400">Kho đồng phục</span>
             </motion.h1>
 
             <motion.p custom={2} variants={fadeUp} initial="hidden" animate="visible"
-                className="text-base text-[#4C5769] max-w-2xl font-medium"
+                className="text-base text-gray-600 max-w-2xl font-medium"
             >
                 Tìm kiếm sản phẩm theo tên hoặc lọc theo trường học để bắt đầu trang bị cho năm học mới.
             </motion.p>
@@ -404,18 +404,18 @@ export default function ProductList() {
 
         {/* ═══ FILTER BAR — Style Matched with SchoolList ═══ */}
         <motion.div custom={3} variants={fadeUp} initial="hidden" animate="visible" className="mb-8 relative z-20">
-          <div className="nb-card-static overflow-visible px-5 py-5 shadow-[6px_6px_0_#1A1A2E] ring-2 ring-[#B8A9E8]/35 sm:px-6">
+          <div className="nb-card-static overflow-visible px-5 py-5 shadow-soft-lg ring-2 ring-purple-300/35 sm:px-6">
             <div className="flex w-full flex-wrap items-end gap-x-3 gap-y-3">
               {/* Search */}
               <div className="min-w-[200px] flex-1 space-y-1.5">
-                <label className="block text-[10px] font-bold text-[#6B7280] ml-1 uppercase tracking-widest leading-tight">
+                <label className="block text-[10px] font-bold text-gray-500 ml-1 uppercase tracking-widest leading-tight">
                   Sản phẩm / Chiến dịch
                 </label>
                 <div className="group relative w-full transition-transform duration-200 hover:-translate-y-px">
-                  <Search className="pointer-events-none absolute left-3 top-1/2 z-[2] h-3.5 w-3.5 -translate-y-1/2 text-[#1A1A2E]" />
+                  <Search className="pointer-events-none absolute left-3 top-1/2 z-[2] h-3.5 w-3.5 -translate-y-1/2 text-gray-900" />
                   <input
                     placeholder="Nhập tên sản phẩm..."
-                    className="relative z-0 w-full h-9 pl-10 pr-3 rounded-lg border-2 border-[#1A1A2E] bg-white text-sm font-semibold text-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E] transition-shadow placeholder:text-[#6B7280] placeholder:font-medium focus:outline-none focus:ring-2 focus:ring-[#B8A9E8]/45 focus:ring-offset-0 group-hover:shadow-[5px_5px_0_#1A1A2E]"
+                    className="relative z-0 w-full h-9 pl-10 pr-3 rounded-lg border border-gray-200 bg-white text-sm font-semibold text-gray-900 shadow-soft-md transition-shadow placeholder:text-gray-500 placeholder:font-medium focus:outline-none focus:ring-2 focus:ring-purple-300/45 focus:ring-offset-0 group-hover:shadow-soft-md"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && handleSearch()}
@@ -425,7 +425,7 @@ export default function ProductList() {
 
               {/* School Filter */}
               <div className="w-full max-w-[220px] shrink-0 space-y-1.5 sm:w-[220px]">
-                <label className="block text-[10px] font-bold text-[#6B7280] ml-1 uppercase tracking-widest leading-tight">
+                <label className="block text-[10px] font-bold text-gray-500 ml-1 uppercase tracking-widest leading-tight">
                   Trường học
                 </label>
                 <SearchableSelect
@@ -450,7 +450,7 @@ export default function ProductList() {
                     <button
                         type="button"
                         onClick={handleSearch}
-                        className="group relative inline-flex h-9 min-w-[136px] items-center justify-center gap-2 overflow-hidden rounded-lg border-2 border-[#1A1A2E] bg-gradient-to-r from-[#A78BFA] via-[#C4B5FD] to-[#7C3AED] px-3.5 text-sm font-bold text-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E] transition-all duration-200 hover:-translate-y-px hover:shadow-[5px_5px_0_#1A1A2E] hover:brightness-[1.08] active:translate-y-px active:shadow-[3px_3px_0_#1A1A2E] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7C3AED]/55"
+                        className="group relative inline-flex h-9 min-w-[136px] items-center justify-center gap-2 overflow-hidden rounded-lg border border-gray-200 bg-gradient-to-r from-[#A78BFA] via-[#C4B5FD] to-[#7C3AED] px-3.5 text-sm font-bold text-gray-900 shadow-soft-md transition-all duration-200 hover:-translate-y-px hover:shadow-soft-md hover:brightness-[1.08] active:translate-y-px active:shadow-soft-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7C3AED]/55"
                     >
                         <span className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/40 via-white/10 to-transparent opacity-95 group-hover:from-white/50" />
                         <Search className="relative z-[1] h-3.5 w-3.5 shrink-0" strokeWidth={2.5} />
@@ -459,7 +459,7 @@ export default function ProductList() {
                     <button
                         type="button"
                         onClick={handleReset}
-                        className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border-2 border-[#1A1A2E] bg-white text-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E] transition-all hover:-translate-y-px hover:shadow-[5px_5px_0_#1A1A2E] active:translate-y-px active:shadow-[3px_3px_0_#1A1A2E]"
+                        className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-900 shadow-soft-md transition-all hover:-translate-y-px hover:shadow-soft-md active:translate-y-px active:shadow-soft-sm"
                         title="Đặt lại"
                     >
                         <RotateCcw className="h-3.5 w-3.5" />
@@ -477,7 +477,7 @@ export default function ProductList() {
               transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
               className="h-12 w-12 rounded-full border-4 border-[#7C3AED] border-t-transparent"
             />
-            <p className="text-sm font-bold text-[#1A1A2E] uppercase animate-pulse">Đang nạp kho dữ liệu...</p>
+            <p className="text-sm font-bold text-gray-900 uppercase animate-pulse">Đang nạp kho dữ liệu...</p>
           </div>
         ) : (
           <div className="space-y-20">
@@ -531,15 +531,15 @@ export default function ProductList() {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
               >
-                <div className="flex flex-col md:flex-row md:items-end justify-between border-b-2 border-dashed border-[#1A1A2E]/20 pb-6 mb-10 gap-6">
+                <div className="flex flex-col md:flex-row md:items-end justify-between border-b-2 border-dashed border-gray-200/20 pb-6 mb-10 gap-6">
                   <SectionHeader 
                     title="Tất cả sản phẩm" 
                     icon={LayoutGrid} 
                     subtitle="Toàn bộ danh mục đồng phục hiện có."
                   />
-                  <div className="flex items-center gap-2 rounded-lg border-2 border-[#1A1A2E] bg-[#FAFAF5] px-3 py-1.5 shadow-[2px_2px_0_#1A1A2E]">
-                    <Tag className="h-3 w-3 text-[#1A1A2E]" />
-                    <span className="text-[10px] font-black text-[#1A1A2E] uppercase">
+                  <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-1.5 shadow-sm">
+                    <Tag className="h-3 w-3 text-gray-900" />
+                    <span className="text-[10px] font-black text-gray-900 uppercase">
                       Kết quả: {filteredData.allOutfits.length}
                     </span>
                   </div>
@@ -555,11 +555,11 @@ export default function ProductList() {
 
             {!filteredData?.activeCampaigns.length && !filteredData?.featuredOutfits.length && !filteredData?.allOutfits.length && (
               <div className="py-24 text-center">
-                  <div className="w-20 h-20 mx-auto mb-6 flex items-center justify-center rounded-xl border-3 border-[#1A1A2E] bg-[#EDE9FE] shadow-[6px_6px_0_#1A1A2E]">
-                    <LayoutGrid className="w-8 h-8 text-[#1A1A2E]" />
+                  <div className="w-20 h-20 mx-auto mb-6 flex items-center justify-center rounded-xl border-3 border-gray-200 bg-violet-50 shadow-soft-lg">
+                    <LayoutGrid className="w-8 h-8 text-gray-900" />
                   </div>
-                  <h3 className="text-xl font-extrabold text-[#1A1A2E] mb-2">Không tìm thấy sản phẩm nào</h3>
-                  <p className="text-[#6B7280] text-sm font-medium">Hãy thử thay đổi tiêu chí lọc hoặc tên sản phẩm.</p>
+                  <h3 className="text-xl font-extrabold text-gray-900 mb-2">Không tìm thấy sản phẩm nào</h3>
+                  <p className="text-gray-500 text-sm font-medium">Hãy thử thay đổi tiêu chí lọc hoặc tên sản phẩm.</p>
                   <button 
                     onClick={handleReset}
                     className="mt-6 font-black text-[#7C3AED] underline decoration-2 underline-offset-4"

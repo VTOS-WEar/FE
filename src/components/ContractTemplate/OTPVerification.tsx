@@ -123,26 +123,26 @@ export function OTPVerification({
     return (
         <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/70 p-4">
             <div
-                className="bg-white rounded-md border-2 border-[#1A1A2E] shadow-[6px_6px_0_#1A1A2E] p-7 w-full max-w-sm"
+                className="bg-white rounded-md border border-gray-200 shadow-soft-lg p-7 w-full max-w-sm"
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Header */}
                 <div className="text-center mb-6">
-                    <div className="w-14 h-14 rounded-full bg-[#EDE9FE] border-2 border-[#1A1A2E] flex items-center justify-center text-2xl mx-auto mb-3">
+                    <div className="w-14 h-14 rounded-full bg-violet-50 border border-gray-200 flex items-center justify-center text-2xl mx-auto mb-3">
                         🔐
                     </div>
-                    <h3 className="font-extrabold text-[#1A1A2E] text-lg">Xác thực danh tính</h3>
+                    <h3 className="font-extrabold text-gray-900 text-lg">Xác thực danh tính</h3>
                     {signerName && (
-                        <p className="text-sm font-bold text-[#6938EF] mt-1">{signerName}</p>
+                        <p className="text-sm font-bold text-violet-600 mt-1">{signerName}</p>
                     )}
-                    <p className="text-sm text-[#6B7280] mt-2 leading-relaxed">
+                    <p className="text-sm text-gray-500 mt-2 leading-relaxed">
                         {sent ? (
                             <>
                                 Mã OTP <strong>6 chữ số</strong> đã gửi đến
                                 <br />
-                                <span className="font-bold text-[#1A1A2E]">{maskedContact}</span>
+                                <span className="font-bold text-gray-900">{maskedContact}</span>
                                 <br />
-                                <span className="text-xs text-[#9CA3AF]">(Nếu không nhận được, nhập bất kỳ 6 chữ số)</span>
+                                <span className="text-xs text-gray-400">(Nếu không nhận được, nhập bất kỳ 6 chữ số)</span>
                             </>
                         ) : (
                             "Đang gửi mã OTP..."
@@ -166,8 +166,8 @@ export function OTPVerification({
                             className={`
                                 w-11 h-12 text-center text-xl font-extrabold rounded
                                 border-2 transition-all outline-none
-                                ${d ? "border-[#6938EF] bg-[#EDE9FE] text-[#1A1A2E]" : "border-[#D1D5DB] bg-[#F9FAFB] text-[#1A1A2E]"}
-                                focus:border-[#6938EF] focus:bg-[#EDE9FE]
+                                ${d ? "border-[#6938EF] bg-violet-50 text-gray-900" : "border-gray-300 bg-gray-50 text-gray-900"}
+                                focus:border-[#6938EF] focus:bg-violet-50
                             `}
                         />
                     ))}
@@ -175,7 +175,7 @@ export function OTPVerification({
 
                 {/* Error */}
                 {error && (
-                    <p className="text-center text-xs font-bold text-[#EF4444] mb-3 mt-1">
+                    <p className="text-center text-xs font-bold text-red-500 mb-3 mt-1">
                         ⚠️ {error}
                     </p>
                 )}
@@ -183,14 +183,14 @@ export function OTPVerification({
                 {/* Resend */}
                 <div className="text-center mb-5">
                     {countdown > 0 ? (
-                        <p className="text-xs text-[#9CA3AF]">
-                            Gửi lại sau <span className="font-bold text-[#1A1A2E]">{countdown}s</span>
+                        <p className="text-xs text-gray-400">
+                            Gửi lại sau <span className="font-bold text-gray-900">{countdown}s</span>
                         </p>
                     ) : (
                         <button
                             onClick={handleSend}
                             disabled={sending}
-                            className="text-xs font-bold text-[#6938EF] underline underline-offset-2 disabled:opacity-50"
+                            className="text-xs font-bold text-violet-600 underline underline-offset-2 disabled:opacity-50"
                         >
                             {sending ? "Đang gửi..." : "Gửi lại mã OTP"}
                         </button>
@@ -209,7 +209,7 @@ export function OTPVerification({
                     >
                         {verifying ? (
                             <span className="flex items-center justify-center gap-2">
-                                <span className="w-4 h-4 border-2 border-[#1A1A2E] border-t-transparent rounded-full animate-spin" />
+                                <span className="w-4 h-4 border border-gray-200 border-t-transparent rounded-full animate-spin" />
                                 Đang xác thực...
                             </span>
                         ) : (

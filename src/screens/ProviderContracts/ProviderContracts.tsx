@@ -16,13 +16,13 @@ import { ContractTemplate, type ContractTemplateData } from "../../components/Co
 
 const STATUS_MAP: Record<string, { label: string; badge: string }> = {
     Pending: { label: "Chờ duyệt", badge: "nb-badge nb-badge-yellow" },
-    PendingSchoolSign: { label: "Chờ trường ký", badge: "nb-badge bg-[#FEF3C7] text-[#92400E] border-[#1A1A2E]" },
-    PendingProviderSign: { label: "✍️ Chờ bạn ký", badge: "nb-badge bg-[#E0E7FF] text-[#3730A3] border-[#1A1A2E]" },
-    Active: { label: "Đang hiệu lực", badge: "nb-badge bg-[#D1FAE5] text-[#065F46] border-[#1A1A2E]" },
-    InUse: { label: "Đang dùng", badge: "nb-badge bg-[#DBEAFE] text-[#1D4ED8] border-[#1A1A2E]" },
-    Fulfilled: { label: "Hoàn thành", badge: "nb-badge bg-[#D1FAE5] text-[#065F46] border-[#1A1A2E]" },
+    PendingSchoolSign: { label: "Chờ trường ký", badge: "nb-badge bg-[#FEF3C7] text-amber-800 border-gray-200" },
+    PendingProviderSign: { label: "✍️ Chờ bạn ký", badge: "nb-badge bg-[#E0E7FF] text-[#3730A3] border-gray-200" },
+    Active: { label: "Đang hiệu lực", badge: "nb-badge bg-[#D1FAE5] text-emerald-800 border-gray-200" },
+    InUse: { label: "Đang dùng", badge: "nb-badge bg-[#DBEAFE] text-[#1D4ED8] border-gray-200" },
+    Fulfilled: { label: "Hoàn thành", badge: "nb-badge bg-[#D1FAE5] text-emerald-800 border-gray-200" },
     Rejected: { label: "Từ chối", badge: "nb-badge nb-badge-red" },
-    Expired: { label: "Hết hạn", badge: "nb-badge bg-[#F3F4F6] text-[#6B7280]" },
+    Expired: { label: "Hết hạn", badge: "nb-badge bg-gray-100 text-gray-500" },
 };
 
 export function ProviderContracts() {
@@ -163,8 +163,8 @@ export function ProviderContracts() {
 
                 <div className="flex-1 flex flex-col min-w-0">
                     <TopNavBar>
-                        <h1 className="font-extrabold text-[#1A1A2E] text-2xl">📄 Hợp đồng</h1>
-                        <p className="font-medium text-[#6B7280] text-sm mt-1">Quản lý hợp đồng từ các trường học</p>
+                        <h1 className="font-extrabold text-gray-900 text-2xl">📄 Hợp đồng</h1>
+                        <p className="font-medium text-gray-500 text-sm mt-1">Quản lý hợp đồng từ các trường học</p>
                     </TopNavBar>
 
                     <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-6">
@@ -189,7 +189,7 @@ export function ProviderContracts() {
                         ) : contracts.length === 0 ? (
                             <div className="nb-card-static p-10 text-center">
                                 <div className="text-5xl mb-3">📋</div>
-                                <p className="font-medium text-[#9CA3AF] text-base">Chưa có hợp đồng nào được gửi đến bạn.</p>
+                                <p className="font-medium text-gray-400 text-base">Chưa có hợp đồng nào được gửi đến bạn.</p>
                             </div>
                         ) : (() => {
                             const totalPages = Math.ceil(contracts.length / pageSize);
@@ -205,9 +205,9 @@ export function ProviderContracts() {
                                             >
                                                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                                                     <div className="flex-1 min-w-0">
-                                                        <h3 className="font-bold text-[#1A1A2E] text-base truncate">{c.contractName}</h3>
-                                                        <p className="font-medium text-[#9CA3AF] text-sm mt-1">
-                                                            Trường: <strong className="text-[#6B7280]">{c.schoolName || "—"}</strong> &nbsp;·&nbsp; {c.items.length} mục &nbsp;·&nbsp; Hạn: {new Date(c.expiresAt).toLocaleDateString("vi")}
+                                                        <h3 className="font-bold text-gray-900 text-base truncate">{c.contractName}</h3>
+                                                        <p className="font-medium text-gray-400 text-sm mt-1">
+                                                            Trường: <strong className="text-gray-500">{c.schoolName || "—"}</strong> &nbsp;·&nbsp; {c.items.length} mục &nbsp;·&nbsp; Hạn: {new Date(c.expiresAt).toLocaleDateString("vi")}
                                                         </p>
                                                     </div>
                                                     <div className="flex items-center gap-2">
@@ -217,7 +217,7 @@ export function ProviderContracts() {
                                                         <button
                                                             onClick={(e) => { e.stopPropagation(); openContractTemplate(c.contractId); }}
                                                             disabled={templateLoading}
-                                                            className="nb-btn nb-btn-sm text-xs bg-[#EDE9FE] border-[#1A1A2E] disabled:opacity-50"
+                                                            className="nb-btn nb-btn-sm text-xs bg-violet-50 border-gray-200 disabled:opacity-50"
                                                         >📄 Xem HĐ</button>
                                                         <button
                                                             onClick={(e) => { e.stopPropagation(); openContractChat(c); }}
@@ -236,7 +236,7 @@ export function ProviderContracts() {
                                     {totalPages > 1 && (
                                         <div className="flex items-center justify-center gap-3 mt-4">
                                             <button disabled={page <= 1} onClick={() => setPage(p => p - 1)} className="nb-btn nb-btn-outline nb-btn-sm text-sm">← Trước</button>
-                                            <span className="text-sm font-bold text-[#6B7280]">{page}/{totalPages}</span>
+                                            <span className="text-sm font-bold text-gray-500">{page}/{totalPages}</span>
                                             <button disabled={page >= totalPages} onClick={() => setPage(p => p + 1)} className="nb-btn nb-btn-outline nb-btn-sm text-sm">Sau →</button>
                                         </div>
                                     )}
@@ -249,36 +249,36 @@ export function ProviderContracts() {
                             <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[1000] p-4">
                                 <div className="nb-card-static p-8 w-full max-w-[640px] max-h-[85vh] overflow-auto">
                                     <div className="flex items-center justify-between mb-5">
-                                        <h2 className="font-extrabold text-[#1A1A2E] text-xl truncate" title={selected.contractName}>📄 {selected.contractName}</h2>
+                                        <h2 className="font-extrabold text-gray-900 text-xl truncate" title={selected.contractName}>📄 {selected.contractName}</h2>
                                         <span className={STATUS_MAP[selected.status]?.badge || "nb-badge"}>
                                             {STATUS_MAP[selected.status]?.label || selected.status}
                                         </span>
                                     </div>
 
                                     <div className="grid grid-cols-2 gap-3 mb-5">
-                                        <div className="bg-[#F8FAFC] border-2 border-[#E5E7EB] rounded-lg p-3">
-                                            <span className="block text-xs font-bold text-[#9CA3AF] uppercase mb-1">Trường</span>
-                                            <span className="block text-sm font-bold text-[#1A1A2E]">{selected.schoolName || "—"}</span>
+                                        <div className="bg-[#F8FAFC] border-2 border-gray-200 rounded-lg p-3">
+                                            <span className="block text-xs font-bold text-gray-400 uppercase mb-1">Trường</span>
+                                            <span className="block text-sm font-bold text-gray-900">{selected.schoolName || "—"}</span>
                                         </div>
-                                        <div className="bg-[#F8FAFC] border-2 border-[#E5E7EB] rounded-lg p-3">
-                                            <span className="block text-xs font-bold text-[#9CA3AF] uppercase mb-1">Ngày tạo</span>
-                                            <span className="block text-sm font-bold text-[#1A1A2E]">{new Date(selected.createdAt).toLocaleDateString("vi")}</span>
+                                        <div className="bg-[#F8FAFC] border-2 border-gray-200 rounded-lg p-3">
+                                            <span className="block text-xs font-bold text-gray-400 uppercase mb-1">Ngày tạo</span>
+                                            <span className="block text-sm font-bold text-gray-900">{new Date(selected.createdAt).toLocaleDateString("vi")}</span>
                                         </div>
-                                        <div className="bg-[#F8FAFC] border-2 border-[#E5E7EB] rounded-lg p-3">
-                                            <span className="block text-xs font-bold text-[#9CA3AF] uppercase mb-1">Thời hạn</span>
-                                            <span className="block text-sm font-bold text-[#1A1A2E]">{new Date(selected.expiresAt).toLocaleDateString("vi")}</span>
+                                        <div className="bg-[#F8FAFC] border-2 border-gray-200 rounded-lg p-3">
+                                            <span className="block text-xs font-bold text-gray-400 uppercase mb-1">Thời hạn</span>
+                                            <span className="block text-sm font-bold text-gray-900">{new Date(selected.expiresAt).toLocaleDateString("vi")}</span>
                                         </div>
                                         {selected.approvedAt && (
-                                            <div className="bg-[#F8FAFC] border-2 border-[#E5E7EB] rounded-lg p-3">
-                                                <span className="block text-xs font-bold text-[#9CA3AF] uppercase mb-1">Ngày duyệt</span>
-                                                <span className="block text-sm font-bold text-[#1A1A2E]">{new Date(selected.approvedAt).toLocaleDateString("vi")}</span>
+                                            <div className="bg-[#F8FAFC] border-2 border-gray-200 rounded-lg p-3">
+                                                <span className="block text-xs font-bold text-gray-400 uppercase mb-1">Ngày duyệt</span>
+                                                <span className="block text-sm font-bold text-gray-900">{new Date(selected.approvedAt).toLocaleDateString("vi")}</span>
                                             </div>
                                         )}
                                     </div>
 
                                     {error && <div className="nb-alert nb-alert-error mb-4">{error}</div>}
 
-                                    <h3 className="font-extrabold text-[#1A1A2E] text-base mb-3">Danh sách đồng phục</h3>
+                                    <h3 className="font-extrabold text-gray-900 text-base mb-3">Danh sách đồng phục</h3>
                                     <table className="nb-table">
                                         <thead>
                                             <tr>
@@ -314,7 +314,7 @@ export function ProviderContracts() {
                                             </button>
                                             <button
                                                 onClick={() => { openContractTemplate(selected.contractId); setShowDetail(false); setSelected(null); }}
-                                                className="nb-btn flex-1 bg-[#EDE9FE] border-[#1A1A2E]"
+                                                className="nb-btn flex-1 bg-violet-50 border-gray-200"
                                             >
                                                 📄 Xem HĐ
                                             </button>
@@ -331,7 +331,7 @@ export function ProviderContracts() {
                                     {/* Reject form */}
                                     {showReject && (
                                         <div className="mt-4 bg-[#FEF2F2] border-2 border-[#FECACA] rounded-xl p-4">
-                                            <label className="block text-sm font-bold text-[#1A1A2E] mb-2">Lý do từ chối</label>
+                                            <label className="block text-sm font-bold text-gray-900 mb-2">Lý do từ chối</label>
                                             <textarea
                                                 value={rejectReason}
                                                 onChange={e => setRejectReason(e.target.value)}
@@ -380,9 +380,9 @@ export function ProviderContracts() {
             {/* Contract Template full-document viewer */}
             {templateLoading && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50">
-                    <div className="bg-white rounded-md border-2 border-[#1A1A2E] px-8 py-5 shadow-[4px_4px_0_#1A1A2E] flex items-center gap-3">
+                    <div className="bg-white rounded-md border border-gray-200 px-8 py-5 shadow-soft-md flex items-center gap-3">
                         <div className="w-5 h-5 border-3 border-[#6938EF] border-t-transparent rounded-full animate-spin" />
-                        <span className="font-bold text-[#1A1A2E]">Đang tải hợp đồng...</span>
+                        <span className="font-bold text-gray-900">Đang tải hợp đồng...</span>
                     </div>
                 </div>
             )}

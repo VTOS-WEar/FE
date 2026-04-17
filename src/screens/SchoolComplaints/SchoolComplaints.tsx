@@ -17,7 +17,7 @@ const STATUS_BADGE: Record<string, string> = {
     Open: "nb-badge nb-badge-yellow",
     InProgress: "nb-badge nb-badge-blue",
     Resolved: "nb-badge nb-badge-green",
-    Closed: "nb-badge bg-[#F3F4F6] text-[#6B7280]",
+    Closed: "nb-badge bg-gray-100 text-gray-500",
 };
 const STATUS_LABELS: Record<string, string> = { Open: "Mở", InProgress: "Đang xử lý", Resolved: "Đã giải quyết", Closed: "Đã đóng" };
 const STATUS_COLORS: Record<string, string> = { Open: "#f59e0b", InProgress: "#3b82f6", Resolved: "#10b981", Closed: "#6b7280" };
@@ -90,12 +90,12 @@ export function SchoolComplaints() {
                         <Breadcrumb><BreadcrumbList>
                             <BreadcrumbItem><BreadcrumbLink href="/school/dashboard" className="font-semibold text-[#4c5769] text-base">Trang chủ</BreadcrumbLink></BreadcrumbItem>
                             <BreadcrumbSeparator className="text-[#cbcad7]">/</BreadcrumbSeparator>
-                            <BreadcrumbItem><BreadcrumbPage className="font-bold text-[#1A1A2E] text-base">Khiếu nại</BreadcrumbPage></BreadcrumbItem>
+                            <BreadcrumbItem><BreadcrumbPage className="font-bold text-gray-900 text-base">Khiếu nại</BreadcrumbPage></BreadcrumbItem>
                         </BreadcrumbList></Breadcrumb>
                     </TopNavBar>
                     <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-6">
 
-                        <h1 className="font-extrabold text-[#1A1A2E] text-[28px]">📋 Quản lý Khiếu nại</h1>
+                        <h1 className="font-extrabold text-gray-900 text-[28px]">📋 Quản lý Khiếu nại</h1>
 
                         {/* Status tabs — NB */}
                         <div className="nb-tabs w-fit">
@@ -115,7 +115,7 @@ export function SchoolComplaints() {
                         ) : complaints.length === 0 ? (
                             <div className="nb-card-static p-12 text-center">
                                 <p className="text-4xl mb-3">📋</p>
-                                <p className="font-medium text-[#9CA3AF]">Chưa có khiếu nại nào.</p>
+                                <p className="font-medium text-gray-400">Chưa có khiếu nại nào.</p>
                             </div>
                         ) : (
                             <div className="grid gap-4">
@@ -124,9 +124,9 @@ export function SchoolComplaints() {
                                         className="nb-card p-5 cursor-pointer">
                                         <div className="flex items-center justify-between gap-3">
                                             <div className="flex-1 min-w-0">
-                                                <h3 className="font-bold text-[#1A1A2E] text-lg truncate">{c.title}</h3>
-                                                <p className="text-sm text-[#6B7280] mt-1">
-                                                    NCC: <strong className="text-[#1A1A2E]">{c.providerName || "—"}</strong> · {c.campaignName || "—"} · {new Date(c.createdAt).toLocaleDateString("vi")}
+                                                <h3 className="font-bold text-gray-900 text-lg truncate">{c.title}</h3>
+                                                <p className="text-sm text-gray-500 mt-1">
+                                                    NCC: <strong className="text-gray-900">{c.providerName || "—"}</strong> · {c.campaignName || "—"} · {new Date(c.createdAt).toLocaleDateString("vi")}
                                                 </p>
                                             </div>
                                             <span className={STATUS_BADGE[c.status] || "nb-badge"}>{STATUS_LABELS[c.status] || c.status}</span>
@@ -145,7 +145,7 @@ export function SchoolComplaints() {
                         {totalPages > 1 && (
                             <div className="flex justify-center gap-2">
                                 <button disabled={page <= 1} onClick={() => setPage(p => p - 1)} className="nb-btn nb-btn-outline nb-btn-sm text-sm">← Trước</button>
-                                <span className="flex items-center text-sm text-[#6B7280] px-2 font-bold">{page}/{totalPages}</span>
+                                <span className="flex items-center text-sm text-gray-500 px-2 font-bold">{page}/{totalPages}</span>
                                 <button disabled={page >= totalPages} onClick={() => setPage(p => p + 1)} className="nb-btn nb-btn-outline nb-btn-sm text-sm">Sau →</button>
                             </div>
                         )}
@@ -157,13 +157,13 @@ export function SchoolComplaints() {
             {/* Detail Modal — NB style */}
             {(detail || detailLoading) && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => setDetail(null)}>
-                    <div className="bg-white rounded-md w-full max-w-lg mx-4 p-6 max-h-[85vh] overflow-auto border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E]" onClick={e => e.stopPropagation()}>
+                    <div className="bg-white rounded-md w-full max-w-lg mx-4 p-6 max-h-[85vh] overflow-auto border border-gray-200 shadow-soft-md" onClick={e => e.stopPropagation()}>
                         {detailLoading ? (
-                            <div className="text-center py-10 text-[#9CA3AF]">Đang tải...</div>
+                            <div className="text-center py-10 text-gray-400">Đang tải...</div>
                         ) : detail && (
                             <>
                                 <div className="flex justify-between items-center mb-5">
-                                    <h2 className="font-extrabold text-xl text-[#1A1A2E]">📋 Chi tiết khiếu nại</h2>
+                                    <h2 className="font-extrabold text-xl text-gray-900">📋 Chi tiết khiếu nại</h2>
                                     <span className={STATUS_BADGE[detail.status] || "nb-badge"}>{STATUS_LABELS[detail.status] || detail.status}</span>
                                 </div>
 
@@ -179,7 +179,7 @@ export function SchoolComplaints() {
                                             <div>
                                                 <p className="font-bold mb-1">✅ Phản hồi từ NCC:</p>
                                                 <p>{detail.response}</p>
-                                                {detail.respondedAt && <p className="text-xs text-[#9CA3AF] mt-1">Lúc: {new Date(detail.respondedAt).toLocaleString("vi")}</p>}
+                                                {detail.respondedAt && <p className="text-xs text-gray-400 mt-1">Lúc: {new Date(detail.respondedAt).toLocaleString("vi")}</p>}
                                             </div>
                                         </div>
                                     )}
@@ -187,7 +187,7 @@ export function SchoolComplaints() {
 
                                 <div className="flex gap-3 mt-5">
                                     <button onClick={() => setDetail(null)} className="flex-1 nb-btn nb-btn-outline text-sm">Đóng</button>
-                                    <button onClick={() => openChat(detail)} className="flex-1 nb-btn text-sm bg-[#3B82F6] text-white border-[#1A1A2E]">💬 Chat</button>
+                                    <button onClick={() => openChat(detail)} className="flex-1 nb-btn text-sm bg-[#3B82F6] text-white border-gray-200">💬 Chat</button>
                                     {detail.status === "Resolved" && (
                                         <button onClick={handleClose} disabled={closing} className="flex-1 nb-btn nb-btn-green text-sm disabled:opacity-50">
                                             {closing ? "Đang đóng..." : "✅ Đóng khiếu nại"}
@@ -208,8 +208,8 @@ export function SchoolComplaints() {
 function InfoRow({ label, value }: { label: string; value: string }) {
     return (
         <div className="flex gap-3">
-            <span className="min-w-[100px] font-bold text-[#6B7280] text-sm">{label}:</span>
-            <span className="text-[#1A1A2E] text-sm font-medium flex-1 min-w-0 line-clamp-4">{value}</span>
+            <span className="min-w-[100px] font-bold text-gray-500 text-sm">{label}:</span>
+            <span className="text-gray-900 text-sm font-medium flex-1 min-w-0 line-clamp-4">{value}</span>
         </div>
     );
 }

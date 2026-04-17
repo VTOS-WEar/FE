@@ -23,10 +23,10 @@ export const ProductShowcaseSection = (): JSX.Element => {
       <div className="mx-auto w-full max-w-[1100px] px-4 md:px-8">
         {/* Header */}
         <header className="mx-auto max-w-[700px] text-center mb-14 nb-reveal">
-          <h2 className="text-3xl font-extrabold leading-[1.15] text-[#1A1A2E] md:text-4xl">
+          <h2 className="text-3xl font-extrabold leading-[1.15] text-gray-900 md:text-4xl">
             Kết quả thực tế
           </h2>
-          <p className="mt-3 text-lg font-medium leading-relaxed text-[#4C5769]">
+          <p className="mt-3 text-lg font-medium leading-relaxed text-gray-600">
             Chỉ cần tải ảnh lên — AI tạo hình bạn mặc đồng phục ngay lập tức
           </p>
         </header>
@@ -39,14 +39,14 @@ export const ProductShowcaseSection = (): JSX.Element => {
               className={`group w-[40vw] max-w-[430px] min-w-[150px] ${image.revealDir}`}
               style={{ transform: `rotate(${image.rotate})` }}
             >
-              <div className="nb-card-static overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-[8px_8px_0_#1A1A2E]">
+              <div className="nb-card-static overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-soft-lg">
                 <div className="relative">
                   <img
                     src={image.src}
                     alt={image.caption}
                     className="h-[340px] lg:h-[400px] w-full object-cover object-center"
                   />
-                  <div className="absolute bottom-3 left-3 rounded-lg bg-[#B8A9E8] px-3 py-1.5 border-3 border-[#1A1A2E] font-bold text-[#1A1A2E] text-sm shadow-[3px_3px_0_#1A1A2E]">
+                  <div className="absolute bottom-3 left-3 rounded-lg bg-purple-400 px-3 py-1.5 border-3 border-gray-200 font-bold text-gray-900 text-sm shadow-soft-sm">
                     {image.caption}
                   </div>
                 </div>
@@ -57,7 +57,7 @@ export const ProductShowcaseSection = (): JSX.Element => {
 
         {/* Category badges (support accent — cyan) */}
         <div className="mt-12 flex flex-wrap items-center justify-center gap-3 nb-reveal">
-          <span className="text-sm font-bold text-[#6B7280] uppercase tracking-wider">Hỗ trợ:</span>
+          <span className="text-sm font-bold text-gray-500 uppercase tracking-wider">Hỗ trợ:</span>
           {categories.map((cat) => (
             <span
               key={cat}

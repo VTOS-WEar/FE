@@ -113,8 +113,8 @@ export function ProviderComplaints() {
 
                 <div className="flex-1 flex flex-col min-w-0">
                     <TopNavBar>
-                        <h1 className="font-extrabold text-[#1A1A2E] text-2xl">📋 Khiếu nại từ Trường học</h1>
-                        <p className="font-medium text-[#6B7280] text-sm mt-1">Xem và phản hồi các khiếu nại</p>
+                        <h1 className="font-extrabold text-gray-900 text-2xl">📋 Khiếu nại từ Trường học</h1>
+                        <p className="font-medium text-gray-500 text-sm mt-1">Xem và phản hồi các khiếu nại</p>
                     </TopNavBar>
 
                     <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-6">
@@ -139,7 +139,7 @@ export function ProviderComplaints() {
                         ) : complaints.length === 0 ? (
                             <div className="nb-card-static p-10 text-center">
                                 <div className="text-5xl mb-3">📋</div>
-                                <p className="font-medium text-[#9CA3AF] text-base">Chưa có khiếu nại nào.</p>
+                                <p className="font-medium text-gray-400 text-base">Chưa có khiếu nại nào.</p>
                             </div>
                         ) : (
                             <div className="space-y-4">
@@ -151,9 +151,9 @@ export function ProviderComplaints() {
                                     >
                                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                                             <div className="flex-1 min-w-0">
-                                                <h3 className="font-bold text-[#1A1A2E] text-base truncate">{c.title}</h3>
-                                                <p className="font-medium text-[#9CA3AF] text-sm mt-1">
-                                                    Chiến dịch: <strong className="text-[#6B7280]">{c.campaignName || "—"}</strong> &nbsp;·&nbsp;
+                                                <h3 className="font-bold text-gray-900 text-base truncate">{c.title}</h3>
+                                                <p className="font-medium text-gray-400 text-sm mt-1">
+                                                    Chiến dịch: <strong className="text-gray-500">{c.campaignName || "—"}</strong> &nbsp;·&nbsp;
                                                     {new Date(c.createdAt).toLocaleDateString("vi")}
                                                 </p>
                                             </div>
@@ -170,7 +170,7 @@ export function ProviderComplaints() {
                         {totalPages > 1 && (
                             <div className="flex justify-center gap-2 mt-4">
                                 <button disabled={page <= 1} onClick={() => setPage(p => p - 1)} className="nb-btn nb-btn-outline nb-btn-sm text-sm">← Trước</button>
-                                <span className="flex items-center text-sm text-[#6B7280] px-2 font-bold">{page}/{totalPages}</span>
+                                <span className="flex items-center text-sm text-gray-500 px-2 font-bold">{page}/{totalPages}</span>
                                 <button disabled={page >= totalPages} onClick={() => setPage(p => p + 1)} className="nb-btn nb-btn-outline nb-btn-sm text-sm">Sau →</button>
                             </div>
                         )}
@@ -186,7 +186,7 @@ export function ProviderComplaints() {
                                     ) : detail && (
                                         <>
                                             <div className="flex items-center justify-between mb-5">
-                                                <h2 className="font-extrabold text-[#1A1A2E] text-xl">📋 Chi tiết khiếu nại</h2>
+                                                <h2 className="font-extrabold text-gray-900 text-xl">📋 Chi tiết khiếu nại</h2>
                                                 <span className={STATUS_MAP[detail.status]?.badge || "nb-badge"}>
                                                     {STATUS_MAP[detail.status]?.label || detail.status}
                                                 </span>
@@ -201,16 +201,16 @@ export function ProviderComplaints() {
 
                                                 {detail.response && (
                                                     <div className="nb-alert nb-alert-success mt-3">
-                                                        <p className="font-bold text-[#065F46] text-sm">✅ Phản hồi của bạn:</p>
-                                                        <p className="font-medium text-[#1A1A2E] text-sm mt-1">{detail.response}</p>
+                                                        <p className="font-bold text-emerald-800 text-sm">✅ Phản hồi của bạn:</p>
+                                                        <p className="font-medium text-gray-900 text-sm mt-1">{detail.response}</p>
                                                     </div>
                                                 )}
                                             </div>
 
                                             {/* Respond form — only show when Open or InProgress */}
                                             {(detail.status === "Open" || detail.status === "InProgress") && (
-                                                <div className="bg-[#F8FAFC] border-2 border-[#E5E7EB] rounded-xl p-4 mt-4">
-                                                    <label className="block font-bold text-[#1A1A2E] text-sm mb-2">
+                                                <div className="bg-[#F8FAFC] border-2 border-gray-200 rounded-xl p-4 mt-4">
+                                                    <label className="block font-bold text-gray-900 text-sm mb-2">
                                                         ✍️ Phản hồi khiếu nại
                                                     </label>
                                                     <textarea
@@ -221,7 +221,7 @@ export function ProviderComplaints() {
                                                         className="nb-input w-full resize-y"
                                                         maxLength={500}
                                                     />
-                                                    <label className="flex items-center gap-2 mt-3 text-sm text-[#6B7280] font-medium cursor-pointer">
+                                                    <label className="flex items-center gap-2 mt-3 text-sm text-gray-500 font-medium cursor-pointer">
                                                         <input
                                                             type="checkbox"
                                                             checked={markResolved}
@@ -265,8 +265,8 @@ export function ProviderComplaints() {
 function InfoRow({ label, value }: { label: string; value: string }) {
     return (
         <div className="flex gap-3">
-            <span className="min-w-[120px] font-bold text-[#9CA3AF] text-sm">{label}:</span>
-            <span className="font-medium text-[#1A1A2E] text-sm flex-1 min-w-0 line-clamp-4">{value}</span>
+            <span className="min-w-[120px] font-bold text-gray-400 text-sm">{label}:</span>
+            <span className="font-medium text-gray-900 text-sm flex-1 min-w-0 line-clamp-4">{value}</span>
         </div>
     );
 }
