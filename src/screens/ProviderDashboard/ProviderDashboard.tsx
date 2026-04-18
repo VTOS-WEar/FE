@@ -42,7 +42,7 @@ function StatsCard({
  {value}
  </p>
  {subtext && (
- <p className=" font-medium text-[#6B7280] text-xs mt-1">
+ <p className=" font-medium text-gray-500 text-xs mt-1">
  {subtext}
  </p>
  )}
@@ -71,13 +71,13 @@ function QuickActionCard({
  className={`nb-action-card group ${!href ? "opacity-50 cursor-not-allowed" : ""}`}
  disabled={!href}
  >
- <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-xl mb-3 border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E] ${tint || "bg-[#EDE9FE]"}`}>
+ <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-xl mb-3 border border-gray-200 shadow-sm ${tint || "bg-violet-50"}`}>
  {emoji}
  </div>
- <h3 className=" font-bold text-[#1A1A2E] text-base mb-1">
+ <h3 className=" font-bold text-gray-900 text-base mb-1">
  {title}
  </h3>
- <p className=" font-medium text-[#6B7280] text-sm leading-relaxed">
+ <p className=" font-medium text-gray-500 text-sm leading-relaxed">
  {description}
  </p>
  </button>
@@ -130,7 +130,7 @@ export const ProviderDashboard = (): JSX.Element => {
  <BreadcrumbList>
  <BreadcrumbItem><BreadcrumbLink href="/provider/dashboard" className=" font-semibold text-[#4c5769] text-base">Trang chủ</BreadcrumbLink></BreadcrumbItem>
  <BreadcrumbSeparator className="text-[#cbcad7]">/</BreadcrumbSeparator>
- <BreadcrumbItem><BreadcrumbPage className=" font-bold text-[#1A1A2E] text-base">Tổng quan</BreadcrumbPage></BreadcrumbItem>
+ <BreadcrumbItem><BreadcrumbPage className=" font-bold text-gray-900 text-base">Tổng quan</BreadcrumbPage></BreadcrumbItem>
  </BreadcrumbList>
  </Breadcrumb>
  </TopNavBar>
@@ -139,7 +139,7 @@ export const ProviderDashboard = (): JSX.Element => {
  <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-6 nb-fade-in">
  {/* Greeting */}
  <div>
- <h1 className=" font-extrabold text-[#1A1A2E] text-[28px] lg:text-[32px] leading-[1.22]">
+ <h1 className=" font-extrabold text-gray-900 text-[28px] lg:text-[32px] leading-[1.22]">
  Xin chào, {providerName || "Nhà cung cấp"} 🏭
  </h1>
  <p className="mt-1 font-medium text-[#4c5769] text-sm lg:text-base">
@@ -182,7 +182,7 @@ export const ProviderDashboard = (): JSX.Element => {
  label="Khiếu nại"
  value="0"
  subtext="Không có khiếu nại"
- icon={<svg className="w-5 h-5 text-[#EF4444]" viewBox="0 0 24 24" fill="currentColor"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z" /></svg>}
+ icon={<svg className="w-5 h-5 text-red-500" viewBox="0 0 24 24" fill="currentColor"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z" /></svg>}
  iconBg="bg-[#FEE2E2]"
  />
  </div>
@@ -219,7 +219,7 @@ export const ProviderDashboard = (): JSX.Element => {
  title="Hồ sơ"
  description="Cập nhật thông tin nhà cung cấp"
  href="/provider/profile"
- tint="bg-[#EDE9FE]"
+ tint="bg-violet-50"
  />
  </div>
  </div>
@@ -227,7 +227,7 @@ export const ProviderDashboard = (): JSX.Element => {
  {/* Profile Summary Card */}
  {profile && (
  <div className="nb-card-static p-6 nb-slide-up">
- <h2 className=" font-bold text-[#1A1A2E] text-lg mb-4">
+ <h2 className=" font-bold text-gray-900 text-lg mb-4">
  📇 Thông tin nhà cung cấp
  </h2>
  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -239,11 +239,11 @@ export const ProviderDashboard = (): JSX.Element => {
  { label: "Địa chỉ", value: profile.address || "Chưa cập nhật" },
  { label: "Trạng thái", value: profile.status },
  ].map((item) => (
- <div key={item.label} className="p-3 rounded-lg bg-[#FFF8F0] border border-[#E5E7EB]">
- <p className=" font-bold text-[#6B7280] text-xs uppercase tracking-wider mb-1">
+ <div key={item.label} className="p-3 rounded-lg bg-gray-50 border border-gray-200">
+ <p className=" font-bold text-gray-500 text-xs uppercase tracking-wider mb-1">
  {item.label}
  </p>
- <p className=" font-semibold text-[#1A1A2E] text-sm">
+ <p className=" font-semibold text-gray-900 text-sm">
  {item.value}
  </p>
  </div>

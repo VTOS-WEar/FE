@@ -96,7 +96,7 @@ export const ResetPassword = (): JSX.Element => {
     };
 
     return (
-        <GuestLayout bgColor="#FFF8F0">
+        <GuestLayout bgColor="#f9fafb">
             <main className="nb-page flex-1 px-4 py-10 lg:py-14 nb-fade-in">
                 <div className="mx-auto w-full max-w-6xl">
                     <div className="nb-card-static overflow-hidden rounded-2xl">
@@ -104,22 +104,22 @@ export const ResetPassword = (): JSX.Element => {
                             {/* LEFT — Form */}
                             <div className="lg:w-[52%] flex items-center justify-center p-6 lg:p-12 bg-white">
                                 <div className="w-full max-w-[26rem]">
-                                    <h1 className="font-extrabold text-[#1A1A2E] text-3xl lg:text-4xl text-center mb-6 lg:mb-8">
+                                    <h1 className="font-extrabold text-gray-900 text-3xl lg:text-4xl text-center mb-6 lg:mb-8">
                                         Đặt lại mật khẩu ✦
                                     </h1>
 
                                     <div className="flex items-center gap-4 lg:gap-6 my-5 lg:my-6">
-                                        <div className="flex-1 h-[2px] bg-[#1A1A2E]/10" />
-                                        <span className="font-bold text-[#6B7280] text-sm uppercase tracking-wider">
+                                        <div className="flex-1 h-[2px] bg-gray-900/10" />
+                                        <span className="font-bold text-gray-500 text-sm uppercase tracking-wider">
                                             Nhập mật khẩu mới
                                         </span>
-                                        <div className="flex-1 h-[2px] bg-[#1A1A2E]/10" />
+                                        <div className="flex-1 h-[2px] bg-gray-900/10" />
                                     </div>
 
                                     <div className="space-y-4 lg:space-y-5">
                                         {/* Password */}
                                         <div className="space-y-2">
-                                            <Label className="font-bold text-[#1A1A2E] text-sm">
+                                            <Label className="font-bold text-gray-900 text-sm">
                                                 Mật khẩu mới
                                             </Label>
                                             <div className="relative">
@@ -133,7 +133,7 @@ export const ResetPassword = (): JSX.Element => {
                                                 <button
                                                     type="button"
                                                     onClick={() => setShowPass1((p) => !p)}
-                                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-[#4C5769] hover:text-[#1A1A2E] transition-colors"
+                                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-600 hover:text-gray-800 transition-colors"
                                                     aria-label="Toggle password visibility"
                                                 >
                                                     {showPass1 ? (
@@ -143,14 +143,14 @@ export const ResetPassword = (): JSX.Element => {
                                                     )}
                                                 </button>
                                             </div>
-                                            <p className="text-xs lg:text-sm text-[#6B7280] font-medium">
+                                            <p className="text-xs lg:text-sm text-gray-500 font-medium">
                                                 Gợi ý: tối thiểu 8 ký tự.
                                             </p>
                                         </div>
 
                                         {/* Re Password */}
                                         <div className="space-y-2">
-                                            <Label className="font-bold text-[#1A1A2E] text-sm">
+                                            <Label className="font-bold text-gray-900 text-sm">
                                                 Nhập lại mật khẩu
                                             </Label>
                                             <div className="relative">
@@ -167,7 +167,7 @@ export const ResetPassword = (): JSX.Element => {
                                                 <button
                                                     type="button"
                                                     onClick={() => setShowPass2((p) => !p)}
-                                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-[#4C5769] hover:text-[#1A1A2E] transition-colors"
+                                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-600 hover:text-gray-800 transition-colors"
                                                     aria-label="Toggle password visibility"
                                                 >
                                                     {showPass2 ? (
@@ -179,7 +179,7 @@ export const ResetPassword = (): JSX.Element => {
                                             </div>
 
                                             {!passwordsMatch && (
-                                                <p className="text-xs lg:text-sm text-[#991B1B] font-bold">
+                                                <p className="text-xs lg:text-sm text-red-800 font-bold">
                                                     Mật khẩu nhập lại không khớp.
                                                 </p>
                                             )}
@@ -195,10 +195,10 @@ export const ResetPassword = (): JSX.Element => {
                                         </button>
 
                                         <p className="text-center font-medium text-sm lg:text-base">
-                                            <span className="text-[#4C5769]">Quay lại </span>
+                                            <span className="text-gray-600">Quay lại </span>
                                             <Link
                                                 to="/signin"
-                                                className="font-bold text-[#1A1A2E] hover:text-[#B8A9E8] border-b-2 border-[#B8A9E8] transition-colors"
+                                                className="font-bold text-gray-900 hover:text-purple-500 border-b-2 border-purple-300 transition-colors"
                                             >
                                                 Đăng nhập
                                             </Link>
@@ -208,10 +208,10 @@ export const ResetPassword = (): JSX.Element => {
                             </div>
 
                             {/* RIGHT — Hero with NB */}
-                            <div className="lg:w-[48%] relative overflow-hidden bg-[#F5C6C2] p-8 lg:p-12 flex items-center justify-center border-l-0 lg:border-l-2 border-t-2 lg:border-t-0 border-[#1A1A2E]">
-                                <div className="absolute top-8 left-8 w-14 h-14 bg-[#B8A9E8] border-2 border-[#1A1A2E] rounded-lg shadow-[3px_3px_0_#1A1A2E] rotate-12 opacity-60" />
-                                <div className="absolute bottom-14 left-6 w-10 h-10 bg-[#C8E44D] border-2 border-[#1A1A2E] rounded-full shadow-[3px_3px_0_#1A1A2E] opacity-50" />
-                                <div className="absolute top-[35%] right-8 w-12 h-12 bg-[#F5E642] border-2 border-[#1A1A2E] rounded-lg shadow-[2px_2px_0_#1A1A2E] -rotate-6 opacity-60" />
+                            <div className="lg:w-[48%] relative overflow-hidden bg-pink-200 p-8 lg:p-12 flex items-center justify-center border-l-0 lg:border-l-2 border-t-2 lg:border-t-0 border-gray-200">
+                                <div className="absolute top-8 left-8 w-14 h-14 bg-purple-400 border border-gray-200 rounded-lg shadow-soft-sm rotate-12 opacity-60" />
+                                <div className="absolute bottom-14 left-6 w-10 h-10 bg-emerald-400 border border-gray-200 rounded-full shadow-soft-sm opacity-50" />
+                                <div className="absolute top-[35%] right-8 w-12 h-12 bg-amber-400 border border-gray-200 rounded-lg shadow-sm -rotate-6 opacity-60" />
 
                                 <div className="relative z-10 w-full max-w-md text-right">
                                     <img
@@ -219,7 +219,7 @@ export const ResetPassword = (): JSX.Element => {
                                         alt="Vtos logo"
                                         src="https://c.animaapp.com/mjxt3t8wNP0otU/img/vtos--1--removebg-preview-2-1.png"
                                     />
-                                    <p className="font-extrabold text-[#1A1A2E] text-xl lg:text-3xl leading-relaxed mb-6">
+                                    <p className="font-extrabold text-gray-900 text-xl lg:text-3xl leading-relaxed mb-6">
                                         Đổi mật khẩu nhanh chóng & an toàn ✦
                                     </p>
                                     <img

@@ -9,9 +9,8 @@ import { TopNavBar } from "../../components/layout/TopNavBar";
 import { useSidebarConfig } from "../../hooks/useSidebarConfig";
 import { getSchoolProfile, getCampaigns, publishDraftCampaign, deleteCampaign, type CampaignListItemDto } from "../../lib/api/schools";
 
-/* ── Status config → nb-badge variants ── */
 const STATUS_CONFIG: Record<string, { label: string; badge: string }> = {
-    Draft:     { label: "Bản nháp",    badge: "nb-badge text-[#6B7280] bg-[#F3F4F6]" },
+    Draft:     { label: "Bản nháp",    badge: "nb-badge text-gray-500 bg-gray-100" },
     Active:    { label: "Đang mở",     badge: "nb-badge nb-badge-green" },
     Paused:    { label: "Tạm dừng",    badge: "nb-badge nb-badge-yellow" },
     Completed: { label: "Hoàn thành",  badge: "nb-badge nb-badge-blue" },
@@ -58,7 +57,7 @@ function CampaignCard({
         <div onClick={onClick} className="nb-card p-5 cursor-pointer group">
             <div className="flex items-start justify-between mb-3">
                 <div className="flex-1 min-w-0 mr-3">
-                    <h3 className="font-bold text-[#1A1A2E] text-base truncate group-hover:text-[#6938EF] transition-colors">{campaign.campaignName}</h3>
+                    <h3 className="font-bold text-gray-900 text-base truncate group-hover:text-violet-600 transition-colors">{campaign.campaignName}</h3>
                     <p className="font-medium text-[#97A3B6] text-sm mt-0.5 line-clamp-1">{campaign.description || "Không có mô tả"}</p>
                 </div>
                 <StatusBadge status={campaign.status} />
@@ -67,44 +66,44 @@ function CampaignCard({
             <div className="flex items-center gap-4 mb-3">
                 <div className="flex items-center gap-1.5">
                     <svg className="w-4 h-4 text-[#97A3B6]" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 10H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2z" /></svg>
-                    <span className="font-medium text-[#4C5769] text-xs">{formatDate(campaign.startDate)} — {formatDate(campaign.endDate)}</span>
+                    <span className="font-medium text-gray-600 text-xs">{formatDate(campaign.startDate)} — {formatDate(campaign.endDate)}</span>
                 </div>
-                {isActive && daysLeft > 0 && <span className="font-bold text-[#6938EF] text-xs">Còn {daysLeft} ngày</span>}
+                {isActive && daysLeft > 0 && <span className="font-bold text-violet-600 text-xs">Còn {daysLeft} ngày</span>}
             </div>
 
-            <div className="flex items-center gap-4 pt-3 border-t-2 border-[#E5E7EB]">
+            <div className="flex items-center gap-4 pt-3 border-t-2 border-gray-200">
                 <div className="flex items-center gap-1.5">
                     <svg className="w-4 h-4 text-[#97A3B6]" viewBox="0 0 24 24" fill="currentColor"><path d="M18 6h-2c0-2.21-1.79-4-4-4S8 3.79 8 6H6c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-6-2c1.1 0 2 .9 2 2h-4c0-1.1.9-2 2-2z" /></svg>
-                    <span className="font-semibold text-[#4C5769] text-sm">{campaign.outfitCount} sản phẩm</span>
+                    <span className="font-semibold text-gray-600 text-sm">{campaign.outfitCount} sản phẩm</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                     <svg className="w-4 h-4 text-[#97A3B6]" viewBox="0 0 24 24" fill="currentColor"><path d="M15.55 13c.75 0 1.41-.41 1.75-1.03l3.58-6.49A.996.996 0 0020.01 4H5.21l-.94-2H1v2h2l3.6 7.59-1.35 2.44C4.52 15.37 5.48 17 7 17h12v-2H7l1.1-2h7.45zM6.16 6h12.15l-2.76 5H8.53L6.16 6zM7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z" /></svg>
-                    <span className="font-semibold text-[#4C5769] text-sm">{campaign.orderCount} đơn hàng</span>
+                    <span className="font-semibold text-gray-600 text-sm">{campaign.orderCount} đơn hàng</span>
                 </div>
             </div>
 
             {/* Draft action buttons */}
             {isDraft && (
-                <div className="flex items-center gap-2 mt-3 pt-3 border-t-2 border-[#E5E7EB]"
+                <div className="flex items-center gap-2 mt-3 pt-3 border-t-2 border-gray-200"
                     onClick={(e) => e.stopPropagation()}
                 >
                     <button
                         onClick={onEdit}
-                        className="flex items-center gap-1.5 rounded-[8px] border-[2px] border-[#19182B] bg-white px-3 py-1.5 text-xs font-extrabold text-[#19182B] shadow-[2px_2px_0_#19182B] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#19182B] transition-all"
+                        className="flex items-center gap-1.5 rounded-[8px] border border-gray-200 bg-white px-3 py-1.5 text-xs font-extrabold text-gray-700 shadow-soft-sm hover:scale-[0.99] hover:shadow-sm transition-all"
                     >
                         <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" /></svg>
                         Sửa
                     </button>
                     <button
                         onClick={onPublish}
-                        className="flex items-center gap-1.5 rounded-[8px] border-[2px] border-[#19182B] bg-[#D9F8E8] px-3 py-1.5 text-xs font-extrabold text-[#166534] shadow-[2px_2px_0_#19182B] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#19182B] transition-all"
+                        className="flex items-center gap-1.5 rounded-[8px] border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-extrabold text-emerald-700 shadow-soft-sm hover:scale-[0.99] hover:shadow-sm transition-all"
                     >
                         <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" /></svg>
                         Công khai
                     </button>
                     <button
                         onClick={onDelete}
-                        className="flex items-center gap-1.5 rounded-[8px] border-[2px] border-[#19182B] bg-[#FEE2E2] px-3 py-1.5 text-xs font-extrabold text-[#991B1B] shadow-[2px_2px_0_#19182B] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#19182B] transition-all"
+                        className="flex items-center gap-1.5 rounded-[8px] border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-extrabold text-red-700 shadow-soft-sm hover:scale-[0.99] hover:shadow-sm transition-all"
                     >
                         <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" /></svg>
                         Xóa
@@ -212,8 +211,8 @@ export const CampaignList = (): JSX.Element => {
         <div className="nb-page flex flex-col">
             {/* Toast */}
             {toast && (
-                <div className={`fixed top-6 right-6 z-[99999] flex items-center gap-3 rounded-[12px] border-[3px] border-[#19182B] px-5 py-3 text-sm font-extrabold shadow-[4px_4px_0_#19182B] ${
-                    toast.type === "success" ? "bg-[#D9F8E8] text-[#166534]" : "bg-[#FEE2E2] text-[#991B1B]"
+                <div className={`fixed top-6 right-6 z-[99999] flex items-center gap-3 rounded-[12px] border border-gray-200 px-5 py-3 text-sm font-extrabold shadow-soft-md ${
+                    toast.type === "success" ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-red-50 text-red-700 border-red-200"
                 }`}>
                     {toast.type === "success"
                         ? <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" /></svg>
@@ -225,17 +224,17 @@ export const CampaignList = (): JSX.Element => {
             {/* Confirm Publish / Delete Dialog */}
             {confirm && (
                 <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/50 p-4">
-                    <div className="bg-white rounded-[14px] border-[3px] border-[#19182B] shadow-[6px_6px_0_#19182B] w-full max-w-sm p-6">
-                        <h3 className="font-extrabold text-[#19182B] text-lg mb-2">
+                    <div className="bg-white rounded-[14px] border border-gray-200 shadow-soft-lg w-full max-w-sm p-6">
+                        <h3 className="font-extrabold text-gray-900 text-lg mb-2">
                             {confirm.type === "publish" ? "Công khai chiến dịch?" : "Xóa chiến dịch?"}
                         </h3>
-                        <p className="text-[#6B7280] text-sm mb-6">
+                        <p className="text-gray-500 text-sm mb-6">
                             {confirm.type === "publish"
                                 ? `"${confirm.campaign.campaignName}" sẽ được công khai và phụ huynh có thể đặt hàng.`
                                 : `Bạn có chắc muốn xóa "${confirm.campaign.campaignName}"? Không thể hoàn tác.`}
                         </p>
                         <div className="flex justify-end gap-3">
-                            <button onClick={() => setConfirm(null)} className="rounded-[10px] border-[3px] border-[#19182B] bg-white px-4 py-2 text-sm font-extrabold text-[#19182B] shadow-[3px_3px_0_#19182B] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] transition-all">
+                            <button onClick={() => setConfirm(null)} className="rounded-[10px] border border-gray-200 bg-white px-4 py-2 text-sm font-extrabold text-gray-700 shadow-soft-sm hover:scale-[0.99] hover:shadow-sm transition-all">
                                 Hủy
                             </button>
                             <button
@@ -244,8 +243,8 @@ export const CampaignList = (): JSX.Element => {
                                     if (confirm.type === "publish") handlePublish(c);
                                     else handleDelete(c);
                                 }}
-                                className={`rounded-[10px] border-[3px] border-[#19182B] px-4 py-2 text-sm font-extrabold text-white shadow-[3px_3px_0_#19182B] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] transition-all disabled:opacity-50 ${
-                                    confirm.type === "publish" ? "bg-[#16A34A] hover:bg-[#15803D]" : "bg-[#DC2626] hover:bg-[#B91C1C]"
+                                className={`rounded-[10px] border px-4 py-2 text-sm font-extrabold text-white shadow-soft-sm hover:scale-[0.99] hover:shadow-sm transition-all disabled:opacity-50 ${
+                                    confirm.type === "publish" ? "border-emerald-500 bg-emerald-500 hover:bg-emerald-600" : "border-red-500 bg-red-500 hover:bg-red-600"
                                 }`}
                             >
                                 {confirm.type === "publish" ? "Công khai" : "Xóa"}
@@ -265,7 +264,7 @@ export const CampaignList = (): JSX.Element => {
                         <Breadcrumb><BreadcrumbList>
                             <BreadcrumbItem><BreadcrumbLink href="/school/dashboard" className="font-semibold text-[#4c5769] text-base">Trang chủ</BreadcrumbLink></BreadcrumbItem>
                             <BreadcrumbSeparator className="text-[#cbcad7]">/</BreadcrumbSeparator>
-                            <BreadcrumbItem><BreadcrumbPage className="font-bold text-[#1A1A2E] text-base">Quản lý chiến dịch</BreadcrumbPage></BreadcrumbItem>
+                            <BreadcrumbItem><BreadcrumbPage className="font-bold text-gray-900 text-base">Quản lý chiến dịch</BreadcrumbPage></BreadcrumbItem>
                         </BreadcrumbList></Breadcrumb>
                     </TopNavBar>
 
@@ -273,7 +272,7 @@ export const CampaignList = (): JSX.Element => {
                         {/* Header */}
                         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                             <div>
-                                <h1 className="font-extrabold text-[#1A1A2E] text-[28px] lg:text-[32px] leading-tight">Quản lý chiến dịch 🎯</h1>
+                                <h1 className="font-extrabold text-gray-900 text-[28px] lg:text-[32px] leading-tight">Quản lý chiến dịch 🎯</h1>
                                 <p className="mt-1 font-medium text-[#4c5769] text-sm lg:text-base">Xem và quản lý các đợt đặt hàng đồng phục.</p>
                             </div>
                             <button onClick={() => navigate("/school/campaigns/new")} className="nb-btn nb-btn-purple text-sm whitespace-nowrap">
@@ -295,7 +294,7 @@ export const CampaignList = (): JSX.Element => {
                                     return (
                                         <button key={tab.key} onClick={() => setActiveTab(tab.key)} className={`nb-tab ${isAct ? "nb-tab-active" : ""}`}>
                                             {tab.label}
-                                            {badge > 0 && <span className={`ml-1.5 min-w-[20px] h-5 flex items-center justify-center rounded-full text-xs font-bold px-1.5 ${isAct ? "bg-white/20 text-white" : "bg-[#E5E7EB] text-[#4C5769]"}`}>{badge}</span>}
+                                            {badge > 0 && <span className={`ml-1.5 min-w-[20px] h-5 flex items-center justify-center rounded-full text-xs font-bold px-1.5 ${isAct ? "bg-white/20 text-white" : "bg-[#E5E7EB] text-gray-600"}`}>{badge}</span>}
                                         </button>
                                     );
                                 })}
@@ -328,10 +327,10 @@ export const CampaignList = (): JSX.Element => {
                         {/* Empty */}
                         {!loading && filteredCampaigns.length === 0 && (
                             <div className="nb-card-static p-12 text-center">
-                                <div className="w-14 h-14 rounded-full bg-[#EDE9FE] flex items-center justify-center mx-auto mb-4 border-2 border-[#1A1A2E] shadow-[3px_3px_0_#1A1A2E]">
-                                    <svg className="w-7 h-7 text-[#6938EF]" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" /></svg>
+                                <div className="w-14 h-14 rounded-full bg-violet-50 flex items-center justify-center mx-auto mb-4 border border-gray-200 shadow-soft-sm">
+                                    <svg className="w-7 h-7 text-violet-600" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" /></svg>
                                 </div>
-                                <p className="font-bold text-[#4C5769] text-base">Chưa có chiến dịch nào</p>
+                                <p className="font-bold text-gray-600 text-base">Chưa có chiến dịch nào</p>
                                 <p className="font-medium text-[#97A3B6] text-sm mt-1 mb-4">Tạo đợt đặt hàng mới để bắt đầu.</p>
                                 <button onClick={() => navigate("/school/campaigns/new")} className="nb-btn nb-btn-purple text-sm">
                                     <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" /></svg>

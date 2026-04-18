@@ -37,12 +37,12 @@ function TBtn({
             onClick={onClick}
             title={title}
             disabled={disabled}
-            className={`flex h-8 min-w-[32px] px-1 items-center justify-center rounded-[6px] border-[2px] border-[#19182B] text-[12px] font-black transition-all ${
+            className={`flex h-8 min-w-[32px] px-1 items-center justify-center rounded-[6px] border border-gray-200 text-[12px] font-black transition-all ${
                 disabled
-                    ? "opacity-30 cursor-not-allowed bg-gray-100 text-gray-400 shadow-none"
+                    ? "opacity-30 cursor-not-allowed bg-gray-100 text-gray-400"
                     : active
-                    ? "bg-[#8B6BFF] text-white shadow-[2px_2px_0_#19182B]"
-                    : "bg-white text-[#19182B] shadow-[2px_2px_0_#19182B] hover:bg-[#F2ECFF]"
+                    ? "bg-violet-500 text-white border-violet-500"
+                    : "bg-white text-gray-700 hover:bg-violet-50"
             }`}
         >
             {children}
@@ -52,7 +52,7 @@ function TBtn({
 
 /* ── Separator ── */
 function TSep() {
-    return <div className="mx-0.5 h-6 w-[2px] rounded bg-[#D1C9E0]" />;
+    return <div className="mx-0.5 h-6 w-[2px] rounded bg-gray-200" />;
 }
 
 /* ── Color picker button ── */
@@ -73,8 +73,8 @@ function ColorBtn({
             onMouseDown={(e) => e.preventDefault()}
             onClick={onClick}
             title={title}
-            className={`w-6 h-6 rounded-full border-2 transition-all ${
-                active ? "border-[#19182B] scale-110 shadow-[1px_1px_0_#19182B]" : "border-gray-300 hover:border-gray-500 hover:scale-105"
+            className={`w-6 h-6 rounded-full border border-gray-300 transition-all ${
+                active ? "border-gray-700 scale-110" : "border-gray-300 hover:border-gray-500 hover:scale-105"
             }`}
             style={{ backgroundColor: color }}
         />
@@ -185,9 +185,9 @@ export function RichTextEditor({ value, onChange, placeholder }: RichTextEditorP
     if (!editor) return null;
 
     return (
-        <div className="rounded-[8px] border-[2px] border-[#19182B] bg-white shadow-[3px_3px_0_#19182B] transition-all focus-within:translate-x-[1px] focus-within:translate-y-[1px] focus-within:shadow-[2px_2px_0_#19182B]">
+        <div className="rounded-[8px] border border-gray-200 bg-white shadow-soft-sm transition-all focus-within:shadow-soft-md">
             {/* ── Toolbar ── */}
-            <div className="flex flex-wrap items-center gap-1 border-b-[2px] border-[#19182B] bg-[#FAFAFA] px-2 py-1.5 rounded-t-[6px]">
+            <div className="flex flex-wrap items-center gap-1 border-b border-gray-200 bg-gray-50 px-2 py-1.5 rounded-t-[6px]">
                 {/* Undo / Redo */}
                 <TBtn
                     onClick={() => editor.chain().focus().undo().run()}
@@ -337,7 +337,7 @@ export function RichTextEditor({ value, onChange, placeholder }: RichTextEditorP
                         </span>
                     </TBtn>
                     {showTextColors && (
-                        <div className="absolute top-full left-0 mt-1 p-2 bg-white border-2 border-[#19182B] rounded-lg shadow-[3px_3px_0_#19182B] z-50 flex gap-1.5">
+                        <div className="absolute top-full left-0 mt-1 p-2 bg-white border border-gray-200 rounded-lg shadow-soft-md z-50 flex gap-1.5">
                             {TEXT_COLORS.map((c) => (
                                 <ColorBtn
                                     key={c.color}
@@ -369,7 +369,7 @@ export function RichTextEditor({ value, onChange, placeholder }: RichTextEditorP
                         </span>
                     </TBtn>
                     {showHighlightColors && (
-                        <div className="absolute top-full left-0 mt-1 p-2 bg-white border-2 border-[#19182B] rounded-lg shadow-[3px_3px_0_#19182B] z-50 flex gap-1.5">
+                        <div className="absolute top-full left-0 mt-1 p-2 bg-white border border-gray-200 rounded-lg shadow-soft-md z-50 flex gap-1.5">
                             {HIGHLIGHT_COLORS.map((c) => (
                                 <ColorBtn
                                     key={c.color}
@@ -433,14 +433,14 @@ export function RichTextEditor({ value, onChange, placeholder }: RichTextEditorP
                     font-size: 1.25rem;
                     font-weight: 800;
                     margin: 0.75rem 0 0.25rem;
-                    color: #19182B;
+                    color: #374151;
                     letter-spacing: -0.01em;
                 }
                 .prose-editor-content h3 {
                     font-size: 1.1rem;
                     font-weight: 700;
                     margin: 0.5rem 0 0.25rem;
-                    color: #19182B;
+                    color: #374151;
                 }
                 .prose-editor-content p {
                     margin: 0.25rem 0;

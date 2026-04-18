@@ -150,20 +150,20 @@ function OutfitFormModal({
     };
 
     /* Brutal input class */
-    const brutalInputClass = "w-full rounded-[8px] border-[2px] border-[#19182B] bg-white px-4 py-3 text-[15px] font-semibold text-[#19182B] shadow-[3px_3px_0_#19182B] outline-none transition-all placeholder:text-[#8B859A] focus:translate-x-[1px] focus:translate-y-[1px] focus:shadow-[2px_2px_0_#19182B]";
+    const modernInputClass = "w-full rounded-[10px] border border-gray-200 bg-white px-4 py-3 text-[15px] font-medium text-gray-900 shadow-soft-sm outline-none transition-all placeholder:text-gray-400 focus:border-purple-400 focus:ring-2 focus:ring-purple-200/50";
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
             <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-            <div className="relative w-full max-w-[640px] mx-4 max-h-[90vh] overflow-y-auto rounded-[18px] border-[3px] border-[#19182B] bg-white shadow-[6px_6px_0_#19182B]">
+            <div className="relative w-full max-w-[640px] mx-4 max-h-[90vh] overflow-y-auto rounded-[18px] border border-gray-200 bg-white shadow-soft-lg">
 
                 {/* ── Header ── */}
-                <div className="flex items-start justify-between gap-4 border-b-[3px] border-[#19182B] bg-[#F2ECFF] px-6 py-5 sticky top-0 z-10">
+                <div className="flex items-start justify-between gap-4 border-b border-gray-200 bg-violet-50 px-6 py-5 sticky top-0 z-10">
                     <div>
-                        <div className="mb-2 inline-flex items-center gap-2 rounded-[8px] border-[2px] border-[#19182B] bg-[#FFD978] px-3 py-1 text-[12px] font-black shadow-[2px_2px_0_#19182B]">
+                        <div className="mb-2 inline-flex items-center gap-2 rounded-[8px] border border-yellow-200 bg-yellow-50 px-3 py-1 text-[12px] font-black shadow-soft-sm">
                             {isEditing ? "✏️ CHỈNH SỬA SẢN PHẨM" : "➕ THÊM MỚI"}
                         </div>
-                        <h2 className="text-[24px] font-black leading-none text-[#19182B] md:text-[28px]">
+                        <h2 className="text-[24px] font-black leading-none text-gray-900 md:text-[28px]">
                             {isEditing ? "Chỉnh sửa đồng phục" : "Thêm đồng phục mới"}
                         </h2>
                         <p className="mt-2 text-[14px] font-semibold text-[#6F6A7D]">
@@ -172,7 +172,7 @@ function OutfitFormModal({
                     </div>
                     <button
                         onClick={onClose}
-                        className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-[10px] border-[3px] border-[#19182B] bg-white text-[22px] font-black shadow-[4px_4px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+                        className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-[10px] border border-gray-200 bg-white text-[22px] font-black shadow-soft-sm transition-all hover:scale-[0.99] hover:shadow-soft-sm active:scale-[0.98] active:shadow-none"
                     >
                         ×
                     </button>
@@ -183,10 +183,10 @@ function OutfitFormModal({
 
                     {/* Image Upload Card */}
                     <section>
-                        <label className="mb-2 block text-[14px] font-extrabold text-[#19182B]">
+                        <label className="mb-2 block text-[14px] font-extrabold text-gray-900">
                             Hình ảnh đồng phục
                         </label>
-                        <div className="rounded-[14px] border-[3px] border-[#19182B] bg-[#F2ECFF] p-3 shadow-[4px_4px_0_#19182B]">
+                        <div className="rounded-[14px] border border-purple-200 bg-violet-50 p-3 shadow-soft-sm">
                             <div
                                 className="relative flex min-h-[200px] items-center justify-center rounded-[10px] border-[2px] border-dashed border-[#8B6BFF] bg-white/70 px-4 py-6 cursor-pointer"
                                 onClick={() => fileInputRef.current?.click()}
@@ -210,23 +210,23 @@ function OutfitFormModal({
                                         <button
                                             type="button"
                                             onClick={(e) => { e.stopPropagation(); setImageFile(null); setImagePreview(null); setForm((f) => ({ ...f, mainImageURL: "" })); }}
-                                            className="absolute right-3 top-3 flex h-10 w-10 items-center justify-center rounded-full border-[2px] border-[#19182B] bg-white text-[#6F6A7D] shadow-[2px_2px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#19182B] hover:text-[#FF6B57] z-10"
+                                            className="absolute right-3 top-3 flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-400 shadow-soft-sm transition-all hover:scale-[0.99] hover:shadow-soft-sm hover:text-red-500 z-10"
                                         >
                                             ×
                                         </button>
-                                        <img src={imagePreview} alt="Preview" className="h-[180px] w-[180px] rounded-[10px] border-[2px] border-[#19182B] object-cover shadow-[3px_3px_0_#19182B]" />
+                                        <img src={imagePreview} alt="Preview" className="h-[180px] w-[180px] rounded-[10px] border border-gray-200 object-cover shadow-soft-sm" />
                                     </>
                                 ) : (
                                     <div className="flex flex-col items-center gap-3 text-center">
-                                        <div className="flex h-12 w-12 items-center justify-center rounded-[10px] border-[2px] border-[#19182B] bg-white shadow-[3px_3px_0_#19182B]">
-                                            <svg className="w-6 h-6 text-[#8B6BFF]" viewBox="0 0 24 24" fill="currentColor">
+                                        <div className="flex h-12 w-12 items-center justify-center rounded-[10px] border border-gray-200 bg-white shadow-soft-sm">
+                                            <svg className="w-6 h-6 text-violet-500" viewBox="0 0 24 24" fill="currentColor">
                                                 <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z" />
                                             </svg>
                                         </div>
-                                        <p className="text-[14px] font-extrabold text-[#19182B]">
+                                        <p className="text-[14px] font-extrabold text-gray-900">
                                             Kéo thả hoặc nhấn để chọn ảnh
                                         </p>
-                                        <p className="text-[13px] font-bold text-[#6F6A7D]">
+                                        <p className="text-[13px] font-bold text-gray-500">
                                             JPG, PNG tối đa 5MB. Ảnh sản phẩm nên có nền sáng, rõ mặt trước
                                         </p>
                                     </div>
@@ -242,19 +242,19 @@ function OutfitFormModal({
                     <section className="grid gap-5 md:grid-cols-2">
                         {/* Name — full width */}
                         <div className="md:col-span-2">
-                            <label className="mb-2 block text-[14px] font-extrabold text-[#19182B]">
-                                Tên đồng phục <span className="ml-1 text-[#FF6B57]">*</span>
+                            <label className="mb-2 block text-[14px] font-extrabold text-gray-900">
+                                Tên đồng phục <span className="ml-1 text-red-500">*</span>
                             </label>
                             <input
                                 type="text"
                                 value={form.outfitName}
                                 onChange={(e) => setForm((f) => ({ ...f, outfitName: e.target.value }))}
                                 placeholder="VD: Áo sơ mi Nam"
-                                className={`${brutalInputClass} ${isNameOver ? '!border-[#EF4444]' : ''}`}
+                                className={`${modernInputClass} ${isNameOver ? '!border-[#EF4444]' : ''}`}
                                 required
                                 maxLength={50}
                             />
-                            <div className={`text-xs font-semibold mt-1 text-right ${isNameOver ? 'text-[#EF4444]' : nameLength > 40 ? 'text-[#F59E0B]' : 'text-[#9CA3AF]'}`}>
+                            <div className={`text-xs font-semibold mt-1 text-right ${isNameOver ? 'text-red-500' : nameLength > 40 ? 'text-[#F59E0B]' : 'text-gray-400'}`}>
                                 {nameLength}/50
                                 {isNameOver && <span className="ml-1">⚠️ Vượt quá giới hạn!</span>}
                             </div>
@@ -263,16 +263,16 @@ function OutfitFormModal({
                         {/* Description — full width */}
                         <div className="md:col-span-2">
                             <div className="flex items-center justify-between mb-2">
-                                <label className="block text-[14px] font-extrabold text-[#19182B]">
+                                <label className="block text-[14px] font-extrabold text-gray-900">
                                     Mô tả
                                 </label>
                                 <button
                                     type="button"
                                     onClick={() => setShowPreview(!showPreview)}
-                                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-[8px] border-[2px] border-[#19182B] text-[12px] font-extrabold transition-all ${
+                                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-[8px] border border-gray-200 text-[12px] font-extrabold transition-all ${
                                         showPreview
-                                            ? "bg-[#8B6BFF] text-white shadow-[2px_2px_0_#19182B]"
-                                            : "bg-white text-[#19182B] shadow-[2px_2px_0_#19182B] hover:bg-[#F2ECFF]"
+                                            ? "bg-violet-500 text-white shadow-soft-sm"
+                                            : "bg-white text-gray-900 shadow-soft-sm hover:bg-violet-50"
                                     }`}
                                 >
                                     {showPreview ? (
@@ -300,23 +300,23 @@ function OutfitFormModal({
 
                             {/* ── Preview Mode: rendered HTML ── */}
                             {showPreview && (
-                                <div className="rounded-[8px] border-[2px] border-[#8B6BFF] bg-[#FDFCFF] shadow-[3px_3px_0_#8B6BFF] min-h-[120px] px-5 py-4">
-                                    <div className="flex items-center gap-1.5 mb-3 pb-2 border-b border-[#E9D5FF]">
-                                        <svg className="w-3.5 h-3.5 text-[#8B6BFF]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                                        <span className="text-[11px] font-extrabold text-[#8B6BFF] uppercase tracking-wider">Xem trước</span>
+                                <div className="rounded-[8px] border border-violet-200 bg-violet-50 shadow-soft-sm min-h-[120px] px-5 py-4">
+                                    <div className="flex items-center gap-1.5 mb-3 pb-2 border-b border-violet-100">
+                                        <svg className="w-3.5 h-3.5 text-violet-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                        <span className="text-[11px] font-extrabold text-violet-500 uppercase tracking-wider">Xem trước</span>
                                     </div>
                                     {form.description ? (
                                         <div
-                                            className="prose-editor-content text-[15px] text-[#4B5563] leading-relaxed"
+                                            className="prose-editor-content text-[15px] text-gray-700 leading-relaxed"
                                             dangerouslySetInnerHTML={{ __html: form.description }}
                                         />
                                     ) : (
-                                        <p className="text-[#9A95A8] text-[15px] font-normal italic">Chưa có nội dung mô tả.</p>
+                                        <p className="text-gray-400 text-[15px] font-normal italic">Chưa có nội dung mô tả.</p>
                                     )}
                                 </div>
                             )}
 
-                            <div className={`text-xs font-semibold mt-1 text-right ${isDescOver ? 'text-[#EF4444]' : descLength > 400 ? 'text-[#F59E0B]' : 'text-[#9CA3AF]'}`}>
+                            <div className={`text-xs font-semibold mt-1 text-right ${isDescOver ? 'text-red-500' : descLength > 400 ? 'text-[#F59E0B]' : 'text-gray-400'}`}>
                                 {descLength}/500
                                 {isDescOver && <span className="ml-1">⚠️ Vượt quá giới hạn!</span>}
                             </div>
@@ -330,15 +330,15 @@ function OutfitFormModal({
 
                         {/* Price */}
                         <div>
-                            <label className="mb-2 block text-[14px] font-extrabold text-[#19182B]">
-                                Giá (VND) <span className="ml-1 text-[#FF6B57]">*</span>
+                            <label className="mb-2 block text-[14px] font-extrabold text-gray-900">
+                                Giá (VND) <span className="ml-1 text-red-500">*</span>
                             </label>
                             <input
                                 type="number"
                                 value={form.price}
                                 onChange={(e) => setForm((f) => ({ ...f, price: e.target.value }))}
                                 placeholder="VD: 250000"
-                                className={brutalInputClass}
+                                className={modernInputClass}
                                 min="0"
                                 step="1000"
                                 required
@@ -347,13 +347,13 @@ function OutfitFormModal({
 
                         {/* Type */}
                         <div>
-                            <label className="mb-2 block text-[14px] font-extrabold text-[#19182B]">
+                            <label className="mb-2 block text-[14px] font-extrabold text-gray-900">
                                 Loại
                             </label>
                             <select
                                 value={form.outfitType}
                                 onChange={(e) => setForm((f) => ({ ...f, outfitType: parseInt(e.target.value) }))}
-                                className={brutalInputClass}
+                                className={modernInputClass}
                             >
                                 {OUTFIT_TYPE_OPTIONS.map((opt) => (
                                     <option key={opt.value} value={opt.value}>
@@ -366,18 +366,18 @@ function OutfitFormModal({
                 </form>
 
                 {/* ── Footer ── */}
-                <div className="flex flex-col-reverse gap-3 border-t-[3px] border-[#19182B] bg-[#FFFDF9] px-6 py-5 sm:flex-row sm:justify-end">
+                <div className="flex flex-col-reverse gap-3 border-t border-gray-200 bg-[#FFFDF9] px-6 py-5 sm:flex-row sm:justify-end">
                     <button
                         type="button"
                         onClick={onClose}
-                        className="rounded-[8px] border-[3px] border-[#19182B] bg-white px-5 py-3 text-[15px] font-extrabold text-[#19182B] shadow-[4px_4px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+                        className="rounded-[8px] border border-gray-200 bg-white px-5 py-3 text-[15px] font-extrabold text-gray-900 shadow-soft-sm transition-all hover:scale-[0.99] hover:shadow-soft-sm active:scale-[0.98] active:shadow-none"
                     >
                         Huỷ
                     </button>
                     <button
                         onClick={handleSubmit}
                         disabled={isLoading || !form.outfitName.trim() || isNameOver || isDescOver}
-                        className="flex items-center justify-center gap-2 rounded-[8px] border-[3px] border-[#19182B] bg-[#8B6BFF] px-5 py-3 text-[15px] font-extrabold text-white shadow-[4px_4px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="flex items-center justify-center gap-2 rounded-[8px] border border-violet-500 bg-violet-500 px-5 py-3 text-[15px] font-extrabold text-white shadow-soft-sm transition-all hover:scale-[0.99] hover:shadow-soft-sm active:scale-[0.98] active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {isLoading && (
                             <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -394,7 +394,7 @@ function OutfitFormModal({
 }
 
 /* ────────────────────────────────────────────────────────────────────── */
-/* Delete Confirm Dialog — Neubrutalism Concept                           */
+/* Delete Confirm Dialog                                                */
 /* ────────────────────────────────────────────────────────────────────── */
 function DeleteConfirmDialog({
     isOpen, onClose, onConfirm, outfitName, isLoading,
@@ -405,31 +405,31 @@ function DeleteConfirmDialog({
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
             <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-            <div className="relative w-full max-w-[420px] mx-4 rounded-[18px] border-[3px] border-[#19182B] bg-white shadow-[6px_6px_0_#19182B] overflow-hidden">
+            <div className="relative w-full max-w-[420px] mx-4 rounded-[18px] border border-gray-200 bg-white shadow-soft-lg overflow-hidden">
                 {/* Delete header */}
-                <div className="border-b-[3px] border-[#19182B] bg-[#FEE2E2] px-6 py-4">
+                <div className="border-b border-gray-200 bg-red-50 px-6 py-4">
                     <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-[8px] border-[2px] border-[#19182B] bg-white shadow-[2px_2px_0_#19182B] text-lg">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-[8px] border border-gray-200 bg-white shadow-soft-sm text-lg">
                             🗑️
                         </div>
-                        <h3 className="text-[18px] font-black text-[#19182B]">Xóa đồng phục?</h3>
+                        <h3 className="text-[18px] font-black text-gray-900">Xóa đồng phục?</h3>
                     </div>
                 </div>
                 <div className="px-6 py-5">
-                    <p className="font-semibold text-[#6F6A7D] text-[15px] mb-5">
-                        Bạn có chắc muốn xóa <strong className="text-[#19182B]">"{outfitName}"</strong>? Hành động này không thể hoàn tác.
+                    <p className="font-semibold text-gray-500 text-[15px] mb-5">
+                        Bạn có chắc muốn xóa <strong className="text-gray-900">"{outfitName}"</strong>? Hành động này không thể hoàn tác.
                     </p>
                     <div className="flex justify-end gap-3">
                         <button
                             onClick={onClose}
-                            className="rounded-[8px] border-[3px] border-[#19182B] bg-white px-5 py-3 text-[15px] font-extrabold text-[#19182B] shadow-[4px_4px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+                            className="rounded-[8px] border border-gray-200 bg-white px-5 py-3 text-[15px] font-extrabold text-gray-900 shadow-soft-sm transition-all hover:scale-[0.99] hover:shadow-soft-sm active:scale-[0.98] active:shadow-none"
                         >
                             Hủy
                         </button>
                         <button
                             onClick={onConfirm}
                             disabled={isLoading}
-                            className="flex items-center gap-2 rounded-[8px] border-[3px] border-[#19182B] bg-[#FF6B57] px-5 py-3 text-[15px] font-extrabold text-white shadow-[4px_4px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="flex items-center gap-2 rounded-[8px] border border-red-500 bg-red-500 px-5 py-3 text-[15px] font-extrabold text-white shadow-soft-sm transition-all hover:scale-[0.99] hover:shadow-soft-sm active:scale-[0.98] active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {isLoading && (
                                 <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -447,7 +447,7 @@ function DeleteConfirmDialog({
 }
 
 /* ────────────────────────────────────────────────────────────────────── */
-/* Hide Confirm Dialog — Neubrutalism Concept                             */
+/* Hide Confirm Dialog                                                  */
 /* ────────────────────────────────────────────────────────────────────── */
 function HideConfirmDialog({
     isOpen, onClose, onConfirm, outfitName, isLoading,
@@ -458,30 +458,30 @@ function HideConfirmDialog({
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
             <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-            <div className="relative w-full max-w-[420px] mx-4 rounded-[18px] border-[3px] border-[#19182B] bg-white shadow-[6px_6px_0_#19182B] overflow-hidden">
-                <div className="border-b-[3px] border-[#19182B] bg-[#FEF3C7] px-6 py-4">
+            <div className="relative w-full max-w-[420px] mx-4 rounded-[18px] border border-gray-200 bg-white shadow-soft-lg overflow-hidden">
+                <div className="border-b border-gray-200 bg-amber-50 px-6 py-4">
                     <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-[8px] border-[2px] border-[#19182B] bg-white shadow-[2px_2px_0_#19182B] text-lg">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-[8px] border border-gray-200 bg-white shadow-soft-sm text-lg">
                             🙈
                         </div>
-                        <h3 className="text-[18px] font-black text-[#19182B]">Ẩn đồng phục?</h3>
+                        <h3 className="text-[18px] font-black text-gray-900">Ẩn đồng phục?</h3>
                     </div>
                 </div>
                 <div className="px-6 py-5">
-                    <p className="font-semibold text-[#6F6A7D] text-[15px] mb-5">
-                        Đồng phục <strong className="text-[#19182B]">"{outfitName}"</strong> đã từng thuộc chiến dịch đã hoàn tất nên không thể xóa. Bạn có muốn ẩn đồng phục này khỏi trang công khai không?
+                    <p className="font-semibold text-gray-500 text-[15px] mb-5">
+                        Đồng phục <strong className="text-gray-900">"{outfitName}"</strong> đã từng thuộc chiến dịch đã hoàn tất nên không thể xóa. Bạn có muốn ẩn đồng phục này khỏi trang công khai không?
                     </p>
                     <div className="flex justify-end gap-3">
                         <button
                             onClick={onClose}
-                            className="rounded-[8px] border-[3px] border-[#19182B] bg-white px-5 py-3 text-[15px] font-extrabold text-[#19182B] shadow-[4px_4px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+                            className="rounded-[8px] border border-gray-200 bg-white px-5 py-3 text-[15px] font-extrabold text-gray-900 shadow-soft-sm transition-all hover:scale-[0.99] hover:shadow-soft-sm active:scale-[0.98] active:shadow-none"
                         >
                             Hủy
                         </button>
                         <button
                             onClick={onConfirm}
                             disabled={isLoading}
-                            className="flex items-center gap-2 rounded-[8px] border-[3px] border-[#19182B] bg-[#D97706] px-5 py-3 text-[15px] font-extrabold text-white shadow-[4px_4px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="flex items-center gap-2 rounded-[8px] border border-amber-600 bg-amber-600 px-5 py-3 text-[15px] font-extrabold text-white shadow-soft-sm transition-all hover:scale-[0.99] hover:shadow-soft-sm active:scale-[0.98] active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {isLoading && (
                                 <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -509,22 +509,22 @@ function UniformCard({ item, onEdit, onDelete, onManageVariants, onHide }: {
 
     return (
         <div className="nb-card overflow-hidden group">
-            <div className="w-full aspect-[4/3] bg-[#F3F4F6] border-b-2 border-[#1A1A2E] flex items-center justify-center relative">
+            <div className="w-full aspect-[4/3] bg-gray-100 border-b border-gray-200 flex items-center justify-center relative">
                 {item.mainImageURL ? (
                     <img src={item.mainImageURL} alt={item.outfitName} className="w-full h-full object-cover" />
                 ) : (
-                    <svg className="w-16 h-16 text-[#9CA3AF]" viewBox="0 0 24 24" fill="currentColor"><path d="M21 16V7.99C21 6.89 20.1 6 19 6H5C3.9 6 3 6.89 3 7.99V16C3 17.1 3.9 18 5 18H19C20.1 18 21 17.1 21 16ZM12 14L17 10H7L12 14Z" /></svg>
+                    <svg className="w-16 h-16 text-gray-400" viewBox="0 0 24 24" fill="currentColor"><path d="M21 16V7.99C21 6.89 20.1 6 19 6H5C3.9 6 3 6.89 3 7.99V16C3 17.1 3.9 18 5 18H19C20.1 18 21 17.1 21 16ZM12 14L17 10H7L12 14Z" /></svg>
                 )}
                 <div className="absolute top-2 right-2 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-all">
-                    <button onClick={() => onEdit(item)} className="w-8 h-8 flex items-center justify-center rounded-lg bg-white border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E] hover:bg-[#F5F3FF] text-[#6938EF] transition-all" title="Sửa">
+                    <button onClick={() => onEdit(item)} className="w-8 h-8 flex items-center justify-center rounded-lg bg-white border border-gray-200 shadow-sm hover:bg-violet-50 text-violet-600 transition-all" title="Sửa">
                         <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" /></svg>
                     </button>
                     {item.canDelete ? (
-                        <button onClick={() => onDelete(item)} className="w-8 h-8 flex items-center justify-center rounded-lg bg-white border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E] hover:bg-[#FEE2E2] text-[#EF4444] transition-all" title="Xóa">
+                        <button onClick={() => onDelete(item)} className="w-8 h-8 flex items-center justify-center rounded-lg bg-white border border-gray-200 shadow-sm hover:bg-red-50 text-red-500 transition-all" title="Xóa">
                             <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" /></svg>
                         </button>
                     ) : (
-                        <button onClick={() => onHide(item)} className="w-8 h-8 flex items-center justify-center rounded-lg bg-white border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E] hover:bg-[#FEF3C7] text-[#D97706] transition-all" title="Ẩn đồng phục">
+                        <button onClick={() => onHide(item)} className="w-8 h-8 flex items-center justify-center rounded-lg bg-white border border-gray-200 shadow-sm hover:bg-amber-50 text-amber-600 transition-all" title="Ẩn đồng phục">
                             <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" /></svg>
                         </button>
                     )}
@@ -534,16 +534,16 @@ function UniformCard({ item, onEdit, onDelete, onManageVariants, onHide }: {
             {/* Content */}
             <div className="flex flex-col bg-white">
                 <div className="px-4 pt-3 pb-2">
-                    <h3 className="font-bold text-[#1A1A2E] text-base leading-tight truncate">{item.outfitName}</h3>
-                    <p className="font-medium text-[#4C5769] text-sm mt-0.5 line-clamp-1">{item.description ? stripHtml(item.description) : "Không có mô tả"}</p>
+                    <h3 className="font-bold text-gray-900 text-base leading-tight truncate">{item.outfitName}</h3>
+                    <p className="font-medium text-gray-600 text-sm mt-0.5 line-clamp-1">{item.description ? stripHtml(item.description) : "Không có mô tả"}</p>
                 </div>
-                <div className="mx-4 border-t-2 border-[#E5E7EB]" />
+                <div className="mx-4 border-t-2 border-gray-200" />
                 <div className="px-4 py-3 flex items-center justify-between">
-                    <span className="nb-badge text-[#4C5769] bg-[#F3F4F6]">{OUTFIT_TYPE_LABELS[item.outfitType] || "Khác"}</span>
-                    <span className="font-extrabold text-[#6938EF] text-sm">{formattedPrice}</span>
+                    <span className="nb-badge text-gray-600 bg-gray-100">{OUTFIT_TYPE_LABELS[item.outfitType] || "Khác"}</span>
+                    <span className="font-extrabold text-violet-600 text-sm">{formattedPrice}</span>
                 </div>
                 <div className="px-4 pb-3">
-                    <button onClick={() => onManageVariants(item)} className="w-full nb-btn-outline text-xs py-2 text-[#6938EF] border-[#DDD6FE] bg-[#F5F3FF] hover:bg-[#EDE9FE]">
+                    <button onClick={() => onManageVariants(item)} className="w-full nb-btn-outline text-xs py-2 text-violet-600 border-[#DDD6FE] bg-violet-50 hover:bg-violet-50">
                         <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z" /></svg>
                         Quản lý kích cỡ
                     </button>
@@ -558,11 +558,11 @@ function UniformCard({ item, onEdit, onDelete, onManageVariants, onHide }: {
 /* ────────────────────────────────────────────────────────────────────── */
 function UploadPlaceholderCard({ onClick }: { onClick: () => void }) {
     return (
-        <div onClick={onClick} className="flex flex-col items-center justify-center rounded-md border-2 border-dashed border-[#1A1A2E] bg-[#FAFBFC] hover:border-[#6938EF] hover:bg-[#F5F3FF] cursor-pointer transition-all duration-200 min-h-[320px] group hover:shadow-[4px_4px_0_#6938EF]">
-            <div className="w-14 h-14 rounded-full border-2 border-dashed border-[#1A1A2E] group-hover:border-[#6938EF] flex items-center justify-center mb-3 transition-colors">
-                <svg className="w-8 h-8 text-[#9CA3AF] group-hover:text-[#6938EF] transition-colors" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" /></svg>
+        <div onClick={onClick} className="flex flex-col items-center justify-center rounded-md border-2 border-dashed border-gray-200 bg-gray-50 hover:border-violet-600 hover:bg-violet-50 cursor-pointer transition-all duration-200 min-h-[320px] group hover:shadow-soft-md">
+            <div className="w-14 h-14 rounded-full border-2 border-dashed border-gray-200 group-hover:border-violet-600 flex items-center justify-center mb-3 transition-colors">
+                <svg className="w-8 h-8 text-gray-400 group-hover:text-violet-600 transition-colors" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" /></svg>
             </div>
-            <p className="font-bold text-[#4C5769] group-hover:text-[#6938EF] text-sm transition-colors">Tải lên mẫu thiết kế mới</p>
+            <p className="font-bold text-gray-600 group-hover:text-violet-600 text-sm transition-colors">Tải lên mẫu thiết kế mới</p>
             <p className="font-medium text-[#97A3B6] text-xs mt-1">Nhấn để thêm đồng phục</p>
         </div>
     );
@@ -746,7 +746,7 @@ export const UniformManagement = (): JSX.Element => {
                         {/* Header */}
                         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                             <div>
-                                <h1 className="font-extrabold text-[#1A1A2E] text-[28px] lg:text-[32px] leading-tight">👕 Danh mục đồng phục</h1>
+                                <h1 className="font-extrabold text-gray-900 text-[28px] lg:text-[32px] leading-tight">👕 Danh mục đồng phục</h1>
                                 <p className="mt-1 font-medium text-[#4c5769] text-sm lg:text-base">Xem và quản lý các mẫu thiết kế từ nhà cung cấp.</p>
                             </div>
                             <button onClick={openCreate} className="nb-btn nb-btn-purple text-sm whitespace-nowrap">
@@ -757,14 +757,14 @@ export const UniformManagement = (): JSX.Element => {
 
                         {/* Search + Filters */}
                         <div className="nb-card-static p-4 space-y-4">
-                            <div className="flex items-center gap-2 bg-[#F8F9FB] border border-[#cbcad7] rounded-[10px] px-4 py-2.5">
+                            <div className="flex items-center gap-2 bg-gray-50 border border-[#cbcad7] rounded-[10px] px-4 py-2.5">
                                 <svg className="w-5 h-5 text-[#97A3B6] flex-shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" /></svg>
                                 <input type="text" value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} placeholder="Tìm kiếm..." className="flex-1 bg-transparent outline-none font-medium text-sm text-[#1a1a2e] placeholder:text-[#97A3B6]" />
                             </div>
                             <div className="flex flex-wrap items-center gap-2">
                                 <div className="flex items-center gap-1.5 px-3 py-2 nb-card-static">
-                                    <svg className="w-4 h-4 text-[#4C5769]" viewBox="0 0 24 24" fill="currentColor"><path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z" /></svg>
-                                    <span className="font-semibold text-[#4C5769] text-sm">Bộ lọc</span>
+                                    <svg className="w-4 h-4 text-gray-600" viewBox="0 0 24 24" fill="currentColor"><path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z" /></svg>
+                                    <span className="font-semibold text-gray-600 text-sm">Bộ lọc</span>
                                 </div>
                                 {FILTER_TABS.map((tab) => {
                                     const isActive = activeTab === tab.key;
@@ -772,7 +772,7 @@ export const UniformManagement = (): JSX.Element => {
                                     return (
                                         <button key={tab.key} onClick={() => { setActiveTab(tab.key); setPage(1); }} className={`nb-tab ${isActive ? "nb-tab-active" : ""}`}>
                                             {tab.label}
-                                            {badge > 0 && <span className={`ml-1.5 min-w-[20px] h-5 flex items-center justify-center rounded-full text-xs font-bold px-1.5 ${isActive ? "bg-white/20 text-white" : "bg-[#E5E7EB] text-[#4C5769]"}`}>{badge}</span>}
+                                            {badge > 0 && <span className={`ml-1.5 min-w-[20px] h-5 flex items-center justify-center rounded-full text-xs font-bold px-1.5 ${isActive ? "bg-white/20 text-white" : "bg-[#E5E7EB] text-gray-600"}`}>{badge}</span>}
                                         </button>
                                     );
                                 })}
@@ -803,7 +803,7 @@ export const UniformManagement = (): JSX.Element => {
                                 {totalPages > 1 && (
                                     <div className="flex items-center justify-center gap-3 mt-4">
                                         <button disabled={page <= 1} onClick={() => setPage(p => p - 1)} className="nb-btn nb-btn-outline nb-btn-sm text-sm">← Trước</button>
-                                        <span className="text-sm font-bold text-[#6B7280]">{page}/{totalPages} ({filteredOutfits.length} mẫu)</span>
+                                        <span className="text-sm font-bold text-gray-500">{page}/{totalPages} ({filteredOutfits.length} mẫu)</span>
                                         <button disabled={page >= totalPages} onClick={() => setPage(p => p + 1)} className="nb-btn nb-btn-outline nb-btn-sm text-sm">Sau →</button>
                                     </div>
                                 )}
@@ -814,7 +814,7 @@ export const UniformManagement = (): JSX.Element => {
                         {!loading && filteredOutfits.length === 0 && (
                             <div className="nb-card-static p-12 text-center">
                                 <svg className="w-16 h-16 text-[#CBCAD7] mx-auto mb-4" viewBox="0 0 24 24" fill="currentColor"><path d="M21 16V7.99C21 6.89 20.1 6 19 6H5C3.9 6 3 6.89 3 7.99V16C3 17.1 3.9 18 5 18H19C20.1 18 21 17.1 21 16ZM12 14L17 10H7L12 14Z" /></svg>
-                                <p className="font-semibold text-[#4C5769] text-base">Chưa có mẫu đồng phục nào</p>
+                                <p className="font-semibold text-gray-600 text-base">Chưa có mẫu đồng phục nào</p>
                                 <p className="font-medium text-[#97A3B6] text-sm mt-1">Nhấn "Thêm mẫu mới" để bắt đầu thêm sản phẩm.</p>
                             </div>
                         )}
@@ -849,7 +849,7 @@ export const UniformManagement = (): JSX.Element => {
 
             {/* Toast */}
             {toast && (
-                <div className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-3.5 rounded-[10px] border-[3px] border-[#19182B] shadow-[4px_4px_0_#19182B] animate-in slide-in-from-bottom-4 duration-300 ${toast.type === "success" ? "bg-[#10b981] text-white" : "bg-[#FF6B57] text-white"}`}>
+                <div className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-3.5 rounded-[10px] border border-gray-200 shadow-soft-md animate-in slide-in-from-bottom-4 duration-300 ${toast.type === "success" ? "bg-emerald-500 text-white" : "bg-red-500 text-white"}`}>
                     {toast.type === "success" ? "✅" : "❌"}
                     <span className="font-extrabold text-[15px]">{toast.message}</span>
                 </div>

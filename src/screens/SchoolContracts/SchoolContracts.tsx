@@ -20,14 +20,14 @@ type OutfitOption = { id: string; name: string; price: number };
 
 const STATUS_BADGE: Record<string, string> = {
     Pending: "nb-badge nb-badge-yellow",
-    PendingSchoolSign: "nb-badge bg-[#FEF3C7] text-[#92400E] border-[#1A1A2E]",
-    PendingProviderSign: "nb-badge bg-[#E0E7FF] text-[#3730A3] border-[#1A1A2E]",
-    Active: "nb-badge bg-[#D1FAE5] text-[#065F46] border-[#1A1A2E]",
-    InUse: "nb-badge bg-[#DBEAFE] text-[#1D4ED8] border-[#1A1A2E]",
-    Fulfilled: "nb-badge bg-[#D1FAE5] text-[#065F46] border-[#1A1A2E]",
+    PendingSchoolSign: "nb-badge bg-[#FEF3C7] text-amber-800 border-gray-200",
+    PendingProviderSign: "nb-badge bg-[#E0E7FF] text-[#3730A3] border-gray-200",
+    Active: "nb-badge bg-[#D1FAE5] text-emerald-800 border-gray-200",
+    InUse: "nb-badge bg-[#DBEAFE] text-[#1D4ED8] border-gray-200",
+    Fulfilled: "nb-badge bg-[#D1FAE5] text-emerald-800 border-gray-200",
     Rejected: "nb-badge nb-badge-red",
-    Expired: "nb-badge bg-[#F3F4F6] text-[#6B7280]",
-    Cancelled: "nb-badge bg-[#FEE2E2] text-[#991B1B] border-[#1A1A2E]",
+    Expired: "nb-badge bg-gray-100 text-gray-500",
+    Cancelled: "nb-badge bg-[#FEE2E2] text-red-800 border-gray-200",
 };
 const STATUS_LABELS: Record<string, string> = {
     Pending: "Chờ duyệt",
@@ -189,13 +189,13 @@ export function SchoolContracts() {
                         <Breadcrumb><BreadcrumbList>
                             <BreadcrumbItem><BreadcrumbLink href="/school/dashboard" className="font-semibold text-[#4c5769] text-base">Trang chủ</BreadcrumbLink></BreadcrumbItem>
                             <BreadcrumbSeparator className="text-[#cbcad7]">/</BreadcrumbSeparator>
-                            <BreadcrumbItem><BreadcrumbPage className="font-bold text-[#1A1A2E] text-base">Hợp đồng</BreadcrumbPage></BreadcrumbItem>
+                            <BreadcrumbItem><BreadcrumbPage className="font-bold text-gray-900 text-base">Hợp đồng</BreadcrumbPage></BreadcrumbItem>
                         </BreadcrumbList></Breadcrumb>
                     </TopNavBar>
                     <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-6">
 
                         <div className="flex items-center justify-between">
-                            <h1 className="font-extrabold text-[#1A1A2E] text-[28px]">📄 Quản lý Hợp đồng</h1>
+                            <h1 className="font-extrabold text-gray-900 text-[28px]">📄 Quản lý Hợp đồng</h1>
                             <button onClick={() => setShowCreate(true)} className="nb-btn nb-btn-purple text-sm">+ Tạo hợp đồng mới</button>
                         </div>
 
@@ -217,7 +217,7 @@ export function SchoolContracts() {
                         ) : contracts.length === 0 ? (
                             <div className="nb-card-static p-12 text-center">
                                 <p className="text-4xl mb-3">📋</p>
-                                <p className="font-medium text-[#9CA3AF]">Chưa có hợp đồng nào. Tạo hợp đồng mới để bắt đầu!</p>
+                                <p className="font-medium text-gray-400">Chưa có hợp đồng nào. Tạo hợp đồng mới để bắt đầu!</p>
                             </div>
                         ) : (() => {
                             const totalPages = Math.ceil(contracts.length / pageSize);
@@ -230,9 +230,9 @@ export function SchoolContracts() {
                                                 className="nb-card p-5 cursor-pointer">
                                                 <div className="flex items-center justify-between gap-3">
                                                     <div className="flex-1 min-w-0">
-                                                        <h3 className="font-bold text-[#1A1A2E] text-lg truncate">{c.contractName}</h3>
-                                                        <p className="text-sm text-[#6B7280] mt-1 truncate">
-                                                            NCC: <strong className="text-[#1A1A2E]">{c.providerName || "—"}</strong> · {c.items.length} mục · Hạn: {new Date(c.expiresAt).toLocaleDateString("vi")}
+                                                        <h3 className="font-bold text-gray-900 text-lg truncate">{c.contractName}</h3>
+                                                        <p className="text-sm text-gray-500 mt-1 truncate">
+                                                            NCC: <strong className="text-gray-900">{c.providerName || "—"}</strong> · {c.items.length} mục · Hạn: {new Date(c.expiresAt).toLocaleDateString("vi")}
                                                         </p>
                                                     </div>
                                                     <span className={STATUS_BADGE[c.status] || "nb-badge"}>{STATUS_LABELS[c.status] || c.status}</span>
@@ -245,10 +245,10 @@ export function SchoolContracts() {
                                                     <button
                                                         onClick={(e) => { e.stopPropagation(); openContractTemplate(c.contractId); }}
                                                         disabled={templateLoading}
-                                                        className="nb-btn nb-btn-sm text-xs bg-[#EDE9FE] border-[#1A1A2E] disabled:opacity-50"
+                                                        className="nb-btn nb-btn-sm text-xs bg-violet-50 border-gray-200 disabled:opacity-50"
                                                     >📄 Xem HĐ</button>
                                                     <button onClick={(e) => { e.stopPropagation(); openContractChat(c); }}
-                                                        className="nb-btn nb-btn-sm text-xs bg-[#3B82F6] text-white border-[#1A1A2E]">💬 Chat</button>
+                                                        className="nb-btn nb-btn-sm text-xs bg-[#3B82F6] text-white border-gray-200">💬 Chat</button>
                                                 </div>
                                                 {c.rejectionReason && (
                                                     <div className="nb-alert nb-alert-error mt-3 text-xs">
@@ -261,7 +261,7 @@ export function SchoolContracts() {
                                     {totalPages > 1 && (
                                         <div className="flex items-center justify-center gap-3 mt-4">
                                             <button disabled={page <= 1} onClick={() => setPage(p => p - 1)} className="nb-btn nb-btn-outline nb-btn-sm text-sm">← Trước</button>
-                                            <span className="text-sm font-bold text-[#6B7280]">{page}/{totalPages}</span>
+                                            <span className="text-sm font-bold text-gray-500">{page}/{totalPages}</span>
                                             <button disabled={page >= totalPages} onClick={() => setPage(p => p + 1)} className="nb-btn nb-btn-outline nb-btn-sm text-sm">Sau →</button>
                                         </div>
                                     )}
@@ -275,30 +275,30 @@ export function SchoolContracts() {
             {/* Detail Modal — NB style */}
             {showDetail && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => { setShowDetail(false); setSelected(null); }}>
-                    <div className="bg-white rounded-md w-full max-w-lg mx-4 p-6 max-h-[85vh] overflow-auto border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E]" onClick={e => e.stopPropagation()}>
+                    <div className="bg-white rounded-md w-full max-w-lg mx-4 p-6 max-h-[85vh] overflow-auto border border-gray-200 shadow-soft-md" onClick={e => e.stopPropagation()}>
                         {detailLoading ? (
-                            <div className="text-center py-10 text-[#9CA3AF]">Đang tải...</div>
+                            <div className="text-center py-10 text-gray-400">Đang tải...</div>
                         ) : selected && (
                             <>
                                 <div className="flex justify-between items-center mb-5">
-                                    <h2 className="font-extrabold text-xl text-[#1A1A2E] truncate" title={selected.contractName}>📄 {selected.contractName}</h2>
+                                    <h2 className="font-extrabold text-xl text-gray-900 truncate" title={selected.contractName}>📄 {selected.contractName}</h2>
                                     <span className={STATUS_BADGE[selected.status] || "nb-badge"}>{STATUS_LABELS[selected.status] || selected.status}</span>
                                 </div>
                                 <div className="grid grid-cols-2 gap-3 mb-5">
-                                    <div className="nb-card-static p-3"><p className="text-xs text-[#9CA3AF] font-bold uppercase mb-1">Nhà cung cấp</p><p className="text-sm font-bold text-[#1A1A2E]">{selected.providerName || "—"}</p></div>
-                                    <div className="nb-card-static p-3"><p className="text-xs text-[#9CA3AF] font-bold uppercase mb-1">Ngày tạo</p><p className="text-sm font-bold text-[#1A1A2E]">{new Date(selected.createdAt).toLocaleDateString("vi")}</p></div>
-                                    <div className="nb-card-static p-3"><p className="text-xs text-[#9CA3AF] font-bold uppercase mb-1">Thời hạn</p><p className="text-sm font-bold text-[#1A1A2E]">{new Date(selected.expiresAt).toLocaleDateString("vi")}</p></div>
+                                    <div className="nb-card-static p-3"><p className="text-xs text-gray-400 font-bold uppercase mb-1">Nhà cung cấp</p><p className="text-sm font-bold text-gray-900">{selected.providerName || "—"}</p></div>
+                                    <div className="nb-card-static p-3"><p className="text-xs text-gray-400 font-bold uppercase mb-1">Ngày tạo</p><p className="text-sm font-bold text-gray-900">{new Date(selected.createdAt).toLocaleDateString("vi")}</p></div>
+                                    <div className="nb-card-static p-3"><p className="text-xs text-gray-400 font-bold uppercase mb-1">Thời hạn</p><p className="text-sm font-bold text-gray-900">{new Date(selected.expiresAt).toLocaleDateString("vi")}</p></div>
                                     {selected.approvedAt && (
-                                        <div className="nb-card-static p-3"><p className="text-xs text-[#9CA3AF] font-bold uppercase mb-1">Ngày duyệt</p><p className="text-sm font-bold text-[#1A1A2E]">{new Date(selected.approvedAt).toLocaleDateString("vi")}</p></div>
+                                        <div className="nb-card-static p-3"><p className="text-xs text-gray-400 font-bold uppercase mb-1">Ngày duyệt</p><p className="text-sm font-bold text-gray-900">{new Date(selected.approvedAt).toLocaleDateString("vi")}</p></div>
                                     )}
                                 </div>
-                                <h3 className="font-bold text-sm text-[#1A1A2E] mb-3">Danh sách đồng phục</h3>
+                                <h3 className="font-bold text-sm text-gray-900 mb-3">Danh sách đồng phục</h3>
                                 <table className="nb-table mb-4">
                                     <thead><tr><th>Đồng phục</th><th>Giá/đvị</th><th className="text-center">SL min</th><th className="text-center">SL max</th></tr></thead>
                                     <tbody>
                                         {selected.items.map(item => (
                                             <tr key={item.itemId}>
-                                                <td className="font-bold text-[#1A1A2E]">{item.outfitName}</td>
+                                                <td className="font-bold text-gray-900">{item.outfitName}</td>
                                                 <td>{item.pricePerUnit.toLocaleString("vi")}₫</td>
                                                 <td className="text-center">{item.minQuantity}</td>
                                                 <td className="text-center">{item.maxQuantity}</td>
@@ -313,7 +313,7 @@ export function SchoolContracts() {
                                     <button onClick={() => { setShowDetail(false); setSelected(null); }} className="nb-btn nb-btn-outline text-sm">Đóng</button>
                                     <button
                                         onClick={() => { openContractTemplate(selected.contractId); setShowDetail(false); }}
-                                        className="flex-1 nb-btn text-sm bg-[#EDE9FE] border-[#1A1A2E]"
+                                        className="flex-1 nb-btn text-sm bg-violet-50 border-gray-200"
                                     >📄 Xem & Ký HĐ</button>
                                     {selected.status === "Pending" && (
                                         <button onClick={(e) => handleCancel(e, selected.contractId)}
@@ -321,7 +321,7 @@ export function SchoolContracts() {
                                             className="nb-btn nb-btn-red text-sm disabled:opacity-50"
                                         >{cancelling === selected.contractId ? "Đang hủy..." : "✕ Hủy"}</button>
                                     )}
-                                    <button onClick={() => openContractChat(selected)} className="nb-btn text-sm bg-[#3B82F6] text-white border-[#1A1A2E]">💬 Chat</button>
+                                    <button onClick={() => openContractChat(selected)} className="nb-btn text-sm bg-[#3B82F6] text-white border-gray-200">💬 Chat</button>
                                 </div>
                             </>
                         )}
@@ -332,36 +332,36 @@ export function SchoolContracts() {
             {/* Create Contract Modal — NB style */}
             {showCreate && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => setShowCreate(false)}>
-                    <div className="bg-white rounded-md w-full max-w-lg mx-4 p-6 max-h-[85vh] overflow-auto border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E]" onClick={e => e.stopPropagation()}>
-                        <h2 className="font-extrabold text-xl text-[#1A1A2E] mb-5">📝 Tạo hợp đồng mới</h2>
+                    <div className="bg-white rounded-md w-full max-w-lg mx-4 p-6 max-h-[85vh] overflow-auto border border-gray-200 shadow-soft-md" onClick={e => e.stopPropagation()}>
+                        <h2 className="font-extrabold text-xl text-gray-900 mb-5">📝 Tạo hợp đồng mới</h2>
                         {error && <div className="nb-alert nb-alert-error text-sm mb-4"><span>⚠️</span><span>{error}</span></div>}
 
                         <div className="space-y-4">
                             <div>
-                                <label className="block text-xs font-bold text-[#6B7280] mb-1">Tên hợp đồng</label>
+                                <label className="block text-xs font-bold text-gray-500 mb-1">Tên hợp đồng</label>
                                 <input value={contractName} onChange={e => setContractName(e.target.value)} placeholder="VD: Hợp đồng đồng phục HK1 2026" maxLength={200} className="nb-input w-full" />
                             </div>
                             <div>
-                                <label className="block text-xs font-bold text-[#6B7280] mb-1">Nhà cung cấp</label>
+                                <label className="block text-xs font-bold text-gray-500 mb-1">Nhà cung cấp</label>
                                 <select value={selectedProvider} onChange={e => setSelectedProvider(e.target.value)} className="nb-select w-full">
                                     <option value="">-- Chọn nhà cung cấp --</option>
                                     {providers.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-xs font-bold text-[#6B7280] mb-1">Thời hạn hợp đồng <span className="text-red-500">*</span></label>
+                                <label className="block text-xs font-bold text-gray-500 mb-1">Thời hạn hợp đồng <span className="text-red-500">*</span></label>
                                 <input type="date" value={expiresAt} onChange={e => setExpiresAt(e.target.value)} min={new Date().toISOString().split("T")[0]} className="nb-input w-full" />
                             </div>
 
                             <div>
                                 <div className="flex justify-between items-center mb-2">
-                                    <label className="text-xs font-bold text-[#6B7280]">Danh sách đồng phục</label>
+                                    <label className="text-xs font-bold text-gray-500">Danh sách đồng phục</label>
                                     <button onClick={addItem} className="nb-btn nb-btn-outline nb-btn-sm text-xs">+ Thêm mục</button>
                                 </div>
                                 {items.map((item, idx) => (
                                     <div key={idx} className="nb-card-static p-4 mb-2 relative">
                                         {items.length > 1 && (
-                                            <button onClick={() => removeItem(idx)} className="absolute -top-3 -right-3 w-7 h-7 flex items-center justify-center rounded-full bg-[#EF4444] text-white text-sm font-bold border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E] hover:bg-[#DC2626] hover:shadow-none transition-all" title="Xóa mục">✕</button>
+                                            <button onClick={() => removeItem(idx)} className="absolute -top-3 -right-3 w-7 h-7 flex items-center justify-center rounded-full bg-[#EF4444] text-white text-sm font-bold border border-gray-200 shadow-sm hover:bg-[#DC2626] hover:shadow-none transition-all" title="Xóa mục">✕</button>
                                         )}
                                         <select value={item.outfitId} onChange={e => updateItem(idx, "outfitId", e.target.value)} className="nb-select w-full text-sm mb-2">
                                             <option value="">-- Chọn đồng phục --</option>
@@ -369,15 +369,15 @@ export function SchoolContracts() {
                                         </select>
                                         <div className="grid grid-cols-3 gap-2">
                                             <div>
-                                                <label className="text-[10px] text-[#9CA3AF] font-bold">Giá/đvị (₫)</label>
+                                                <label className="text-[10px] text-gray-400 font-bold">Giá/đvị (₫)</label>
                                                 <input type="number" value={item.pricePerUnit || ""} onChange={e => updateItem(idx, "pricePerUnit", Number(e.target.value))} className="nb-input w-full text-sm" />
                                             </div>
                                             <div>
-                                                <label className="text-[10px] text-[#9CA3AF] font-bold">SL tối thiểu</label>
+                                                <label className="text-[10px] text-gray-400 font-bold">SL tối thiểu</label>
                                                 <input type="number" value={item.minQuantity} onChange={e => updateItem(idx, "minQuantity", Number(e.target.value))} className="nb-input w-full text-sm" />
                                             </div>
                                             <div>
-                                                <label className="text-[10px] text-[#9CA3AF] font-bold">SL tối đa</label>
+                                                <label className="text-[10px] text-gray-400 font-bold">SL tối đa</label>
                                                 <input type="number" value={item.maxQuantity} onChange={e => updateItem(idx, "maxQuantity", Number(e.target.value))} className="nb-input w-full text-sm" />
                                             </div>
                                         </div>
@@ -399,9 +399,9 @@ export function SchoolContracts() {
             {/* Contract Template full-document viewer */}
             {templateLoading && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50">
-                    <div className="bg-white rounded-md border-2 border-[#1A1A2E] px-8 py-5 shadow-[4px_4px_0_#1A1A2E] flex items-center gap-3">
+                    <div className="bg-white rounded-md border border-gray-200 px-8 py-5 shadow-soft-md flex items-center gap-3">
                         <div className="w-5 h-5 border-3 border-[#6938EF] border-t-transparent rounded-full animate-spin" />
-                        <span className="font-bold text-[#1A1A2E]">Đang tải hợp đồng...</span>
+                        <span className="font-bold text-gray-900">Đang tải hợp đồng...</span>
                     </div>
                 </div>
             )}

@@ -72,7 +72,7 @@ export function SignaturePad({ onSave, onCancel, title = "Ký tên điện tử"
             ctx.lineWidth = 2.5;
             ctx.lineCap = "round";
             ctx.lineJoin = "round";
-            ctx.strokeStyle = "#1A1A2E";
+            ctx.strokeStyle = "#111827";
             if (lastPoint.current) {
                 ctx.moveTo(lastPoint.current.x, lastPoint.current.y);
                 ctx.lineTo(pt.x, pt.y);
@@ -145,13 +145,13 @@ export function SignaturePad({ onSave, onCancel, title = "Ký tên điện tử"
     return (
         <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/70 p-4">
             <div
-                className="bg-white rounded-md border-2 border-[#1A1A2E] shadow-[6px_6px_0_#1A1A2E] p-6 w-full max-w-md"
+                className="bg-white rounded-md border border-gray-200 shadow-soft-lg p-6 w-full max-w-md"
                 onClick={(e) => e.stopPropagation()}
             >
-                <h3 className="font-extrabold text-[#1A1A2E] text-lg mb-4">{title}</h3>
+                <h3 className="font-extrabold text-gray-900 text-lg mb-4">{title}</h3>
 
                 {/* ── Tab switcher ── */}
-                <div className="flex border-2 border-[#1A1A2E] rounded overflow-hidden mb-4">
+                <div className="flex border border-gray-200 rounded overflow-hidden mb-4">
                     {(["draw", "upload"] as Tab[]).map((t) => (
                         <button
                             key={t}
@@ -159,10 +159,10 @@ export function SignaturePad({ onSave, onCancel, title = "Ký tên điện tử"
                             className={`
                                 flex-1 py-2 text-sm font-bold transition-colors
                                 ${tab === t
-                                    ? "bg-[#EDE9FE] text-[#1A1A2E]"
-                                    : "bg-white text-[#6B7280] hover:bg-[#F9FAFB]"
+                                    ? "bg-violet-50 text-gray-900"
+                                    : "bg-white text-gray-500 hover:bg-gray-50"
                                 }
-                                ${t === "draw" ? "border-r-2 border-[#1A1A2E]" : ""}
+                                ${t === "draw" ? "border-r border-gray-200" : ""}
                             `}
                         >
                             {t === "draw" ? "✏️ Vẽ tay" : "📁 Tải ảnh lên"}
@@ -173,10 +173,10 @@ export function SignaturePad({ onSave, onCancel, title = "Ký tên điện tử"
                 {/* ── Draw tab ── */}
                 {tab === "draw" && (
                     <>
-                        <p className="text-xs text-[#6B7280] mb-2">
+                        <p className="text-xs text-gray-500 mb-2">
                             Dùng chuột hoặc ngón tay để ký tên vào ô bên dưới
                         </p>
-                        <div className="relative border-2 border-[#1A1A2E] rounded bg-[#FDFCF8]">
+                        <div className="relative border border-gray-200 rounded bg-[#FDFCF8]">
                             <canvas
                                 ref={canvasRef}
                                 className="w-full h-[160px] cursor-crosshair rounded block"
@@ -205,13 +205,13 @@ export function SignaturePad({ onSave, onCancel, title = "Ký tên điện tử"
                 {/* ── Upload tab ── */}
                 {tab === "upload" && (
                     <>
-                        <p className="text-xs text-[#6B7280] mb-2">
+                        <p className="text-xs text-gray-500 mb-2">
                             Tải ảnh chữ ký của bạn lên (PNG nền trong tốt nhất)
                         </p>
 
                         {uploadedImage ? (
                             /* Preview */
-                            <div className="relative border-2 border-[#6938EF] rounded bg-[#EDE9FE] p-3 flex items-center justify-center h-[160px]">
+                            <div className="relative border-2 border-[#6938EF] rounded bg-violet-50 p-3 flex items-center justify-center h-[160px]">
                                 <img
                                     src={uploadedImage}
                                     alt="Chữ ký"
@@ -219,7 +219,7 @@ export function SignaturePad({ onSave, onCancel, title = "Ký tên điện tử"
                                 />
                                 <button
                                     onClick={() => { setUploadedImage(null); if (fileInputRef.current) fileInputRef.current.value = ""; }}
-                                    className="absolute top-2 right-2 w-7 h-7 rounded-full bg-[#EF4444] text-white text-sm font-bold border-2 border-[#1A1A2E] flex items-center justify-center hover:bg-[#DC2626] transition-colors"
+                                    className="absolute top-2 right-2 w-7 h-7 rounded-full bg-[#EF4444] text-white text-sm font-bold border border-gray-200 flex items-center justify-center hover:bg-[#DC2626] transition-colors"
                                     title="Xóa ảnh"
                                 >
                                     ✕
@@ -230,7 +230,7 @@ export function SignaturePad({ onSave, onCancel, title = "Ký tên điện tử"
                             <div
                                 className={`
                                     border-2 border-dashed rounded h-[160px] flex flex-col items-center justify-center gap-3 cursor-pointer transition-colors
-                                    ${dragging ? "border-[#6938EF] bg-[#EDE9FE]" : "border-[#D1D5DB] bg-[#F9FAFB] hover:border-[#6938EF] hover:bg-[#F5F3FF]"}
+                                    ${dragging ? "border-[#6938EF] bg-violet-50" : "border-gray-300 bg-gray-50 hover:border-violet-600 hover:bg-violet-50"}
                                 `}
                                 onClick={() => fileInputRef.current?.click()}
                                 onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
@@ -239,10 +239,10 @@ export function SignaturePad({ onSave, onCancel, title = "Ký tên điện tử"
                             >
                                 <span className="text-3xl">🖼️</span>
                                 <div className="text-center">
-                                    <p className="text-sm font-bold text-[#1A1A2E]">
+                                    <p className="text-sm font-bold text-gray-900">
                                         Kéo thả hoặc click để chọn ảnh
                                     </p>
-                                    <p className="text-xs text-[#9CA3AF] mt-1">PNG, JPG · Tối đa 5MB</p>
+                                    <p className="text-xs text-gray-400 mt-1">PNG, JPG · Tối đa 5MB</p>
                                 </div>
                             </div>
                         )}
@@ -256,9 +256,9 @@ export function SignaturePad({ onSave, onCancel, title = "Ký tên điện tử"
                         />
 
                         {/* Tip */}
-                        <div className="mt-3 flex items-start gap-2 bg-[#FFF8F0] border border-[#F0C391] rounded p-3">
+                        <div className="mt-3 flex items-start gap-2 bg-gray-50 border border-[#F0C391] rounded p-3">
                             <span className="text-sm flex-shrink-0">💡</span>
-                            <p className="text-xs text-[#92400E]">
+                            <p className="text-xs text-amber-800">
                                 <strong>Mẹo:</strong> Ký tay trên giấy trắng, chụp ảnh, dùng{" "}
                                 <strong>remove.bg</strong> để xóa nền → chữ ký trông chuyên nghiệp hơn.
                             </p>
@@ -275,7 +275,7 @@ export function SignaturePad({ onSave, onCancel, title = "Ký tên điện tử"
                         <button
                             onClick={clearCanvas}
                             className="nb-btn text-sm px-4"
-                            style={{ border: "2px solid #1A1A2E", boxShadow: "2px 2px 0 #1A1A2E" }}
+                            style={{ border: "1px solid #e5e7eb", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}
                         >
                             Xóa
                         </button>

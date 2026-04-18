@@ -301,31 +301,31 @@ export function OutfitOrderModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={onClose}>
       <div
-        className="bg-white rounded-[8px] border-[2px] border-[#1A1A2E] shadow-[3px_3px_0_#1A1A2E] w-full max-w-[640px] mx-4 overflow-hidden max-h-[90vh] flex flex-col"
+        className="bg-white rounded-[8px] border border-gray-200 shadow-soft-sm w-full max-w-[640px] mx-4 overflow-hidden max-h-[90vh] flex flex-col"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="flex items-center justify-between px-5 py-3.5 border-b-[2px] border-[#1A1A2E] bg-[#F1F5F9]">
-          <h3 className="font-black text-base text-[#1A1A2E] uppercase tracking-wide">Thêm vào giỏ hàng</h3>
+        <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-200 bg-slate-100">
+          <h3 className="font-black text-base text-gray-900 uppercase tracking-wide">Thêm vào giỏ hàng</h3>
           <button
             onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-[4px] border-[2px] border-[#1A1A2E] bg-white shadow-[2px_2px_0_#1A1A2E] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+            className="w-8 h-8 flex items-center justify-center rounded-[4px] border border-gray-200 bg-white shadow-sm hover:shadow-none hover:scale-[0.98] transition-all"
           >
-            <X className="w-4 h-4 text-[#1A1A2E]" />
+            <X className="w-4 h-4 text-gray-900" />
           </button>
         </div>
 
         <div className="p-0 flex flex-col overflow-hidden">
           {loadingOutfit || !outfit ? (
             <div className="flex items-center justify-center p-12 gap-3 text-[#97A3B6] text-sm font-bold">
-              <div className="w-5 h-5 border-3 border-[#E5E7EB] border-t-[#8B6BFF] rounded-full animate-spin" />
+              <div className="w-5 h-5 border-3 border-gray-200 border-t-[#8B6BFF] rounded-full animate-spin" />
               Đang tải dữ liệu...
             </div>
           ) : (
             <>
               <div className="overflow-y-auto overflow-x-hidden p-5 space-y-5 max-h-[calc(90vh-140px)]">
                 {/* 1. Product Summary Block */}
-                <div className="flex gap-4 p-3 bg-[#F8F9FA] rounded-[8px] border-[2px] border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E]">
-                  <div className="w-20 h-20 rounded-[6px] overflow-hidden bg-white border-[2px] border-[#1A1A2E] flex-shrink-0">
+                <div className="flex gap-4 p-3 bg-gray-50 rounded-[8px] border border-gray-200 shadow-sm">
+                  <div className="w-20 h-20 rounded-[6px] overflow-hidden bg-white border border-gray-200 flex-shrink-0">
                     {outfit.mainImageURL ? (
                       <img src={outfit.mainImageURL} alt={outfit.outfitName} className="w-full h-full object-cover" />
                     ) : (
@@ -336,10 +336,10 @@ export function OutfitOrderModal({
                   </div>
                   <div className="flex-1 min-w-0 py-0.5">
                     <div className="flex items-center gap-2 mb-0.5">
-                      <span className="px-1.5 py-0.5 bg-[#1A1A2E] text-white text-[8px] font-black rounded uppercase tracking-wider">Xác thực</span>
+                      <span className="px-1.5 py-0.5 bg-gray-900 text-white text-[8px] font-black rounded uppercase tracking-wider">Xác thực</span>
                       <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter truncate">{outfit.school.schoolName}</span>
                     </div>
-                    <h4 className="font-black text-base text-[#1A1A2E] line-clamp-1 mb-1 leading-tight uppercase">{outfit.outfitName}</h4>
+                    <h4 className="font-black text-base text-gray-900 line-clamp-1 mb-1 leading-tight uppercase">{outfit.outfitName}</h4>
                     <div className="flex items-baseline gap-2">
                       <span className="font-black text-xl text-[#8B6BFF]">
                         {(selectedCampaign?.campaignPrice ?? outfit.price).toLocaleString("vi-VN")}₫
@@ -369,24 +369,24 @@ export function OutfitOrderModal({
                       <div className="relative">
                         <button
                           onClick={() => setCampaignDropOpen((v) => !v)}
-                          className="w-full flex items-center justify-between bg-white border-[2px] border-[#1A1A2E] rounded-[6px] px-3.5 py-2.5 shadow-[2px_2px_0_#1A1A2E] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#1A1A2E] transition-all"
+                          className="w-full flex items-center justify-between bg-white border border-gray-200 rounded-[6px] px-3.5 py-2.5 shadow-sm hover:scale-[0.99] hover:shadow-sm transition-all"
                         >
                           <div className="text-left truncate">
-                            <span className="block font-black text-[12px] text-[#1A1A2E]">
+                            <span className="block font-black text-[12px] text-gray-900">
                               {selectedCampaign?.campaignName || "Chọn chiến dịch..."}
                             </span>
                           </div>
-                          <ChevronDown className={`w-3.5 h-3.5 text-[#1A1A2E] transition-transform flex-shrink-0 ${campaignDropOpen ? "rotate-180" : ""}`} />
+                          <ChevronDown className={`w-3.5 h-3.5 text-gray-900 transition-transform flex-shrink-0 ${campaignDropOpen ? "rotate-180" : ""}`} />
                         </button>
                         {campaignDropOpen && (
-                          <div className="absolute top-full left-0 right-0 mt-2 bg-white border-[2px] border-[#1A1A2E] rounded-[8px] shadow-[4px_4px_0_#1A1A2E] z-30 max-h-56 overflow-y-auto py-1">
+                          <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-[8px] shadow-soft-md z-30 max-h-56 overflow-y-auto py-1">
                             {outfit.campaignOptions.map((option) => (
                               <button
                                 key={option.campaignOutfitId}
                                 onClick={() => { setSelectedCampaignId(option.campaignId); setCampaignDropOpen(false); }}
-                                className={`w-full text-left px-4 py-3 hover:bg-[#F2ECFF] transition-colors border-b last:border-none border-gray-100 ${option.campaignId === selectedCampaignId ? "bg-[#EDE9FE]" : ""}`}
+                                className={`w-full text-left px-4 py-3 hover:bg-[#F2ECFF] transition-colors border-b last:border-none border-gray-100 ${option.campaignId === selectedCampaignId ? "bg-violet-50" : ""}`}
                               >
-                                <span className="font-black text-[13px] block text-[#1A1A2E]">{option.campaignName}</span>
+                                <span className="font-black text-[13px] block text-gray-900">{option.campaignName}</span>
                                 <span className="text-[10px] font-bold text-gray-400 mt-0.5 block italic truncate">
                                   Hạn chót: {new Date(option.endDate).toLocaleDateString("vi-VN")}
                                 </span>
@@ -416,24 +416,24 @@ export function OutfitOrderModal({
                       <div className="relative">
                         <button
                           onClick={() => setChildDropOpen((v) => !v)}
-                          className="w-full flex items-center justify-between bg-white border-[2px] border-[#1A1A2E] rounded-[6px] px-3.5 py-2.5 shadow-[2px_2px_0_#1A1A2E] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#1A1A2E] transition-all"
+                          className="w-full flex items-center justify-between bg-white border border-gray-200 rounded-[6px] px-3.5 py-2.5 shadow-sm hover:scale-[0.99] hover:shadow-sm transition-all"
                         >
                           <div className="text-left truncate">
-                            <span className="block font-black text-[12px] text-[#1A1A2E]">
+                            <span className="block font-black text-[12px] text-gray-900">
                               {selectedChild?.fullName || "Chọn học sinh..."}
                             </span>
                           </div>
-                          <ChevronDown className={`w-3.5 h-3.5 text-[#1A1A2E] transition-transform flex-shrink-0 ${childDropOpen ? "rotate-180" : ""}`} />
+                          <ChevronDown className={`w-3.5 h-3.5 text-gray-900 transition-transform flex-shrink-0 ${childDropOpen ? "rotate-180" : ""}`} />
                         </button>
                         {childDropOpen && (
-                          <div className="absolute top-full left-0 right-0 mt-2 bg-white border-[2px] border-[#1A1A2E] rounded-[8px] shadow-[4px_4px_0_#1A1A2E] z-30 max-h-56 overflow-y-auto py-1">
+                          <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-[8px] shadow-soft-md z-30 max-h-56 overflow-y-auto py-1">
                             {schoolChildren.map((child) => (
                               <button
                                 key={child.childId}
                                 onClick={() => { setSelectedChildId(child.childId); setChildDropOpen(false); }}
-                                className={`w-full text-left px-4 py-3 hover:bg-[#F2ECFF] transition-colors border-b last:border-none border-gray-100 ${selectedChildId === child.childId ? "bg-[#EDE9FE]" : ""}`}
+                                className={`w-full text-left px-4 py-3 hover:bg-[#F2ECFF] transition-colors border-b last:border-none border-gray-100 ${selectedChildId === child.childId ? "bg-violet-50" : ""}`}
                               >
-                                <span className="font-black text-[13px] block text-[#1A1A2E]">{child.fullName}</span>
+                                <span className="font-black text-[13px] block text-gray-900">{child.fullName}</span>
                                 <span className="text-[10px] font-bold text-gray-400 mt-0.5 block italic truncate">
                                   {child.grade} • {child.school.schoolName}
                                 </span>
@@ -448,34 +448,34 @@ export function OutfitOrderModal({
 
                 {/* 3. Smart Advisor (Bodygram) Section */}
                 {selectedChild && (
-                  <div className="bg-[#E0F2FE] border-[2px] border-[#1A1A2E] rounded-[10px] p-4 shadow-[3px_3px_0_#1A1A2E] relative z-20">
+                  <div className="bg-sky-100 border border-gray-200 rounded-[10px] p-4 shadow-soft-sm relative z-20">
                     <div className="flex items-center gap-2 mb-3">
-                      <div className="w-8 h-8 bg-white border-[2px] border-[#1A1A2E] rounded-md flex items-center justify-center">
+                      <div className="w-8 h-8 bg-white border border-gray-200 rounded-md flex items-center justify-center">
                         <span className="text-sm">🤖</span>
                       </div>
                       <div className="flex-1">
-                        <h5 className="font-black text-[12px] text-[#1A1A2E] leading-tight uppercase">Cố vấn kích cỡ AI</h5>
-                        <p className="text-[9px] font-extrabold text-[#0369A1] uppercase tracking-tighter">Từ Bodygram</p>
+                        <h5 className="font-black text-[12px] text-gray-900 leading-tight uppercase">Cố vấn kích cỡ AI</h5>
+                        <p className="text-[9px] font-extrabold text-sky-700 uppercase tracking-tighter">Từ Bodygram</p>
                       </div>
                     </div>
 
                     <div className="space-y-4">
                       {loadingScans || ((bodygramScans?.length ?? 0) > 0 && !selectedScanRecordId) ? (
-                        <div className="flex items-center gap-2 py-3 text-[#0369A1] text-xs font-bold italic">
+                        <div className="flex items-center gap-2 py-3 text-sky-700 text-xs font-bold italic">
                           <div className="w-3 h-3 border-2 border-white/50 border-t-[#0369A1] rounded-full animate-spin" />
                           Đang tìm kiếm dữ liệu đo lường...
                         </div>
                       ) : (bodygramScans?.length ?? 0) === 0 ? (
-                        <div className="bg-white/60 border-2 border-dashed border-[#1A1A2E]/30 rounded-lg p-4 flex flex-col gap-3">
+                        <div className="bg-white/60 border-2 border-dashed border-gray-200/30 rounded-lg p-4 flex flex-col gap-3">
                           <div className="flex gap-2 items-start">
                             <span className="text-amber-500 text-sm mt-0.5">⚠️</span>
-                            <p className="text-[11px] font-bold text-[#1A1A2E] leading-relaxed italic">
+                            <p className="text-[11px] font-bold text-gray-900 leading-relaxed italic">
                               Chưa có dữ liệu từ Bodygram. Hệ thống sẽ đề xuất dựa trên chiều cao ({selectedChild.heightCm}cm) và cân nặng ({selectedChild.weightKg}kg) đã đăng ký.
                             </p>
                           </div>
                           <Link
                             to={`/children/${selectedChild.childId}/scan`}
-                            className="flex items-center justify-center gap-2 w-full py-2 bg-white border-[2px] border-[#1A1A2E] rounded-md shadow-[2px_2px_0_#1A1A2E] text-[10px] font-black uppercase tracking-wider hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#1A1A2E] transition-all"
+                            className="flex items-center justify-center gap-2 w-full py-2 bg-white border border-gray-200 rounded-md shadow-sm text-[10px] font-black uppercase tracking-wider hover:scale-[0.99] hover:shadow-sm transition-all"
                           >
                             <span className="text-xs">📸</span>
                             Quét ngay với Bodygram
@@ -484,26 +484,26 @@ export function OutfitOrderModal({
                       ) : (
                         <div className="space-y-3">
                           <div className="relative">
-                            <label className="block text-[9px] font-black text-[#0369A1] uppercase mb-1.5 ml-1 italic tracking-widest">Chọn phiên bản đo lường</label>
+                            <label className="block text-[9px] font-black text-sky-700 uppercase mb-1.5 ml-1 italic tracking-widest">Chọn phiên bản đo lường</label>
                             <button
                               onClick={() => setScanDropOpen((v) => !v)}
-                              className="w-full flex items-center justify-between bg-white border-[2px] border-[#1A1A2E] rounded-[6px] px-3 py-2 shadow-[1px_1px_0_#1A1A2E] transition-all"
+                              className="w-full flex items-center justify-between bg-white border border-gray-200 rounded-[6px] px-3 py-2 shadow-sm transition-all"
                             >
-                              <span className="font-black text-[11px] text-[#1A1A2E]">
+                              <span className="font-black text-[11px] text-gray-900">
                                 {(() => {
                                   const scan = bodygramScans?.find((item) => item.scanRecordId === selectedScanRecordId);
                                   return scan ? `${new Date(scan.scannedAt).toLocaleDateString("vi-VN")} — ${scan.heightCm}cm / ${scan.weightKg}kg` : "Chọn ngày quét...";
                                 })()}
                               </span>
-                              <ChevronDown className={`w-3 h-3 text-[#1A1A2E] transition-transform ${scanDropOpen ? "rotate-180" : ""}`} />
+                              <ChevronDown className={`w-3 h-3 text-gray-900 transition-transform ${scanDropOpen ? "rotate-180" : ""}`} />
                             </button>
                             {scanDropOpen && (
-                              <div className="absolute top-full left-0 right-0 mt-1 bg-white border-[2px] border-[#1A1A2E] rounded-[8px] shadow-[4px_4px_0_#1A1A2E] z-50 max-h-40 overflow-y-auto py-1">
+                              <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-[8px] shadow-soft-md z-50 max-h-40 overflow-y-auto py-1">
                                 {(bodygramScans ?? []).map((scan) => (
                                   <button
                                     key={scan.scanRecordId}
                                     onClick={() => { setSelectedScanRecordId(scan.scanRecordId); setScanDropOpen(false); }}
-                                    className={`w-full text-left px-3 py-2 text-[12px] font-bold hover:bg-sky-50 transition-colors ${selectedScanRecordId === scan.scanRecordId ? "bg-sky-100 text-[#0369A1]" : "text-[#1A1A2E]"}`}
+                                    className={`w-full text-left px-3 py-2 text-[12px] font-bold hover:bg-sky-50 transition-colors ${selectedScanRecordId === scan.scanRecordId ? "bg-sky-100 text-sky-700" : "text-gray-900"}`}
                                   >
                                     Ngày {new Date(scan.scannedAt).toLocaleDateString("vi-VN")} • {scan.heightCm}cm
                                   </button>
@@ -511,14 +511,14 @@ export function OutfitOrderModal({
                               </div>
                             )}
                           </div>
-                          {loadingScanDetail && <p className="text-[10px] font-bold text-[#0369A1] animate-pulse">Đang nạp dữ liệu phân tích...</p>}
+                          {loadingScanDetail && <p className="text-[10px] font-bold text-sky-700 animate-pulse">Đang nạp dữ liệu phân tích...</p>}
                         </div>
                       )}
 
                       {recommendation.reason && (
-                        <div className="bg-[#B9E6FE] border border-[#1A1A2E] rounded-lg p-3 flex gap-2 items-start shadow-[inset_1px_1px_3px_rgba(0,0,0,0.1)]">
+                        <div className="bg-sky-200 border border-gray-200 rounded-lg p-3 flex gap-2 items-start shadow-[inset_1px_1px_3px_rgba(0,0,0,0.1)]">
                           <span className="text-sm mt-0.5">💡</span>
-                          <p className="text-[11px] font-bold text-[#1A1A2E] leading-relaxed">
+                          <p className="text-[11px] font-bold text-gray-900 leading-relaxed">
                             {recommendation.reason}
                           </p>
                         </div>
@@ -530,7 +530,7 @@ export function OutfitOrderModal({
                 {/* 4. Size Selection Block */}
                 <div className="space-y-4">
                   <div className="flex items-center justify-between ml-1">
-                    <label className="font-black text-[12px] text-[#1A1A2E] uppercase tracking-widest">Kích cỡ đề xuất</label>
+                    <label className="font-black text-[12px] text-gray-900 uppercase tracking-widest">Kích cỡ đề xuất</label>
                     <span className="text-[10px] font-bold text-gray-400 italic">
                       {recommendation.source === "bodygram" ? "Dựa trên Bodygram" : "Dựa trên cân nặng & chiều cao"}
                     </span>
@@ -548,14 +548,14 @@ export function OutfitOrderModal({
                             key={variant.productVariantId}
                             onClick={() => setSelectedVariantId(variant.productVariantId)}
                             className={`h-10 rounded-[6px] border-[2px] font-black text-[12px] transition-all relative flex items-center justify-center ${isSelected
-                              ? "border-[#1A1A2E] bg-[#8B6BFF] text-white shadow-[2px_2px_0_#1A1A2E]"
+                              ? "border-gray-200 bg-violet-500 text-white shadow-sm"
                               : isRecommended
                                 ? "border-[#8B6BFF] bg-white text-[#8B6BFF] shadow-[1.5px_1.5px_0_#8B6BFF]"
-                                : "border-gray-200 text-gray-400 hover:border-[#1A1A2E] hover:text-[#1A1A2E]"
+                                : "border-gray-200 text-gray-400 hover:border-gray-300 hover:text-gray-800"
                               }`}
                           >
                             {isRecommended && (
-                              <div className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 bg-amber-400 border-[1.5px] border-[#1A1A2E] rounded-full flex items-center justify-center">
+                              <div className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 bg-amber-400 border border-gray-200 rounded-full flex items-center justify-center">
                                 <span className="text-[7px]">⭐</span>
                               </div>
                             )}
@@ -568,9 +568,9 @@ export function OutfitOrderModal({
                 </div>
 
                 {/* 5. Quantity Adjustment */}
-                <div className="flex items-center justify-between p-3.5 bg-[#F1F5F9] rounded-[8px] border-[2px] border-[#1A1A2E]">
+                <div className="flex items-center justify-between p-3.5 bg-slate-100 rounded-[8px] border border-gray-200">
                   <div className="space-y-0.5">
-                    <span className="block font-black text-[11px] text-[#1A1A2E] uppercase">Số lượng</span>
+                    <span className="block font-black text-[11px] text-gray-900 uppercase">Số lượng</span>
                     {selectedCampaign?.maxQuantity != null && (
                       <span className="text-[9px] font-bold text-amber-600 uppercase italic">Tối đa {selectedCampaign.maxQuantity} bộ</span>
                     )}
@@ -578,27 +578,27 @@ export function OutfitOrderModal({
                   <div className="flex items-center gap-3">
                     <button
                       onClick={() => setOrderQty((v) => Math.max(1, v - 1))}
-                      className="w-9 h-9 flex items-center justify-center rounded-[6px] border-[2px] border-[#1A1A2E] bg-white shadow-[1.5px_1.5px_0_#1A1A2E] hover:bg-gray-50 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all"
+                      className="w-9 h-9 flex items-center justify-center rounded-[6px] border border-gray-200 bg-white shadow-sm hover:bg-gray-50 active:scale-[0.98] active:shadow-none transition-all"
                     >
-                      <Minus className="w-3.5 h-3.5 text-[#1A1A2E]" />
+                      <Minus className="w-3.5 h-3.5 text-gray-900" />
                     </button>
-                    <span className="font-black text-lg min-w-[25px] text-center text-[#1A1A2E]">{orderQty}</span>
+                    <span className="font-black text-lg min-w-[25px] text-center text-gray-900">{orderQty}</span>
                     <button
                       onClick={() => setOrderQty((v) => {
                         const next = v + 1;
                         const max = selectedCampaign?.maxQuantity;
                         return (max != null) ? Math.min(next, max) : next;
                       })}
-                      className="w-9 h-9 flex items-center justify-center rounded-[6px] border-[2px] border-[#1A1A2E] bg-white shadow-[1.5px_1.5px_0_#1A1A2E] hover:bg-gray-50 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all"
+                      className="w-9 h-9 flex items-center justify-center rounded-[6px] border border-gray-200 bg-white shadow-sm hover:bg-gray-50 active:scale-[0.98] active:shadow-none transition-all"
                     >
-                      <Plus className="w-3.5 h-3.5 text-[#1A1A2E]" />
+                      <Plus className="w-3.5 h-3.5 text-gray-900" />
                     </button>
                   </div>
                 </div>
               </div>
 
               {/* 6. Pinned Footer Actions */}
-              <div className="mt-auto p-5 bg-white border-t-[2px] border-[#1A1A2E] flex flex-col sm:flex-row items-center gap-4">
+              <div className="mt-auto p-5 bg-white border-t border-gray-200 flex flex-col sm:flex-row items-center gap-4">
                 <div className="flex-1 text-center sm:text-left">
                   <span className="block text-[9px] font-black text-gray-400 uppercase tracking-widest mb-0.5">Tổng cộng</span>
                   <span className="font-black text-2xl text-[#8B6BFF]">
@@ -606,13 +606,13 @@ export function OutfitOrderModal({
                   </span>
                 </div>
                 <div className="flex items-center gap-2.5 w-full sm:w-auto">
-                  <button onClick={onClose} className="px-5 py-2.5 rounded-[6px] border-[2px] border-[#1A1A2E] font-black text-[12px] text-gray-500 uppercase hover:bg-gray-50 transition-all">
+                  <button onClick={onClose} className="px-5 py-2.5 rounded-[6px] border border-gray-200 font-black text-[12px] text-gray-500 uppercase hover:bg-gray-50 transition-all">
                     Đóng
                   </button>
                   <button
                     onClick={handleAddToCart}
                     disabled={!canOrder}
-                    className="flex-1 sm:flex-none px-7 py-2.5 rounded-[6px] border-[2px] border-[#1A1A2E] bg-[#8B6BFF] text-white font-black text-[12px] uppercase shadow-[3px_3px_0_#1A1A2E] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#1A1A2E] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex-1 sm:flex-none px-7 py-2.5 rounded-[6px] border border-gray-200 bg-violet-500 text-white font-black text-[12px] uppercase shadow-soft-sm hover:scale-[0.99] hover:shadow-sm active:scale-[0.97] active:shadow-none transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <ShoppingCart className="w-3.5 h-3.5" />
                     Thêm vào giỏ

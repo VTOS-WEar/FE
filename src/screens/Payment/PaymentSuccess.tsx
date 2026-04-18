@@ -21,34 +21,34 @@ export const PaymentSuccess = (): JSX.Element => {
   }, []);
 
   return (
-    <GuestLayout bgColor="#FFF8F0">
+    <GuestLayout bgColor="#f9fafb">
       <div className="flex items-center justify-center py-16 md:py-24 px-4 nb-fade-in">
         <div className="max-w-md w-full text-center">
           {/* Success icon */}
           <div className="relative mb-8 flex items-center justify-center">
-            <div className={`w-20 h-20 bg-[#C8E44D] rounded-xl border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E] flex items-center justify-center transition-all duration-500 ${showIcon ? "scale-100 opacity-100" : "scale-0 opacity-0"}`}>
-              <CheckCircle className="w-10 h-10 text-[#1A1A2E]" />
+            <div className={`w-20 h-20 bg-emerald-400 rounded-xl border border-gray-200 shadow-soft-md flex items-center justify-center transition-all duration-500 ${showIcon ? "scale-100 opacity-100" : "scale-0 opacity-0"}`}>
+              <CheckCircle className="w-10 h-10 text-gray-900" />
             </div>
           </div>
 
           {/* Content card */}
           <div className="nb-card-static p-8 mb-6">
-            <h1 className="font-extrabold text-2xl text-[#1A1A2E] mb-2">
+            <h1 className="font-extrabold text-2xl text-gray-900 mb-2">
               Thanh toán thành công! 🎉
             </h1>
-            <p className="text-sm text-[#6B7280] mb-6 font-medium">
+            <p className="text-sm text-gray-500 mb-6 font-medium">
               Cảm ơn bạn đã đặt hàng. Đơn hàng của bạn đang được xử lý.
             </p>
 
             {/* Order info */}
             {orderCode && (
-              <div className="bg-[#EDE9FE] rounded-xl p-4 mb-6 border-2 border-[#1A1A2E]/10">
-                <p className="text-xs text-[#6B7280] mb-1 font-medium">Mã đơn hàng</p>
-                <p className="font-extrabold text-lg text-[#1A1A2E]">
+              <div className="bg-violet-50 rounded-xl p-4 mb-6 border border-gray-200/10">
+                <p className="text-xs text-gray-500 mb-1 font-medium">Mã đơn hàng</p>
+                <p className="font-extrabold text-lg text-gray-900">
                   #{orderCode}
                 </p>
                 {status && (
-                  <span className="inline-block mt-2 px-3 py-1 bg-[#C8E44D] text-[#1A1A2E] font-bold text-xs rounded-lg border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E]">
+                  <span className="inline-block mt-2 px-3 py-1 bg-emerald-400 text-gray-900 font-bold text-xs rounded-lg border border-gray-200 shadow-sm">
                     {status === "PAID" ? "Đã thanh toán" : status}
                   </span>
                 )}
@@ -63,14 +63,14 @@ export const PaymentSuccess = (): JSX.Element => {
                 { done: false, label: "Đang chờ nhà trường xác nhận" },
               ].map((step, i) => (
                 <div key={i} className="flex items-center gap-3">
-                  <div className={`w-7 h-7 rounded-lg border-2 border-[#1A1A2E] flex items-center justify-center flex-shrink-0 ${step.done ? "bg-[#C8E44D] shadow-[2px_2px_0_#1A1A2E]" : "bg-[#EDE9FE]"}`}>
+                  <div className={`w-7 h-7 rounded-lg border border-gray-200 flex items-center justify-center flex-shrink-0 ${step.done ? "bg-emerald-400 shadow-sm" : "bg-violet-50"}`}>
                     {step.done ? (
-                      <span className="text-[#1A1A2E] text-xs font-bold">✓</span>
+                      <span className="text-gray-900 text-xs font-bold">✓</span>
                     ) : (
-                      <Loader2 className="w-3 h-3 text-[#1A1A2E] animate-spin" />
+                      <Loader2 className="w-3 h-3 text-gray-900 animate-spin" />
                     )}
                   </div>
-                  <span className="text-sm text-[#4C5769] font-medium">{step.label}</span>
+                  <span className="text-sm text-gray-600 font-medium">{step.label}</span>
                 </div>
               ))}
             </div>
@@ -94,7 +94,7 @@ export const PaymentSuccess = (): JSX.Element => {
             </div>
           </div>
 
-          <p className="text-xs text-[#9CA3AF] font-medium">
+          <p className="text-xs text-gray-400 font-medium">
             Bạn sẽ nhận được email xác nhận đơn hàng trong vài phút.
           </p>
         </div>

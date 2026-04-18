@@ -19,7 +19,6 @@ function getAccessToken(): string {
 
 /* ── Design tokens (matching html.ts reference) ── */
 const T = {
-    ink: "#19182B",
     bg: "#F6F1E8",
     surface: "#FFFFFF",
     surfaceSoft: "#FFFDF9",
@@ -53,11 +52,11 @@ const statusTone: Record<string, { bg: string; text: string }> = {
 /* ── Micro-components ── */
 
 function Badge({ children, tone }: { children: React.ReactNode; tone?: { bg: string; text: string } }) {
-    const t = tone || { bg: T.surface, text: T.ink };
+    const t = tone || { bg: T.surface, text: "#374151" };
     return (
         <span
-            className="inline-flex items-center rounded-full border-[2px] px-3 py-1 text-[12px] font-black uppercase tracking-wide"
-            style={{ borderColor: T.ink, background: t.bg, color: t.text, boxShadow: `2px 2px 0 ${T.ink}` }}
+            className="inline-flex items-center rounded-full border border-gray-200 px-3 py-1 text-[12px] font-black uppercase tracking-wide shadow-soft-sm"
+            style={{ background: t.bg, color: t.text }}
         >
             {children}
         </span>
@@ -69,12 +68,12 @@ function SortButton({ children, active, direction, onClick }: {
 }) {
     return (
         <button onClick={onClick}
-            className={`inline-flex items-center gap-1 text-left text-[12px] font-black uppercase tracking-[0.08em] transition-colors hover:text-[#6938EF] ${active ? "text-[#19182B]" : "text-[#4E4A5B]"}`}
+            className={`inline-flex items-center gap-1 text-left text-[12px] font-black uppercase tracking-[0.08em] transition-colors hover:text-violet-600 ${active ? "text-gray-900" : "text-[#4E4A5B]"}`}
         >
             <span>{children}</span>
             <span className="inline-flex flex-col leading-none text-[10px] opacity-60">
-                <span className={active && direction === "asc" ? "text-[#6938EF] opacity-100" : ""}>▲</span>
-                <span className={active && direction === "desc" ? "text-[#6938EF] opacity-100" : ""}>▼</span>
+                <span className={active && direction === "asc" ? "text-violet-600 opacity-100" : ""}>▲</span>
+                <span className={active && direction === "desc" ? "text-violet-600 opacity-100" : ""}>▼</span>
             </span>
         </button>
     );
@@ -278,14 +277,14 @@ export const AdminUsers = (): JSX.Element => {
                         <Breadcrumb><BreadcrumbList>
                             <BreadcrumbItem><BreadcrumbLink href="/admin/dashboard" className="font-semibold text-[#4c5769] text-base">Trang chủ</BreadcrumbLink></BreadcrumbItem>
                             <BreadcrumbSeparator className="text-[#cbcad7]">/</BreadcrumbSeparator>
-                            <BreadcrumbItem><BreadcrumbPage className="font-bold text-[#1A1A2E] text-base">Quản lý người dùng</BreadcrumbPage></BreadcrumbItem>
+                            <BreadcrumbItem><BreadcrumbPage className="font-bold text-gray-900 text-base">Quản lý người dùng</BreadcrumbPage></BreadcrumbItem>
                         </BreadcrumbList></Breadcrumb>
                     </TopNavBar>
 
                     <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-6 nb-fade-in">
                         {/* ── Page Header ── */}
                         <div>
-                            <h1 className="text-[40px] font-black leading-none md:text-[48px]" style={{ color: T.ink }}>
+                            <h1 className="text-[40px] font-black leading-none md:text-[48px] text-gray-900">
                                 👥 Quản lý người dùng
                             </h1>
                             <p className="mt-3 max-w-3xl text-[17px] font-semibold leading-8" style={{ color: T.muted }}>
@@ -294,7 +293,7 @@ export const AdminUsers = (): JSX.Element => {
                         </div>
 
                         {/* ── Toolbar ── */}
-                        <div className="rounded-[18px] border-[3px] p-4" style={{ borderColor: T.ink, background: T.surface, boxShadow: `6px 6px 0 ${T.ink}` }}>
+                        <div className="rounded-2xl border border-gray-200 p-4 shadow-soft-lg">
                             <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
                                 {/* Left: Search + Filters */}
                                 <div className="flex flex-1 flex-col gap-3 xl:flex-row xl:items-center">
@@ -305,16 +304,16 @@ export const AdminUsers = (): JSX.Element => {
                                             value={search}
                                             onChange={e => { setSearch(e.target.value); setPage(1); }}
                                             placeholder="Tìm theo tên, email..."
-                                            className="w-full rounded-[12px] border-[2px] py-3 pl-12 pr-4 text-[15px] font-semibold outline-none transition-all placeholder:text-[#9A95A8] focus:translate-x-[1px] focus:translate-y-[1px] focus:shadow-[2px_2px_0_#19182B]"
-                                            style={{ borderColor: T.ink, color: T.ink, background: T.surface, boxShadow: `3px 3px 0 ${T.ink}` }}
+                                            className="w-full rounded-xl border border-gray-200 py-3 pl-12 pr-4 text-[15px] font-semibold outline-none transition-all placeholder:text-gray-400 focus:border-purple-400 focus:ring-2 focus:ring-purple-200/50 focus:outline-none"
+                                            style={{ background: T.surface }}
                                         />
                                     </div>
                                     {/* Role filter */}
                                     <select
                                         value={filterRole}
                                         onChange={e => { setFilterRole(e.target.value); setPage(1); }}
-                                        className="min-w-[180px] rounded-[12px] border-[2px] px-4 py-3 text-[15px] font-semibold outline-none transition-all focus:translate-x-[1px] focus:translate-y-[1px] focus:shadow-[2px_2px_0_#19182B]"
-                                        style={{ borderColor: T.ink, color: T.ink, background: T.surface, boxShadow: `3px 3px 0 ${T.ink}` }}
+                                        className="min-w-[180px] rounded-xl border border-gray-200 px-4 py-3 text-[15px] font-semibold outline-none transition-all placeholder:text-gray-400 focus:border-purple-400 focus:ring-2 focus:ring-purple-200/50 focus:outline-none"
+                                        style={{ background: T.surface }}
                                     >
                                         <option value="all">Tất cả vai trò</option>
                                         <option value="Admin">Quản trị viên</option>
@@ -326,8 +325,8 @@ export const AdminUsers = (): JSX.Element => {
                                     <select
                                         value={filterStatus}
                                         onChange={e => { setFilterStatus(e.target.value); setPage(1); }}
-                                        className="min-w-[180px] rounded-[12px] border-[2px] px-4 py-3 text-[15px] font-semibold outline-none transition-all focus:translate-x-[1px] focus:translate-y-[1px] focus:shadow-[2px_2px_0_#19182B]"
-                                        style={{ borderColor: T.ink, color: T.ink, background: T.surface, boxShadow: `3px 3px 0 ${T.ink}` }}
+                                        className="min-w-[180px] rounded-xl border border-gray-200 px-4 py-3 text-[15px] font-semibold outline-none transition-all placeholder:text-gray-400 focus:border-purple-400 focus:ring-2 focus:ring-purple-200/50 focus:outline-none"
+                                        style={{ background: T.surface }}
                                     >
                                         <option value="all">Tất cả trạng thái</option>
                                         <option value="Active">Hoạt động</option>
@@ -336,14 +335,14 @@ export const AdminUsers = (): JSX.Element => {
                                 </div>
                                 {/* Right: count + export */}
                                 <div className="flex items-center gap-3">
-                                    <Badge tone={{ bg: T.surface, text: T.ink }}>
+                                    <Badge tone={{ bg: T.surface, text: "#374151" }}>
                                         Tổng: {filtered.length}
                                     </Badge>
                                     <button
                                         onClick={handleExportCSV}
                                         disabled={filtered.length === 0}
-                                        className="rounded-[12px] border-[3px] px-5 py-3 text-[14px] font-extrabold transition-all disabled:opacity-40 hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
-                                        style={{ borderColor: T.ink, background: T.surface, color: T.ink, boxShadow: `4px 4px 0 ${T.ink}` }}
+                                        className="rounded-xl border border-gray-200 px-5 py-3 text-[14px] font-extrabold transition-all disabled:opacity-40 hover:scale-[0.99] hover:shadow-soft-sm active:scale-[0.98] active:shadow-none"
+                                        style={{ background: T.surface, color: "#374151" }}
                                     >
                                         📥 Xuất Excel
                                     </button>
@@ -352,11 +351,11 @@ export const AdminUsers = (): JSX.Element => {
                         </div>
 
                         {/* ── Table ── */}
-                        <div className="overflow-hidden rounded-[18px] border-[3px]" style={{ borderColor: T.ink, background: T.surface, boxShadow: `6px 6px 0 ${T.ink}` }}>
+                        <div className="overflow-hidden rounded-2xl border border-gray-200 shadow-soft-lg">
                             {/* Table Header */}
                             <div
-                                className="sticky top-0 z-10 hidden lg:grid items-center border-b-[3px] px-5 py-4"
-                                style={{ gridTemplateColumns: gridCols, borderColor: T.ink, background: T.primarySoft }}
+                                className="sticky top-0 z-10 hidden lg:grid items-center border-b border-gray-200 px-5 py-4"
+                                style={{ gridTemplateColumns: gridCols, background: T.primarySoft }}
                             >
                                 {columns.map(col => (
                                     <SortButton key={col.key} active={sortKey === col.key} direction={sortDir} onClick={() => handleSort(col.key)}>
@@ -397,23 +396,23 @@ export const AdminUsers = (): JSX.Element => {
                             {/* Error */}
                             {!loading && error && (
                                 <div className="flex min-h-[240px] flex-col items-center justify-center px-6 py-12 text-center">
-                                    <div className="flex h-16 w-16 items-center justify-center rounded-[16px] border-[3px] text-[28px]"
-                                        style={{ borderColor: T.ink, background: T.dangerSoft, boxShadow: `4px 4px 0 ${T.ink}` }}>⚠️</div>
+                                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-gray-200 text-[28px] shadow-soft-md"
+                                        style={{ background: T.dangerSoft }}>⚠️</div>
                                     <div className="mt-5 text-[28px] font-black">Không tải được dữ liệu</div>
                                     <p className="mt-3 max-w-lg text-[15px] font-semibold leading-7" style={{ color: T.muted }}>
                                         Có lỗi khi lấy danh sách người dùng. Kiểm tra kết nối hoặc thử lại.
                                     </p>
                                     <button onClick={fetchUsers}
-                                        className="mt-5 rounded-[12px] border-[3px] px-5 py-3 text-[15px] font-extrabold text-white transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
-                                        style={{ borderColor: T.ink, background: T.primary, boxShadow: `4px 4px 0 ${T.ink}` }}>Thử lại</button>
+                                        className="mt-5 rounded-xl border border-gray-200 px-5 py-3 text-[15px] font-extrabold text-white transition-all hover:scale-[0.99] hover:shadow-soft-sm active:scale-[0.98] active:shadow-none"
+                                        style={{ background: T.primary }}>Thử lại</button>
                                 </div>
                             )}
 
                             {/* Empty */}
                             {!loading && !error && filtered.length === 0 && (
                                 <div className="flex min-h-[240px] flex-col items-center justify-center px-6 py-12 text-center">
-                                    <div className="flex h-16 w-16 items-center justify-center rounded-[16px] border-[3px] text-[28px]"
-                                        style={{ borderColor: T.ink, background: T.warningSoft, boxShadow: `4px 4px 0 ${T.ink}` }}>📭</div>
+                                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-gray-200 text-[28px] shadow-soft-md"
+                                        style={{ background: T.warningSoft }}>📭</div>
                                     <div className="mt-5 text-[28px] font-black">Không tìm thấy người dùng</div>
                                     <p className="mt-3 max-w-lg text-[15px] font-semibold leading-7" style={{ color: T.muted }}>
                                         Thử thay đổi từ khóa tìm kiếm hoặc bộ lọc để xem lại toàn bộ danh sách.
@@ -429,7 +428,7 @@ export const AdminUsers = (): JSX.Element => {
                                             className="hidden lg:grid items-center gap-4 border-b px-5 py-4 transition-colors hover:bg-[#F7F2FF] nb-fade-in"
                                             style={{ gridTemplateColumns: gridCols, borderColor: "#D9D4E6", animationDelay: `${idx * 40}ms` }}>
                                             <div className="min-w-0">
-                                                <div className="text-[16px] font-black" style={{ color: T.ink }}>{u.fullName}</div>
+                                                <div className="text-[16px] font-black text-gray-900">{u.fullName}</div>
                                             </div>
                                             <div className="truncate text-[15px] font-semibold" style={{ color: "#3D384A" }}>{u.email}</div>
                                             <div><Badge tone={roleTone[u.role]}>{roleLabel[u.role] || u.role}</Badge></div>
@@ -439,8 +438,8 @@ export const AdminUsers = (): JSX.Element => {
                                             </div>
                                             <div className="flex items-center justify-end">
                                                 <button onClick={() => handleViewDetail(u.id)}
-                                                    className="rounded-[12px] border-[3px] px-4 py-2 text-[13px] font-extrabold transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
-                                                    style={{ borderColor: T.ink, background: T.surface, color: T.ink, boxShadow: `4px 4px 0 ${T.ink}` }}>
+                                                    className="rounded-xl border border-gray-200 px-4 py-2 text-[13px] font-extrabold transition-all hover:scale-[0.99] hover:shadow-soft-sm active:scale-[0.98] active:shadow-none"
+                                                    style={{ background: T.surface, color: "#374151" }}>
                                                     👁 Chi tiết
                                                 </button>
                                             </div>
@@ -453,7 +452,7 @@ export const AdminUsers = (): JSX.Element => {
                                             style={{ borderColor: "#D9D4E6", animationDelay: `${idx * 40}ms` }}>
                                             <div className="flex items-start justify-between gap-3">
                                                 <div>
-                                                    <div className="text-[16px] font-black" style={{ color: T.ink }}>{u.fullName}</div>
+                                                    <div className="text-[16px] font-black text-gray-900">{u.fullName}</div>
                                                     <div className="text-[14px] font-semibold mt-1" style={{ color: "#3D384A" }}>{u.email}</div>
                                                 </div>
                                                 <div className="flex flex-col gap-1.5 items-end">
@@ -466,8 +465,8 @@ export const AdminUsers = (): JSX.Element => {
                                                     {new Date(u.createdAt).toLocaleDateString("vi")}
                                                 </span>
                                                 <button onClick={() => handleViewDetail(u.id)}
-                                                    className="rounded-[12px] border-[3px] px-4 py-2 text-[13px] font-extrabold transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
-                                                    style={{ borderColor: T.ink, background: T.surface, color: T.ink, boxShadow: `4px 4px 0 ${T.ink}` }}>
+                                                    className="rounded-xl border border-gray-200 px-4 py-2 text-[13px] font-extrabold transition-all hover:scale-[0.99] hover:shadow-soft-sm active:scale-[0.98] active:shadow-none"
+                                                    style={{ background: T.surface, color: "#374151" }}>
                                                     👁 Chi tiết
                                                 </button>
                                             </div>
@@ -475,19 +474,19 @@ export const AdminUsers = (): JSX.Element => {
                                     ))}
 
                                     {/* Pagination */}
-                                    <div className="flex flex-col gap-3 border-t-[3px] px-5 py-4 md:flex-row md:items-center md:justify-between"
-                                        style={{ borderColor: T.ink, background: T.surfaceSoft }}>
+                                    <div className="flex flex-col gap-3 border-t border-gray-200 px-5 py-4 md:flex-row md:items-center md:justify-between"
+                                        style={{ background: T.surfaceSoft }}>
                                         <div className="text-[14px] font-bold" style={{ color: T.muted }}>
                                             Hiển thị {Math.min((page - 1) * pageSize + 1, filtered.length)}–{Math.min(page * pageSize, filtered.length)} / {filtered.length} người dùng · Trang {page}/{totalPages}
                                         </div>
                                         {totalPages > 1 && (
                                             <div className="flex gap-3">
                                                 <button disabled={page <= 1} onClick={() => setPage(p => p - 1)}
-                                                    className="rounded-[12px] border-[3px] px-4 py-2 text-[13px] font-extrabold transition-all disabled:opacity-40 hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
-                                                    style={{ borderColor: T.ink, background: T.surface, color: T.ink, boxShadow: `4px 4px 0 ${T.ink}` }}>← Trước</button>
+                                                    className="rounded-xl border border-gray-200 px-4 py-2 text-[13px] font-extrabold transition-all disabled:opacity-40 hover:scale-[0.99] hover:shadow-soft-sm active:scale-[0.98] active:shadow-none"
+                                                    style={{ background: T.surface, color: "#374151" }}>← Trước</button>
                                                 <button disabled={page >= totalPages} onClick={() => setPage(p => p + 1)}
-                                                    className="rounded-[12px] border-[3px] px-4 py-2 text-[13px] font-extrabold text-white transition-all disabled:opacity-40 hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
-                                                    style={{ borderColor: T.ink, background: T.primary, boxShadow: `4px 4px 0 ${T.ink}` }}>Sau →</button>
+                                                    className="rounded-xl border border-gray-200 px-4 py-2 text-[13px] font-extrabold text-white transition-all disabled:opacity-40 hover:scale-[0.99] hover:shadow-soft-sm active:scale-[0.98] active:shadow-none"
+                                                    style={{ background: T.primary }}>Sau →</button>
                                             </div>
                                         )}
                                     </div>
@@ -503,20 +502,20 @@ export const AdminUsers = (): JSX.Element => {
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 nb-backdrop-enter"
                     style={{ background: "rgba(25, 24, 43, 0.55)" }}
                     onClick={() => !detailLoading && setSelected(null)}>
-                    <div className="w-full max-w-lg rounded-[18px] border-[3px] p-6 space-y-5 nb-modal-enter"
-                        style={{ borderColor: T.ink, background: T.surface, boxShadow: `6px 6px 0 ${T.ink}` }}
+                    <div className="w-full max-w-lg rounded-2xl border border-gray-200 p-6 space-y-5 nb-modal-enter shadow-soft-lg"
+                        style={{ background: T.surface }}
                         onClick={e => e.stopPropagation()}>
                         {detailLoading ? (
                             <div className="flex items-center justify-center py-12">
-                                <div className="animate-spin w-10 h-10 border-[3px] rounded-full" style={{ borderColor: T.primarySoft, borderTopColor: T.primary }} />
+                                <div className="animate-spin w-10 h-10 border-2 rounded-full" style={{ borderColor: T.primarySoft, borderTopColor: T.primary }} />
                             </div>
                         ) : selected && (
                             <>
                                 <div className="flex justify-between items-center">
-                                    <h2 className="text-[24px] font-black" style={{ color: T.ink }}>Chi tiết người dùng</h2>
+                                    <h2 className="text-[24px] font-black text-gray-900">Chi tiết người dùng</h2>
                                     <button onClick={() => setSelected(null)}
-                                        className="flex h-10 w-10 items-center justify-center rounded-[10px] border-[2px] text-[16px] font-black transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none"
-                                        style={{ borderColor: T.ink, background: T.surface, boxShadow: `2px 2px 0 ${T.ink}` }}>✕</button>
+                                        className="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 text-[16px] font-black transition-all hover:scale-[0.99] hover:shadow-none"
+                                        style={{ background: T.surface }}>✕</button>
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     {[
@@ -535,21 +534,21 @@ export const AdminUsers = (): JSX.Element => {
                                             {item.badge ? (
                                                 <Badge tone={item.badgeTone}>{item.badgeText}</Badge>
                                             ) : (
-                                                <p className="text-[15px] font-semibold" style={{ color: T.ink }}>{item.value}</p>
+                                                <p className="text-[15px] font-semibold text-gray-900">{item.value}</p>
                                             )}
                                         </div>
                                     ))}
                                 </div>
                                 {selected.role !== "Admin" && (
                                     <button onClick={handleToggleBan}
-                                        className="w-full rounded-[12px] border-[3px] py-3 text-[15px] font-extrabold text-white transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
-                                        style={{ borderColor: T.ink, background: isBanned ? "#10B981" : "#EF4444", boxShadow: `4px 4px 0 ${T.ink}` }}>
+                                        className="w-full rounded-xl border border-gray-200 py-3 text-[15px] font-extrabold text-white transition-all hover:scale-[0.99] hover:shadow-soft-sm active:scale-[0.98] active:shadow-none"
+                                        style={{ background: isBanned ? "#10B981" : "#EF4444" }}>
                                         {isBanned ? "🔓 Mở khoá tài khoản" : "🔒 Khoá tài khoản"}
                                     </button>
                                 )}
                                 <button onClick={() => setSelected(null)}
-                                    className="w-full rounded-[12px] border-[3px] py-3 text-[15px] font-extrabold transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
-                                    style={{ borderColor: T.ink, background: T.surface, color: T.ink, boxShadow: `4px 4px 0 ${T.ink}` }}>Đóng</button>
+                                    className="w-full rounded-xl border border-gray-200 py-3 text-[15px] font-extrabold transition-all hover:scale-[0.99] hover:shadow-soft-sm active:scale-[0.98] active:shadow-none"
+                                    style={{ background: T.surface, color: "#374151" }}>Đóng</button>
                             </>
                         )}
                     </div>
@@ -559,12 +558,10 @@ export const AdminUsers = (): JSX.Element => {
             {/* ── Toast notification ── */}
             {toast && (
                 <div
-                    className="fixed top-6 right-6 z-[60] flex items-center gap-3 rounded-[14px] border-[3px] px-5 py-4 text-[15px] font-extrabold nb-fade-in"
+                    className="fixed top-6 right-6 z-[60] flex items-center gap-3 rounded-xl border border-gray-200 px-5 py-4 text-[15px] font-extrabold nb-fade-in shadow-soft-md"
                     style={{
-                        borderColor: T.ink,
                         background: toast.type === "success" ? T.successSoft : toast.type === "warning" ? T.dangerSoft : T.dangerSoft,
                         color: toast.type === "success" ? "#187A4C" : "#B2452D",
-                        boxShadow: `4px 4px 0 ${T.ink}`,
                         minWidth: "260px",
                         maxWidth: "400px",
                     }}

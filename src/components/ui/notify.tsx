@@ -79,7 +79,7 @@ export function Notify({
             <div className="relative overflow-hidden rounded-xl">
                 <Alert
                     className={`px-6 py-4 text-base rounded-xl
-            bg-white border-2 border-[#1A1A2E] shadow-[6px_6px_0_#1A1A2E]
+            bg-white border border-gray-200 shadow-soft-lg
             [&>svg]:top-5 [&>svg]:left-5 ${alertColorClass}`}
                 >
                     <Icon className="h-5 w-5" />
@@ -95,7 +95,7 @@ export function Notify({
                 <button
                     type="button"
                     onClick={onClose}
-                    className="absolute right-3 top-3 h-8 w-8 rounded-lg border-2 border-[#1A1A2E] bg-white shadow-[2px_2px_0_#1A1A2E] active:shadow-none active:translate-x-[2px] active:translate-y-[2px] grid place-items-center transition-all"
+                    className="absolute right-3 top-3 h-8 w-8 rounded-lg border border-gray-200 bg-white shadow-sm active:shadow-none active:scale-[0.98] grid place-items-center transition-all"
                     aria-label="Close"
                 >
                     ✕

@@ -25,7 +25,7 @@ export const Homepage = (): JSX.Element => {
   useScrollReveal();
 
   return (
-    <GuestLayout bgColor="#FFF8F0">
+    <GuestLayout bgColor="#f9fafb">
       <div className="nb-fade-in">
         {/* LOUD: Hero */}
         <HeroSection />

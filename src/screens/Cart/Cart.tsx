@@ -133,7 +133,7 @@ export const Cart = (): JSX.Element => {
   /* ── Empty state (skip if mid-checkout to avoid flash) ── */
   if (allItems.length === 0 && !checkingOut) {
     return (
-      <GuestLayout bgColor="#FFF8F0" mainClassName="flex-1">
+      <GuestLayout bgColor="#f9fafb" mainClassName="flex-1">
         <div className="max-w-[1200px] mx-auto px-4 lg:px-8 py-16 text-center">
           <ShoppingCart className="w-16 h-16 text-gray-300 mx-auto mb-4" />
           <h1 className="font-montserrat font-extrabold text-2xl text-black mb-2">
@@ -185,7 +185,7 @@ export const Cart = (): JSX.Element => {
             {groups.map((group) => (
               <div
                 key={`${group.schoolId}-${group.campaignId}`}
-                className="bg-white rounded-2xl border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E] overflow-hidden"
+                className="bg-white rounded-2xl border border-gray-200 shadow-soft-md overflow-hidden"
               >
                 {/* School header */}
                 <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
@@ -301,7 +301,7 @@ export const Cart = (): JSX.Element => {
           {/* ── Right: Order summary ── */}
           <div className="lg:w-[360px] flex-shrink-0 space-y-5">
             {/* Order info */}
-            <div className="bg-white rounded-2xl border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E] p-6">
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-soft-md p-6">
               <h3 className="font-montserrat font-bold text-base text-black mb-5">
                 Thông tin đơn hàng
               </h3>
@@ -421,7 +421,7 @@ export const Cart = (): JSX.Element => {
             </div>
 
             {/* Delivery method */}
-            <div className="bg-white rounded-2xl border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E] p-6">
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-soft-md p-6">
               <h3 className="font-montserrat font-bold text-base text-black mb-4">
                 Phương thức nhận hàng
               </h3>
@@ -430,8 +430,8 @@ export const Cart = (): JSX.Element => {
                 <label
                   className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${
                     deliveryMethod === "home"
-                      ? "border-[#1A1A2E] bg-[#EDE9FE]"
-                      : "border-[#1A1A2E]/20 hover:border-[#1A1A2E]/40"
+                      ? "border-gray-200 bg-violet-50"
+                      : "border-gray-200/20 hover:border-gray-300/40"
                   }`}
                 >
                   <input
@@ -456,8 +456,8 @@ export const Cart = (): JSX.Element => {
                 <label
                   className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${
                     deliveryMethod === "school"
-                      ? "border-[#1A1A2E] bg-[#EDE9FE]"
-                      : "border-[#1A1A2E]/20 hover:border-[#1A1A2E]/40"
+                      ? "border-gray-200 bg-violet-50"
+                      : "border-gray-200/20 hover:border-gray-300/40"
                   }`}
                 >
                   <input

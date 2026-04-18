@@ -19,7 +19,7 @@ export const Navbar = (): JSX.Element => {
   const navigate = useNavigate();
 
   return (
-    <header className="flex w-full items-center justify-between gap-4 px-4 lg:px-8 py-4 bg-[#FFF8F0] border-b-2 border-[#1A1A2E]">
+    <header className="flex w-full items-center justify-between gap-4 px-4 lg:px-8 py-4 bg-gray-50 border-b border-gray-200">
       {/* Logo */}
       <button type="button" onClick={() => navigate("/")} className="flex-shrink-0">
         <img
@@ -37,22 +37,22 @@ export const Navbar = (): JSX.Element => {
               <DropdownMenuTrigger asChild>
                 <button
                   type="button"
-                  className="flex items-center gap-1 font-bold text-[#1A1A2E] text-sm hover:text-[#1A1A2E]/70 transition-colors outline-none"
+                  className="flex items-center gap-1 font-bold text-gray-900 text-sm hover:text-gray-800/70 transition-colors outline-none"
                 >
                   {item.label}
                   <ChevronDownIcon className="w-4 h-4" />
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="rounded-xl border-2 border-[#1A1A2E] bg-white shadow-[4px_4px_0_#1A1A2E]">
-                <DropdownMenuItem className="font-medium cursor-pointer data-[highlighted]:bg-[#FFF8F0]">Sản phẩm 1</DropdownMenuItem>
-                <DropdownMenuItem className="font-medium cursor-pointer data-[highlighted]:bg-[#FFF8F0]">Sản phẩm 2</DropdownMenuItem>
-                <DropdownMenuItem className="font-medium cursor-pointer data-[highlighted]:bg-[#FFF8F0]">Sản phẩm 3</DropdownMenuItem>
+              <DropdownMenuContent className="rounded-xl border border-gray-200 bg-white shadow-soft-md">
+                <DropdownMenuItem className="font-medium cursor-pointer data-[highlighted]:bg-gray-50">Sản phẩm 1</DropdownMenuItem>
+                <DropdownMenuItem className="font-medium cursor-pointer data-[highlighted]:bg-gray-50">Sản phẩm 2</DropdownMenuItem>
+                <DropdownMenuItem className="font-medium cursor-pointer data-[highlighted]:bg-gray-50">Sản phẩm 3</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
             <button
               key={index}
-              className="font-bold text-[#1A1A2E] text-sm hover:text-[#1A1A2E]/70 transition-colors whitespace-nowrap"
+              className="font-bold text-gray-900 text-sm hover:text-gray-800/70 transition-colors whitespace-nowrap"
             >
               {item.label}
             </button>
@@ -66,11 +66,11 @@ export const Navbar = (): JSX.Element => {
           <Input
             type="text"
             placeholder="Tìm kiếm..."
-            className="w-full h-10 pl-4 pr-12 rounded-xl border-2 border-[#1A1A2E] bg-white text-sm font-medium placeholder:text-[#9CA3AF] focus-visible:ring-0 focus-visible:border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E]"
+            className="w-full h-10 pl-4 pr-12 rounded-xl border border-gray-200 bg-white text-sm font-medium placeholder:text-gray-400 focus-visible:ring-0 focus-visible:border-gray-200 shadow-sm"
           />
           <button
             type="button"
-            className="absolute right-0 top-0 h-10 w-10 rounded-r-xl border-l-2 border-[#1A1A2E] bg-[#1A1A2E] text-white flex items-center justify-center hover:bg-[#1A1A2E]/90 transition-colors"
+            className="absolute right-0 top-0 h-10 w-10 rounded-r-xl border-l border-gray-200 bg-gray-900 text-white flex items-center justify-center hover:bg-gray-900/90 transition-colors"
           >
             <SearchIcon className="w-5 h-5" />
           </button>
@@ -81,7 +81,7 @@ export const Navbar = (): JSX.Element => {
       <button
         type="button"
         onClick={() => navigate("/signin")}
-        className="flex items-center gap-2 h-10 px-4 lg:px-5 rounded-xl border-2 border-[#1A1A2E] bg-white text-[#1A1A2E] font-bold text-sm shadow-[3px_3px_0_#1A1A2E] transition-all duration-150 hover:-translate-y-[1px] hover:shadow-[4px_4px_0_#1A1A2E] active:shadow-none active:translate-y-0 flex-shrink-0"
+        className="flex items-center gap-2 h-10 px-4 lg:px-5 rounded-xl border border-gray-200 bg-white text-gray-900 font-bold text-sm shadow-soft-sm transition-all duration-150 hover:-translate-y-[1px] hover:shadow-soft-md active:shadow-none active:translate-y-0 flex-shrink-0"
       >
         <LogIn className="w-4 h-4" />
         <span className="whitespace-nowrap">Đăng nhập</span>

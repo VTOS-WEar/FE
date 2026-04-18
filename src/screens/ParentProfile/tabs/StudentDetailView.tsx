@@ -155,7 +155,7 @@ export const StudentDetailView = ({ childId, onBack }: StudentDetailViewProps): 
   if (!student) {
     return (
       <div className="text-center py-12">
-        <p className="text-[#6B7280] font-bold">Không thể tải thông tin học sinh</p>
+        <p className="text-gray-500 font-bold">Không thể tải thông tin học sinh</p>
         <button onClick={onBack} className="nb-btn nb-btn-outline mt-4 text-sm">
           Quay lại
         </button>
@@ -164,15 +164,15 @@ export const StudentDetailView = ({ childId, onBack }: StudentDetailViewProps): 
   }
 
   const initials = fullName?.split(" ").map(w => w[0]).join("").slice(-2).toUpperCase();
-  const inputClass = "nb-input w-full h-11 text-sm border-2 border-[#1A1A2E] hover:shadow-[2px_2px_0_#B8A9E8] hover:border-[#B8A9E8] focus:shadow-[2px_2px_0_#B8A9E8] focus:border-[#B8A9E8] transition-all duration-300";
-  const selectClass = "nb-input h-11 text-sm px-3 border-2 border-[#1A1A2E] hover:shadow-[2px_2px_0_#B8A9E8] hover:border-[#B8A9E8] focus:shadow-[2px_2px_0_#B8A9E8] focus:border-[#B8A9E8] transition-all duration-300";
+  const inputClass = "nb-input w-full h-11 text-sm border border-gray-200 hover:shadow-sm hover:border-purple-300 focus:shadow-sm focus:border-purple-300 transition-all duration-300";
+  const selectClass = "nb-input h-11 text-sm px-3 border border-gray-200 hover:shadow-sm hover:border-purple-300 focus:shadow-sm focus:border-purple-300 transition-all duration-300";
 
   return (
     <div className="space-y-0">
       {/* Back button */}
       <button
         onClick={onBack}
-        className="mb-4 flex items-center gap-2 font-bold text-[#6B7280] hover:text-[#1A1A2E] hover:translate-x-[-4px] transition-all duration-300"
+        className="mb-4 flex items-center gap-2 font-bold text-gray-500 hover:text-gray-800 hover:translate-x-[-4px] transition-all duration-300"
       >
         <ArrowLeft className="w-4 h-4" />
         Quay lại
@@ -183,7 +183,7 @@ export const StudentDetailView = ({ childId, onBack }: StudentDetailViewProps): 
         {/* Left: Avatar */}
         <div className="flex flex-col items-center gap-4 group">
           <div className="relative">
-            <div className="w-60 h-80 bg-[#EDE9FE] rounded-xl flex items-center justify-center border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E] overflow-hidden hover:shadow-[6px_6px_0_#B8A9E8] transition-all duration-300">
+            <div className="w-60 h-80 bg-violet-50 rounded-xl flex items-center justify-center border border-gray-200 shadow-soft-md overflow-hidden hover:shadow-soft-md transition-all duration-300">
               {student.avatarUrl ? (
                 <img
                   src={student.avatarUrl}
@@ -191,19 +191,19 @@ export const StudentDetailView = ({ childId, onBack }: StudentDetailViewProps): 
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <span className="font-extrabold text-[#1A1A2E] text-5xl">{initials}</span>
+                <span className="font-extrabold text-gray-900 text-5xl">{initials}</span>
               )}
             </div>
             <button
               type="button"
               onClick={handleAvatarClick}
               disabled={saving || uploadingAvatar}
-              className="absolute bottom-[-4px] right-[-4px] w-11 h-11 bg-[#C8E44D] border-2 border-[#1A1A2E] rounded-lg flex items-center justify-center shadow-[2px_2px_0_#1A1A2E] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="absolute bottom-[-4px] right-[-4px] w-11 h-11 bg-emerald-400 border border-gray-200 rounded-lg flex items-center justify-center shadow-sm hover:shadow-none hover:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {uploadingAvatar ? (
-                <Loader2 className="w-5 h-5 text-[#1A1A2E] animate-spin" />
+                <Loader2 className="w-5 h-5 text-gray-900 animate-spin" />
               ) : (
-                <Camera className="w-5 h-5 text-[#1A1A2E]" />
+                <Camera className="w-5 h-5 text-gray-900" />
               )}
             </button>
             <input
@@ -215,8 +215,8 @@ export const StudentDetailView = ({ childId, onBack }: StudentDetailViewProps): 
             />
           </div>
           <div className="text-center">
-            <p className="font-bold text-[#1A1A2E] text-base">{fullName}</p>
-            <p className="font-medium text-[#6B7280] text-sm mt-1">{student.schoolName || "—"}</p>
+            <p className="font-bold text-gray-900 text-base">{fullName}</p>
+            <p className="font-medium text-gray-500 text-sm mt-1">{student.schoolName || "—"}</p>
           </div>
         </div>
 
@@ -224,7 +224,7 @@ export const StudentDetailView = ({ childId, onBack }: StudentDetailViewProps): 
         <div className="flex-1 space-y-5">
           {/* Họ và tên */}
           <div className="flex flex-col gap-2 animate-in fade-in slide-in-from-top-4 duration-500">
-            <label htmlFor="fullName" className="font-bold text-[#1A1A2E] text-sm transition-colors duration-300">HỌ VÀ TÊN</label>
+            <label htmlFor="fullName" className="font-bold text-gray-900 text-sm transition-colors duration-300">HỌ VÀ TÊN</label>
             <input
               id="fullName"
               type="text"
@@ -238,40 +238,40 @@ export const StudentDetailView = ({ childId, onBack }: StudentDetailViewProps): 
           <div className="grid grid-cols-3 gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
             {/* Trường học - 2 columns */}
             <div className="col-span-2 flex flex-col gap-2">
-              <label htmlFor="school" className="font-bold text-[#1A1A2E] text-sm transition-colors duration-300">TRƯỜNG HỌC</label>
+              <label htmlFor="school" className="font-bold text-gray-900 text-sm transition-colors duration-300">TRƯỜNG HỌC</label>
               <input
                 id="school"
                 type="text"
                 disabled
                 value={student.schoolName || "—"}
-                className={`${inputClass} !bg-[#F3F4F6] !cursor-not-allowed opacity-70 hover:shadow-none`}
+                className={`${inputClass} !bg-gray-100 !cursor-not-allowed opacity-70 hover:shadow-none`}
               />
             </div>
 
             {/* Lớp học - 1 column */}
             <div className="col-span-1 flex flex-col gap-2">
-              <label htmlFor="grade" className="font-bold text-[#1A1A2E] text-sm transition-colors duration-300">LỚP HỌC</label>
+              <label htmlFor="grade" className="font-bold text-gray-900 text-sm transition-colors duration-300">LỚP HỌC</label>
               <input
                 id="grade"
                 type="text"
                 disabled
                 value={grade}
                 onChange={e => setGrade(e.target.value)}
-                className={`${inputClass} !bg-[#F3F4F6] !cursor-not-allowed opacity-70 hover:shadow-none`}
+                className={`${inputClass} !bg-gray-100 !cursor-not-allowed opacity-70 hover:shadow-none`}
               />
             </div>
           </div>
 
           {/* Giới tính */}
           <div className="flex flex-col gap-2 animate-in fade-in slide-in-from-top-4 duration-500">
-            <label className="font-bold text-[#1A1A2E] text-sm transition-colors duration-300">GIỚI TÍNH</label>
+            <label className="font-bold text-gray-900 text-sm transition-colors duration-300">GIỚI TÍNH</label>
             <div className="flex items-center gap-6">
               {["Nam", "Nữ", "Khác"].map(g => (
                 <label key={g} className="flex items-center gap-2 cursor-pointer group/gender hover:scale-110 transition-transform duration-300 user-select-none" role="radio" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setGender(g); } }} onClick={() => setGender(g)}>
-                  <div className={`w-5 h-5 rounded-lg border-2 flex items-center justify-center transition-all duration-300 ${gender === g ? "border-[#1A1A2E] bg-[#B8A9E8] shadow-[2px_2px_0_#1A1A2E] scale-110" : "border-[#D1D5DB] group-hover/gender:border-[#1A1A2E] group-hover/gender:shadow-[2px_2px_0_#B8A9E8]"}`}>
-                    {gender === g && <div className="w-2 h-2 rounded-sm bg-[#1A1A2E] animate-pulse" />}
+                  <div className={`w-5 h-5 rounded-lg border-2 flex items-center justify-center transition-all duration-300 ${gender === g ? "border-gray-200 bg-purple-400 shadow-sm scale-110" : "border-gray-300 group-hover/gender:border-gray-200 group-hover/gender:shadow-sm"}`}>
+                    {gender === g && <div className="w-2 h-2 rounded-sm bg-gray-900 animate-pulse" />}
                   </div>
-                  <span className="font-bold text-sm text-[#1A1A2E] group-hover/gender:text-[#B8A9E8] transition-colors duration-300">{g}</span>
+                  <span className="font-bold text-sm text-gray-900 group-hover/gender:text-purple-400 transition-colors duration-300">{g}</span>
                 </label>
               ))}
             </div>
@@ -281,19 +281,19 @@ export const StudentDetailView = ({ childId, onBack }: StudentDetailViewProps): 
           <div className="grid grid-cols-3 gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
             {/* Tuổi (calculated) */}
             <div className="flex flex-col gap-2">
-              <label htmlFor="age" className="font-bold text-[#1A1A2E] text-sm transition-colors duration-300">TUỔI</label>
+              <label htmlFor="age" className="font-bold text-gray-900 text-sm transition-colors duration-300">TUỔI</label>
               <input
                 id="age"
                 type="number"
                 disabled
                 value={student.age}
-                className={`${inputClass} !bg-[#F3F4F6] !cursor-not-allowed opacity-70 hover:shadow-none`}
+                className={`${inputClass} !bg-gray-100 !cursor-not-allowed opacity-70 hover:shadow-none`}
               />
             </div>
 
             {/* Chiều cao */}
             <div className="flex flex-col gap-2">
-              <label htmlFor="height" className="font-bold text-[#1A1A2E] text-sm transition-colors duration-300">CHIỀU CAO (cm)</label>
+              <label htmlFor="height" className="font-bold text-gray-900 text-sm transition-colors duration-300">CHIỀU CAO (cm)</label>
               <input
                 id="height"
                 type="number"
@@ -305,7 +305,7 @@ export const StudentDetailView = ({ childId, onBack }: StudentDetailViewProps): 
 
             {/* Cân nặng */}
             <div className="flex flex-col gap-2">
-              <label htmlFor="weight" className="font-bold text-[#1A1A2E] text-sm transition-colors duration-300">CÂN NẶNG (kg)</label>
+              <label htmlFor="weight" className="font-bold text-gray-900 text-sm transition-colors duration-300">CÂN NẶNG (kg)</label>
               <input
                 id="weight"
                 type="number"
@@ -364,7 +364,7 @@ export const StudentDetailView = ({ childId, onBack }: StudentDetailViewProps): 
             <button
               onClick={handleSave}
               disabled={saving}
-              className="nb-btn nb-btn-purple text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 hover:shadow-[2px_2px_0_#1A1A2E] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all duration-300 active:translate-x-0 active:translate-y-0 active:shadow-none"
+              className="nb-btn nb-btn-purple text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 hover:shadow-sm hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all duration-300 active:translate-x-0 active:translate-y-0 active:shadow-none"
             >
               {saving ? (
                 <>
@@ -376,7 +376,7 @@ export const StudentDetailView = ({ childId, onBack }: StudentDetailViewProps): 
               )}
             </button>
             {message && (
-              <span className={`font-bold text-sm animate-in fade-in duration-300 ${message.startsWith("✓") ? "text-[#065F46]" : "text-[#991B1B]"}`}>
+              <span className={`font-bold text-sm animate-in fade-in duration-300 ${message.startsWith("✓") ? "text-emerald-800" : "text-red-800"}`}>
                 {message}
               </span>
             )}

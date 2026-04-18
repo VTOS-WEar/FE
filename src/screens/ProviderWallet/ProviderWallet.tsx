@@ -35,7 +35,7 @@ function txColor(type: string) {
     switch (type) {
         case "ProviderPayment": return "text-[#10B981]";
         case "Refund": return "text-[#F59E0B]";
-        default: return "text-[#6B7280]";
+        default: return "text-gray-500";
     }
 }
 
@@ -102,8 +102,8 @@ export default function ProviderWallet() {
 
                 <div className="flex-1 flex flex-col min-w-0">
                     <TopNavBar>
-                        <h1 className="font-extrabold text-[#1A1A2E] text-2xl">💰 Ví nhà cung cấp</h1>
-                        <p className="font-medium text-[#6B7280] text-sm mt-1">Theo dõi số dư và lịch sử giao dịch</p>
+                        <h1 className="font-extrabold text-gray-900 text-2xl">💰 Ví nhà cung cấp</h1>
+                        <p className="font-medium text-gray-500 text-sm mt-1">Theo dõi số dư và lịch sử giao dịch</p>
                     </TopNavBar>
 
                     <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-6 nb-fade-in">
@@ -118,10 +118,10 @@ export default function ProviderWallet() {
                                     <p className="nb-stat-label">Số dư hiện tại</p>
                                     <p className="nb-stat-value text-4xl mt-2">{fmt(wallet?.balance ?? 0)}</p>
                                     <div className="flex items-center gap-4 mt-4">
-                                        <p className="font-medium text-[#6B7280] text-xs">
+                                        <p className="font-medium text-gray-500 text-xs">
                                             Mã ví: {wallet?.walletId?.slice(0, 8) ?? "—"}
                                         </p>
-                                        <p className="font-medium text-[#6B7280] text-xs">
+                                        <p className="font-medium text-gray-500 text-xs">
                                             Cập nhật: {wallet?.updatedAt ? fmtDate(wallet.updatedAt) : "—"}
                                         </p>
                                     </div>
@@ -137,7 +137,7 @@ export default function ProviderWallet() {
                                 {/* Info note — NB alert */}
                                 <div className="nb-alert nb-alert-success">
                                     <span className="text-lg leading-none flex-shrink-0">ℹ️</span>
-                                    <p className="font-medium text-[#065F46] text-sm leading-snug">
+                                    <p className="font-medium text-emerald-800 text-sm leading-snug">
                                         Số dư được cập nhật tự động khi trường thanh toán đơn sản xuất. Quản trị viên sẽ phân bổ tiền thực tế thông qua mã ví.
                                     </p>
                                 </div>
@@ -145,7 +145,7 @@ export default function ProviderWallet() {
                                 {/* Bank Info Card */}
                                 <div className="nb-card-static p-6">
                                     <div className="flex items-center justify-between mb-4">
-                                        <h2 className="font-extrabold text-[#1A1A2E] text-lg">🏦 Thông tin ngân hàng</h2>
+                                        <h2 className="font-extrabold text-gray-900 text-lg">🏦 Thông tin ngân hàng</h2>
                                         {!editingBank && (
                                             <button className="nb-btn nb-btn-outline text-sm" onClick={() => setEditingBank(true)}>✏️ Chỉnh sửa</button>
                                         )}
@@ -154,35 +154,35 @@ export default function ProviderWallet() {
                                         <div className="space-y-3">
                                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                                 <div className="sm:col-span-2 relative">
-                                                    <label className="block text-xs font-bold text-[#6B7280] mb-1">Ngân hàng</label>
+                                                    <label className="block text-xs font-bold text-gray-500 mb-1">Ngân hàng</label>
                                                     <input className="nb-input w-full" value={bankSearch || (bankForm.bankCode ? `${bankForm.bankName} (${bankForm.bankCode})` : "")}
                                                         onChange={e => { setBankSearch(e.target.value); setShowBankDropdown(true); }}
                                                         onFocus={() => { setBankSearch(""); setShowBankDropdown(true); }}
                                                         placeholder="Tìm ngân hàng..." autoComplete="off" />
                                                     {showBankDropdown && (
-                                                        <div className="absolute z-20 top-full mt-1 left-0 right-0 bg-white border-2 border-[#1A1A2E] rounded-md shadow-[4px_4px_0_#1A1A2E] max-h-48 overflow-y-auto">
+                                                        <div className="absolute z-20 top-full mt-1 left-0 right-0 bg-white border border-gray-200 rounded-md shadow-soft-md max-h-48 overflow-y-auto">
                                                             {VIETNAM_BANKS.filter(b => {
                                                                 const q = bankSearch.toLowerCase();
                                                                 return !q || b.code.toLowerCase().includes(q) || b.shortName.toLowerCase().includes(q) || b.name.toLowerCase().includes(q);
                                                             }).map(b => (
-                                                                <button key={b.code} type="button" className="w-full text-left px-3 py-2 text-sm hover:bg-[#EDE9FE] transition-colors flex items-center justify-between"
+                                                                <button key={b.code} type="button" className="w-full text-left px-3 py-2 text-sm hover:bg-violet-50 transition-colors flex items-center justify-between"
                                                                     onClick={() => { setBankForm(f => ({ ...f, bankCode: b.code, bankName: b.shortName })); setBankSearch(""); setShowBankDropdown(false); }}>
-                                                                    <span className="font-semibold text-[#1A1A2E]">{b.shortName}</span>
-                                                                    <span className="text-xs text-[#9CA3AF]">{b.code}</span>
+                                                                    <span className="font-semibold text-gray-900">{b.shortName}</span>
+                                                                    <span className="text-xs text-gray-400">{b.code}</span>
                                                                 </button>
                                                             ))}
                                                             {VIETNAM_BANKS.filter(b => { const q = bankSearch.toLowerCase(); return !q || b.code.toLowerCase().includes(q) || b.shortName.toLowerCase().includes(q) || b.name.toLowerCase().includes(q); }).length === 0 && (
-                                                                <p className="px-3 py-2 text-sm text-[#9CA3AF]">Không tìm thấy ngân hàng</p>
+                                                                <p className="px-3 py-2 text-sm text-gray-400">Không tìm thấy ngân hàng</p>
                                                             )}
                                                         </div>
                                                     )}
                                                 </div>
                                                 <div>
-                                                    <label className="block text-xs font-bold text-[#6B7280] mb-1">Số tài khoản</label>
+                                                    <label className="block text-xs font-bold text-gray-500 mb-1">Số tài khoản</label>
                                                     <input className="nb-input w-full" value={bankForm.accountNumber} onChange={e => setBankForm(f => ({ ...f, accountNumber: e.target.value }))} placeholder="0491000567890" />
                                                 </div>
                                                 <div>
-                                                    <label className="block text-xs font-bold text-[#6B7280] mb-1">Tên chủ tài khoản</label>
+                                                    <label className="block text-xs font-bold text-gray-500 mb-1">Tên chủ tài khoản</label>
                                                     <input className="nb-input w-full" value={bankForm.accountName} onChange={e => setBankForm(f => ({ ...f, accountName: e.target.value }))} placeholder="CONG TY ABC" />
                                                 </div>
                                             </div>
@@ -196,30 +196,30 @@ export default function ProviderWallet() {
                                         </div>
                                     ) : (
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                            <div><p className="text-xs font-bold text-[#9CA3AF] uppercase mb-1">Ngân hàng</p><p className="text-sm font-bold text-[#1A1A2E]">{wallet?.bankName || "Chưa cập nhật"} {wallet?.bankCode ? `(${wallet.bankCode})` : ""}</p></div>
-                                            <div><p className="text-xs font-bold text-[#9CA3AF] uppercase mb-1">Số tài khoản</p><p className="text-sm font-bold text-[#1A1A2E]">{wallet?.bankAccountNumber || "Chưa cập nhật"}</p></div>
-                                            <div className="sm:col-span-2"><p className="text-xs font-bold text-[#9CA3AF] uppercase mb-1">Chủ tài khoản</p><p className="text-sm font-bold text-[#1A1A2E]">{wallet?.bankAccountName || "Chưa cập nhật"}</p></div>
+                                            <div><p className="text-xs font-bold text-gray-400 uppercase mb-1">Ngân hàng</p><p className="text-sm font-bold text-gray-900">{wallet?.bankName || "Chưa cập nhật"} {wallet?.bankCode ? `(${wallet.bankCode})` : ""}</p></div>
+                                            <div><p className="text-xs font-bold text-gray-400 uppercase mb-1">Số tài khoản</p><p className="text-sm font-bold text-gray-900">{wallet?.bankAccountNumber || "Chưa cập nhật"}</p></div>
+                                            <div className="sm:col-span-2"><p className="text-xs font-bold text-gray-400 uppercase mb-1">Chủ tài khoản</p><p className="text-sm font-bold text-gray-900">{wallet?.bankAccountName || "Chưa cập nhật"}</p></div>
                                         </div>
                                     )}
                                 </div>
 
                                 {/* Transaction History */}
                                 <div className="nb-card-static p-6">
-                                    <h2 className="font-extrabold text-[#1A1A2E] text-lg mb-4">📋 Lịch sử giao dịch</h2>
+                                    <h2 className="font-extrabold text-gray-900 text-lg mb-4">📋 Lịch sử giao dịch</h2>
                                     {txns.length === 0 ? (
-                                        <p className="text-center py-10 text-[#9CA3AF] font-medium">Chưa có giao dịch nào</p>
+                                        <p className="text-center py-10 text-gray-400 font-medium">Chưa có giao dịch nào</p>
                                     ) : (
                                         <>
                                             <div className="space-y-3">
                                                 {txns.map(tx => (
-                                                    <div key={tx.paymentId} className="flex items-center justify-between py-3 border-b border-[#E5E7EB] last:border-0">
+                                                    <div key={tx.paymentId} className="flex items-center justify-between py-3 border-b border-gray-200 last:border-0">
                                                         <div className="flex items-center gap-3">
-                                                            <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-lg border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E] ${tx.transactionType === "ProviderPayment" ? "bg-[#D1FAE5]" : tx.transactionType === "Refund" ? "bg-[#FEF3C7]" : "bg-[#F3F4F6]"}`}>
+                                                            <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-lg border border-gray-200 shadow-sm ${tx.transactionType === "ProviderPayment" ? "bg-[#D1FAE5]" : tx.transactionType === "Refund" ? "bg-[#FEF3C7]" : "bg-gray-100"}`}>
                                                                 {tx.transactionType === "ProviderPayment" ? "↓" : "↑"}
                                                             </div>
                                                             <div>
-                                                                <p className="font-bold text-[#1A1A2E] text-sm">{txLabel(tx.transactionType)}</p>
-                                                                <p className="font-medium text-[#9CA3AF] text-xs">{tx.description || fmtDate(tx.timestamp)}</p>
+                                                                <p className="font-bold text-gray-900 text-sm">{txLabel(tx.transactionType)}</p>
+                                                                <p className="font-medium text-gray-400 text-xs">{tx.description || fmtDate(tx.timestamp)}</p>
                                                             </div>
                                                         </div>
                                                         <p className={`font-extrabold text-base ${txColor(tx.transactionType)}`}>
@@ -231,7 +231,7 @@ export default function ProviderWallet() {
                                             {totalPages > 1 && (
                                                 <div className="flex justify-center gap-2 mt-4">
                                                     <button disabled={page <= 1} onClick={() => setPage(p => p - 1)} className="nb-btn nb-btn-outline nb-btn-sm text-sm">← Trước</button>
-                                                    <span className="flex items-center text-sm text-[#6B7280] px-2 font-bold">{page}/{totalPages}</span>
+                                                    <span className="flex items-center text-sm text-gray-500 px-2 font-bold">{page}/{totalPages}</span>
                                                     <button disabled={page >= totalPages} onClick={() => setPage(p => p + 1)} className="nb-btn nb-btn-outline nb-btn-sm text-sm">Sau →</button>
                                                 </div>
                                             )}
@@ -247,15 +247,15 @@ export default function ProviderWallet() {
             {/* Withdraw Modal */}
             {showWithdraw && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-md border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E] p-6 w-full max-w-md space-y-4">
-                        <h3 className="font-extrabold text-[#1A1A2E] text-lg">💸 Yêu cầu rút tiền</h3>
-                        <p className="text-sm text-[#6B7280]">Số dư hiện tại: <span className="font-extrabold text-[#10B981]">{fmt(wallet?.balance ?? 0)}</span></p>
+                    <div className="bg-white rounded-md border border-gray-200 shadow-soft-md p-6 w-full max-w-md space-y-4">
+                        <h3 className="font-extrabold text-gray-900 text-lg">💸 Yêu cầu rút tiền</h3>
+                        <p className="text-sm text-gray-500">Số dư hiện tại: <span className="font-extrabold text-[#10B981]">{fmt(wallet?.balance ?? 0)}</span></p>
                         <div>
-                            <label className="block text-xs font-bold text-[#6B7280] mb-1">Số tiền muốn rút (₫)</label>
+                            <label className="block text-xs font-bold text-gray-500 mb-1">Số tiền muốn rút (₫)</label>
                             <input className="nb-input w-full" type="number" min={100000} step={10} max={wallet?.balance ?? 0}
                                 value={withdrawAmount} onChange={e => setWithdrawAmount(e.target.value)}
                                 placeholder="Nhập số tiền..." />
-                            <p className="text-xs text-[#9CA3AF] mt-1">Tối thiểu 100,000₫ · Số tiền phải chia hết cho 10</p>
+                            <p className="text-xs text-gray-400 mt-1">Tối thiểu 100,000₫ · Số tiền phải chia hết cho 10</p>
                         </div>
                         {withdrawMsg && (
                             <div className={`nb-alert ${withdrawMsg.type === "ok" ? "nb-alert-success" : "nb-alert-error"}`}>

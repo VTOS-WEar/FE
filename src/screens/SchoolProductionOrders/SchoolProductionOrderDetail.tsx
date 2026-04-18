@@ -138,7 +138,7 @@ export default function SchoolProductionOrderDetail() {
 
     if (!detail) return (
         <div className="text-center py-20">
-            <p className="text-[#6B7280] mb-4">Không tìm thấy đơn sản xuất.</p>
+            <p className="text-gray-500 mb-4">Không tìm thấy đơn sản xuất.</p>
             <button onClick={() => navigate("/school/production-orders")} className="nb-btn nb-btn-purple text-sm">← Quay lại</button>
         </div>
     );
@@ -152,7 +152,7 @@ export default function SchoolProductionOrderDetail() {
                     <BreadcrumbSeparator className="text-[#cbcad7]">/</BreadcrumbSeparator>
                     <BreadcrumbItem><BreadcrumbLink href="/school/production-orders" className="font-semibold text-[#4c5769] text-base">Đơn sản xuất</BreadcrumbLink></BreadcrumbItem>
                     <BreadcrumbSeparator className="text-[#cbcad7]">/</BreadcrumbSeparator>
-                    <BreadcrumbItem><BreadcrumbPage className="font-bold text-[#1A1A2E] text-base">{detail.batchName}</BreadcrumbPage></BreadcrumbItem>
+                    <BreadcrumbItem><BreadcrumbPage className="font-bold text-gray-900 text-base">{detail.batchName}</BreadcrumbPage></BreadcrumbItem>
                 </BreadcrumbList></Breadcrumb>
             </TopNavBar>
             <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-6">
@@ -161,7 +161,7 @@ export default function SchoolProductionOrderDetail() {
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                     <button onClick={() => navigate("/school/production-orders")} className="nb-btn nb-btn-outline nb-btn-sm text-sm">← Quay lại</button>
-                    <h1 className="font-extrabold text-[#1A1A2E] text-2xl truncate" title={detail.batchName}>🏭 {detail.batchName}</h1>
+                    <h1 className="font-extrabold text-gray-900 text-2xl truncate" title={detail.batchName}>🏭 {detail.batchName}</h1>
                 </div>
                 <span className={STATUS_BADGE[detail.status] || "nb-badge"}>{STATUS_LABELS[detail.status] || detail.status}</span>
             </div>
@@ -190,7 +190,7 @@ export default function SchoolProductionOrderDetail() {
                         ].map(({ label, value }) => (
                             <div key={label} className="nb-card-static p-4">
                                 <p className="nb-stat-label text-xs">{label}</p>
-                                <p className="font-bold text-[#1A1A2E] text-base mt-1 truncate" title={value}>{value}</p>
+                                <p className="font-bold text-gray-900 text-base mt-1 truncate" title={value}>{value}</p>
                             </div>
                         ))}
                     </div>
@@ -200,15 +200,15 @@ export default function SchoolProductionOrderDetail() {
                     )}
 
                     <div className="nb-card-static p-0">
-                        <div className="px-6 pt-5 pb-3 border-b-2 border-[#E5E7EB]">
-                            <h3 className="font-bold text-[#1A1A2E] text-base">📦 Danh sách sản phẩm</h3>
+                        <div className="px-6 pt-5 pb-3 border-b-2 border-gray-200">
+                            <h3 className="font-bold text-gray-900 text-base">📦 Danh sách sản phẩm</h3>
                         </div>
                         <table className="nb-table">
                             <thead><tr><th>Đồng phục</th><th>Size</th><th>SL</th><th>Đơn giá</th></tr></thead>
                             <tbody>
                                 {detail.items.map(item => (
                                     <tr key={item.id}>
-                                        <td className="font-bold text-[#1A1A2E]">{item.outfitName}</td>
+                                        <td className="font-bold text-gray-900">{item.outfitName}</td>
                                         <td>{item.size}</td>
                                         <td className="font-bold">{item.quantity}</td>
                                         <td>{item.unitPrice.toLocaleString("vi")}₫</td>
@@ -233,13 +233,13 @@ export default function SchoolProductionOrderDetail() {
             {activeTab === "delivery" && (
                 <div className="space-y-5">
                     {!deliveryStatus ? (
-                        <div className="text-center py-10 text-[#9CA3AF]">Đang tải...</div>
+                        <div className="text-center py-10 text-gray-400">Đang tải...</div>
                     ) : (
                         <>
                             {/* Progress */}
                             <div className="nb-card-static p-5">
-                                <div className="flex justify-between text-sm text-[#6B7280] mb-2">
-                                    <span>Đã giao: <strong className="text-[#1A1A2E]">{deliveryStatus.totalDelivered}/{deliveryStatus.totalQuantity}</strong></span>
+                                <div className="flex justify-between text-sm text-gray-500 mb-2">
+                                    <span>Đã giao: <strong className="text-gray-900">{deliveryStatus.totalDelivered}/{deliveryStatus.totalQuantity}</strong></span>
                                     <span className="font-bold">{deliveryStatus.totalQuantity > 0 ? Math.round((deliveryStatus.totalDelivered / deliveryStatus.totalQuantity) * 100) : 0}%</span>
                                 </div>
                                 <div className="nb-progress">
@@ -252,18 +252,18 @@ export default function SchoolProductionOrderDetail() {
 
                             {/* Delivery records */}
                             <div className="nb-card-static p-5">
-                                <h3 className="font-bold text-[#1A1A2E] text-base mb-4">📋 Các lần giao hàng</h3>
+                                <h3 className="font-bold text-gray-900 text-base mb-4">📋 Các lần giao hàng</h3>
                                 {deliveryStatus.deliveries.length === 0 ? (
-                                    <p className="text-center text-[#9CA3AF] py-5">Chưa có lần giao nào.</p>
+                                    <p className="text-center text-gray-400 py-5">Chưa có lần giao nào.</p>
                                 ) : (
                                     <div className="grid gap-3">
                                         {deliveryStatus.deliveries.map(d => (
                                             <div key={d.id} className={`p-4 rounded-xl border-2 ${d.isConfirmed ? "border-[#10B981] bg-[#D1FAE5]" : "border-[#F59E0B] bg-[#FEF3C7]"}`}>
                                                 <div className="flex items-center justify-between">
                                                     <div>
-                                                        <strong className="text-[#1A1A2E]">{d.quantity} sản phẩm</strong>
-                                                        <span className="text-xs text-[#6B7280] ml-2">{new Date(d.deliveredAt).toLocaleDateString("vi")}</span>
-                                                        {d.note && <p className="text-xs text-[#4C5769] mt-1 line-clamp-3">📝 {d.note}</p>}
+                                                        <strong className="text-gray-900">{d.quantity} sản phẩm</strong>
+                                                        <span className="text-xs text-gray-500 ml-2">{new Date(d.deliveredAt).toLocaleDateString("vi")}</span>
+                                                        {d.note && <p className="text-xs text-gray-600 mt-1 line-clamp-3">📝 {d.note}</p>}
                                                     </div>
                                                     {d.isConfirmed ? (
                                                         <span className="nb-badge nb-badge-green text-xs">
@@ -283,22 +283,22 @@ export default function SchoolProductionOrderDetail() {
                             {/* Confirm delivery form */}
                             {confirmingDelivery && (
                                 <div className="nb-card-static p-5 border-[#6938EF]">
-                                    <h3 className="font-bold text-[#1A1A2E] text-base mb-4">📋 Xác nhận lần giao — {confirmingDelivery.quantity} sản phẩm</h3>
+                                    <h3 className="font-bold text-gray-900 text-base mb-4">📋 Xác nhận lần giao — {confirmingDelivery.quantity} sản phẩm</h3>
                                     <div className="grid grid-cols-2 gap-3 mb-3">
                                         <div>
-                                            <label className="block text-xs font-bold text-[#6B7280] mb-1">SL chấp nhận</label>
+                                            <label className="block text-xs font-bold text-gray-500 mb-1">SL chấp nhận</label>
                                             <input type="number" min={0} max={confirmingDelivery.quantity} value={confirmForm.acceptedQuantity}
                                                 onChange={e => setConfirmForm(f => ({ ...f, acceptedQuantity: Number(e.target.value) }))} className="nb-input w-full" />
                                         </div>
                                         <div>
-                                            <label className="block text-xs font-bold text-[#6B7280] mb-1">SL lỗi</label>
+                                            <label className="block text-xs font-bold text-gray-500 mb-1">SL lỗi</label>
                                             <input type="number" min={0} value={confirmForm.defectiveQuantity}
                                                 onChange={e => setConfirmForm(f => ({ ...f, defectiveQuantity: Number(e.target.value) }))} className="nb-input w-full" />
                                         </div>
                                     </div>
                                     {confirmForm.defectiveQuantity > 0 && (
                                         <div className="mb-3">
-                                            <label className="block text-xs font-bold text-[#6B7280] mb-1">Ghi chú lỗi</label>
+                                            <label className="block text-xs font-bold text-gray-500 mb-1">Ghi chú lỗi</label>
                                             <textarea value={confirmForm.defectNote} onChange={e => setConfirmForm(f => ({ ...f, defectNote: e.target.value }))}
                                                 placeholder="Mô tả lỗi..." rows={2} className="nb-input w-full resize-y" maxLength={500} />
                                         </div>
@@ -315,7 +315,7 @@ export default function SchoolProductionOrderDetail() {
                             {/* Verify quantity */}
                             {verifyData && (
                                 <div className="nb-card-static p-5">
-                                    <h3 className="font-bold text-[#1A1A2E] text-base mb-4">📊 Tổng hợp số lượng</h3>
+                                    <h3 className="font-bold text-gray-900 text-base mb-4">📊 Tổng hợp số lượng</h3>
                                     <div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
                                         {[
                                             { label: "Yêu cầu", val: verifyData.totalExpected, cls: "nb-card-purple" },
@@ -340,7 +340,7 @@ export default function SchoolProductionOrderDetail() {
             {activeTab === "distribution" && (
                 <div className="space-y-5">
                     {!distStatus ? (
-                        <div className="text-center py-10 text-[#9CA3AF]">Đang tải...</div>
+                        <div className="text-center py-10 text-gray-400">Đang tải...</div>
                     ) : (
                         <>
                             <div className="grid grid-cols-3 gap-4">
@@ -379,20 +379,20 @@ export default function SchoolProductionOrderDetail() {
                                     .filter(o => !distSearch || o.childName.toLowerCase().includes(searchLower) || o.parentName.toLowerCase().includes(searchLower));
                                 return pending.length > 0 || distSearch ? (
                                     <div className="nb-card-static p-5">
-                                        <h3 className="font-bold text-[#1A1A2E] text-base mb-3">📋 Chờ phân phối</h3>
+                                        <h3 className="font-bold text-gray-900 text-base mb-3">📋 Chờ phân phối</h3>
                                         <div className="relative mb-3">
                                             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-base pointer-events-none">🔍</span>
                                             <input type="text" placeholder="Tìm theo tên học sinh hoặc phụ huynh..." value={distSearch}
                                                 onChange={e => setDistSearch(e.target.value)} className="nb-input w-full pl-9 text-sm" />
                                         </div>
                                         {pending.length === 0 ? (
-                                            <p className="text-center text-[#9CA3AF] text-sm py-4">Không tìm thấy kết quả.</p>
+                                            <p className="text-center text-gray-400 text-sm py-4">Không tìm thấy kết quả.</p>
                                         ) : pending.map(o => (
-                                            <label key={o.orderId} className={`flex items-center gap-3 p-3 rounded-lg mb-2 cursor-pointer border-2 transition-colors ${selectedOrders.includes(o.orderId) ? "border-[#6938EF] bg-[#EDE9FE]" : "border-[#E5E7EB] bg-[#F9FAFB]"}`}>
+                                            <label key={o.orderId} className={`flex items-center gap-3 p-3 rounded-lg mb-2 cursor-pointer border-2 transition-colors ${selectedOrders.includes(o.orderId) ? "border-[#6938EF] bg-violet-50" : "border-gray-200 bg-gray-50"}`}>
                                                 <input type="checkbox" className="w-4 h-4 accent-[#6938EF]"
                                                     checked={selectedOrders.includes(o.orderId)}
                                                     onChange={e => { if (e.target.checked) setSelectedOrders(p => [...p, o.orderId]); else setSelectedOrders(p => p.filter(id => id !== o.orderId)); }} />
-                                                <div className="flex-1"><strong className="text-[#1A1A2E] text-sm">{o.childName}</strong> <span className="text-xs text-[#6B7280]">({o.parentName})</span></div>
+                                                <div className="flex-1"><strong className="text-gray-900 text-sm">{o.childName}</strong> <span className="text-xs text-gray-500">({o.parentName})</span></div>
                                                 <span className={`nb-badge text-[10px] ${o.deliveryMethod === "AtHome" ? "nb-badge-blue" : "nb-badge-green"}`}>
                                                     {o.deliveryMethod === "AtHome" ? "🏠 Giao nhà" : "🏫 Tại trường"}
                                                 </span>
@@ -403,7 +403,7 @@ export default function SchoolProductionOrderDetail() {
                                         {selectedOrders.some(id => distStatus.orders.find(o => o.orderId === id)?.deliveryMethod === "AtHome") && (
                                             <div className="nb-alert nb-alert-info mt-3">
                                                 <div className="w-full space-y-2">
-                                                    <h5 className="font-bold text-sm text-[#1A1A2E]">🚛 Thông tin vận chuyển</h5>
+                                                    <h5 className="font-bold text-sm text-gray-900">🚛 Thông tin vận chuyển</h5>
                                                     <div className="grid grid-cols-2 gap-2">
                                                         <input placeholder="Đơn vị vận chuyển" value={shipForm.shippingCompany} onChange={e => setShipForm(f => ({ ...f, shippingCompany: e.target.value }))} maxLength={100} className="nb-input text-sm" />
                                                         <input placeholder="Mã vận đơn" value={shipForm.trackingCode} onChange={e => setShipForm(f => ({ ...f, trackingCode: e.target.value }))} maxLength={100} className="nb-input text-sm" />
@@ -417,7 +417,7 @@ export default function SchoolProductionOrderDetail() {
                                             <button disabled={selectedOrders.length === 0 || actionLoading} onClick={() => handleDistribute("AtSchool")}
                                                 className="flex-1 nb-btn nb-btn-green text-sm disabled:opacity-50">🏫 Phát tại trường</button>
                                             <button disabled={selectedOrders.length === 0 || actionLoading} onClick={() => handleDistribute("AtHome")}
-                                                className="flex-1 nb-btn text-sm bg-[#3B82F6] text-white border-[#1A1A2E] disabled:opacity-50">🏠 Giao tận nhà</button>
+                                                className="flex-1 nb-btn text-sm bg-[#3B82F6] text-white border-gray-200 disabled:opacity-50">🏠 Giao tận nhà</button>
                                         </div>
                                     </div>
                                 ) : null;
@@ -433,14 +433,14 @@ export default function SchoolProductionOrderDetail() {
                                         {distributed.map(o => (
                                             <div key={o.orderId} className="p-3 rounded-lg mb-2 border-2 border-[#10B981] bg-[#D1FAE5] flex items-center justify-between">
                                                 <div>
-                                                    <strong className="text-[#1A1A2E] text-sm">{o.childName}</strong>
-                                                    <span className="text-xs text-[#6B7280] ml-2">({o.parentName})</span>
-                                                    {o.trackingCode && <span className="text-xs text-[#6938EF] ml-2">📦 {o.trackingCode}</span>}
+                                                    <strong className="text-gray-900 text-sm">{o.childName}</strong>
+                                                    <span className="text-xs text-gray-500 ml-2">({o.parentName})</span>
+                                                    {o.trackingCode && <span className="text-xs text-violet-600 ml-2">📦 {o.trackingCode}</span>}
                                                     <span className={`nb-badge text-[10px] ml-2 ${o.deliveryMethod === "AtHome" ? "nb-badge-blue" : "nb-badge-green"}`}>
                                                         {o.deliveryMethod === "AtHome" ? "🏠" : "🏫"}
                                                     </span>
                                                 </div>
-                                                <span className="text-xs text-[#6B7280]">{o.distributedAt ? new Date(o.distributedAt).toLocaleDateString("vi") : ""}</span>
+                                                <span className="text-xs text-gray-500">{o.distributedAt ? new Date(o.distributedAt).toLocaleDateString("vi") : ""}</span>
                                             </div>
                                         ))}
                                     </div>
@@ -450,22 +450,22 @@ export default function SchoolProductionOrderDetail() {
                             {/* Schedules */}
                             <div className="nb-card-static p-5">
                                 <div className="flex justify-between items-center mb-4">
-                                    <h3 className="font-bold text-[#1A1A2E] text-base">📅 Lịch phân phối</h3>
+                                    <h3 className="font-bold text-gray-900 text-base">📅 Lịch phân phối</h3>
                                     <button onClick={() => setShowScheduleModal(true)} className="nb-btn nb-btn-purple nb-btn-sm text-xs">+ Tạo lịch</button>
                                 </div>
                                 {schedules.length === 0 ? (
-                                    <p className="text-center text-[#9CA3AF] py-5 bg-[#F9FAFB] rounded-lg">Chưa có lịch nào.</p>
+                                    <p className="text-center text-gray-400 py-5 bg-gray-50 rounded-lg">Chưa có lịch nào.</p>
                                 ) : (
                                     <div className="grid gap-3">
                                         {schedules.map(s => (
                                             <div key={s.id} className={`p-4 rounded-xl border-2 ${s.status === "Completed" ? "border-[#10B981] bg-[#D1FAE5]" : "border-[#F59E0B] bg-[#FEF3C7]"}`}>
                                                 <div className="flex items-center justify-between">
                                                     <div>
-                                                        <strong className="text-sm text-[#1A1A2E]">{new Date(s.scheduledDate).toLocaleDateString("vi")} — {s.timeSlot}</strong>
+                                                        <strong className="text-sm text-gray-900">{new Date(s.scheduledDate).toLocaleDateString("vi")} — {s.timeSlot}</strong>
                                                         <span className={`nb-badge text-[10px] ml-2 ${s.method === "AtHome" ? "nb-badge-blue" : "nb-badge-green"}`}>
                                                             {s.method === "AtHome" ? "🏠 Giao nhà" : "🏫 Tại trường"}
                                                         </span>
-                                                        {s.note && <p className="text-xs text-[#4C5769] mt-1 line-clamp-3">📝 {s.note}</p>}
+                                                        {s.note && <p className="text-xs text-gray-600 mt-1 line-clamp-3">📝 {s.note}</p>}
                                                     </div>
                                                     <div className="flex items-center gap-2">
                                                         <span className={`nb-badge text-[10px] ${s.status === "Completed" ? "nb-badge-green" : "nb-badge-yellow"}`}>
@@ -490,22 +490,22 @@ export default function SchoolProductionOrderDetail() {
             {/* ═══ TAB: Khiếu nại ═══ */}
             {activeTab === "complaints" && (
                 <div className="nb-card-static p-5">
-                    <h3 className="font-bold text-[#1A1A2E] text-base mb-4">🐛 Báo cáo lỗi sản phẩm</h3>
+                    <h3 className="font-bold text-gray-900 text-base mb-4">🐛 Báo cáo lỗi sản phẩm</h3>
                     <div className="space-y-4">
                         <div>
-                            <label className="block text-xs font-bold text-[#6B7280] mb-1">Tiêu đề *</label>
+                            <label className="block text-xs font-bold text-gray-500 mb-1">Tiêu đề *</label>
                             <input value={defectForm.title} onChange={e => setDefectForm(f => ({ ...f, title: e.target.value }))}
                                 placeholder="VD: Áo sơ mi bị rách" maxLength={200} className="nb-input w-full" />
                         </div>
                         <div>
-                            <label className="block text-xs font-bold text-[#6B7280] mb-1">Mô tả chi tiết *</label>
+                            <label className="block text-xs font-bold text-gray-500 mb-1">Mô tả chi tiết *</label>
                             <textarea value={defectForm.description} onChange={e => setDefectForm(f => ({ ...f, description: e.target.value }))}
                                 placeholder="Mô tả chi tiết lỗi..." rows={3} maxLength={1000} className="nb-input w-full resize-y" />
                         </div>
                         <div>
                             <div className="flex justify-between mb-1">
-                                <label className="text-xs font-bold text-[#6B7280]">📷 Ảnh chứng minh (URL)</label>
-                                <span className="text-[10px] text-[#EF4444] font-bold">* Bắt buộc ≥ 1</span>
+                                <label className="text-xs font-bold text-gray-500">📷 Ảnh chứng minh (URL)</label>
+                                <span className="text-[10px] text-red-500 font-bold">* Bắt buộc ≥ 1</span>
                             </div>
                             {defectForm.proofImageUrls.map((url, idx) => (
                                 <div key={idx} className="flex gap-2 mb-2">
@@ -513,7 +513,7 @@ export default function SchoolProductionOrderDetail() {
                                         placeholder={`URL ảnh ${idx + 1}...`} className="nb-input flex-1 text-sm" />
                                     {defectForm.proofImageUrls.length > 1 && (
                                         <button onClick={() => { const urls = defectForm.proofImageUrls.filter((_, i) => i !== idx); setDefectForm(f => ({ ...f, proofImageUrls: urls })); }}
-                                            className="text-[#EF4444] font-bold text-lg hover:text-[#DC2626] px-2">×</button>
+                                            className="text-red-500 font-bold text-lg hover:text-[#DC2626] px-2">×</button>
                                     )}
                                 </div>
                             ))}
@@ -533,8 +533,8 @@ export default function SchoolProductionOrderDetail() {
             {/* Reject modal */}
             {showReject && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => { setShowReject(false); setRejectReason(""); }}>
-                    <div className="bg-white rounded-md w-full max-w-md mx-4 p-6 border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E]" onClick={e => e.stopPropagation()}>
-                        <h3 className="font-extrabold text-lg text-[#1A1A2E] mb-4">❌ Từ chối đơn sản xuất</h3>
+                    <div className="bg-white rounded-md w-full max-w-md mx-4 p-6 border border-gray-200 shadow-soft-md" onClick={e => e.stopPropagation()}>
+                        <h3 className="font-extrabold text-lg text-gray-900 mb-4">❌ Từ chối đơn sản xuất</h3>
                         <textarea value={rejectReason} onChange={e => setRejectReason(e.target.value)}
                             placeholder="Nhập lý do từ chối..." rows={3} maxLength={500} className="nb-input w-full resize-y mb-4" />
                         <div className="flex gap-3">
@@ -550,22 +550,22 @@ export default function SchoolProductionOrderDetail() {
             {/* Schedule creation modal */}
             {showScheduleModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => { setShowScheduleModal(false); setScheduleForm({ scheduledDate: "", method: "AtSchool", startTime: "", endTime: "", note: "" }); }}>
-                    <div className="bg-white rounded-md w-full max-w-md mx-4 p-6 border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E]" onClick={e => e.stopPropagation()}>
-                        <h3 className="font-extrabold text-lg text-[#1A1A2E] mb-4">📅 Tạo lịch phân phối</h3>
+                    <div className="bg-white rounded-md w-full max-w-md mx-4 p-6 border border-gray-200 shadow-soft-md" onClick={e => e.stopPropagation()}>
+                        <h3 className="font-extrabold text-lg text-gray-900 mb-4">📅 Tạo lịch phân phối</h3>
                         <div className="space-y-3">
                             <div>
-                                <label className="block text-xs font-bold text-[#6B7280] mb-1">Ngày dự kiến *</label>
+                                <label className="block text-xs font-bold text-gray-500 mb-1">Ngày dự kiến *</label>
                                 <input type="date" value={scheduleForm.scheduledDate} onChange={e => setScheduleForm(f => ({ ...f, scheduledDate: e.target.value }))} className="nb-input w-full" />
                             </div>
                             <div>
-                                <label className="block text-xs font-bold text-[#6B7280] mb-1">Hình thức</label>
+                                <label className="block text-xs font-bold text-gray-500 mb-1">Hình thức</label>
                                 <select value={scheduleForm.method} onChange={e => setScheduleForm(f => ({ ...f, method: e.target.value }))} className="nb-select w-full">
                                     <option value="AtSchool">🏫 Phát tại trường</option>
                                     <option value="AtHome">🏠 Giao tận nhà</option>
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-xs font-bold text-[#6B7280] mb-1">Khung giờ *</label>
+                                <label className="block text-xs font-bold text-gray-500 mb-1">Khung giờ *</label>
                                 <div className="flex items-center gap-2">
                                     <select value={scheduleForm.startTime} onChange={e => setScheduleForm(f => ({ ...f, startTime: e.target.value }))} className="nb-select flex-1">
                                         <option value="">Giờ bắt đầu</option>
@@ -574,7 +574,7 @@ export default function SchoolProductionOrderDetail() {
                                             return <option key={h} value={`${hh}:00`}>{`${hh}:00`}</option>;
                                         })}
                                     </select>
-                                    <span className="text-[#6B7280] font-medium shrink-0">—</span>
+                                    <span className="text-gray-500 font-medium shrink-0">—</span>
                                     <select value={scheduleForm.endTime} onChange={e => setScheduleForm(f => ({ ...f, endTime: e.target.value }))} className="nb-select flex-1">
                                         <option value="">Giờ kết thúc</option>
                                         {Array.from({ length: 24 }, (_, i) => i).map(h => {
@@ -585,7 +585,7 @@ export default function SchoolProductionOrderDetail() {
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-xs font-bold text-[#6B7280] mb-1">Ghi chú</label>
+                                <label className="block text-xs font-bold text-gray-500 mb-1">Ghi chú</label>
                                 <textarea value={scheduleForm.note} onChange={e => setScheduleForm(f => ({ ...f, note: e.target.value }))}
                                     placeholder="VD: Phát đồng phục cho khối 10..." rows={2} maxLength={500} className="nb-input w-full resize-y" />
                             </div>

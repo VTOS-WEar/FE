@@ -104,31 +104,31 @@ export const ParentProfile = (): JSX.Element => {
   }
 
   return (
-    <GuestLayout bgColor="#FFF8F0" mainClassName="flex-1">
+    <GuestLayout bgColor="#f9fafb" mainClassName="flex-1">
       <div className="relative z-10 mx-auto max-w-[1200px] px-4 py-8 md:py-12 lg:px-8 nb-fade-in">
         <nav className="mb-6 flex items-center gap-2 text-sm font-bold">
-          <a href="/" className="text-[#6B7280] transition-colors hover:text-[#1A1A2E]">
+          <a href="/" className="text-gray-500 transition-colors hover:text-gray-800">
             Trang chủ
           </a>
-          <span className="text-[#6B7280]">/</span>
-          <span className="text-[#1A1A2E]">Hồ sơ phụ huynh</span>
+          <span className="text-gray-500">/</span>
+          <span className="text-gray-900">Hồ sơ phụ huynh</span>
         </nav>
 
         <div className="nb-card-static flex min-h-[500px] flex-col overflow-hidden rounded-2xl lg:flex-row">
-          <div className="flex flex-shrink-0 flex-col border-b-2 border-[#1A1A2E] bg-[#FAFAF5] p-5 lg:w-[280px] lg:border-b-0 lg:border-r-2 xl:p-6">
+          <div className="flex flex-shrink-0 flex-col border-b border-gray-200 bg-gray-50 p-5 lg:w-[280px] lg:border-b-0 lg:border-r-2 xl:p-6">
             <div className="mb-8 flex items-center gap-3.5">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl border-2 border-[#1A1A2E] bg-[#EDE9FE] shadow-[3px_3px_0_#1A1A2E]">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-gray-200 bg-violet-50 shadow-soft-sm">
                 {user.avatar ? (
                   <img src={user.avatar} alt="" className="h-full w-full rounded-xl object-cover" />
                 ) : (
-                  <User className="h-5 w-5 text-[#1A1A2E]" />
+                  <User className="h-5 w-5 text-gray-900" />
                 )}
               </div>
               <div className="min-w-0 flex-1">
-                <p className="mb-0.5 text-[10px] font-bold uppercase tracking-widest text-[#6B7280]">
+                <p className="mb-0.5 text-[10px] font-bold uppercase tracking-widest text-gray-500">
                   Tài khoản
                 </p>
-                <p className="truncate text-[16px] font-extrabold leading-tight text-[#1A1A2E]" title={user.fullName}>
+                <p className="truncate text-[16px] font-extrabold leading-tight text-gray-900" title={user.fullName}>
                   {user.fullName}
                 </p>
               </div>
@@ -142,12 +142,12 @@ export const ParentProfile = (): JSX.Element => {
                     {({ isActive }) => (
                       <div
                         className={`group relative flex items-center gap-3 rounded-xl border-2 px-3.5 py-3 text-left text-[13px] font-bold transition-all ${isActive
-                          ? "border-[#1A1A2E] bg-[#B8A9E8] text-[#1A1A2E] shadow-[3px_3px_0_#1A1A2E]"
-                          : "border-transparent text-[#4C5769] hover:border-[#1A1A2E]/20 hover:bg-[#EDE9FE]"
+                          ? "border-gray-200 bg-purple-400 text-gray-900 shadow-soft-sm"
+                          : "border-transparent text-gray-600 hover:border-gray-300/20 hover:bg-violet-50"
                           }`}
                       >
                         <Icon
-                          className={`h-[18px] w-[18px] transition-colors ${isActive ? "text-[#1A1A2E]" : "text-[#4C5769] group-hover:text-[#1A1A2E]"
+                          className={`h-[18px] w-[18px] transition-colors ${isActive ? "text-gray-900" : "text-gray-600 group-hover:text-gray-800"
                             }`}
                         />
                         <span className="flex-1">{item.label}</span>
@@ -159,10 +159,10 @@ export const ParentProfile = (): JSX.Element => {
               })}
             </nav>
 
-            <div className="mt-6 border-t-2 border-[#1A1A2E]/10 pt-5">
+            <div className="mt-6 border-t border-gray-200/10 pt-5">
               <button
                 onClick={handleLogout}
-                className="flex w-full items-center gap-3 rounded-xl border-2 border-transparent px-3.5 py-3 text-left text-[13px] font-bold text-[#991B1B] transition-all hover:border-[#991B1B]/30 hover:bg-[#FEE2E2]"
+                className="flex w-full items-center gap-3 rounded-xl border-2 border-transparent px-3.5 py-3 text-left text-[13px] font-bold text-red-800 transition-all hover:border-[#991B1B]/30 hover:bg-red-50"
               >
                 <LogOut className={`h-[18px] w-[18px] ${isLoggingOut ? "animate-spin" : ""}`} />
                 {isLoggingOut ? "Đang xuất..." : "Đăng xuất"}
@@ -184,8 +184,8 @@ export const ParentProfile = (): JSX.Element => {
                   className="absolute inset-0 z-10 flex items-center justify-center bg-white"
                 >
                   <div className="flex flex-col items-center gap-3">
-                    <div className="w-10 h-10 rounded-full border-[3px] border-[#EDE9FE] border-t-[#1A1A2E] animate-spin" />
-                    <p className="text-xs font-bold text-[#6B7280] tracking-wide">Đang tải...</p>
+                    <div className="w-10 h-10 rounded-full border-2 border-violet-100 border-t-gray-900 animate-spin" />
+                    <p className="text-xs font-bold text-gray-500 tracking-wide">Đang tải...</p>
                   </div>
                 </motion.div>
               )}

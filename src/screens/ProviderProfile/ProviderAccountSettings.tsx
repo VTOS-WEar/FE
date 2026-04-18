@@ -45,14 +45,14 @@ export const ProviderAccountSettings = (): JSX.Element => {
                         <Breadcrumb><BreadcrumbList>
                             <BreadcrumbItem><BreadcrumbLink href="/provider/dashboard" className="font-semibold text-[#4c5769] text-base">Trang chủ</BreadcrumbLink></BreadcrumbItem>
                             <BreadcrumbSeparator className="text-[#cbcad7]">/</BreadcrumbSeparator>
-                            <BreadcrumbItem><BreadcrumbPage className="font-bold text-[#1A1A2E] text-base">Cài đặt tài khoản</BreadcrumbPage></BreadcrumbItem>
+                            <BreadcrumbItem><BreadcrumbPage className="font-bold text-gray-900 text-base">Cài đặt tài khoản</BreadcrumbPage></BreadcrumbItem>
                         </BreadcrumbList></Breadcrumb>
                     </TopNavBar>
 
                     <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-6 nb-fade-in">
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                             <div>
-                                <h1 className="font-extrabold text-[#1A1A2E] text-[28px] lg:text-[32px] leading-tight">🔐 Cài đặt tài khoản</h1>
+                                <h1 className="font-extrabold text-gray-900 text-[28px] lg:text-[32px] leading-tight">🔐 Cài đặt tài khoản</h1>
                                 <p className="mt-1 font-medium text-[#4c5769] text-sm lg:text-base">Quản lý bảo mật và mật khẩu tài khoản.</p>
                             </div>
                         </div>

@@ -143,7 +143,7 @@ export const BodygramAvatarViewer = ({
   if (!avatarUrl) {
     return (
       <div
-        className={`flex items-center justify-center rounded-[28px] border-2 border-[#1A1A2E] bg-[#FAFAF5] p-4 text-center text-sm font-bold text-[#6B7280] ${className || "h-[520px]"}`}
+        className={`flex items-center justify-center rounded-[28px] border border-gray-200 bg-gray-50 p-4 text-center text-sm font-bold text-gray-500 ${className || "h-[520px]"}`}
       >
         Chưa có avatar 3D cho lần scan này.
       </div>
@@ -153,7 +153,7 @@ export const BodygramAvatarViewer = ({
   if (/\.(png|jpg|jpeg)$/i.test(avatarUrl)) {
     return (
       <div
-        className={`flex items-center justify-center overflow-hidden rounded-[28px] border-2 border-[#1A1A2E] bg-[#FAFAF5] ${className || "h-[520px]"}`}
+        className={`flex items-center justify-center overflow-hidden rounded-[28px] border border-gray-200 bg-gray-50 ${className || "h-[520px]"}`}
       >
         <img src={avatarUrl} alt="Avatar" className="h-full w-full object-contain" />
       </div>
@@ -162,7 +162,7 @@ export const BodygramAvatarViewer = ({
 
   return (
     <div
-      className={`overflow-hidden border-2 border-[#1A1A2E] bg-[radial-gradient(circle_at_top,_#ffffff,_#eef2f7_58%,_#dde3ec)] ${className || "h-[520px] rounded-[28px]"}`}
+      className={`overflow-hidden border border-gray-200 bg-[radial-gradient(circle_at_top,_#ffffff,_#eef2f7_58%,_#dde3ec)] ${className || "h-[520px] rounded-[28px]"}`}
     >
       <Canvas camera={{ position: [0, 1.25, 3], fov: 35 }}>
         <ambientLight intensity={1.6} />

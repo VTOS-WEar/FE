@@ -73,7 +73,7 @@ export const ProviderProfile = (): JSX.Element => {
     };
 
     const fieldClass = "nb-input w-full py-3 text-sm";
-    const labelClass = "font-bold text-[#1A1A2E] text-sm mb-2 block";
+    const labelClass = "font-bold text-gray-900 text-sm mb-2 block";
     const sc = statusConfig[status];
 
     return (
@@ -88,21 +88,21 @@ export const ProviderProfile = (): JSX.Element => {
                         <Breadcrumb><BreadcrumbList>
                             <BreadcrumbItem><BreadcrumbLink href="/provider/dashboard" className="font-semibold text-[#4c5769] text-base">Trang chủ</BreadcrumbLink></BreadcrumbItem>
                             <BreadcrumbSeparator className="text-[#cbcad7]">/</BreadcrumbSeparator>
-                            <BreadcrumbItem><BreadcrumbPage className="font-bold text-[#1A1A2E] text-base">Hồ sơ Nhà Cung Cấp</BreadcrumbPage></BreadcrumbItem>
+                            <BreadcrumbItem><BreadcrumbPage className="font-bold text-gray-900 text-base">Hồ sơ Nhà Cung Cấp</BreadcrumbPage></BreadcrumbItem>
                         </BreadcrumbList></Breadcrumb>
                     </TopNavBar>
 
                     <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-6 nb-fade-in">
                         {loading ? (
                             <div className="flex items-center justify-center py-20">
-                                <div className="animate-spin rounded-full h-10 w-10 border-[3px] border-[#6938EF] border-t-transparent" />
+                                <div className="animate-spin rounded-full h-10 w-10 border-2 border-[#6938EF] border-t-transparent" />
                             </div>
                         ) : (
                             <>
                                 {/* Header */}
                                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                                     <div>
-                                        <h1 className="font-extrabold text-[#1A1A2E] text-[28px] lg:text-[32px] leading-tight">🏢 Hồ sơ Nhà Cung Cấp</h1>
+                                        <h1 className="font-extrabold text-gray-900 text-[28px] lg:text-[32px] leading-tight">🏢 Hồ sơ Nhà Cung Cấp</h1>
                                         <p className="mt-1 font-medium text-[#4c5769] text-sm lg:text-base">Cập nhật thông tin của nhà cung cấp.</p>
                                     </div>
                                     {sc && <span className={sc.cls}>{sc.label}</span>}
@@ -113,26 +113,26 @@ export const ProviderProfile = (): JSX.Element => {
                                     <div className="nb-card-static border-[#EF4444] bg-[#FEE2E2] px-4 py-3 text-sm font-semibold text-[#DC2626]">⚠️ {error}</div>
                                 )}
                                 {success && (
-                                    <div className="nb-card-static border-[#10B981] bg-[#D1FAE5] px-4 py-3 text-sm font-semibold text-[#065F46]">✅ {success}</div>
+                                    <div className="nb-card-static border-[#10B981] bg-[#D1FAE5] px-4 py-3 text-sm font-semibold text-emerald-800">✅ {success}</div>
                                 )}
 
                                 {/* Form Card */}
                                 <div className="nb-card p-0">
-                                    <div className="px-6 sm:px-8 pt-6 pb-4 border-b-2 border-[#E5E7EB]">
+                                    <div className="px-6 sm:px-8 pt-6 pb-4 border-b-2 border-gray-200">
                                         <div className="flex items-center gap-3">
-                                            <div className="flex items-center justify-center w-9 h-9 bg-[#6938EF] rounded-lg border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E]">
+                                            <div className="flex items-center justify-center w-9 h-9 bg-[#6938EF] rounded-lg border border-gray-200 shadow-sm">
                                                 <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
                                                     <path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z" clipRule="evenodd" />
                                                 </svg>
                                             </div>
-                                            <h2 className="font-extrabold text-[#1A1A2E] text-lg">Thông tin nhà cung cấp</h2>
+                                            <h2 className="font-extrabold text-gray-900 text-lg">Thông tin nhà cung cấp</h2>
                                         </div>
                                     </div>
 
                                     <div className="px-6 sm:px-8 py-6">
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                             <div className="md:col-span-2">
-                                                <label className={labelClass}>Tên nhà cung cấp <span className="text-[#EF4444]">*</span></label>
+                                                <label className={labelClass}>Tên nhà cung cấp <span className="text-red-500">*</span></label>
                                                 <input value={providerName} onChange={e => setProviderName(e.target.value)} placeholder="Nhập tên nhà cung cấp..." className={fieldClass} />
                                             </div>
                                             <div>

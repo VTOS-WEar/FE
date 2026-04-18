@@ -90,7 +90,7 @@ export const FrameSubsection = (): JSX.Element => {
             </header>
 
             <div className="flex flex-col items-center pt-[38px] px-[25px]">
-                <Avatar className="w-[170px] h-[170px] border-[3px] border-white shadow-[0px_4px_4px_#00000040]">
+                <Avatar className="w-[170px] h-[170px] border-2 border-white shadow-[0px_4px_4px_#00000040]">
                     <AvatarImage src="" alt="School Avatar" />
                     <AvatarFallback className="bg-cover bg-[50%_50%]" />
                 </Avatar>

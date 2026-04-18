@@ -18,7 +18,7 @@ const STATUS_BADGE: Record<string, string> = {
     Shipped: "nb-badge bg-[#FFEDD5] text-[#C2410C]",
     Delivered: "nb-badge nb-badge-green",
     Cancelled: "nb-badge nb-badge-red",
-    Refunded: "nb-badge bg-[#F3F4F6] text-[#6B7280]",
+    Refunded: "nb-badge bg-gray-100 text-gray-500",
 };
 const STATUS_LABELS: Record<string, string> = {
     Pending: "Chờ thanh toán", Paid: "Đã thanh toán", Confirmed: "Đã xác nhận",
@@ -102,18 +102,18 @@ export const OrderManagement = (): JSX.Element => {
                         <Breadcrumb><BreadcrumbList>
                             <BreadcrumbItem><BreadcrumbLink href="/school/dashboard" className="font-semibold text-[#4c5769] text-base">Trang chủ</BreadcrumbLink></BreadcrumbItem>
                             <BreadcrumbSeparator className="text-[#cbcad7]">/</BreadcrumbSeparator>
-                            <BreadcrumbItem><BreadcrumbPage className="font-bold text-[#1A1A2E] text-base">Đơn hàng</BreadcrumbPage></BreadcrumbItem>
+                            <BreadcrumbItem><BreadcrumbPage className="font-bold text-gray-900 text-base">Đơn hàng</BreadcrumbPage></BreadcrumbItem>
                         </BreadcrumbList></Breadcrumb>
                     </TopNavBar>
                     <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-6">
 
-                        <h1 className="font-extrabold text-[#1A1A2E] text-[28px]">📦 Quản lý Đơn hàng</h1>
+                        <h1 className="font-extrabold text-gray-900 text-[28px]">📦 Quản lý Đơn hàng</h1>
 
                         {/* Stats — NB stat cards */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
                             <div className="nb-stat-card nb-stat-primary">
                                 <div className="flex items-center gap-3">
-                                    <div className="nb-stat-icon bg-[#EDE9FE]"><span className="text-lg">📦</span></div>
+                                    <div className="nb-stat-icon bg-violet-50"><span className="text-lg">📦</span></div>
                                     <div><p className="nb-stat-label">Tổng đơn hàng</p><p className="nb-stat-value mt-1">{globalStats.total}</p></div>
                                 </div>
                             </div>
@@ -132,7 +132,7 @@ export const OrderManagement = (): JSX.Element => {
                             <div className="nb-stat-card">
                                 <div className="flex items-center gap-3">
                                     <div className="nb-stat-icon bg-[#FEE2E2]"><span className="text-lg">❌</span></div>
-                                    <div><p className="nb-stat-label">Đã huỷ</p><p className="nb-stat-value text-[#EF4444] mt-1">{globalStats.cancelled}</p></div>
+                                    <div><p className="nb-stat-label">Đã huỷ</p><p className="nb-stat-value text-red-500 mt-1">{globalStats.cancelled}</p></div>
                                 </div>
                             </div>
                         </div>
@@ -163,7 +163,7 @@ export const OrderManagement = (): JSX.Element => {
                         ) : orders.length === 0 ? (
                             <div className="nb-card-static p-12 text-center">
                                 <p className="text-4xl mb-3">📦</p>
-                                <p className="font-medium text-[#9CA3AF]">Chưa có đơn hàng nào.</p>
+                                <p className="font-medium text-gray-400">Chưa có đơn hàng nào.</p>
                             </div>
                         ) : (
                             <div className="grid gap-3">
@@ -173,17 +173,17 @@ export const OrderManagement = (): JSX.Element => {
                                         <div className="flex items-center justify-between gap-4">
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex items-center gap-3 mb-1">
-                                                    <h3 className="font-bold text-[#1A1A2E] text-base">Đơn #{o.orderId.slice(0, 8).toUpperCase()}</h3>
+                                                    <h3 className="font-bold text-gray-900 text-base">Đơn #{o.orderId.slice(0, 8).toUpperCase()}</h3>
                                                     <span className={STATUS_BADGE[o.orderStatus] || "nb-badge"}>{STATUS_LABELS[o.orderStatus] || o.orderStatus}</span>
                                                 </div>
-                                                <p className="text-sm text-[#6B7280]">
+                                                <p className="text-sm text-gray-500">
                                                     👤 {o.parentName} · 👦 {o.childName}
                                                     {o.campaignName && <> · 🏷️ {o.campaignName}</>}
                                                 </p>
                                             </div>
                                             <div className="text-right flex-shrink-0">
-                                                <p className="font-extrabold text-lg text-[#1A1A2E]">{formatVND(o.totalAmount)}</p>
-                                                <p className="text-xs text-[#9CA3AF]">{formatDate(o.orderDate)} · {o.itemCount} SP</p>
+                                                <p className="font-extrabold text-lg text-gray-900">{formatVND(o.totalAmount)}</p>
+                                                <p className="text-xs text-gray-400">{formatDate(o.orderDate)} · {o.itemCount} SP</p>
                                             </div>
                                         </div>
                                     </div>
@@ -195,7 +195,7 @@ export const OrderManagement = (): JSX.Element => {
                         {totalPages > 1 && (
                             <div className="flex justify-center gap-2">
                                 <button disabled={page <= 1} onClick={() => setPage(p => p - 1)} className="nb-btn nb-btn-outline nb-btn-sm text-sm">← Trước</button>
-                                <span className="flex items-center text-sm text-[#6B7280] px-2 font-bold">{page}/{totalPages}</span>
+                                <span className="flex items-center text-sm text-gray-500 px-2 font-bold">{page}/{totalPages}</span>
                                 <button disabled={page >= totalPages} onClick={() => setPage(p => p + 1)} className="nb-btn nb-btn-outline nb-btn-sm text-sm">Sau →</button>
                             </div>
                         )}
@@ -206,9 +206,9 @@ export const OrderManagement = (): JSX.Element => {
             {/* Detail Modal — NB style */}
             {detail && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => setDetail(null)}>
-                    <div className="bg-white rounded-md w-full max-w-md mx-4 p-6 border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E]" onClick={e => e.stopPropagation()}>
+                    <div className="bg-white rounded-md w-full max-w-md mx-4 p-6 border border-gray-200 shadow-soft-md" onClick={e => e.stopPropagation()}>
                         <div className="flex justify-between items-center mb-5">
-                            <h2 className="font-extrabold text-xl text-[#1A1A2E]">📦 Chi tiết đơn hàng</h2>
+                            <h2 className="font-extrabold text-xl text-gray-900">📦 Chi tiết đơn hàng</h2>
                             <span className={STATUS_BADGE[detail.orderStatus] || "nb-badge"}>{STATUS_LABELS[detail.orderStatus] || detail.orderStatus}</span>
                         </div>
                         <div className="space-y-3 text-sm">
@@ -233,8 +233,8 @@ export const OrderManagement = (): JSX.Element => {
 function InfoRow({ label, value }: { label: string; value: string }) {
     return (
         <div className="flex gap-3">
-            <span className="min-w-[100px] font-bold text-[#6B7280] text-sm">{label}:</span>
-            <span className="text-[#1A1A2E] text-sm font-medium break-all">{value}</span>
+            <span className="min-w-[100px] font-bold text-gray-500 text-sm">{label}:</span>
+            <span className="text-gray-900 text-sm font-medium break-all">{value}</span>
         </div>
     );
 }

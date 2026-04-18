@@ -78,7 +78,7 @@ export const SchoolProfile = (): JSX.Element => {
 
     const isApproved = !loading && profileData !== null;
     const fieldClass = "nb-input py-3 text-sm";
-    const labelClass = "font-bold text-[#1A1A2E] text-sm mb-2 block";
+    const labelClass = "font-bold text-gray-900 text-sm mb-2 block";
 
     return (
         <div className="nb-page flex flex-col">
@@ -92,14 +92,14 @@ export const SchoolProfile = (): JSX.Element => {
                         <Breadcrumb><BreadcrumbList>
                             <BreadcrumbItem><BreadcrumbLink className="font-semibold text-[#4c5769] text-base">Trang chủ</BreadcrumbLink></BreadcrumbItem>
                             <BreadcrumbSeparator className="text-[#cbcad7]">/</BreadcrumbSeparator>
-                            <BreadcrumbItem><BreadcrumbPage className="font-bold text-[#1A1A2E] text-base">Hồ sơ Trường học</BreadcrumbPage></BreadcrumbItem>
+                            <BreadcrumbItem><BreadcrumbPage className="font-bold text-gray-900 text-base">Hồ sơ Trường học</BreadcrumbPage></BreadcrumbItem>
                         </BreadcrumbList></Breadcrumb>
                     </TopNavBar>
 
                     <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-6 nb-fade-in">
                         {loading && (
                             <div className="flex items-center justify-center py-20">
-                                <div className="animate-spin rounded-full h-10 w-10 border-[3px] border-[#6938EF] border-t-transparent" />
+                                <div className="animate-spin rounded-full h-10 w-10 border-2 border-[#6938EF] border-t-transparent" />
                             </div>
                         )}
 
@@ -118,7 +118,7 @@ export const SchoolProfile = (): JSX.Element => {
                                 {/* Header + Status */}
                                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                                     <div>
-                                        <h1 className="font-extrabold text-[#1A1A2E] text-[32px] leading-tight">🏫 Cung cấp thông tin Trường học</h1>
+                                        <h1 className="font-extrabold text-gray-900 text-[32px] leading-tight">🏫 Cung cấp thông tin Trường học</h1>
                                         <p className="mt-1 font-medium text-[#4c5769] text-base">Cập nhật thông tin định danh và tài liệu pháp lý của nhà trường.</p>
                                     </div>
                                     <span className={`nb-badge text-base ${status === "submitted" ? "nb-badge-green" : "nb-badge-yellow"}`}>
@@ -129,7 +129,7 @@ export const SchoolProfile = (): JSX.Element => {
                                 {/* Status Alert Card */}
                                 <div className="nb-card p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                                     <div>
-                                        <h2 className="font-extrabold text-[#1A1A2E] text-xl">
+                                        <h2 className="font-extrabold text-gray-900 text-xl">
                                             Hồ sơ hiện tại: {status === "submitted" ? "Đã gửi" : "Nháp"}
                                         </h2>
                                         <p className="mt-2 font-medium text-[#4c5769] text-sm">
@@ -143,24 +143,24 @@ export const SchoolProfile = (): JSX.Element => {
 
                                 {/* Feedback */}
                                 {error && <div className="nb-card-static border-[#EF4444] bg-[#FEE2E2] px-4 py-3 text-sm font-semibold text-[#DC2626]">⚠️ {error}</div>}
-                                {success && <div className="nb-card-static border-[#10B981] bg-[#D1FAE5] px-4 py-3 text-sm font-semibold text-[#065F46]">✅ {success}</div>}
+                                {success && <div className="nb-card-static border-[#10B981] bg-[#D1FAE5] px-4 py-3 text-sm font-semibold text-emerald-800">✅ {success}</div>}
 
                                 {/* Contact Info Card */}
                                 <div className="nb-card p-0">
-                                    <div className="px-6 sm:px-8 pt-6 pb-4 border-b-2 border-[#E5E7EB]">
+                                    <div className="px-6 sm:px-8 pt-6 pb-4 border-b-2 border-gray-200">
                                         <div className="flex items-center gap-3">
-                                            <div className="flex items-center justify-center w-9 h-9 bg-[#6938EF] rounded-lg border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E]">
+                                            <div className="flex items-center justify-center w-9 h-9 bg-[#6938EF] rounded-lg border border-gray-200 shadow-sm">
                                                 <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
                                                     <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                                                 </svg>
                                             </div>
-                                            <h2 className="font-extrabold text-[#1A1A2E] text-lg">Thông tin liên hệ</h2>
+                                            <h2 className="font-extrabold text-gray-900 text-lg">Thông tin liên hệ</h2>
                                         </div>
                                     </div>
                                     <div className="px-6 sm:px-8 py-6">
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                             <div className="md:col-span-2">
-                                                <label className={labelClass}>Tên trường <span className="text-[#EF4444]">*</span></label>
+                                                <label className={labelClass}>Tên trường <span className="text-red-500">*</span></label>
                                                 <input id="schoolName" value={schoolName} onChange={e => setSchoolName(e.target.value)} placeholder="Nhập tên trường..." className={fieldClass} />
                                             </div>
                                             <div>
@@ -181,25 +181,25 @@ export const SchoolProfile = (): JSX.Element => {
 
                                 {/* Legal Documents Card (Placeholder) */}
                                 <div className="nb-card p-0">
-                                    <div className="px-6 sm:px-8 pt-6 pb-4 border-b-2 border-[#E5E7EB]">
+                                    <div className="px-6 sm:px-8 pt-6 pb-4 border-b-2 border-gray-200">
                                         <div className="flex items-center gap-3">
-                                            <div className="flex items-center justify-center w-9 h-9 bg-[#6938EF] rounded-lg border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E]">
+                                            <div className="flex items-center justify-center w-9 h-9 bg-[#6938EF] rounded-lg border border-gray-200 shadow-sm">
                                                 <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                                                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                                 </svg>
                                             </div>
-                                            <h2 className="font-extrabold text-[#1A1A2E] text-lg">Tài liệu pháp lý</h2>
+                                            <h2 className="font-extrabold text-gray-900 text-lg">Tài liệu pháp lý</h2>
                                         </div>
                                     </div>
                                     <div className="px-6 sm:px-8 py-6">
                                         <div className="flex flex-col items-center justify-center py-12 text-center">
-                                            <div className="w-16 h-16 bg-[#F3F4F6] rounded-full flex items-center justify-center mb-4 border-2 border-dashed border-[#1A1A2E]">
-                                                <svg className="w-8 h-8 text-[#9CA3AF]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                                            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4 border-2 border-dashed border-gray-200">
+                                                <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
                                                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z" />
                                                 </svg>
                                             </div>
-                                            <h3 className="font-bold text-[#6B7280] text-base mb-2">Tính năng đang phát triển</h3>
-                                            <p className="font-medium text-[#9CA3AF] text-sm max-w-md">
+                                            <h3 className="font-bold text-gray-500 text-base mb-2">Tính năng đang phát triển</h3>
+                                            <p className="font-medium text-gray-400 text-sm max-w-md">
                                                 Chức năng tải lên tài liệu pháp lý (Giấy phép hoạt động, Quyết định thành lập...) sẽ được cập nhật trong phiên bản tiếp theo.
                                             </p>
                                         </div>

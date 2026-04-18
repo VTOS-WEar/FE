@@ -45,7 +45,7 @@ export default function ProductDetail() {
   ];
 
   return (
-    <div className="bg-[#FFF8F0]">
+    <div className="bg-gray-50">
       {/* Breadcrumb */}
       <div className="max-w-[1440px] mx-auto px-6 lg:px-12 pt-8 pb-6">
         <div className="flex items-center gap-2.5 text-base">
@@ -69,7 +69,7 @@ export default function ProductDetail() {
           {/* Left - Product Images */}
           <div className="space-y-4">
             {/* Main Image */}
-            <div className="relative w-full aspect-square bg-white rounded-xl overflow-hidden border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E]">
+            <div className="relative w-full aspect-square bg-white rounded-xl overflow-hidden border border-gray-200 shadow-soft-md">
               <img
                 src="https://api.builder.io/api/v1/image/assets/TEMP/ca53d5716185773c3e8e3503a9b32095d88cfa1f?width=596"
                 alt="Áo sơ mi trắng nam"
@@ -94,7 +94,7 @@ export default function ProductDetail() {
           {/* Right - Product Info */}
           <div className="space-y-6">
             {/* School Info */}
-            <div className="flex items-center gap-4 p-5 bg-white rounded-xl border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E] hover:-translate-y-1 hover:shadow-[6px_6px_0_#1A1A2E] transition-all duration-300 ease-in-out">
+            <div className="flex items-center gap-4 p-5 bg-white rounded-xl border border-gray-200 shadow-soft-md hover:-translate-y-1 hover:shadow-soft-md transition-all duration-300 ease-in-out">
               <img
                 src="https://api.builder.io/api/v1/image/assets/TEMP/7c56845c7a5a2ebc8fe7f65a9cc5d4e782dc9bd8?width=200"
                 alt="THPT Phan Châu Trinh logo"
@@ -105,7 +105,7 @@ export default function ProductDetail() {
                   THPT Phan Châu Trinh - Đà Nẵng
                 </p>
               </div>
-              <div className="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 rounded-full px-4 py-2 shadow-[3px_3px_0_#1A1A2E] border-2 border-[#1A1A2E] transition-all duration-300">
+              <div className="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 rounded-full px-4 py-2 shadow-soft-sm border border-gray-200 transition-all duration-300">
                 <Check className="w-4 h-4 text-white" />
                 <span className="font-montserrat font-semibold text-sm text-white">
                   Đã xác thực
@@ -182,7 +182,7 @@ export default function ProductDetail() {
                   alert("Vui lòng chọn chiến dịch mua đồng phục tại trang trường để đặt hàng.");
                   navigate("/schools");
                 }}
-                className="flex-1 flex items-center justify-center gap-3 bg-blue-accent hover:bg-blue-accent/90 text-white font-montserrat font-bold text-xl px-12 py-5 rounded-lg border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_#1A1A2E] transition-all duration-300 ease-in-out"
+                className="flex-1 flex items-center justify-center gap-3 bg-blue-accent hover:bg-blue-accent/90 text-white font-montserrat font-bold text-xl px-12 py-5 rounded-lg border border-gray-200 shadow-soft-md hover:scale-[0.98] hover:shadow-sm transition-all duration-300 ease-in-out"
               >
                 <ShoppingCart className="w-6 h-6 transition-transform duration-300 group-hover:scale-110" />
                 Thêm vào giỏ hàng
@@ -232,7 +232,7 @@ export default function ProductDetail() {
           </div>
 
           {/* Tab Content */}
-          <div className="bg-white rounded-xl p-8 border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E]">
+          <div className="bg-white rounded-xl p-8 border border-gray-200 shadow-soft-md">
             {activeTab === "description" && (
               <div className="space-y-5">
                 <div className="flex items-start gap-4">
@@ -521,7 +521,7 @@ export default function ProductDetail() {
               <Link
                 key={product.id}
                 to={`/products/${product.id}`}
-                className="bg-white rounded-xl border-2 border-[#1A1A2E] overflow-hidden shadow-[4px_4px_0_#1A1A2E] hover:shadow-[6px_6px_0_#1A1A2E] transition-all duration-300 ease-in-out hover:-translate-y-1 group"
+                className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-soft-md hover:shadow-soft-md transition-all duration-300 ease-in-out hover:-translate-y-1 group"
               >
                 <div className="relative w-full aspect-square overflow-hidden">
                   <img

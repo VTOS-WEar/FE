@@ -38,10 +38,10 @@ function CampaignCountdownCard({
  <div className="nb-card-static p-6">
  <div className="flex items-start justify-between mb-4">
  <div>
- <h2 className=" font-bold text-[#1A1A2E] text-lg truncate">
+ <h2 className=" font-bold text-gray-900 text-lg truncate">
  {campaign.campaignName}
  </h2>
- <p className=" font-medium text-[#6B7280] text-sm mt-0.5">
+ <p className=" font-medium text-gray-500 text-sm mt-0.5">
  Kết thúc vào ngày {formatDate(campaign.endDate)}
  </p>
  </div>
@@ -57,7 +57,7 @@ function CampaignCountdownCard({
  <div className="flex items-start gap-6">
  {/* Countdown timer */}
  <div className="flex-shrink-0">
- <p className=" font-bold text-[#6B7280] text-xs tracking-wider uppercase mb-3">
+ <p className=" font-bold text-gray-500 text-xs tracking-wider uppercase mb-3">
  Thời gian còn lại
  </p>
  <div className="flex items-center gap-2">
@@ -68,7 +68,7 @@ function CampaignCountdownCard({
  { val: String(timeLeft.seconds).padStart(2, "0"), label: "Giây" },
  ].map((unit, i) => (
  <div key={unit.label} className="flex items-center gap-2">
- {i > 0 && <span className=" font-bold text-[#1A1A2E] text-2xl animate-pulse">:</span>}
+ {i > 0 && <span className=" font-bold text-gray-900 text-2xl animate-pulse">:</span>}
  <div className="text-center">
  <div className="nb-countdown-box">
  <span className="nb-countdown-value">
@@ -85,12 +85,12 @@ function CampaignCountdownCard({
  {/* Warning Alert — compact, right side */}
  {isNearEnd && (
  <div className="flex-1 nb-alert nb-alert-warning self-center">
- <div className="w-6 h-6 rounded-full bg-[#F59E0B] flex items-center justify-center flex-shrink-0 mt-px border-2 border-[#1A1A2E]">
+ <div className="w-6 h-6 rounded-full bg-[#F59E0B] flex items-center justify-center flex-shrink-0 mt-px border border-gray-200">
  <svg className="w-3 h-3 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z" /></svg>
  </div>
  <div>
- <p className=" font-bold text-[#92400E] text-xs leading-tight">Sắp kết thúc</p>
- <p className=" font-medium text-[#92400E] text-[10px] mt-0.5 leading-snug">
+ <p className=" font-bold text-amber-800 text-xs leading-tight">Sắp kết thúc</p>
+ <p className=" font-medium text-amber-800 text-[10px] mt-0.5 leading-snug">
  Vui lòng nhắc nhở học sinh chưa hoàn tất đăng ký size trước thời hạn đóng cổng.
  </p>
  <button className=" font-bold text-[#EA580C] text-[10px] mt-1 hover:text-[#C2410C] transition-colors">
@@ -167,12 +167,12 @@ function StatsCard({
 }) {
  const indicatorColor =
  indicatorType === "positive" ? "text-[#10B981]"
- : indicatorType === "negative" ? "text-[#EF4444]"
- : "text-[#6B7280]";
+ : indicatorType === "negative" ? "text-red-500"
+ : "text-gray-500";
 
  return (
  <div
-className={`nb-stat-card border-[3px] border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E] hover:-translate-y-px hover:shadow-[5px_5px_0_#1A1A2E] ${cardTone ?? ""}`}
+className={`nb-stat-card border-2 border-gray-200 shadow-soft-md hover:-translate-y-px hover:shadow-soft-md ${cardTone ?? ""}`}
  style={{ cursor: onClick ? "pointer" : undefined }}
  onClick={onClick}
  >
@@ -214,13 +214,13 @@ className={`nb-progress-bar ${progressBarClass}`}
 function CategoryBar({ name, percentage, color }: { name: string; percentage: number; color: string }) {
  return (
  <div className="flex items-center gap-3">
- <div className={`w-8 h-8 rounded-lg flex items-center justify-center border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E] ${color}`}>
+ <div className={`w-8 h-8 rounded-lg flex items-center justify-center border border-gray-200 shadow-sm ${color}`}>
  <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M18.85 10.39l-6.27-8.39c-.31-.44-.96-.44-1.27 0l-6.27 8.39A1 1 0 005.85 12h4.15v9c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-9h4.15a1 1 0 00.7-1.61z" /></svg>
  </div>
  <div className="flex-1">
  <div className="flex items-center justify-between mb-1">
- <span className=" font-semibold text-[#4C5769] text-sm">{name}</span>
- <span className=" font-bold text-[#1A1A2E] text-sm">{percentage}%</span>
+ <span className=" font-semibold text-gray-600 text-sm">{name}</span>
+ <span className=" font-bold text-gray-900 text-sm">{percentage}%</span>
  </div>
  <div className="nb-progress">
  <div
@@ -357,7 +357,7 @@ export const SchoolDashboard = (): JSX.Element => {
  <BreadcrumbList>
  <BreadcrumbItem><BreadcrumbLink href="/school/dashboard" className=" font-semibold text-[#4c5769] text-base">Trang chủ</BreadcrumbLink></BreadcrumbItem>
  <BreadcrumbSeparator className="text-[#cbcad7]">/</BreadcrumbSeparator>
- <BreadcrumbItem><BreadcrumbPage className=" font-bold text-[#1A1A2E] text-base">Tổng quan</BreadcrumbPage></BreadcrumbItem>
+ <BreadcrumbItem><BreadcrumbPage className=" font-bold text-gray-900 text-base">Tổng quan</BreadcrumbPage></BreadcrumbItem>
  </BreadcrumbList>
  </Breadcrumb>
  </TopNavBar>
@@ -366,11 +366,11 @@ export const SchoolDashboard = (): JSX.Element => {
  <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-6 nb-fade-in">
  {/* Greeting */}
  <div>
- <h1 className=" font-extrabold text-[#1A1A2E] text-[28px] lg:text-[32px] leading-[1.22]">
+ <h1 className=" font-extrabold text-gray-900 text-[28px] lg:text-[32px] leading-[1.22]">
  Xin chào, Ban Giám Hiệu 👋
  </h1>
  <p className="mt-1 font-medium text-[#4c5769] text-sm lg:text-base">
- Dưới đây là tình hình đặt đồng phục cho niên khoá <span className="font-bold text-[#6938EF] border-b-2 border-[#6938EF]">2025-2026</span>.
+ Dưới đây là tình hình đặt đồng phục cho niên khoá <span className="font-bold text-violet-600 border-b-2 border-[#6938EF]">2025-2026</span>.
  </p>
  </div>
 
@@ -438,11 +438,11 @@ cardTone="bg-[#FFF9F4]"
  ) : (
  <div className="nb-card-static p-6">
  <div className="text-center py-8">
- <div className="w-14 h-14 rounded-full bg-[#F3F4F6] flex items-center justify-center mx-auto mb-3 border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E]">
- <svg className="w-7 h-7 text-[#9CA3AF]" viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z" /></svg>
+ <div className="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-3 border border-gray-200 shadow-sm">
+ <svg className="w-7 h-7 text-gray-400" viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z" /></svg>
  </div>
- <p className=" font-bold text-[#6B7280] text-base">Chưa có chiến dịch đang hoạt động</p>
- <p className=" font-medium text-[#9CA3AF] text-sm mt-1">Tạo một chiến dịch mới để bắt đầu.</p>
+ <p className=" font-bold text-gray-500 text-base">Chưa có chiến dịch đang hoạt động</p>
+ <p className=" font-medium text-gray-400 text-sm mt-1">Tạo một chiến dịch mới để bắt đầu.</p>
  <button
  onClick={() => navigate("/school/campaigns/new")}
  className="mt-4 nb-btn nb-btn-purple"
@@ -456,7 +456,7 @@ cardTone="bg-[#FFF9F4]"
 
  {/* Product Category Card */}
  <div className="lg:col-span-2 nb-card-static p-6">
- <h2 className=" font-bold text-[#1A1A2E] text-lg mb-5">
+ <h2 className=" font-bold text-gray-900 text-lg mb-5">
  Phân loại sản phẩm
  </h2>
  {productCategories.length > 0 ? (
@@ -478,7 +478,7 @@ cardTone="bg-[#FFF9F4]"
  </div>
  ) : (
  <div className="text-center py-8">
- <p className=" font-medium text-[#9CA3AF] text-sm">Chưa có dữ liệu sản phẩm</p>
+ <p className=" font-medium text-gray-400 text-sm">Chưa có dữ liệu sản phẩm</p>
  </div>
  )}
  </div>

@@ -150,14 +150,14 @@ export const TwoFactorSetup = (): JSX.Element => {
     const stepLabels = ["Khởi tạo", "Quét mã", "Xác minh", "Hoàn tất"];
 
     return (
-        <div className="min-h-screen bg-[#FFF8F0] flex items-center justify-center p-4" style={{ fontFamily: "'Space Grotesk Variable', sans-serif" }}>
-            <div className="bg-white w-full max-w-lg p-8 lg:p-10 border-2 border-[#1A1A2E] rounded-2xl shadow-[6px_6px_0_#1A1A2E]">
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4" style={{ fontFamily: "'Space Grotesk Variable', sans-serif" }}>
+            <div className="bg-white w-full max-w-lg p-8 lg:p-10 border border-gray-200 rounded-2xl shadow-soft-lg">
                 {/* Header */}
                 <div className="text-center mb-6">
-                    <div className="w-20 h-20 bg-[#EDE9FE] rounded-xl flex items-center justify-center mx-auto mb-4 border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E]">
-                        <Shield className="w-10 h-10 text-[#1A1A2E]" />
+                    <div className="w-20 h-20 bg-violet-50 rounded-xl flex items-center justify-center mx-auto mb-4 border border-gray-200 shadow-soft-md">
+                        <Shield className="w-10 h-10 text-gray-900" />
                     </div>
-                    <h1 className="text-2xl font-extrabold text-[#1A1A2E]">
+                    <h1 className="text-2xl font-extrabold text-gray-900">
                         {step === "recovery" ? "🔑 Mã khôi phục" : "🔐 Thiết lập xác thực 2 bước"}
                     </h1>
                     {forced && step !== "recovery" && (
@@ -173,18 +173,18 @@ export const TwoFactorSetup = (): JSX.Element => {
                         <div key={label} className="flex items-center" style={{ flex: i < 3 ? 1 : "none" }}>
                             {/* Step circle + label */}
                             <div className="flex flex-col items-center gap-1.5 flex-shrink-0">
-                                <div className={`w-9 h-9 rounded-lg border-2 border-[#1A1A2E] flex items-center justify-center text-sm font-bold transition-all ${
-                                    i < stepIndex ? "bg-[#C8E44D] shadow-[2px_2px_0_#1A1A2E]" :
-                                    i === stepIndex ? "bg-[#B8A9E8] shadow-[2px_2px_0_#1A1A2E]" :
-                                    "bg-[#F3F4F6]"
+                                <div className={`w-9 h-9 rounded-lg border border-gray-200 flex items-center justify-center text-sm font-bold transition-all ${
+                                    i < stepIndex ? "bg-emerald-400 shadow-sm" :
+                                    i === stepIndex ? "bg-purple-400 shadow-sm" :
+                                    "bg-gray-100"
                                 }`}>
                                     {i < stepIndex ? "✓" : i + 1}
                                 </div>
-                                <span className={`text-[10px] font-bold ${i <= stepIndex ? "text-[#1A1A2E]" : "text-[#9CA3AF]"}`}>{label}</span>
+                                <span className={`text-[10px] font-bold ${i <= stepIndex ? "text-gray-900" : "text-gray-400"}`}>{label}</span>
                             </div>
                             {/* Connector line */}
                             {i < 3 && (
-                                <div className={`flex-1 h-[3px] mx-1 rounded-full ${i < stepIndex ? "bg-[#C8E44D]" : "bg-[#E5E7EB]"}`} />
+                                <div className={`flex-1 h-[3px] mx-1 rounded-full ${i < stepIndex ? "bg-emerald-400" : "bg-[#E5E7EB]"}`} />
                             )}
                         </div>
                     ))}
@@ -193,20 +193,20 @@ export const TwoFactorSetup = (): JSX.Element => {
                 {/* ── STEP: Loading ── */}
                 {step === "loading" && (
                     <div className="flex items-center justify-center py-16">
-                        <div className="w-8 h-8 border-4 border-[#E5E7EB] border-t-[#B8A9E8] rounded-full animate-spin" />
+                        <div className="w-8 h-8 border-4 border-gray-200 border-t-[#B8A9E8] rounded-full animate-spin" />
                     </div>
                 )}
 
                 {/* ── STEP: Scan QR ── */}
                 {step === "scan" && setupData && (
                     <div className="space-y-6">
-                        <p className="text-[#4C5769] text-sm text-center font-medium">
+                        <p className="text-gray-600 text-sm text-center font-medium">
                             Quét mã QR bằng Google Authenticator hoặc nhập mã thủ công
                         </p>
 
                         {/* QR Code */}
                         <div className="flex justify-center">
-                            <div className="bg-white p-4 rounded-xl border-2 border-[#1A1A2E] shadow-[3px_3px_0_#1A1A2E]">
+                            <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-soft-sm">
                                 <QRCodeSVG
                                     value={setupData.qrCodeUri}
                                     size={192}
@@ -218,22 +218,22 @@ export const TwoFactorSetup = (): JSX.Element => {
                         {/* Manual key toggle */}
                         <button
                             onClick={() => setShowManualKey(!showManualKey)}
-                            className="w-full flex items-center justify-center gap-2 text-sm text-[#1A1A2E] hover:text-[#B8A9E8] font-bold border-2 border-transparent hover:border-[#E5E7EB] rounded-lg py-2 transition-all"
+                            className="w-full flex items-center justify-center gap-2 text-sm text-gray-900 hover:text-purple-500 font-bold border-2 border-transparent hover:border-gray-200 rounded-lg py-2 transition-all"
                         >
                             <Key className="w-4 h-4" />
                             {showManualKey ? "Ẩn mã thủ công" : "Nhập mã thủ công"}
                         </button>
 
                         {showManualKey && (
-                            <div className="bg-[#F8F9FB] rounded-xl p-4 flex items-center gap-3 border-2 border-[#E5E7EB]">
-                                <code className="flex-1 text-sm font-mono text-[#1A1A2E] break-all select-all font-bold">
+                            <div className="bg-gray-50 rounded-xl p-4 flex items-center gap-3 border-2 border-gray-200">
+                                <code className="flex-1 text-sm font-mono text-gray-900 break-all select-all font-bold">
                                     {setupData.manualKey}
                                 </code>
                                 <button
                                     onClick={() => copyToClipboard(setupData.manualKey, "key")}
-                                    className="flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-lg border-2 border-[#1A1A2E] bg-white shadow-[2px_2px_0_#1A1A2E] hover:bg-[#EDE9FE] transition-all active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
+                                    className="flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-lg border border-gray-200 bg-white shadow-sm hover:bg-violet-50 transition-all active:scale-[0.98] active:shadow-none"
                                 >
-                                    {copiedKey ? <CheckCircle className="w-4 h-4 text-[#065F46]" /> : <Copy className="w-4 h-4 text-[#1A1A2E]" />}
+                                    {copiedKey ? <CheckCircle className="w-4 h-4 text-emerald-800" /> : <Copy className="w-4 h-4 text-gray-900" />}
                                 </button>
                             </div>
                         )}
@@ -250,7 +250,7 @@ export const TwoFactorSetup = (): JSX.Element => {
                 {/* ── STEP: Verify first code ── */}
                 {step === "verify" && (
                     <div className="space-y-6">
-                        <p className="text-[#4C5769] text-sm text-center font-medium">
+                        <p className="text-gray-600 text-sm text-center font-medium">
                             Nhập mã 6 chữ số từ ứng dụng xác thực để hoàn tất
                         </p>
 
@@ -268,7 +268,7 @@ export const TwoFactorSetup = (): JSX.Element => {
                                     onPaste={handlePaste}
                                     onFocus={e => e.target.select()}
                                     autoFocus={i === 0}
-                                    className="w-12 h-14 text-center text-2xl font-extrabold border-2 border-[#1A1A2E] rounded-xl bg-white shadow-[3px_3px_0_#1A1A2E] focus:shadow-[3px_3px_0_#1A1A2E,0_0_0_2px_#B8A9E8] outline-none transition-all"
+                                    className="w-12 h-14 text-center text-2xl font-extrabold border border-gray-200 rounded-xl bg-white shadow-soft-sm focus:shadow-soft-sm ring-2 ring-purple-300 outline-none transition-all"
                                 />
                             ))}
                         </div>
@@ -305,7 +305,7 @@ export const TwoFactorSetup = (): JSX.Element => {
                         <div className="nb-card-static p-5">
                             <div className="grid grid-cols-2 gap-2">
                                 {recoveryCodes.map((code, i) => (
-                                    <div key={i} className="bg-[#F8F9FB] rounded-lg px-3 py-2.5 text-center font-mono text-sm font-bold text-[#1A1A2E] border-2 border-[#E5E7EB]">
+                                    <div key={i} className="bg-gray-50 rounded-lg px-3 py-2.5 text-center font-mono text-sm font-bold text-gray-900 border-2 border-gray-200">
                                         {code}
                                     </div>
                                 ))}
@@ -317,7 +317,7 @@ export const TwoFactorSetup = (): JSX.Element => {
                                 onClick={() => copyToClipboard(recoveryCodes.join("\n"), "codes")}
                                 className="flex-1 h-11 nb-btn nb-btn-outline text-sm font-bold"
                             >
-                                {copiedCodes ? <CheckCircle className="w-4 h-4 text-[#065F46]" /> : <Copy className="w-4 h-4" />}
+                                {copiedCodes ? <CheckCircle className="w-4 h-4 text-emerald-800" /> : <Copy className="w-4 h-4" />}
                                 {copiedCodes ? "Đã sao chép" : "Sao chép"}
                             </button>
                             <button

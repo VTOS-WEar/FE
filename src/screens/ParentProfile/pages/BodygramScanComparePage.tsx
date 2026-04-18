@@ -29,7 +29,7 @@ function calculateDelta(previous?: number | null, current?: number | null) {
 }
 
 function getDeltaTone(delta: number | null) {
-  if (delta == null || delta === 0) return "text-[#4C5769]";
+  if (delta == null || delta === 0) return "text-gray-600";
   return delta > 0 ? "text-[#0F766E]" : "text-[#B91C1C]";
 }
 
@@ -65,19 +65,19 @@ const ScanPreviewCard = ({
   detail: BodygramScanDetail;
   title: string;
 }) => (
-  <div className="relative z-0 rounded-[24px] border-2 border-[#1A1A2E] bg-white p-5 shadow-[3px_3px_0_#1A1A2E] transition-all duration-300 hover:-translate-y-1 hover:shadow-[6px_6px_0_#1A1A2E] hover:z-10">
+  <div className="relative z-0 rounded-[24px] border border-gray-200 bg-white p-5 shadow-soft-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-soft-md hover:z-10">
     <div className="mb-4 flex items-start justify-between gap-4">
       <div>
-        <p className="text-xs font-extrabold uppercase tracking-wide text-[#6B7280]">{title}</p>
-        <h2 className="mt-1 text-xl font-extrabold text-[#1A1A2E]">{detail.childName}</h2>
-        <p className="mt-1 text-sm font-bold text-[#4C5769]">{formatDateTime(detail.scannedAt)}</p>
+        <p className="text-xs font-extrabold uppercase tracking-wide text-gray-500">{title}</p>
+        <h2 className="mt-1 text-xl font-extrabold text-gray-900">{detail.childName}</h2>
+        <p className="mt-1 text-sm font-bold text-gray-600">{formatDateTime(detail.scannedAt)}</p>
       </div>
-      <div className="rounded-full border-2 border-[#1A1A2E] bg-[#EEF2FF] px-3 py-1 text-xs font-extrabold uppercase tracking-wide text-[#1A1A2E]">
+      <div className="rounded-full border border-gray-200 bg-[#EEF2FF] px-3 py-1 text-xs font-extrabold uppercase tracking-wide text-gray-900">
         {detail.status}
       </div>
     </div>
 
-    <div className="rounded-[20px] border-2 border-[#1A1A2E] bg-[#F8FAFC] p-4">
+    <div className="rounded-[20px] border border-gray-200 bg-[#F8FAFC] p-4">
       <BodygramAvatarViewer
         avatarUrl={detail.avatarUrl}
         className="h-[320px] w-full !border-none !bg-transparent"
@@ -85,21 +85,21 @@ const ScanPreviewCard = ({
     </div>
 
     <div className="mt-4 grid gap-3 sm:grid-cols-2">
-      <div className="rounded-2xl border-2 border-[#1A1A2E] bg-[#F3E8FF] p-3">
-        <p className="text-xs font-extrabold uppercase tracking-wide text-[#6B7280]">Chiều cao</p>
-        <p className="mt-1 text-2xl font-extrabold text-[#1A1A2E]">{formatMetric(detail.heightCm, "cm", 1)}</p>
+      <div className="rounded-2xl border border-gray-200 bg-[#F3E8FF] p-3">
+        <p className="text-xs font-extrabold uppercase tracking-wide text-gray-500">Chiều cao</p>
+        <p className="mt-1 text-2xl font-extrabold text-gray-900">{formatMetric(detail.heightCm, "cm", 1)}</p>
       </div>
-      <div className="rounded-2xl border-2 border-[#1A1A2E] bg-[#ECFCCB] p-3">
-        <p className="text-xs font-extrabold uppercase tracking-wide text-[#6B7280]">Cân nặng</p>
-        <p className="mt-1 text-2xl font-extrabold text-[#1A1A2E]">{formatMetric(detail.weightKg, "kg", 1)}</p>
+      <div className="rounded-2xl border border-gray-200 bg-[#ECFCCB] p-3">
+        <p className="text-xs font-extrabold uppercase tracking-wide text-gray-500">Cân nặng</p>
+        <p className="mt-1 text-2xl font-extrabold text-gray-900">{formatMetric(detail.weightKg, "kg", 1)}</p>
       </div>
-      <div className="rounded-2xl border-2 border-[#1A1A2E] bg-white p-3">
-        <p className="text-xs font-extrabold uppercase tracking-wide text-[#6B7280]">Vòng eo</p>
-        <p className="mt-1 text-xl font-extrabold text-[#1A1A2E]">{formatMetric(detail.waistCm, "cm", 1)}</p>
+      <div className="rounded-2xl border border-gray-200 bg-white p-3">
+        <p className="text-xs font-extrabold uppercase tracking-wide text-gray-500">Vòng eo</p>
+        <p className="mt-1 text-xl font-extrabold text-gray-900">{formatMetric(detail.waistCm, "cm", 1)}</p>
       </div>
-      <div className="rounded-2xl border-2 border-[#1A1A2E] bg-white p-3">
-        <p className="text-xs font-extrabold uppercase tracking-wide text-[#6B7280]">Tỷ lệ eo/hông</p>
-        <p className="mt-1 text-xl font-extrabold text-[#1A1A2E]">
+      <div className="rounded-2xl border border-gray-200 bg-white p-3">
+        <p className="text-xs font-extrabold uppercase tracking-wide text-gray-500">Tỷ lệ eo/hông</p>
+        <p className="mt-1 text-xl font-extrabold text-gray-900">
           {detail.waistToHipRatio != null ? detail.waistToHipRatio.toFixed(2) : "--"}
         </p>
       </div>
@@ -187,7 +187,7 @@ export const BodygramScanComparePage = (): JSX.Element => {
         <div className="h-12 w-72 animate-pulse rounded-2xl bg-gray-100" />
         <div className="grid gap-6 xl:grid-cols-2">
           {Array.from({ length: 2 }).map((_, index) => (
-            <div key={index} className="h-[620px] animate-pulse rounded-[24px] border-2 border-[#1A1A2E] bg-gray-100" />
+            <div key={index} className="h-[620px] animate-pulse rounded-[24px] border border-gray-200 bg-gray-100" />
           ))}
         </div>
       </div>
@@ -196,7 +196,7 @@ export const BodygramScanComparePage = (): JSX.Element => {
 
   if (error || !leftDetail || !rightDetail) {
     return (
-      <div className="rounded-[24px] border-2 border-[#991B1B] bg-[#FEE2E2] p-6 text-[#991B1B]">
+      <div className="rounded-[24px] border-2 border-[#991B1B] bg-[#FEE2E2] p-6 text-red-800">
         <p className="text-lg font-extrabold">Không thể mở màn so sánh</p>
         <p className="mt-2 text-sm font-bold">{error || "Dữ liệu so sánh không hợp lệ."}</p>
         <Link
@@ -212,26 +212,26 @@ export const BodygramScanComparePage = (): JSX.Element => {
   return (
     <div className="relative overflow-visible pb-10">
       <div className="pointer-events-none absolute left-[-56px] top-4 h-40 w-40 rounded-full bg-[#E9D5FF]/50 blur-3xl" />
-      <div className="pointer-events-none absolute right-[-72px] top-20 h-48 w-48 rounded-full bg-[#C8E44D]/20 blur-3xl" />
+      <div className="pointer-events-none absolute right-[-72px] top-20 h-48 w-48 rounded-full bg-emerald-400/20 blur-3xl" />
 
       <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <Link
             to="/parentprofile/bodygram-history"
-            className="inline-flex items-center gap-2 text-sm font-extrabold text-[#4C5769] transition-colors hover:text-[#1A1A2E]"
+            className="inline-flex items-center gap-2 text-sm font-extrabold text-gray-600 transition-colors hover:text-gray-800"
           >
             <ArrowLeft className="h-4 w-4" />
             Quay lại lịch sử Bodygram
           </Link>
-          <h1 className="mt-3 text-3xl font-extrabold text-[#1A1A2E]">So sánh hai lần quét Bodygram</h1>
-          <p className="mt-2 max-w-3xl text-sm font-medium text-[#4C5769]">
+          <h1 className="mt-3 text-3xl font-extrabold text-gray-900">So sánh hai lần quét Bodygram</h1>
+          <p className="mt-2 max-w-3xl text-sm font-medium text-gray-600">
             Cột trái là lần quét cũ hơn, cột phải là lần quét mới hơn. Phần tổng hợp phía dưới hiển thị chênh lệch giữa hai lần đo.
           </p>
         </div>
 
         <Link
           to={`/children/${childId}/scan`}
-          className="inline-flex items-center justify-center rounded-xl border-2 border-[#1A1A2E] bg-[#D8B4E2] px-4 py-2 text-sm font-bold text-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#1A1A2E]"
+          className="inline-flex items-center justify-center rounded-xl border border-gray-200 bg-purple-200 px-4 py-2 text-sm font-bold text-gray-900 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-soft-md"
         >
           Quét Bodygram mới
         </Link>
@@ -246,13 +246,13 @@ export const BodygramScanComparePage = (): JSX.Element => {
         </div>
       </div>
 
-      <div className="mt-8 animate-in fade-in slide-in-from-bottom-4 duration-500 rounded-[24px] border-2 border-[#1A1A2E] bg-[#FFF9F2] p-5 shadow-[3px_3px_0_#1A1A2E]">
+      <div className="mt-8 animate-in fade-in slide-in-from-bottom-4 duration-500 rounded-[24px] border border-gray-200 bg-[#FFF9F2] p-5 shadow-soft-sm">
         <div className="mb-5 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
           <div>
-            <p className="text-xs font-extrabold uppercase tracking-wide text-[#6B7280]">Delta Summary</p>
-            <h2 className="text-2xl font-extrabold text-[#1A1A2E]">Tóm tắt chênh lệch giữa hai lần quét</h2>
+            <p className="text-xs font-extrabold uppercase tracking-wide text-gray-500">Delta Summary</p>
+            <h2 className="text-2xl font-extrabold text-gray-900">Tóm tắt chênh lệch giữa hai lần quét</h2>
           </div>
-          <div className="inline-flex items-center gap-2 rounded-full border-2 border-[#1A1A2E] bg-white px-4 py-2 text-xs font-extrabold uppercase tracking-wide text-[#1A1A2E]">
+          <div className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 text-xs font-extrabold uppercase tracking-wide text-gray-900">
             <span>{formatDateTime(leftDetail.scannedAt)}</span>
             <ArrowRight className="h-4 w-4" />
             <span>{formatDateTime(rightDetail.scannedAt)}</span>
@@ -267,36 +267,36 @@ export const BodygramScanComparePage = (): JSX.Element => {
             return (
               <div
                 key={metric.key}
-                className="relative z-0 rounded-2xl border-2 border-[#1A1A2E] bg-white p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-[4px_4px_0_#1A1A2E] hover:z-10"
+                className="relative z-0 rounded-2xl border border-gray-200 bg-white p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-soft-md hover:z-10"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="text-sm font-extrabold text-[#1A1A2E]">{metric.label}</p>
-                    <p className="mt-3 text-xs font-bold uppercase tracking-wide text-[#6B7280]">Trước</p>
-                    <p className="text-lg font-extrabold text-[#1A1A2E]">
+                    <p className="text-sm font-extrabold text-gray-900">{metric.label}</p>
+                    <p className="mt-3 text-xs font-bold uppercase tracking-wide text-gray-500">Trước</p>
+                    <p className="text-lg font-extrabold text-gray-900">
                       {formatMetric(metric.previous, metric.unit || "", fractionDigits)}
                     </p>
                   </div>
 
-                  <div className="rounded-full border-2 border-[#1A1A2E] bg-[#F8FAFC] p-2">
+                  <div className="rounded-full border border-gray-200 bg-[#F8FAFC] p-2">
                     {metric.key === "weight" ? (
-                      <Scale className="h-4 w-4 text-[#1A1A2E]" />
+                      <Scale className="h-4 w-4 text-gray-900" />
                     ) : metric.key === "whr" ? (
-                      <Activity className="h-4 w-4 text-[#1A1A2E]" />
+                      <Activity className="h-4 w-4 text-gray-900" />
                     ) : (
-                      <Ruler className="h-4 w-4 text-[#1A1A2E]" />
+                      <Ruler className="h-4 w-4 text-gray-900" />
                     )}
                   </div>
                 </div>
 
                 <div className="mt-4">
-                  <p className="text-xs font-bold uppercase tracking-wide text-[#6B7280]">Sau</p>
-                  <p className="text-2xl font-extrabold text-[#1A1A2E]">
+                  <p className="text-xs font-bold uppercase tracking-wide text-gray-500">Sau</p>
+                  <p className="text-2xl font-extrabold text-gray-900">
                     {formatMetric(metric.current, metric.unit || "", fractionDigits)}
                   </p>
                 </div>
 
-                <div className={`mt-4 rounded-xl border border-dashed border-[#1A1A2E] bg-[#F8FAFC] px-3 py-2 text-sm font-extrabold ${getDeltaTone(delta)}`}>
+                <div className={`mt-4 rounded-xl border border-dashed border-gray-200 bg-[#F8FAFC] px-3 py-2 text-sm font-extrabold ${getDeltaTone(delta)}`}>
                   Chênh lệch: {getDeltaText(delta, metric.unit || "", fractionDigits)}
                 </div>
               </div>
@@ -305,13 +305,13 @@ export const BodygramScanComparePage = (): JSX.Element => {
         </div>
 
         <div className="mt-6 grid gap-4 lg:grid-cols-2">
-          <div className="rounded-2xl border-2 border-[#1A1A2E] bg-white p-4">
-            <p className="text-xs font-extrabold uppercase tracking-wide text-[#6B7280]">Đánh giá WHR trước</p>
-            <p className="mt-2 text-2xl font-extrabold text-[#1A1A2E]">{getRiskLabel(leftDetail.riskLevel)}</p>
+          <div className="rounded-2xl border border-gray-200 bg-white p-4">
+            <p className="text-xs font-extrabold uppercase tracking-wide text-gray-500">Đánh giá WHR trước</p>
+            <p className="mt-2 text-2xl font-extrabold text-gray-900">{getRiskLabel(leftDetail.riskLevel)}</p>
           </div>
-          <div className="rounded-2xl border-2 border-[#1A1A2E] bg-white p-4">
-            <p className="text-xs font-extrabold uppercase tracking-wide text-[#6B7280]">Đánh giá WHR sau</p>
-            <p className="mt-2 text-2xl font-extrabold text-[#1A1A2E]">{getRiskLabel(rightDetail.riskLevel)}</p>
+          <div className="rounded-2xl border border-gray-200 bg-white p-4">
+            <p className="text-xs font-extrabold uppercase tracking-wide text-gray-500">Đánh giá WHR sau</p>
+            <p className="mt-2 text-2xl font-extrabold text-gray-900">{getRiskLabel(rightDetail.riskLevel)}</p>
           </div>
         </div>
       </div>

@@ -249,22 +249,22 @@ export function ContractTemplate({
     return (
         <>
             {/* ── Full-screen overlay ── */}
-            <div className="fixed inset-0 z-[100] flex flex-col bg-[#1A1A2E]/80">
+            <div className="fixed inset-0 z-[100] flex flex-col bg-gray-900/80">
 
                 {/* Toolbar */}
-                <div className="flex-shrink-0 flex items-center justify-between px-4 py-3 bg-white border-b-2 border-[#1A1A2E]">
+                <div className="flex-shrink-0 flex items-center justify-between px-4 py-3 bg-white border-b border-gray-200">
                     <div className="flex items-center gap-3 min-w-0">
                         <span className="text-lg">📄</span>
                         <div className="min-w-0">
-                            <p className="font-extrabold text-[#1A1A2E] text-sm truncate">{contract.contractName}</p>
-                            <p className="text-xs text-[#6B7280]">Số: {contractNumber}</p>
+                            <p className="font-extrabold text-gray-900 text-sm truncate">{contract.contractName}</p>
+                            <p className="text-xs text-gray-500">Số: {contractNumber}</p>
                         </div>
                     </div>
 
                     <div className="flex items-center gap-2 flex-shrink-0">
                         {successMsg && (
                             <span className={`text-xs font-bold px-3 py-1 rounded border ${successMsg.startsWith("❌")
-                                ? "text-[#991B1B] bg-[#FEE2E2] border-[#FECACA]"
+                                ? "text-red-800 bg-[#FEE2E2] border-[#FECACA]"
                                 : "text-[#059669] bg-[#D1FAE5] border-[#059669]"
                                 }`}>
                                 {successMsg}
@@ -305,7 +305,7 @@ export function ContractTemplate({
                                 href={`${import.meta.env.VITE_API_BASE_URL}${contract.contractPdfUrl}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="nb-btn nb-btn-sm text-xs bg-[#D1FAE5] border-[#1A1A2E]"
+                                className="nb-btn nb-btn-sm text-xs bg-[#D1FAE5] border-gray-200"
                             >
                                 📥 Tải PDF
                             </a>
@@ -319,7 +319,7 @@ export function ContractTemplate({
                         >
                             {generatingPdf ? (
                                 <span className="flex items-center gap-1">
-                                    <span className="w-3 h-3 border-2 border-[#1A1A2E] border-t-transparent rounded-full animate-spin" />
+                                    <span className="w-3 h-3 border border-gray-200 border-t-transparent rounded-full animate-spin" />
                                     Đang xuất...
                                 </span>
                             ) : "🖨️ In / PDF"}
@@ -327,7 +327,7 @@ export function ContractTemplate({
 
                         <button
                             onClick={onClose}
-                            className="nb-btn nb-btn-sm text-xs bg-[#FEE2E2] border-[#1A1A2E]"
+                            className="nb-btn nb-btn-sm text-xs bg-[#FEE2E2] border-gray-200"
                         >
                             ✕ Đóng
                         </button>
@@ -348,7 +348,7 @@ export function ContractTemplate({
                             fontFamily: "'Times New Roman', Times, serif",
                             fontSize: "14px",
                             lineHeight: "1.8",
-                            color: "#1A1A2E",
+                            color: "#111827",
                         }}
                     >
                         {/* ── Header ── */}
@@ -395,7 +395,7 @@ export function ContractTemplate({
                                                 <td style={{ paddingLeft: "20px", paddingRight: "8px", width: "160px", verticalAlign: "top", color: "#4B5563" }}>
                                                     {label}
                                                 </td>
-                                                <td style={{ fontWeight: "600", color: "#1A1A2E" }}>
+                                                <td style={{ fontWeight: "600", color: "#111827" }}>
                                                     {value}
                                                 </td>
                                             </tr>
@@ -425,7 +425,7 @@ export function ContractTemplate({
                                                 <td style={{ paddingLeft: "20px", paddingRight: "8px", width: "160px", verticalAlign: "top", color: "#4B5563" }}>
                                                     {label}
                                                 </td>
-                                                <td style={{ fontWeight: "600", color: "#1A1A2E" }}>
+                                                <td style={{ fontWeight: "600", color: "#111827" }}>
                                                     {value}
                                                 </td>
                                             </tr>
