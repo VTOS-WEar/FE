@@ -23,7 +23,7 @@ function StatCard({ icon, label, value, sub, primary }: { icon: string; label: s
  <span className="nb-stat-label">{label}</span>
  </div>
  <p className="nb-stat-value">{value}</p>
- {sub && <p className=" font-medium text-xs text-[#6B7280] mt-1">{sub}</p>}
+ {sub && <p className=" font-medium text-xs text-gray-500 mt-1">{sub}</p>}
  </div>
  );
 }
@@ -112,7 +112,7 @@ export const AdminDashboard = (): JSX.Element => {
  <Breadcrumb><BreadcrumbList>
  <BreadcrumbItem><BreadcrumbLink href="/admin/dashboard" className=" font-semibold text-[#4c5769] text-base">Trang chủ</BreadcrumbLink></BreadcrumbItem>
  <BreadcrumbSeparator className="text-[#cbcad7]">/</BreadcrumbSeparator>
- <BreadcrumbItem><BreadcrumbPage className=" font-bold text-[#1A1A2E] text-base">Tổng quan</BreadcrumbPage></BreadcrumbItem>
+ <BreadcrumbItem><BreadcrumbPage className=" font-bold text-gray-900 text-base">Tổng quan</BreadcrumbPage></BreadcrumbItem>
  </BreadcrumbList></Breadcrumb>
  </TopNavBar>
  <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-8 nb-fade-in">
@@ -121,12 +121,12 @@ export const AdminDashboard = (): JSX.Element => {
  {localStorage.getItem("vtos_should_setup_2fa") === "true" && (
  <div className="nb-card-static border-[#F59E0B] bg-[#FEF3C7] px-5 py-4 flex items-center justify-between gap-4">
  <div className="flex items-center gap-3">
- <div className="w-9 h-9 rounded-lg bg-[#F59E0B] flex items-center justify-center border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E] flex-shrink-0">
+ <div className="w-9 h-9 rounded-lg bg-[#F59E0B] flex items-center justify-center border border-gray-200 shadow-sm flex-shrink-0">
  <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z" /></svg>
  </div>
  <div>
- <p className="font-bold text-[#92400E] text-sm">⚠️ Tài khoản chưa bật xác thực 2 bước (2FA)</p>
- <p className="font-medium text-[#92400E] text-xs mt-0.5">Bật 2FA để bảo vệ tài khoản của bạn.</p>
+ <p className="font-bold text-amber-800 text-sm">⚠️ Tài khoản chưa bật xác thực 2 bước (2FA)</p>
+ <p className="font-medium text-amber-800 text-xs mt-0.5">Bật 2FA để bảo vệ tài khoản của bạn.</p>
  </div>
  </div>
  <Link to="/2fa-setup" className="nb-btn nb-btn-yellow text-xs px-4 py-2 flex-shrink-0">
@@ -184,7 +184,7 @@ export const AdminDashboard = (): JSX.Element => {
  <div className="flex flex-wrap gap-3 items-center">
  <input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)}
  className="nb-input" />
- <span className="text-[#9CA3AF] text-sm font-bold">→</span>
+ <span className="text-gray-400 text-sm font-bold">→</span>
  <input type="date" value={dateTo} onChange={e => setDateTo(e.target.value)}
  className="nb-input" />
  <div className="ml-auto flex gap-2">
@@ -197,9 +197,9 @@ export const AdminDashboard = (): JSX.Element => {
  {/* Report Table */}
  <div className="nb-card-static overflow-hidden">
  {reportLoading ? (
- <div className="p-8 text-center text-[#9CA3AF] font-semibold">Đang tải báo cáo...</div>
+ <div className="p-8 text-center text-gray-400 font-semibold">Đang tải báo cáo...</div>
  ) : !reportData?.data?.length ? (
- <div className="p-12 text-center text-[#9CA3AF] font-semibold">Không có dữ liệu báo cáo</div>
+ <div className="p-12 text-center text-gray-400 font-semibold">Không có dữ liệu báo cáo</div>
  ) : (
  <div className="overflow-x-auto">
  <table className="nb-table">
@@ -217,9 +217,9 @@ export const AdminDashboard = (): JSX.Element => {
  </div>
  )}
  {reportData?.summary && (
- <div className="px-5 py-3 bg-[#EDE9FE] border-t-2 border-[#1A1A2E] flex gap-6 text-xs ">
+ <div className="px-5 py-3 bg-violet-50 border-t border-gray-200 flex gap-6 text-xs ">
  {Object.entries(reportData.summary).map(([k, v]) => (
- <span key={k} className="text-[#4C5769]"><span className="font-bold">{k}:</span> {String(v)}</span>
+ <span key={k} className="text-gray-600"><span className="font-bold">{k}:</span> {String(v)}</span>
  ))}
  </div>
  )}

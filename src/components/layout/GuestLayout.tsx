@@ -4,7 +4,7 @@ import { NavbarGuest } from "./NavbarGuest";
 
 interface GuestLayoutProps {
     children: ReactNode;
-    bgColor?: string; // mặc định là #FFF8F0 (NB warm paper)
+    bgColor?: string; // mặc định là #f9fafb (cool gray)
     mainClassName?: string;
 }
 
@@ -12,7 +12,7 @@ interface GuestLayoutProps {
  * GuestLayout - Layout cho các screen không có sidebar (SignIn, SignUp, etc.)
  * Includes NavbarGuest + Footer
  */
-export const GuestLayout = ({ children, bgColor = "#FFF8F0", mainClassName = "flex-1" }: GuestLayoutProps) => {
+export const GuestLayout = ({ children, bgColor = "#f9fafb", mainClassName = "flex-1" }: GuestLayoutProps) => {
     return (
         <div
             className="w-full min-h-screen min-h-[100svh] flex flex-col"

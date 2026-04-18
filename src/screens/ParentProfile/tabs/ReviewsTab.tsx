@@ -41,7 +41,7 @@ function RatingStars({
             onMouseLeave={() => !readOnly && setHoverValue(0)}
             title={`Đánh giá ${star} sao`}
             className={`transition-all duration-200 ${isFilled
-              ? "text-[#C8E44D] drop-shadow-[2px_2px_0_#1A1A2E]"
+              ? "text-emerald-400 drop-shadow-sm"
               : "text-[#D1D5DB]"
               } ${!readOnly && "cursor-pointer hover:scale-125"}`}
           >
@@ -117,16 +117,16 @@ function ReviewCard({ feedback, onRefresh }: ReviewCardProps) {
 
   if (isEditing) {
     return (
-      <div className="nb-card !rounded-[12px] overflow-hidden shadow-[3px_3px_0_#1A1A2E] hover:shadow-[6px_6px_0_#1A1A2E] transition-all duration-300">
+      <div className="nb-card !rounded-[12px] overflow-hidden shadow-soft-sm hover:shadow-soft-md transition-all duration-300">
         {/* Header */}
-        <div className="p-4 border-b-2 border-[#1A1A2E]/10 flex items-center justify-between rounded-t-[12px]">
+        <div className="p-4 border-b border-gray-200/10 flex items-center justify-between rounded-t-[12px]">
           <div className="flex items-center gap-2">
-            <ShoppingBag className="w-4 h-4 text-[#B8A9E8]" />
-            <span className="font-bold text-xs uppercase text-[#1A1A2E]">
-              📦 Chiến dịch: <span className="text-[#B8A9E8]">{feedback.campaignName}</span>
+            <ShoppingBag className="w-4 h-4 text-purple-400" />
+            <span className="font-bold text-xs uppercase text-gray-900">
+              📦 Chiến dịch: <span className="text-purple-400">{feedback.campaignName}</span>
             </span>
           </div>
-          <button onClick={handleCancel} className="text-[#9CA3AF] hover:text-[#1A1A2E]">
+          <button onClick={handleCancel} className="text-gray-400 hover:text-gray-800">
             <XCircle className="w-5 h-5" />
           </button>
         </div>
@@ -134,7 +134,7 @@ function ReviewCard({ feedback, onRefresh }: ReviewCardProps) {
         {/* Form Content */}
         <div className="p-5 space-y-6">
           <div className="flex gap-4">
-            <div className="w-20 h-20 rounded-lg border-2 border-[#1A1A2E] overflow-hidden bg-[#EDE9FE] flex-shrink-0 shadow-[2px_2px_0_#1A1A2E]">
+            <div className="w-20 h-20 rounded-lg border border-gray-200 overflow-hidden bg-violet-50 flex-shrink-0 shadow-sm">
               {feedback.outfitImageUrl ? (
                 <img
                   src={feedback.outfitImageUrl}
@@ -142,36 +142,36 @@ function ReviewCard({ feedback, onRefresh }: ReviewCardProps) {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <Package className="w-8 h-8 text-[#B8A9E8] m-auto mt-6" />
+                <Package className="w-8 h-8 text-purple-400 m-auto mt-6" />
               )}
             </div>
             <div className="flex-1">
-              <h3 className="font-bold text-[#1A1A2E] text-sm leading-tight mb-1">{feedback.outfitName}</h3>
-              <p className="text-xs text-[#9CA3AF] mb-3">{feedback.outfitType}</p>
+              <h3 className="font-bold text-gray-900 text-sm leading-tight mb-1">{feedback.outfitName}</h3>
+              <p className="text-xs text-gray-400 mb-3">{feedback.outfitType}</p>
 
               <div className="flex flex-wrap gap-2">
-                <span className="px-2 py-0.5 bg-[#F3F4F6] border border-[#D1D5DB] rounded text-[10px] font-bold text-[#1A1A2E]">Size {feedback.size}</span>
-                <span className="px-2 py-0.5 bg-[#F3F4F6] border border-[#D1D5DB] rounded text-[10px] font-bold text-[#1A1A2E]">x{feedback.quantity}</span>
-                <span className="px-2 py-0.5 bg-[#C8E44D]/20 border border-[#C8E44D] rounded text-[10px] font-bold text-[#1A1A2E]">{fmt(feedback.outfitPrice)}</span>
+                <span className="px-2 py-0.5 bg-gray-100 border border-gray-300 rounded text-[10px] font-bold text-gray-900">Size {feedback.size}</span>
+                <span className="px-2 py-0.5 bg-gray-100 border border-gray-300 rounded text-[10px] font-bold text-gray-900">x{feedback.quantity}</span>
+                <span className="px-2 py-0.5 bg-emerald-400/20 border border-emerald-400 rounded text-[10px] font-bold text-gray-900">{fmt(feedback.outfitPrice)}</span>
               </div>
             </div>
           </div>
 
-          <div className="space-y-4 pt-4 border-t-2 border-[#1A1A2E]/5">
+          <div className="space-y-4 pt-4 border-t border-gray-200/5">
             <div>
-              <label className="block text-xs font-bold text-[#1A1A2E] uppercase mb-2">Chất lượng sản phẩm</label>
+              <label className="block text-xs font-bold text-gray-900 uppercase mb-2">Chất lượng sản phẩm</label>
               <RatingStars value={rating} onChange={setRating} readOnly={isSubmitting} />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-[#1A1A2E] uppercase mb-2">Cảm nhận của bạn</label>
+              <label className="block text-xs font-bold text-gray-900 uppercase mb-2">Cảm nhận của bạn</label>
               <textarea
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
                 disabled={isSubmitting}
                 placeholder="Sản phẩm mặc lên rất đẹp, bé rất thích..."
                 maxLength={500}
-                className="w-full p-3 border-2 border-[#1A1A2E] rounded-lg text-sm font-medium text-[#1A1A2E] placeholder-[#9CA3AF] focus:outline-none focus:bg-[#F9FAFB] shadow-[2px_2px_0_#1A1A2E] resize-none disabled:opacity-50"
+                className="w-full p-3 border border-gray-200 rounded-lg text-sm font-medium text-gray-900 placeholder-[#9CA3AF] focus:outline-none focus:bg-gray-50 shadow-sm resize-none disabled:opacity-50"
                 rows={3}
               />
             </div>
@@ -179,7 +179,7 @@ function ReviewCard({ feedback, onRefresh }: ReviewCardProps) {
         </div>
 
         {/* Footer */}
-        <div className="p-4 bg-[#F9FAFB] border-t-2 border-[#1A1A2E]/10 flex gap-3 justify-end">
+        <div className="p-4 bg-gray-50 border-t border-gray-200/10 flex gap-3 justify-end">
           <button
             onClick={handleCancel}
             disabled={isSubmitting}
@@ -200,12 +200,12 @@ function ReviewCard({ feedback, onRefresh }: ReviewCardProps) {
   }
 
   return (
-    <div className="nb-card !rounded-[12px] overflow-hidden shadow-[3px_3px_0_#1A1A2E] hover:shadow-[6px_6px_0_#1A1A2E] transition-all duration-300 hover:-translate-y-1">
+    <div className="nb-card !rounded-[12px] overflow-hidden shadow-soft-sm hover:shadow-soft-md transition-all duration-300 hover:-translate-y-1">
       <div className="p-5 flex flex-col md:flex-row gap-6">
         {/* Product Section */}
         <div className="flex-1 flex gap-5">
           <div className="relative">
-            <div className="w-20 h-20 rounded-lg border-2 border-[#1A1A2E] overflow-hidden bg-[#EDE9FE] shadow-[2px_2px_0_#1A1A2E]">
+            <div className="w-20 h-20 rounded-lg border border-gray-200 overflow-hidden bg-violet-50 shadow-sm">
               {feedback.outfitImageUrl ? (
                 <img
                   src={feedback.outfitImageUrl}
@@ -213,35 +213,35 @@ function ReviewCard({ feedback, onRefresh }: ReviewCardProps) {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <Package className="w-8 h-8 text-[#B8A9E8] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+                <Package className="w-8 h-8 text-purple-400 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
               )}
             </div>
             {hasRating && (
-              <div className="absolute -top-2 -right-2 bg-[#C8E44D] border-2 border-[#1A1A2E] px-1.5 py-0.5 rounded font-bold text-[9px] shadow-[1px_1px_0_#1A1A2E]">
+              <div className="absolute -top-2 -right-2 bg-emerald-400 border border-gray-200 px-1.5 py-0.5 rounded font-bold text-[9px] shadow-sm">
                 {feedback.rating}/5 ⭐
               </div>
             )}
           </div>
 
           <div className="flex-1 min-w-0">
-            <p className="text-[10px] font-bold text-[#9CA3AF] mb-1 uppercase truncate">
+            <p className="text-[10px] font-bold text-gray-400 mb-1 uppercase truncate">
               📦 {feedback.campaignName}
             </p>
             <h3
-              className="font-bold text-[#1A1A2E] text-sm truncate hover:text-[#B8A9E8] transition-colors cursor-pointer mb-2"
+              className="font-bold text-gray-900 text-sm truncate hover:text-purple-500 transition-colors cursor-pointer mb-2"
               onClick={() => navigate(`/outfits/${feedback.outfitId}`)}
             >
               {feedback.outfitName}
             </h3>
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-[11px] font-medium text-[#6B7280]">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-[11px] font-medium text-gray-500">
               <span className="flex items-center gap-1">
                 <ShoppingBag className="w-3.5 h-3.5" />
                 {feedback.outfitType}
               </span>
-              <span className="px-1.5 py-0.5 bg-[#F3F4F6] border border-[#D1D5DB] rounded">
+              <span className="px-1.5 py-0.5 bg-gray-100 border border-gray-300 rounded">
                 Size {feedback.size}
               </span>
-              <span className="font-bold text-[#1A1A2E]">
+              <span className="font-bold text-gray-900">
                 {fmt(feedback.outfitPrice)}
               </span>
             </div>
@@ -249,23 +249,23 @@ function ReviewCard({ feedback, onRefresh }: ReviewCardProps) {
         </div>
 
         {/* Timeline Section */}
-        <div className="flex flex-row md:flex-col justify-between md:justify-center gap-4 md:pl-6 md:border-l-2 md:border-dashed md:border-[#1A1A2E]/10 min-w-[160px]">
+        <div className="flex flex-row md:flex-col justify-between md:justify-center gap-4 md:pl-6 md:border-l-2 md:border-dashed md:border-gray-200/10 min-w-[160px]">
           <div className="flex flex-col">
-            <div className="flex items-center gap-1.5 text-[#9CA3AF] mb-0.5">
+            <div className="flex items-center gap-1.5 text-gray-400 mb-0.5">
               <Calendar className="w-3.5 h-3.5" />
               <span className="text-[9px] font-bold uppercase tracking-wider">Thời gian đặt</span>
             </div>
-            <p className="text-[11px] font-bold text-[#1A1A2E]">
+            <p className="text-[11px] font-bold text-gray-900">
               {fmtFullDate(feedback.orderDate)}
             </p>
           </div>
 
           <div className="flex flex-col">
-            <div className="flex items-center gap-1.5 text-[#9CA3AF] mb-0.5">
+            <div className="flex items-center gap-1.5 text-gray-400 mb-0.5">
               <Clock className="w-3.5 h-3.5" />
               <span className="text-[9px] font-bold uppercase tracking-wider">Thời gian phản hồi</span>
             </div>
-            <p className="text-[11px] font-bold text-[#1A1A2E]">
+            <p className="text-[11px] font-bold text-gray-900">
               {feedback.feedbackTimestamp
                 ? fmtFullDate(feedback.feedbackTimestamp)
                 : "---"
@@ -276,17 +276,17 @@ function ReviewCard({ feedback, onRefresh }: ReviewCardProps) {
       </div>
 
       {/* Bottom Action/Review Section */}
-      <div className="px-5 py-4 bg-[#F9FAFB] border-t-2 border-[#1A1A2E]/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div className="px-5 py-4 bg-gray-50 border-t border-gray-200/10 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex-1 w-full">
           {hasRating ? (
             <div className="flex gap-2.5 items-start">
-              <MessageSquare className="w-4 h-4 text-[#B8A9E8] mt-0.5 flex-shrink-0" />
-              <p className="text-xs text-[#6B7280] italic leading-relaxed line-clamp-2">
+              <MessageSquare className="w-4 h-4 text-purple-400 mt-0.5 flex-shrink-0" />
+              <p className="text-xs text-gray-500 italic leading-relaxed line-clamp-2">
                 {feedback.comment ? `"${feedback.comment}"` : "Bạn không để lại bình luận."}
               </p>
             </div>
           ) : (
-            <div className="flex items-center gap-2 text-[#9CA3AF]">
+            <div className="flex items-center gap-2 text-gray-400">
               <Star className="w-4 h-4" />
               <span className="text-xs italic">Sản phẩm này chưa được đánh giá</span>
             </div>
@@ -371,8 +371,8 @@ export const ReviewsTab = (): JSX.Element => {
       {/* Header & Filter Row */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
-          <h2 className="font-bold text-[#1A1A2E] text-xl">Đánh giá sản phẩm sáng tạo</h2>
-          <p className="text-sm text-[#9CA3AF] mt-1">
+          <h2 className="font-bold text-gray-900 text-xl">Đánh giá sản phẩm sáng tạo</h2>
+          <p className="text-sm text-gray-400 mt-1">
             Quản lý và xem các đánh giá của bạn về sản phẩm từ các đơn hàng
           </p>
         </div>
@@ -381,32 +381,32 @@ export const ReviewsTab = (): JSX.Element => {
         <div className="relative w-full md:w-[320px]">
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className="w-full bg-white border-2 border-[#1A1A2E] p-3 rounded-lg shadow-[3px_3px_0_#1A1A2E] flex items-center justify-between transition-all hover:-translate-y-0.5 hover:shadow-[5px_5px_0_#1A1A2E] active:shadow-none"
+            className="w-full bg-white border border-gray-200 p-3 rounded-lg shadow-soft-sm flex items-center justify-between transition-all hover:-translate-y-0.5 hover:shadow-soft-md active:shadow-none"
             title="Lọc theo chiến dịch"
           >
             <div className="text-left">
-              <p className="text-[10px] text-[#9CA3AF] font-bold uppercase tracking-wider">Bộ lọc chiến dịch</p>
-              <p className="text-sm font-bold text-[#1A1A2E] mt-0.5 truncate max-w-[220px]">
+              <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Bộ lọc chiến dịch</p>
+              <p className="text-sm font-bold text-gray-900 mt-0.5 truncate max-w-[220px]">
                 {selectedCampaignId
                   ? campaigns.find((c) => c.campaignId === selectedCampaignId)?.campaignName || "Chọn chiến dịch"
                   : "Tất cả chiến dịch"}
               </p>
             </div>
             <ChevronDown
-              className={`w-5 h-5 text-[#1A1A2E] transition-transform duration-300 ${showFilters ? "rotate-180" : ""}`}
+              className={`w-5 h-5 text-gray-900 transition-transform duration-300 ${showFilters ? "rotate-180" : ""}`}
             />
           </button>
 
           {showFilters && (
-            <div className="absolute top-full left-0 right-0 mt-2 bg-white border-2 border-[#1A1A2E] rounded-lg shadow-lg z-10">
+            <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
               <button
                 onClick={() => {
                   setSelectedCampaignId(null);
                   setShowFilters(false);
                 }}
                 className={`w-full px-4 py-3 text-left text-sm font-bold transition-colors ${selectedCampaignId === null
-                  ? "bg-[#B8A9E8] text-white"
-                  : "text-[#1A1A2E] hover:bg-[#F3F4F6]"
+                  ? "bg-purple-400 text-white"
+                  : "text-gray-900 hover:bg-gray-100"
                   }`}
                 title="Xem tất cả chiến dịch"
               >
@@ -420,8 +420,8 @@ export const ReviewsTab = (): JSX.Element => {
                     setShowFilters(false);
                   }}
                   className={`w-full px-4 py-3 text-left text-sm font-bold transition-colors border-t border-[#F3F4F6] ${selectedCampaignId === campaign.campaignId
-                    ? "bg-[#B8A9E8] text-white"
-                    : "text-[#1A1A2E] hover:bg-[#F3F4F6]"
+                    ? "bg-purple-400 text-white"
+                    : "text-gray-900 hover:bg-gray-100"
                     }`}
                 >
                   {campaign.campaignName} ({campaign.count})
@@ -433,12 +433,12 @@ export const ReviewsTab = (): JSX.Element => {
       </div>
 
       {/* Tab Navigation - Always visible */}
-      <div className="flex gap-4 border-b-2 border-[#E5E7EB]">
+      <div className="flex gap-4 border-b-2 border-gray-200">
         <button
           onClick={() => setActiveTab("all")}
           className={`px-4 py-3 font-bold text-sm border-b-4 transition-colors ${activeTab === "all"
-            ? "text-[#1A1A2E] border-[#B8A9E8]"
-            : "text-[#9CA3AF] border-transparent hover:text-[#1A1A2E]"
+            ? "text-gray-900 border-purple-300"
+            : "text-gray-400 border-transparent hover:text-gray-800"
             }`}
         >
           Tất cả ({ratingCounts.find(rc => rc.label === "all")?.count || 0})
@@ -446,8 +446,8 @@ export const ReviewsTab = (): JSX.Element => {
         <button
           onClick={() => setActiveTab("not-rated")}
           className={`px-4 py-3 font-bold text-sm border-b-4 transition-colors ${activeTab === "not-rated"
-            ? "text-[#1A1A2E] border-[#B8A9E8]"
-            : "text-[#9CA3AF] border-transparent hover:text-[#1A1A2E]"
+            ? "text-gray-900 border-purple-300"
+            : "text-gray-400 border-transparent hover:text-gray-800"
             }`}
         >
           Chưa đánh giá ({ratingCounts.find(rc => rc.label === "not-rated")?.count || 0})
@@ -455,8 +455,8 @@ export const ReviewsTab = (): JSX.Element => {
         <button
           onClick={() => setActiveTab("rated")}
           className={`px-4 py-3 font-bold text-sm border-b-4 transition-colors ${activeTab === "rated"
-            ? "text-[#1A1A2E] border-[#B8A9E8]"
-            : "text-[#9CA3AF] border-transparent hover:text-[#1A1A2E]"
+            ? "text-gray-900 border-purple-300"
+            : "text-gray-400 border-transparent hover:text-gray-800"
             }`}
         >
           Đã đánh giá ({ratingCounts.find(rc => rc.label === "rated")?.count || 0})
@@ -465,7 +465,7 @@ export const ReviewsTab = (): JSX.Element => {
 
       {loading ? (
         <div className="flex items-center justify-center py-16">
-          <div className="w-8 h-8 border-4 border-[#E5E7EB] border-t-[#B8A9E8] rounded-full animate-spin" />
+          <div className="w-8 h-8 border-4 border-gray-200 border-t-[#B8A9E8] rounded-full animate-spin" />
         </div>
       ) : (
         <>
@@ -482,10 +482,10 @@ export const ReviewsTab = (): JSX.Element => {
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center py-16 gap-4">
-              <div className="w-16 h-16 bg-[#EDE9FE] rounded-xl flex items-center justify-center border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E]">
-                <AlertCircle className="w-8 h-8 text-[#1A1A2E]" />
+              <div className="w-16 h-16 bg-violet-50 rounded-xl flex items-center justify-center border border-gray-200 shadow-sm">
+                <AlertCircle className="w-8 h-8 text-gray-900" />
               </div>
-              <p className="font-medium text-[#6B7280] text-sm text-center">
+              <p className="font-medium text-gray-500 text-sm text-center">
                 {activeTab === "rated"
                   ? "Bạn chưa có đánh giá nào."
                   : activeTab === "not-rated"
@@ -505,7 +505,7 @@ export const ReviewsTab = (): JSX.Element => {
               >
                 ← Trước
               </button>
-              <span className="flex items-center text-sm text-[#6B7280] px-4 font-bold">
+              <span className="flex items-center text-sm text-gray-500 px-4 font-bold">
                 {page}/{totalPages}
               </span>
               <button

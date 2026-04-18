@@ -244,7 +244,7 @@ export const VerifyOtp = (): JSX.Element => {
     };
 
     return (
-        <GuestLayout bgColor="#FFF8F0">
+        <GuestLayout bgColor="#f9fafb">
             <main className="nb-page flex-1 px-4 py-10 lg:py-14 nb-fade-in">
                 <div className="mx-auto w-full max-w-6xl">
                     <div className="nb-card-static overflow-hidden rounded-2xl">
@@ -252,28 +252,28 @@ export const VerifyOtp = (): JSX.Element => {
                             {/* LEFT — Form */}
                             <div className="lg:w-[52%] flex items-center justify-center p-6 lg:p-12 bg-white">
                                 <div className="w-full max-w-[26rem]">
-                                    <h1 className="font-extrabold text-[#1A1A2E] text-3xl lg:text-4xl text-center mb-3">
+                                    <h1 className="font-extrabold text-gray-900 text-3xl lg:text-4xl text-center mb-3">
                                         Nhập mã OTP ✦
                                     </h1>
 
-                                    <p className="text-center font-medium text-[#6B7280] text-sm lg:text-base mb-6">
+                                    <p className="text-center font-medium text-gray-500 text-sm lg:text-base mb-6">
                                         Mã đã được gửi tới{" "}
-                                        <span className="font-bold text-[#1A1A2E]">
+                                        <span className="font-bold text-gray-900">
                                             {email ? maskEmail(email) : "email của bạn"}
                                         </span>
                                     </p>
 
                                     <div className="flex items-center gap-4 lg:gap-6 my-5 lg:my-6">
-                                        <div className="flex-1 h-[2px] bg-[#1A1A2E]/10" />
-                                        <span className="font-bold text-[#6B7280] text-sm uppercase tracking-wider">
+                                        <div className="flex-1 h-[2px] bg-gray-900/10" />
+                                        <span className="font-bold text-gray-500 text-sm uppercase tracking-wider">
                                             Xác thực
                                         </span>
-                                        <div className="flex-1 h-[2px] bg-[#1A1A2E]/10" />
+                                        <div className="flex-1 h-[2px] bg-gray-900/10" />
                                     </div>
 
                                     <div className="space-y-4">
                                         <div className="space-y-2">
-                                            <Label className="font-bold text-[#1A1A2E] text-sm">
+                                            <Label className="font-bold text-gray-900 text-sm">
                                                 OTP (6 chữ số)
                                             </Label>
 
@@ -293,7 +293,7 @@ export const VerifyOtp = (): JSX.Element => {
                                                             onChange={(e) => handleChange(i, e.target.value)}
                                                             onKeyDown={(e) => handleKeyDown(i, e)}
                                                             onPaste={handlePaste}
-                                                            className="w-12 h-14 text-center text-2xl font-extrabold border-2 border-[#1A1A2E] rounded-xl bg-white shadow-[3px_3px_0_#1A1A2E] focus:shadow-[3px_3px_0_#1A1A2E,0_0_0_2px_#B8A9E8] outline-none transition-all"
+                                                            className="w-12 h-14 text-center text-2xl font-extrabold border border-gray-200 rounded-xl bg-white shadow-soft-sm focus:shadow-soft-sm ring-2 ring-purple-300 outline-none transition-all"
                                                         />
                                                     );
                                                 })}
@@ -303,7 +303,7 @@ export const VerifyOtp = (): JSX.Element => {
                                                 <button
                                                     type="button"
                                                     onClick={() => navigate(-1)}
-                                                    className="font-bold text-[#4C5769] hover:text-[#1A1A2E] transition-colors"
+                                                    className="font-bold text-gray-600 hover:text-gray-800 transition-colors"
                                                 >
                                                     ← Quay lại
                                                 </button>
@@ -312,7 +312,7 @@ export const VerifyOtp = (): JSX.Element => {
                                                     type="button"
                                                     disabled={cooldown > 0 || isLoading}
                                                     onClick={() => void handleResend()}
-                                                    className="font-bold text-[#1A1A2E] disabled:opacity-50 disabled:cursor-not-allowed hover:text-[#B8A9E8] transition-colors border-b-2 border-transparent hover:border-[#B8A9E8]"
+                                                    className="font-bold text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed hover:text-purple-500 transition-colors border-b-2 border-transparent hover:border-purple-300"
                                                 >
                                                     {cooldown > 0 ? `Gửi lại OTP (${cooldown}s)` : "Gửi lại OTP"}
                                                 </button>
@@ -329,10 +329,10 @@ export const VerifyOtp = (): JSX.Element => {
                                         </button>
 
                                         <p className="text-center font-medium text-sm lg:text-base">
-                                            <span className="text-[#4C5769]">Sai email? </span>
+                                            <span className="text-gray-600">Sai email? </span>
                                             <span
                                                 onClick={() => navigate("/register", { replace: true })}
-                                                className="font-bold text-[#1A1A2E] hover:text-[#B8A9E8] border-b-2 border-[#B8A9E8] transition-colors cursor-pointer"
+                                                className="font-bold text-gray-900 hover:text-purple-500 border-b-2 border-purple-300 transition-colors cursor-pointer"
                                             >
                                                 Đăng ký lại
                                             </span>
@@ -342,10 +342,10 @@ export const VerifyOtp = (): JSX.Element => {
                             </div>
 
                             {/* RIGHT — Hero with NB */}
-                            <div className="lg:w-[48%] relative overflow-hidden bg-[#EDE9FE] p-8 lg:p-12 flex items-center justify-center border-l-0 lg:border-l-2 border-t-2 lg:border-t-0 border-[#1A1A2E]">
-                                <div className="absolute top-8 left-6 w-14 h-14 bg-[#C8E44D] border-2 border-[#1A1A2E] rounded-lg shadow-[3px_3px_0_#1A1A2E] rotate-12 opacity-60" />
-                                <div className="absolute bottom-14 right-8 w-10 h-10 bg-[#F5C6C2] border-2 border-[#1A1A2E] rounded-full shadow-[3px_3px_0_#1A1A2E] opacity-50" />
-                                <div className="absolute top-[40%] right-6 w-12 h-12 bg-[#F5E642] border-2 border-[#1A1A2E] rounded-lg shadow-[2px_2px_0_#1A1A2E] -rotate-6 opacity-60" />
+                            <div className="lg:w-[48%] relative overflow-hidden bg-violet-50 p-8 lg:p-12 flex items-center justify-center border-l-0 lg:border-l-2 border-t-2 lg:border-t-0 border-gray-200">
+                                <div className="absolute top-8 left-6 w-14 h-14 bg-emerald-400 border border-gray-200 rounded-lg shadow-soft-sm rotate-12 opacity-60" />
+                                <div className="absolute bottom-14 right-8 w-10 h-10 bg-pink-200 border border-gray-200 rounded-full shadow-soft-sm opacity-50" />
+                                <div className="absolute top-[40%] right-6 w-12 h-12 bg-amber-400 border border-gray-200 rounded-lg shadow-sm -rotate-6 opacity-60" />
 
                                 <div className="relative z-10 w-full max-w-md text-right">
                                     <img
@@ -353,7 +353,7 @@ export const VerifyOtp = (): JSX.Element => {
                                         alt="Vtos logo"
                                         src="https://c.animaapp.com/mjxt3t8wNP0otU/img/vtos--1--removebg-preview-2-1.png"
                                     />
-                                    <p className="font-extrabold text-[#1A1A2E] text-xl lg:text-3xl leading-relaxed mb-6">
+                                    <p className="font-extrabold text-gray-900 text-xl lg:text-3xl leading-relaxed mb-6">
                                         AI Try-On đồng phục trong vài giây ✦
                                     </p>
                                     <img

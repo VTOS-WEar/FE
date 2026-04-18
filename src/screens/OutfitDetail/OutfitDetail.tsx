@@ -193,28 +193,28 @@ function TryOnModal({
       {/* Backdrop — no blur, NB style */}
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
 
-      {/* Modal — NB panel */}
-      <div className="relative bg-[#FFFDF9] rounded-[18px] border-[3px] border-[#19182B] shadow-[6px_6px_0_#19182B] w-full max-w-[760px] max-h-[90vh] overflow-y-auto">
+      {/* Modal — modern panel */}
+      <div className="relative bg-white rounded-[18px] border border-gray-200 shadow-soft-lg w-full max-w-[760px] max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-5 border-b-[2px] border-[#19182B]">
+        <div className="flex items-center justify-between px-6 py-5 border-b border-gray-200">
           <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-[10px] border-[3px] border-[#19182B] bg-[#E9E1FF] shadow-[3px_3px_0_#19182B]">
-              <Sparkles className="w-5 h-5 text-[#7C56FF]" />
+            <div className="flex h-11 w-11 items-center justify-center rounded-[10px] border border-gray-200 bg-violet-50 shadow-soft-sm">
+              <Sparkles className="w-5 h-5 text-violet-500" />
             </div>
             <div>
-              <h2 className="font-extrabold text-[20px] text-[#19182B] leading-tight">
+              <h2 className="font-extrabold text-[20px] text-gray-900 leading-tight">
                 Thử đồ ảo (VR)
               </h2>
-              <p className="font-bold text-[12px] text-[#8D879B] mt-0.5 line-clamp-1 max-w-[280px]">
+              <p className="font-bold text-[12px] text-gray-400 mt-0.5 line-clamp-1 max-w-[280px]">
                 {outfitName}
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="flex h-9 w-9 items-center justify-center rounded-[8px] border-[2px] border-[#19182B] bg-white shadow-[2px_2px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#19182B]"
+            className="flex h-9 w-9 items-center justify-center rounded-[8px] border border-gray-200 bg-white shadow-soft-sm transition-all hover:scale-[0.99] hover:shadow-sm"
           >
-            <X className="w-4 h-4 text-[#19182B]" />
+            <X className="w-4 h-4 text-gray-500" />
           </button>
         </div>
 
@@ -225,11 +225,11 @@ function TryOnModal({
               {/* Left: Upload */}
               <div>
                 <div className="flex items-center justify-between mb-3">
-                  <p className="font-extrabold text-[14px] text-[#19182B]">
+                  <p className="font-extrabold text-[14px] text-gray-900">
                     Ảnh của bạn
                   </p>
                   {photoPreview && (
-                    <span className="rounded-full border-[2px] border-[#19182B] bg-[#D9F8E8] px-2.5 py-0.5 text-[11px] font-extrabold text-[#19182B] shadow-[2px_2px_0_#19182B]">
+                    <span className="rounded-full border border-gray-200 bg-emerald-50 px-2.5 py-0.5 text-[11px] font-extrabold text-emerald-700 shadow-soft-sm">
                       AI READY
                     </span>
                   )}
@@ -240,32 +240,32 @@ function TryOnModal({
                     onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
                     onDragLeave={() => setDragOver(false)}
                     onClick={() => fileRef.current?.click()}
-                    className={`rounded-[14px] border-[2px] border-dashed p-6 flex flex-col items-center justify-center cursor-pointer transition-all aspect-[3/4] ${dragOver
-                      ? "border-[#8B6BFF] bg-[#F2ECFF]"
-                      : "border-[#19182B] bg-[#F6F1E8] hover:border-[#8B6BFF] hover:bg-[#F2ECFF]"
+                    className={`rounded-[14px] border-2 border-dashed p-6 flex flex-col items-center justify-center cursor-pointer transition-all aspect-[3/4] ${dragOver
+                      ? "border-violet-400 bg-violet-50"
+                      : "border-gray-200 bg-gray-50 hover:border-violet-300 hover:bg-violet-50"
                       }`}
                   >
-                    <div className="flex h-16 w-16 items-center justify-center rounded-[12px] border-[2px] border-[#19182B] bg-white shadow-[3px_3px_0_#19182B] mb-4">
-                      <Camera className="w-7 h-7 text-[#8D879B]" />
+                    <div className="flex h-16 w-16 items-center justify-center rounded-[12px] border border-gray-200 bg-white shadow-soft-sm mb-4">
+                      <Camera className="w-7 h-7 text-gray-400" />
                     </div>
-                    <p className="font-black text-[15px] text-[#19182B] text-center">
+                    <p className="font-black text-[15px] text-gray-900 text-center">
                       Tải ảnh của bạn lên
                     </p>
-                    <p className="font-semibold text-[13px] text-[#6F6A7D] mt-1.5 text-center leading-relaxed">
+                    <p className="font-semibold text-[13px] text-gray-500 mt-1.5 text-center leading-relaxed">
                       Chụp ảnh toàn thân, nền sáng và đứng thẳng để AI thử đồ cho kết quả chính xác hơn.
                     </p>
-                    <span className="mt-4 rounded-[8px] border-[2px] border-[#19182B] bg-white px-3 py-1.5 text-[12px] font-extrabold text-[#19182B] shadow-[2px_2px_0_#19182B]">
+                    <span className="mt-4 rounded-[8px] border border-gray-200 bg-white px-3 py-1.5 text-[12px] font-extrabold text-gray-600 shadow-soft-sm">
                       JPG, PNG, WEBP · tối đa 10MB
                     </span>
                     <button
                       type="button"
-                      className="mt-3 rounded-[10px] border-[2px] border-[#19182B] bg-white px-4 py-2 text-[13px] font-extrabold text-[#19182B] shadow-[3px_3px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B]"
+                      className="mt-3 rounded-[10px] border border-gray-200 bg-white px-4 py-2 text-[13px] font-extrabold text-gray-700 shadow-soft-sm transition-all hover:scale-[0.99] hover:shadow-sm"
                     >
                       Chọn ảnh từ máy của bạn
                     </button>
                   </div>
                 ) : (
-                  <div className="relative rounded-[14px] overflow-hidden border-[2px] border-[#19182B] shadow-[3px_3px_0_#19182B]">
+                  <div className="relative rounded-[14px] overflow-hidden border border-gray-200 shadow-soft-sm">
                     <img
                       src={photoPreview}
                       alt="Your photo"
@@ -273,9 +273,9 @@ function TryOnModal({
                     />
                     <button
                       onClick={handleReset}
-                      className="absolute top-2.5 right-2.5 flex h-8 w-8 items-center justify-center rounded-[8px] border-[2px] border-[#19182B] bg-white shadow-[2px_2px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#19182B]"
+                      className="absolute top-2.5 right-2.5 flex h-8 w-8 items-center justify-center rounded-[8px] border border-gray-200 bg-white shadow-soft-sm transition-all hover:scale-[0.99] hover:shadow-sm"
                     >
-                      <X className="w-4 h-4 text-[#19182B]" />
+                      <X className="w-4 h-4 text-gray-500" />
                     </button>
                   </div>
                 )}
@@ -294,14 +294,14 @@ function TryOnModal({
               {/* Right: Outfit preview */}
               <div>
                 <div className="flex items-center justify-between mb-3">
-                  <p className="font-extrabold text-[14px] text-[#19182B]">
+                  <p className="font-extrabold text-[14px] text-gray-900">
                     Đồng phục xem trước
                   </p>
-                  <span className="rounded-full border-[2px] border-[#19182B] bg-[#DCEBFF] px-2.5 py-0.5 text-[11px] font-extrabold text-[#19182B] shadow-[2px_2px_0_#19182B]">
+                  <span className="rounded-full border border-gray-200 bg-sky-50 px-2.5 py-0.5 text-[11px] font-extrabold text-sky-600 shadow-soft-sm">
                     PREVIEW
                   </span>
                 </div>
-                <div className="rounded-[14px] overflow-hidden border-[2px] border-[#19182B] shadow-[3px_3px_0_#19182B] bg-[#F6F1E8]">
+                <div className="rounded-[14px] overflow-hidden border border-gray-200 shadow-soft-sm bg-gray-50">
                   <img
                     src={outfitImage}
                     alt={outfitName}
@@ -311,17 +311,17 @@ function TryOnModal({
               </div>
             </div>
           ) : (
-            /* Result view — NB style */
+            /* Result view — modern style */
             <div className="flex flex-col items-center">
               <div className="flex items-center gap-3 mb-5">
-                <div className="flex h-10 w-10 items-center justify-center rounded-[10px] border-[3px] border-[#19182B] bg-[#D9F8E8] shadow-[3px_3px_0_#19182B]">
+                <div className="flex h-10 w-10 items-center justify-center rounded-[10px] border border-gray-200 bg-emerald-50 shadow-soft-sm">
                   <span className="text-[18px]">✨</span>
                 </div>
-                <h3 className="font-black text-[22px] text-[#19182B]">
+                <h3 className="font-black text-[22px] text-gray-900">
                   Kết quả thử đồ
                 </h3>
               </div>
-              <div className="rounded-[14px] overflow-hidden border-[3px] border-[#19182B] shadow-[5px_5px_0_#19182B] max-w-[400px] w-full">
+              <div className="rounded-[14px] overflow-hidden border border-gray-200 shadow-soft-md max-w-[400px] w-full">
                 <img
                   src={result.resultPhotoUrl}
                   alt="Try-on result"
@@ -331,53 +331,53 @@ function TryOnModal({
               <div className="flex items-center gap-3 mt-6">
                 <button
                   onClick={handleDownload}
-                  className="flex items-center gap-2 rounded-[10px] border-[3px] border-[#19182B] bg-[#8B6BFF] px-5 py-3 text-[14px] font-extrabold text-white shadow-[4px_4px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B]"
+                  className="flex items-center gap-2 rounded-[10px] border border-purple-500 bg-violet-500 px-5 py-3 text-[14px] font-extrabold text-white shadow-soft-sm transition-all hover:scale-[0.99] hover:shadow-sm"
                 >
                   <Download className="w-4 h-4" />
                   Tải ảnh
                 </button>
                 <button
                   onClick={handleReset}
-                  className="flex items-center gap-2 rounded-[10px] border-[3px] border-[#19182B] bg-white px-5 py-3 text-[14px] font-extrabold text-[#19182B] shadow-[4px_4px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B]"
+                  className="flex items-center gap-2 rounded-[10px] border border-gray-200 bg-white px-5 py-3 text-[14px] font-extrabold text-gray-700 shadow-soft-sm transition-all hover:scale-[0.99] hover:shadow-sm"
                 >
                   Thử lại
                 </button>
               </div>
               {result.remainingTries >= 0 && (
-                <span className="mt-4 rounded-full border-[2px] border-[#19182B] bg-[#FFF1BF] px-3 py-1 text-[12px] font-extrabold text-[#19182B] shadow-[2px_2px_0_#19182B]">
+                <span className="mt-4 rounded-full border border-gray-200 bg-amber-50 px-3 py-1 text-[12px] font-extrabold text-amber-700 shadow-soft-sm">
                   Còn {result.remainingTries} lượt thử hôm nay
                 </span>
               )}
             </div>
           )}
 
-          {/* Error — NB style */}
+          {/* Error — modern style */}
           {error && (
-            <div className="mt-4 rounded-[10px] border-[2px] border-[#19182B] bg-[#FFECEA] p-3.5 shadow-[3px_3px_0_#19182B]">
-              <p className="font-bold text-[13px] text-[#D32F2F]">{error}</p>
+            <div className="mt-4 rounded-[10px] border border-red-200 bg-red-50 p-3.5 shadow-soft-sm">
+              <p className="font-bold text-[13px] text-red-600">{error}</p>
             </div>
           )}
         </div>
 
         {/* Footer */}
         {!result && (
-          <div className="px-6 py-4 border-t-[2px] border-[#19182B] bg-[#F6F1E8] rounded-b-[15px] flex items-center justify-between">
-            <p className="font-bold text-[12px] text-[#8D879B]">
+          <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 rounded-b-[15px] flex items-center justify-between">
+            <p className="font-bold text-[12px] text-gray-400">
               Tính năng thử đồ sử dụng AI
             </p>
             <div className="flex items-center gap-3">
               <button
                 onClick={onClose}
-                className="rounded-[10px] border-[3px] border-[#19182B] bg-white px-4 py-2.5 text-[13px] font-extrabold text-[#19182B] shadow-[4px_4px_0_#19182B] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B]"
+                className="rounded-[10px] border border-gray-200 bg-white px-4 py-2.5 text-[13px] font-extrabold text-gray-700 shadow-soft-sm transition-all hover:scale-[0.99] hover:shadow-sm"
               >
                 Chọn mẫu khác
               </button>
               <button
                 onClick={handleTryOn}
                 disabled={!photo || processing}
-                className={`flex items-center gap-2 rounded-[10px] border-[3px] border-[#19182B] px-5 py-2.5 text-[13px] font-extrabold transition-all ${!photo || processing
-                  ? "bg-[#ECEAF2] text-[#9A95A8] shadow-[2px_2px_0_#19182B] cursor-not-allowed"
-                  : "bg-[#8B6BFF] text-white shadow-[4px_4px_0_#19182B] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B]"
+                className={`flex items-center gap-2 rounded-[10px] border border-purple-500 px-5 py-2.5 text-[13px] font-extrabold transition-all ${!photo || processing
+                  ? "bg-gray-100 text-gray-400 shadow-sm cursor-not-allowed"
+                  : "bg-violet-500 text-white shadow-soft-sm hover:scale-[0.99] hover:shadow-sm"
                   }`}
               >
                 {processing ? (
@@ -563,7 +563,7 @@ export const OutfitDetail = (): JSX.Element => {
   /* ── Loading / Error states ── */
   if (loading)
     return (
-      <GuestLayout bgColor="#FFF8F0">
+      <GuestLayout bgColor="#f9fafb">
         <div className="max-w-[1200px] mx-auto px-6 lg:px-12 py-10 min-h-screen">
           <div className="h-4 w-64 bg-gray-200 rounded animate-pulse mb-8" />
           <div className="flex flex-col lg:flex-row gap-10">
@@ -581,7 +581,7 @@ export const OutfitDetail = (): JSX.Element => {
 
   if (error || !outfit)
     return (
-      <GuestLayout bgColor="#FFF8F0">
+      <GuestLayout bgColor="#f9fafb">
         <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
           <p className="font-montserrat font-medium text-gray-500">{error || "Không tìm thấy đồng phục."}</p>
           <button onClick={() => navigate("/schools")} className="text-purple-600 hover:text-purple-700 font-montserrat font-bold">
@@ -605,12 +605,12 @@ export const OutfitDetail = (): JSX.Element => {
       <div className="max-w-[1050px] mx-auto px-4 py-4 lg:py-6">
         {/* Breadcrumbs - Exact style from Reference */}
         <nav className="flex items-center gap-1.5 text-[13px] font-medium text-gray-500 mb-6 overflow-x-auto scrollbar-hide">
-          <Link to="/" className="flex items-center gap-1.5 hover:text-gray-900 transition-colors whitespace-nowrap">
+          <Link to="/" className="flex items-center gap-1.5 hover:text-gray-800 transition-colors whitespace-nowrap">
             <Home className="w-3.5 h-3.5 mb-0.5" />
             Trang chủ
           </Link>
           <ChevronRight className="w-3 h-3 flex-shrink-0 text-gray-400" />
-          <Link to="/outfits" className="hover:text-gray-900 transition-colors whitespace-nowrap">
+          <Link to="/outfits" className="hover:text-gray-800 transition-colors whitespace-nowrap">
             Danh sách đồng phục
           </Link>
           <ChevronRight className="w-3 h-3 flex-shrink-0 text-gray-400" />
@@ -626,7 +626,7 @@ export const OutfitDetail = (): JSX.Element => {
               <motion.div
                 initial={{ opacity: 0, scale: 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="aspect-[4/5] rounded-xl overflow-hidden bg-white border-[2px] border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E] relative group"
+                className="aspect-[4/5] rounded-xl overflow-hidden bg-white border border-gray-200 shadow-soft-md relative group"
               >
                 <img
                   src={mainImage}
@@ -637,13 +637,13 @@ export const OutfitDetail = (): JSX.Element => {
                 {/* Float Action: Like */}
                 <button
                   onClick={() => setLiked(!liked)}
-                  className="absolute top-2 left-2 w-7 h-7 bg-white border-[1.5px] border-[#1A1A2E] rounded-md flex items-center justify-center shadow-[1.5px_1.5px_0_#1A1A2E] hover:translate-x-[0.5px] hover:translate-y-[0.5px] hover:shadow-[0.5px_0.5px_0_#1A1A2E] transition-all z-10"
+                  className="absolute top-2 left-2 w-7 h-7 bg-white border border-gray-200 rounded-md flex items-center justify-center shadow-sm hover:-translate-y-px hover:shadow-sm transition-all z-10"
                 >
                   <Heart className={`w-3 h-3 ${liked ? "fill-red-500 text-red-500" : "text-gray-400"}`} />
                 </button>
 
                 {/* Badge: Type */}
-                <div className="absolute top-3 right-3 px-3 py-1 bg-[#FFF1BF] border-[2px] border-[#1A1A2E] rounded-lg text-gray-900 text-[10px] font-black uppercase tracking-widest z-10 shadow-[2px_2px_0_#1A1A2E]">
+                <div className="absolute top-3 right-3 px-3 py-1 bg-[#FFF1BF] border border-gray-200 rounded-lg text-gray-900 text-[10px] font-black uppercase tracking-widest z-10 shadow-sm">
                   {OUTFIT_TYPE_LABEL[outfit.outfitType] ?? outfit.outfitType}
                 </div>
               </motion.div>
@@ -653,7 +653,7 @@ export const OutfitDetail = (): JSX.Element => {
                 <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
                   <button
                     onClick={() => { setSelectedVariant(null); setSelectedSize(null); }}
-                    className={`w-10 h-10 rounded-md overflow-hidden border-[1px] flex-shrink-0 transition-all ${!selectedVariant ? "border-[#0ea5e9] shadow-[1.5px_1.5px_0_#0ea5e9]" : "border-[#1A1A2E] bg-white"}`}
+                    className={`w-10 h-10 rounded-md overflow-hidden border flex-shrink-0 transition-all ${!selectedVariant ? "border-sky-400 shadow-soft-sm" : "border-gray-200 bg-white"}`}
                   >
                     <img src={outfit.mainImageURL ?? ""} alt="main" className="w-full h-full object-cover" />
                   </button>
@@ -661,7 +661,7 @@ export const OutfitDetail = (): JSX.Element => {
                     <button
                       key={v.productVariantId}
                       onClick={() => { setSelectedVariant(v); setSelectedSize(v.size); }}
-                      className={`w-10 h-10 rounded-md overflow-hidden border-[1px] flex-shrink-0 transition-all ${selectedVariant?.productVariantId === v.productVariantId ? "border-[#0ea5e9] shadow-[1.5px_1.5px_0_#0ea5e9]" : "border-[#1A1A2E] bg-white"}`}
+                      className={`w-10 h-10 rounded-md overflow-hidden border flex-shrink-0 transition-all ${selectedVariant?.productVariantId === v.productVariantId ? "border-sky-400 shadow-soft-sm" : "border-gray-200 bg-white"}`}
                     >
                       <img src={v.variantImageURL!} alt={v.size} className="w-full h-full object-cover" />
                     </button>
@@ -679,14 +679,14 @@ export const OutfitDetail = (): JSX.Element => {
             >
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <Badge className="bg-[#1A1A2E] text-white border-none px-2.5 py-0.5 font-black text-[9px] uppercase rounded-md shadow-[2px_2px_0_#94a3b8]">Verified</Badge>
+                  <Badge className="bg-gray-900 text-white border-none px-2.5 py-0.5 font-black text-[9px] uppercase rounded-md shadow-sm">Verified</Badge>
                   <span className="text-[11px] font-bold text-gray-400 tracking-widest uppercase">SKU: {selectedVariant?.skuCode || 'OFF-DEF'}</span>
                 </div>
                 <h1 className="font-baloo font-black text-2xl lg:text-3xl text-gray-900 leading-[1.2]">
                   {outfit.outfitName}
                 </h1>
                 <div className="flex items-center gap-2">
-                  <div className="flex items-center bg-[#FFF1BF] px-2 py-1 rounded-md border-[2px] border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E]">
+                  <div className="flex items-center bg-[#FFF1BF] px-2 py-1 rounded-md border border-gray-200 shadow-sm">
                     <div className="flex items-center gap-0.5 mr-1.5">
                       {[1, 2, 3, 4, 5].map((s) => {
                         const diff = (outfit.averageRating || 0) - s + 1;
@@ -708,20 +708,20 @@ export const OutfitDetail = (): JSX.Element => {
 
               {/* Price & School Duo Block */}
               <div className="grid grid-cols-2 gap-3 xl:gap-4">
-                <div className="p-3.5 bg-white rounded-xl border-[2.5px] border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E]">
+                <div className="p-3.5 bg-white rounded-xl border-2 border-gray-200 shadow-soft-md">
                   <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Giá bán</p>
                   <p className="font-baloo font-black text-[22px] text-[#0ea5e9]">
                     {fmt(displayPrice)}
                   </p>
                 </div>
-                <Link to={`/schools/${outfit.school.schoolId}`} className="p-3.5 bg-gray-50 rounded-xl border-[2.5px] border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#1A1A2E] transition-all">
+                <Link to={`/schools/${outfit.school.schoolId}`} className="p-3.5 bg-gray-50 rounded-xl border-2 border-gray-200 shadow-soft-md hover:scale-[0.99] hover:shadow-sm transition-all">
                   <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Cung cấp bởi</p>
                   <p className="font-extrabold text-[13px] text-gray-900 line-clamp-1 truncate uppercase">{outfit.school.schoolName}</p>
                 </Link>
               </div>
 
               {/* Selection Options (The Card) */}
-              <div className="bg-white rounded-[12px] p-3 lg:p-4 border-[1.5px] border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E] space-y-3">
+              <div className="bg-white rounded-[12px] p-3 lg:p-4 border border-gray-200 shadow-sm space-y-3">
                 {/* Size Selection */}
                 {sizes.length > 0 && (
                   <div className="space-y-2">
@@ -740,20 +740,20 @@ export const OutfitDetail = (): JSX.Element => {
 
                     {/* Smart Recommendation Integration */}
                     {isParent && (
-                      <div className="p-2 bg-[#DCEBFF] border-[1px] border-[#1A1A2E] shadow-[1.5px_1.5px_0_#1A1A2E] rounded-md space-y-1.5">
+                      <div className="p-2 bg-[#DCEBFF] border-[1px] border-gray-200 shadow-sm rounded-md space-y-1.5">
                         {schoolChildren.length > 0 ? (
                           <>
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-1.5">
-                                <div className="w-5 h-5 bg-white border-[1.5px] border-[#1A1A2E] rounded flex items-center justify-center text-[10px]">🤖</div>
+                                <div className="w-5 h-5 bg-white border border-gray-200 rounded flex items-center justify-center text-[10px]">🤖</div>
                                 <span className="text-[8px] font-black text-gray-900 uppercase">Cố vấn AI</span>
                               </div>
-                              {recommendationLoading && <div className="w-2 h-2 border-2 border-[#1A1A2E] border-t-transparent rounded-full animate-spin" />}
+                              {recommendationLoading && <div className="w-2 h-2 border border-gray-200 border-t-transparent rounded-full animate-spin" />}
                             </div>
                             <select
                               value={selectedChildId}
                               onChange={(e) => setSelectedChildId(e.target.value)}
-                              className="w-full h-7 bg-white border-[1px] border-[#1A1A2E] rounded-sm px-1.5 text-[9px] font-bold text-gray-900 focus:shadow-[1px_1px_0_#1A1A2E] outline-none transition-all"
+                              className="w-full h-7 bg-white border-[1px] border-gray-200 rounded-sm px-1.5 text-[9px] font-bold text-gray-900 focus:shadow-sm outline-none transition-all"
                             >
                               {schoolChildren.length > 1 && <option value="none">-- CHỌN BÉ --</option>}
                               {schoolChildren.map(c => <option key={c.childId} value={c.childId}>{c.fullName.toUpperCase()}</option>)}
@@ -785,11 +785,11 @@ export const OutfitDetail = (): JSX.Element => {
                             key={size}
                             onClick={() => handleSizeSelect(size)}
                             className={`min-w-[36px] h-7 rounded-sm font-black text-[10px] transition-all relative border-[1px] ${isSelected
-                              ? "bg-[#0ea5e9] text-white border-[#1A1A2E] shadow-[1.5px_1.5px_0_#1A1A2E]"
-                              : "bg-white text-gray-900 border-[#1A1A2E] shadow-[1.5px_1.5px_0_#1A1A2E] hover:translate-x-[0.5px] hover:translate-y-[0.5px] hover:shadow-[0.5px_0.5px_0_#1A1A2E]"}`}
+                              ? "bg-[#0ea5e9] text-white border-gray-200 shadow-sm"
+                              : "bg-white text-gray-900 border-gray-200 shadow-sm hover:-translate-y-px hover:shadow-sm"}`}
                           >
                             {size}
-                            {isRecommended && <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-amber-400 rounded-full border-[0.5px] border-[#1A1A2E]" />}
+                            {isRecommended && <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-amber-400 rounded-full border-[0.5px] border-gray-200" />}
                           </button>
                         );
                       })}
@@ -801,10 +801,10 @@ export const OutfitDetail = (): JSX.Element => {
                 <div className="space-y-2">
                   <h4 className="text-[9px] font-black text-gray-900 uppercase tracking-widest">Số lượng</h4>
                   <div className="flex items-center gap-3">
-                    <div className="flex items-center bg-gray-50 rounded-md p-0.5 border-[1px] border-[#1A1A2E] shadow-[1.5px_1.5px_0_#1A1A2E]">
-                      <button onClick={() => setQuantity(q => Math.max(1, q - 1))} className="w-5 h-5 rounded-sm bg-white border border-[#1A1A2E] flex items-center justify-center hover:bg-gray-50 transition-all text-gray-900"><Minus className="w-2.5 h-2.5" /></button>
+                    <div className="flex items-center bg-gray-50 rounded-md p-0.5 border-[1px] border-gray-200 shadow-sm">
+                      <button onClick={() => setQuantity(q => Math.max(1, q - 1))} className="w-5 h-5 rounded-sm bg-white border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-all text-gray-900"><Minus className="w-2.5 h-2.5" /></button>
                       <span className="w-7 text-center font-black text-[11px]">{quantity}</span>
-                      <button onClick={() => setQuantity(q => q + 1)} className="w-5 h-5 rounded-sm bg-white border border-[#1A1A2E] flex items-center justify-center hover:bg-gray-50 transition-all text-gray-900"><Plus className="w-2.5 h-2.5" /></button>
+                      <button onClick={() => setQuantity(q => q + 1)} className="w-5 h-5 rounded-sm bg-white border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-all text-gray-900"><Plus className="w-2.5 h-2.5" /></button>
                     </div>
                     {selectedVariant && (
                       <p className={`text-[8px] font-black uppercase tracking-tighter ${selectedVariant.stockQuantity < 10 ? 'text-amber-600' : 'text-emerald-600'}`}>
@@ -819,9 +819,9 @@ export const OutfitDetail = (): JSX.Element => {
                         onClick={() => {
                           setShowOrderModal(true);
                         }}
-                        className={`h-9 rounded-md font-black text-[10px] flex items-center justify-center gap-1.5 transition-all uppercase border-[1.5px] border-[#1A1A2E] ${schoolChildren.length === 0
-                          ? "bg-gray-200 text-gray-400 shadow-[1px_1px_0_#1A1A2E] cursor-not-allowed opacity-60"
-                          : "bg-[#0ea5e9] text-white shadow-[2px_2px_0_#1A1A2E] hover:translate-x-[0.5px] hover:translate-y-[0.5px] hover:shadow-[1px_1px_0_#1A1A2E]"
+                        className={`h-9 rounded-md font-black text-[10px] flex items-center justify-center gap-1.5 transition-all uppercase border border-gray-200 ${schoolChildren.length === 0
+                          ? "bg-gray-200 text-gray-400 shadow-sm cursor-not-allowed opacity-60"
+                          : "bg-[#0ea5e9] text-white shadow-sm hover:translate-x-[0.5px] hover:translate-y-[0.5px] hover:shadow-sm"
                           }`}
                       >
                         {schoolChildren.length === 0 ? <ShieldCheck className="w-3 h-3" /> : <ShoppingBag className="w-3 h-3" />}
@@ -831,7 +831,7 @@ export const OutfitDetail = (): JSX.Element => {
 
                     <button
                       onClick={() => setShowTryOn(true)}
-                      className="h-9 rounded-md border-[1.5px] border-[#1A1A2E] font-black text-[10px] text-gray-900 flex items-center justify-center gap-1.5 bg-[#F2ECFF] shadow-[2px_2px_0_#1A1A2E] hover:translate-x-[0.5px] hover:translate-y-[0.5px] hover:shadow-[1px_1px_0_#1A1A2E] transition-all uppercase"
+                      className="h-9 rounded-md border border-gray-200 font-black text-[10px] text-gray-900 flex items-center justify-center gap-1.5 bg-[#F2ECFF] shadow-sm hover:translate-x-[0.5px] hover:translate-y-[0.5px] hover:shadow-sm transition-all uppercase"
                     >
                       <Sparkles className="w-3 h-3 text-gray-900 fill-amber-400" />
                       THỬ ĐỒ VR
@@ -840,13 +840,13 @@ export const OutfitDetail = (): JSX.Element => {
                 </div>
 
                 {/* Trust Signals - compact but readable */}
-                <div className="pt-4 border-t-[2px] border-[#1A1A2E] grid grid-cols-2 gap-4">
+                <div className="pt-4 border-t border-gray-200 grid grid-cols-2 gap-4">
                   <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-lg bg-[#D9F8E8] border-[1.5px] border-[#1A1A2E] flex items-center justify-center shadow-[2px_2px_0_#1A1A2E]"><ShieldCheck className="w-3.5 h-3.5 text-gray-900" /></div>
+                    <div className="w-8 h-8 rounded-lg bg-[#D9F8E8] border border-gray-200 flex items-center justify-center shadow-sm"><ShieldCheck className="w-3.5 h-3.5 text-gray-900" /></div>
                     <span className="text-[9px] font-black text-gray-500 uppercase tracking-tighter leading-tight">Chính hãng</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-lg bg-[#DCEBFF] border-[1.5px] border-[#1A1A2E] flex items-center justify-center shadow-[2px_2px_0_#1A1A2E]"><Truck className="w-3.5 h-3.5 text-gray-900" /></div>
+                    <div className="w-8 h-8 rounded-lg bg-[#DCEBFF] border border-gray-200 flex items-center justify-center shadow-sm"><Truck className="w-3.5 h-3.5 text-gray-900" /></div>
                     <span className="text-[9px] font-black text-gray-500 uppercase tracking-tighter leading-tight">Hỏa tốc</span>
                   </div>
                 </div>
@@ -860,7 +860,7 @@ export const OutfitDetail = (): JSX.Element => {
           <div
             ref={tabsRef}
             id="outfit-tabs"
-            className="flex items-center gap-6 border-b-[2px] border-[#1A1A2E] mb-4 overflow-x-auto scrollbar-hide"
+            className="flex items-center gap-6 border-b border-gray-200 mb-4 overflow-x-auto scrollbar-hide"
           >
             {(
               [
@@ -957,10 +957,10 @@ export const OutfitDetail = (): JSX.Element => {
                     return <p className="text-[10px] font-medium text-gray-400">CHƯA CÓ SỐ ĐO.</p>;
                   }
                   return (
-                    <div className="overflow-x-auto border-[2px] border-[#1A1A2E] rounded-xl shadow-[3px_3px_0_#1A1A2E] max-w-2xl bg-white">
+                    <div className="overflow-x-auto border border-gray-200 rounded-xl shadow-soft-sm max-w-2xl bg-white">
                       <table className="w-full text-[10px] border-collapse">
                         <thead>
-                          <tr className="bg-[#FFF1BF] border-b-[2px] border-[#1A1A2E]">
+                          <tr className="bg-[#FFF1BF] border-b border-gray-200">
                             <th className="font-black text-left px-3 py-2 text-gray-900 whitespace-nowrap uppercase">SIZE</th>
                             {allFields.map((f) => (
                               <th key={f.fieldKey} className="font-black text-center px-2 py-2 text-gray-900 whitespace-nowrap uppercase">
@@ -971,7 +971,7 @@ export const OutfitDetail = (): JSX.Element => {
                         </thead>
                         <tbody>
                           {outfit.sizeChart.details.map((d) => (
-                            <tr key={d.sizeLabel} className="border-b border-[#1A1A2E]/10 hover:bg-sky-50 transition-colors">
+                            <tr key={d.sizeLabel} className="border-b border-gray-200/10 hover:bg-sky-50 transition-colors">
                               <td className="font-black px-3 py-2 text-gray-900 bg-gray-50/50">{d.sizeLabel}</td>
                               {allFields.map((f) => {
                                 const m = d.measurements.find((item) => item.fieldKey === f.fieldKey);
@@ -997,7 +997,7 @@ export const OutfitDetail = (): JSX.Element => {
             {activeTab === "reviews" && (
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
                 {/* Rating Summary Card */}
-                <div className="flex items-center gap-4 p-4 bg-white border-[2.5px] border-[#1A1A2E] rounded-xl shadow-[3px_3px_0_#1A1A2E] max-w-max mb-6">
+                <div className="flex items-center gap-4 p-4 bg-white border-2 border-gray-200 rounded-xl shadow-soft-sm max-w-max mb-6">
                   <span className="font-baloo font-black text-4xl leading-none text-gray-900">
                     {outfit.averageRating?.toFixed(1) || "0.0"}
                   </span>
@@ -1034,8 +1034,8 @@ export const OutfitDetail = (): JSX.Element => {
                         setReviewPage(1);
                       }}
                       className={`px-2.5 py-1 rounded-lg font-black text-[10px] transition-all border-[1.5px] uppercase tracking-widest ${selectedRatingFilter === "all"
-                        ? "border-[#1A1A2E] bg-[#0ea5e9] text-white shadow-[1.5px_1.5px_0_#1A1A2E]"
-                        : "border-[#1A1A2E] bg-white text-gray-600 hover:translate-x-[0.5px] hover:translate-y-[0.5px] hover:shadow-[0.5px_0.5px_0_#1A1A2E]"
+                        ? "border-gray-200 bg-[#0ea5e9] text-white shadow-sm"
+                        : "border-gray-200 bg-white text-gray-600 hover:-translate-y-px hover:shadow-sm"
                         }`}
                     >
                       TẤT CẢ ({outfit.feedbackCount})
@@ -1052,8 +1052,8 @@ export const OutfitDetail = (): JSX.Element => {
                             setReviewPage(1);
                           }}
                           className={`px-2 py-1 rounded-lg font-black text-[10px] transition-all border-[1.5px] flex items-center gap-1 uppercase ${selectedRatingFilter === rating
-                            ? "border-[#1A1A2E] bg-[#0ea5e9] text-white shadow-[1.5px_1.5px_0_#1A1A2E]"
-                            : "border-[#1A1A2E] bg-white text-gray-600 hover:translate-x-[0.5px] hover:translate-y-[0.5px] hover:shadow-[0.5px_0.5px_0_#1A1A2E]"
+                            ? "border-gray-200 bg-[#0ea5e9] text-white shadow-sm"
+                            : "border-gray-200 bg-white text-gray-600 hover:-translate-y-px hover:shadow-sm"
                             } ${count === 0 ? "opacity-50 cursor-not-allowed" : ""}`}
                           disabled={count === 0}
                         >
@@ -1087,7 +1087,7 @@ export const OutfitDetail = (): JSX.Element => {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.2 }}
-                            className="bg-white border-[1.5px] border-[#1A1A2E] rounded-xl p-3 shadow-[2px_2px_0_#1A1A2E] hover:translate-x-[0.5px] hover:translate-y-[0.5px] hover:shadow-[1px_1px_0_#1A1A2E] transition-all"
+                            className="bg-white border border-gray-200 rounded-xl p-3 shadow-sm hover:translate-x-[0.5px] hover:translate-y-[0.5px] hover:shadow-sm transition-all"
                           >
                             {/* Header: Avatar, name, rating */}
                             <div className="flex items-start gap-3 mb-2">
@@ -1096,10 +1096,10 @@ export const OutfitDetail = (): JSX.Element => {
                                   <img
                                     src={review.userAvatarUrl}
                                     alt={review.userName}
-                                    className="w-8 h-8 rounded-full object-cover border border-[#1A1A2E]"
+                                    className="w-8 h-8 rounded-full object-cover border border-gray-200"
                                   />
                                 ) : (
-                                  <div className="w-8 h-8 rounded-full bg-sky-100 flex items-center justify-center text-sky-600 font-black text-[10px] border border-[#1A1A2E]">
+                                  <div className="w-8 h-8 rounded-full bg-sky-100 flex items-center justify-center text-sky-600 font-black text-[10px] border border-gray-200">
                                     {review.userName.charAt(0).toUpperCase()}
                                   </div>
                                 )}
@@ -1140,7 +1140,7 @@ export const OutfitDetail = (): JSX.Element => {
 
                       {/* Pagination Controls */}
                       {totalReviewPages > 1 && (
-                        <div className="flex items-center justify-between pt-3 border-t-[1.5px] border-[#1A1A2E] mt-4">
+                        <div className="flex items-center justify-between pt-3 border-t border-gray-100 mt-4">
                           <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
                             Trang {reviewPage} / {totalReviewPages}
                           </div>
@@ -1150,7 +1150,7 @@ export const OutfitDetail = (): JSX.Element => {
                               disabled={reviewPage === 1}
                               className={`px-2.5 py-1 rounded-lg font-black text-[10px] border-[1.5px] uppercase transition-all ${reviewPage === 1
                                 ? "border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed"
-                                : "border-[#1A1A2E] bg-white text-gray-900 shadow-[2px_2px_0_#1A1A2E] hover:translate-x-[0.5px] hover:translate-y-[0.5px] hover:shadow-[1px_1px_0_#1A1A2E]"
+                                : "border-gray-200 bg-white text-gray-900 shadow-sm hover:translate-x-[0.5px] hover:translate-y-[0.5px] hover:shadow-sm"
                                 }`}
                             >
                               Trước
@@ -1160,7 +1160,7 @@ export const OutfitDetail = (): JSX.Element => {
                               disabled={reviewPage === totalReviewPages}
                               className={`px-2.5 py-1 rounded-lg font-black text-[10px] border-[1.5px] uppercase transition-all ${reviewPage === totalReviewPages
                                 ? "border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed"
-                                : "border-[#1A1A2E] bg-white text-gray-900 shadow-[2px_2px_0_#1A1A2E] hover:translate-x-[0.5px] hover:translate-y-[0.5px] hover:shadow-[1px_1px_0_#1A1A2E]"
+                                : "border-gray-200 bg-white text-gray-900 shadow-sm hover:translate-x-[0.5px] hover:translate-y-[0.5px] hover:shadow-sm"
                                 }`}
                             >
                               Tiếp
@@ -1178,7 +1178,7 @@ export const OutfitDetail = (): JSX.Element => {
 
         {/* ───── Related Products ───── */}
         {related.length > 0 && (
-          <motion.div custom={4} variants={fadeUp} initial="hidden" animate="visible" className="mt-10 pt-6 border-t-[2.5px] border-[#1A1A2E]">
+          <motion.div custom={4} variants={fadeUp} initial="hidden" animate="visible" className="mt-10 pt-6 border-t-[2.5px] border-gray-200">
             <div className="flex items-end justify-between mb-6">
               <h2 className="font-baloo font-black text-xl text-gray-900 tracking-tight uppercase">
                 Gợi ý cho bạn
@@ -1204,7 +1204,7 @@ export const OutfitDetail = (): JSX.Element => {
                     <div
                       key={item.outfitId}
                       onClick={() => navigate(`/outfits/${item.outfitId}`)}
-                      className="w-[190px] flex-shrink-0 bg-white rounded-lg p-2 border-[1.5px] border-[#1A1A2E] shadow-[2.5px_2.5px_0_#1A1A2E] hover:translate-x-[0.5px] hover:translate-y-[0.5px] hover:shadow-[1px_1px_0_#1A1A2E] transition-all cursor-pointer group flex flex-col"
+                      className="w-[190px] flex-shrink-0 bg-white rounded-lg p-2 border border-gray-200 shadow-sm hover:translate-x-[0.5px] hover:translate-y-[0.5px] hover:shadow-sm transition-all cursor-pointer group flex flex-col"
                     >
                       <div className="w-full aspect-[4/5] bg-gray-50 rounded-md overflow-hidden relative border border-gray-100/50">
                         {item.mainImageURL ? (

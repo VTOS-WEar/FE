@@ -108,11 +108,11 @@ export const AccountSecuritySettings = (): JSX.Element => {
     <div className="space-y-6">
       {/* Change Password */}
       <div className="nb-card-static p-6">
-        <h3 className="font-extrabold text-[#1A1A2E] text-base mb-4">Đổi mật khẩu</h3>
+        <h3 className="font-extrabold text-gray-900 text-base mb-4">Đổi mật khẩu</h3>
         <div className="space-y-4 max-w-md">
           {!otpSent ? (
             <>
-              <p className="font-medium text-[#6B7280] text-sm">
+              <p className="font-medium text-gray-500 text-sm">
                 Nhấn nút dưới để nhận mã OTP qua email và tiến hành đổi mật khẩu.
               </p>
               <button
@@ -126,7 +126,7 @@ export const AccountSecuritySettings = (): JSX.Element => {
           ) : (
             <>
               <div>
-                <label className="font-bold text-[#1A1A2E] text-sm mb-1.5 block">Mã OTP</label>
+                <label className="font-bold text-gray-900 text-sm mb-1.5 block">Mã OTP</label>
                 <input
                   type="text"
                   inputMode="numeric"
@@ -138,7 +138,7 @@ export const AccountSecuritySettings = (): JSX.Element => {
                 />
               </div>
               <div>
-                <label className="font-bold text-[#1A1A2E] text-sm mb-1.5 block">Mật khẩu mới</label>
+                <label className="font-bold text-gray-900 text-sm mb-1.5 block">Mật khẩu mới</label>
                 <input
                   type="password"
                   value={newPassword}
@@ -148,7 +148,7 @@ export const AccountSecuritySettings = (): JSX.Element => {
                 />
               </div>
               <div>
-                <label className="font-bold text-[#1A1A2E] text-sm mb-1.5 block">Xác nhận mật khẩu mới</label>
+                <label className="font-bold text-gray-900 text-sm mb-1.5 block">Xác nhận mật khẩu mới</label>
                 <input
                   type="password"
                   value={confirmPassword}
@@ -167,7 +167,7 @@ export const AccountSecuritySettings = (): JSX.Element => {
                 </button>
                 <button
                   onClick={() => { setOtpSent(false); setOtp(""); setNewPassword(""); setConfirmPassword(""); setChangePasswordMsg(""); }}
-                  className="text-[#6B7280] hover:text-[#1A1A2E] font-bold text-sm transition-colors"
+                  className="text-gray-500 hover:text-gray-800 font-bold text-sm transition-colors"
                 >
                   Hủy
                 </button>
@@ -175,12 +175,12 @@ export const AccountSecuritySettings = (): JSX.Element => {
             </>
           )}
           {otpRequestMsg && (
-            <p className={`font-bold text-sm ${otpRequestMsg.startsWith("✓") ? "text-[#065F46]" : "text-[#991B1B]"}`}>
+            <p className={`font-bold text-sm ${otpRequestMsg.startsWith("✓") ? "text-emerald-800" : "text-red-800"}`}>
               {otpRequestMsg}
             </p>
           )}
           {changePasswordMsg && (
-            <p className={`font-bold text-sm ${changePasswordMsg.startsWith("✓") ? "text-[#065F46]" : "text-[#991B1B]"}`}>
+            <p className={`font-bold text-sm ${changePasswordMsg.startsWith("✓") ? "text-emerald-800" : "text-red-800"}`}>
               {changePasswordMsg}
             </p>
           )}
@@ -191,32 +191,32 @@ export const AccountSecuritySettings = (): JSX.Element => {
       <div className="nb-card-static p-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className={`w-10 h-10 rounded-lg flex items-center justify-center border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E] ${
-              is2FAEnabled === true ? 'bg-[#C8E44D]' : is2FAEnabled === false ? 'bg-[#EDE9FE]' : 'bg-[#F3F4F6] animate-pulse'
+            <div className={`w-10 h-10 rounded-lg flex items-center justify-center border border-gray-200 shadow-sm ${
+              is2FAEnabled === true ? 'bg-emerald-400' : is2FAEnabled === false ? 'bg-violet-50' : 'bg-gray-100 animate-pulse'
             }`}>
-              {is2FAEnabled === true ? <ShieldCheck className="w-5 h-5 text-[#1A1A2E]" /> : <Shield className="w-5 h-5 text-[#6B7280]" />}
+              {is2FAEnabled === true ? <ShieldCheck className="w-5 h-5 text-gray-900" /> : <Shield className="w-5 h-5 text-gray-500" />}
             </div>
             <div>
-              <h3 className="font-extrabold text-[#1A1A2E] text-base">Xác thực 2 bước (2FA)</h3>
-              <p className="font-medium text-[#6B7280] text-sm mt-0.5">
+              <h3 className="font-extrabold text-gray-900 text-base">Xác thực 2 bước (2FA)</h3>
+              <p className="font-medium text-gray-500 text-sm mt-0.5">
                 Bảo vệ tài khoản bằng Google Authenticator
               </p>
             </div>
           </div>
           <div className="flex items-center gap-3">
             {is2FAEnabled === null ? (
-              <div className="h-7 w-20 bg-[#F3F4F6] rounded-lg animate-pulse" />
+              <div className="h-7 w-20 bg-gray-100 rounded-lg animate-pulse" />
             ) : (
               <>
                 <span className={`px-3 py-1 rounded-lg text-xs font-bold border-2 ${
-                  is2FAEnabled ? 'bg-[#C8E44D] text-[#1A1A2E] border-[#1A1A2E]' : 'bg-[#F3F4F6] text-[#6B7280] border-transparent'
+                  is2FAEnabled ? 'bg-emerald-400 text-gray-900 border-gray-200' : 'bg-gray-100 text-gray-500 border-transparent'
                 }`}>
                   {is2FAEnabled ? 'Đang bật' : 'Đang tắt'}
                 </span>
                 {is2FAEnabled ? (
                   <button
                     onClick={() => setShowDisable2FA(true)}
-                    className="nb-btn nb-btn-outline text-sm !text-[#991B1B] !border-[#FCA5A5] hover:!bg-[#FEE2E2]"
+                    className="nb-btn nb-btn-outline text-sm !text-red-800 !border-[#FCA5A5] hover:!bg-[#FEE2E2]"
                   >
                     Tắt 2FA
                   </button>
@@ -236,7 +236,7 @@ export const AccountSecuritySettings = (): JSX.Element => {
         {/* Disable 2FA Dialog */}
         {showDisable2FA && (
           <div className="mt-4 nb-card-static p-4 !border-[#FCA5A5] !bg-[#FFF5F5]">
-            <p className="font-medium text-sm text-[#4C5769] mb-3">
+            <p className="font-medium text-sm text-gray-600 mb-3">
               Nhập mã 6 chữ số từ ứng dụng xác thực để tắt 2FA:
             </p>
             <div className="flex items-center gap-3">
@@ -266,20 +266,20 @@ export const AccountSecuritySettings = (): JSX.Element => {
                   } finally { setDisabling2FA(false); }
                 }}
                 disabled={disabling2FA || disable2FACode.length !== 6}
-                className="nb-btn text-sm !bg-[#991B1B] !text-white !border-[#1A1A2E] disabled:opacity-50"
+                className="nb-btn text-sm !bg-red-800 !text-white !border-gray-200 disabled:opacity-50"
               >
                 {disabling2FA ? "Đang xử lý..." : "Xác nhận tắt"}
               </button>
               <button
                 onClick={() => { setShowDisable2FA(false); setDisable2FACode(""); setDisable2FAMsg(""); }}
-                className="text-[#6B7280] hover:text-[#1A1A2E] font-bold text-sm transition-colors"
+                className="text-gray-500 hover:text-gray-800 font-bold text-sm transition-colors"
               >
                 Hủy
               </button>
             </div>
             {disable2FAMsg && (
               <p className={`mt-2 font-bold text-sm ${
-                disable2FAMsg.startsWith("✓") ? "text-[#065F46]" : "text-[#991B1B]"
+                disable2FAMsg.startsWith("✓") ? "text-emerald-800" : "text-red-800"
               }`}>{disable2FAMsg}</p>
             )}
           </div>

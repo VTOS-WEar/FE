@@ -76,9 +76,9 @@ export function NotificationDropdown({
             {/* Bell Button */}
             <button
                 onClick={handleToggle}
-                className="w-10 h-10 flex items-center justify-center rounded-full border-2 border-[#1A1A2E] bg-white hover:bg-[#FFF5EB] shadow-[2px_2px_0_#1A1A2E] transition-all relative"
+                className="w-10 h-10 flex items-center justify-center rounded-full border border-gray-200 bg-white hover:bg-[#FFF5EB] shadow-sm transition-all relative"
             >
-                <svg className="w-5 h-5 text-[#1A1A2E]" viewBox="0 0 24 24" fill="currentColor">
+                <svg className="w-5 h-5 text-gray-900" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M12 22c1.1 0 2-.9 2-2h-4a2 2 0 002 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.93 6 11v5l-2 2v1h16v-1l-2-2z" />
                 </svg>
                 {unreadCount > 0 && (
@@ -90,16 +90,16 @@ export function NotificationDropdown({
 
             {/* Dropdown */}
             {isOpen && (
-                <div className="absolute right-0 top-12 w-[360px] max-h-[460px] bg-white border-2 border-[#1A1A2E] rounded-xl shadow-[4px_4px_0_#1A1A2E] z-50 flex flex-col overflow-hidden">
+                <div className="absolute right-0 top-12 w-[360px] max-h-[460px] bg-white border border-gray-200 rounded-xl shadow-soft-md z-50 flex flex-col overflow-hidden">
                     {/* Header */}
-                    <div className="flex items-center justify-between px-4 py-3 border-b-2 border-[#E5E7EB]">
-                        <h3 className="font-bold text-[#1A1A2E] text-sm">
-                            🔔 Thông báo {unreadCount > 0 && <span className="text-[#EF4444]">({unreadCount})</span>}
+                    <div className="flex items-center justify-between px-4 py-3 border-b-2 border-gray-200">
+                        <h3 className="font-bold text-gray-900 text-sm">
+                            🔔 Thông báo {unreadCount > 0 && <span className="text-red-500">({unreadCount})</span>}
                         </h3>
                         {unreadCount > 0 && (
                             <button
                                 onClick={onMarkAllAsRead}
-                                className="text-[#6938EF] font-semibold text-xs hover:underline"
+                                className="text-violet-600 font-semibold text-xs hover:underline"
                             >
                                 Đọc tất cả
                             </button>
@@ -113,7 +113,7 @@ export function NotificationDropdown({
                                 <div className="animate-spin rounded-full h-6 w-6 border-2 border-[#6938EF] border-t-transparent" />
                             </div>
                         ) : notifications.length === 0 ? (
-                            <div className="flex flex-col items-center justify-center py-10 text-[#9CA3AF]">
+                            <div className="flex flex-col items-center justify-center py-10 text-gray-400">
                                 <svg className="w-10 h-10 mb-2" viewBox="0 0 24 24" fill="currentColor" opacity={0.3}>
                                     <path d="M12 22c1.1 0 2-.9 2-2h-4a2 2 0 002 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.93 6 11v5l-2 2v1h16v-1l-2-2z" />
                                 </svg>
@@ -124,7 +124,7 @@ export function NotificationDropdown({
                                 <button
                                     key={n.id}
                                     onClick={() => handleClick(n)}
-                                    className={`w-full text-left px-4 py-3 flex items-start gap-3 hover:bg-[#FFF8F0] transition-colors border-b border-[#F3F4F6] ${
+                                    className={`w-full text-left px-4 py-3 flex items-start gap-3 hover:bg-gray-50 transition-colors border-b border-[#F3F4F6] ${
                                         !n.isRead ? "bg-[#FEFCE8]" : ""
                                     }`}
                                 >
@@ -132,13 +132,13 @@ export function NotificationDropdown({
                                         {typeIcons[n.type] || "🔔"}
                                     </span>
                                     <div className="flex-1 min-w-0">
-                                        <p className={`text-sm leading-snug ${!n.isRead ? "font-bold text-[#1A1A2E]" : "font-medium text-[#4C5769]"}`}>
+                                        <p className={`text-sm leading-snug ${!n.isRead ? "font-bold text-gray-900" : "font-medium text-gray-600"}`}>
                                             {n.title}
                                         </p>
-                                        <p className="text-xs text-[#6B7280] mt-0.5 line-clamp-2">
+                                        <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">
                                             {n.message}
                                         </p>
-                                        <p className="text-[10px] text-[#9CA3AF] mt-1">
+                                        <p className="text-[10px] text-gray-400 mt-1">
                                             {timeAgo(n.createdAt)}
                                         </p>
                                     </div>

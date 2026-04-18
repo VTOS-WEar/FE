@@ -23,7 +23,7 @@ export function PublicPageBreadcrumb({ items, className = "" }: Props) {
           <li key={`${item.label}-${idx}`} className="inline-flex items-center">
             {idx > 0 && (
               <ChevronRight
-                className="mx-0.5 h-4 w-4 shrink-0 text-[#1A1A2E]/40"
+                className="mx-0.5 h-4 w-4 shrink-0 text-gray-900/40"
                 strokeWidth={2.5}
                 aria-hidden
               />
@@ -31,7 +31,7 @@ export function PublicPageBreadcrumb({ items, className = "" }: Props) {
             {item.to ? (
               <Link
                 to={item.to}
-                className="inline-flex items-center gap-1 font-bold text-[#4C5769] underline-offset-4 transition-colors hover:text-[#1A1A2E] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1A1A2E] focus-visible:ring-offset-2"
+                className="inline-flex items-center gap-1 font-bold text-gray-600 underline-offset-4 transition-colors hover:text-gray-800 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-300 focus-visible:ring-offset-2"
               >
                 {idx === 0 ? (
                   <>
@@ -44,7 +44,7 @@ export function PublicPageBreadcrumb({ items, className = "" }: Props) {
               </Link>
             ) : (
               <span
-                className="inline-flex max-w-[min(52vw,320px)] items-center gap-1 truncate rounded-md bg-[#B8A9E8]/45 px-2 py-0.5 font-extrabold text-[#1A1A2E]"
+                className="inline-flex max-w-[min(52vw,320px)] items-center gap-1 truncate rounded-md bg-purple-400/45 px-2 py-0.5 font-extrabold text-gray-900"
                 aria-current="page"
                 title={item.label}
               >

@@ -15,7 +15,7 @@ import {
 
 /* ── Design tokens ── */
 const T = {
-    ink: "#19182B", surface: "#FFFFFF", surfaceSoft: "#FFFDF9",
+    surface: "#FFFFFF", surfaceSoft: "#FFFDF9",
     primary: "#8B6BFF", primarySoft: "#E9E1FF",
     successSoft: "#D9F8E8", warningSoft: "#FFF1BF", dangerSoft: "#FFE3D8",
     infoSoft: "#DCEBFF", muted: "#6F6A7D",
@@ -32,10 +32,10 @@ const STATUS_LABEL: Record<string, string> = {
 };
 
 function Badge({ children, tone }: { children: React.ReactNode; tone?: { bg: string; text: string } }) {
-    const t = tone || { bg: T.surface, text: T.ink };
+    const t = tone || { bg: T.surface, text: "#374151" };
     return (
-        <span className="inline-flex items-center rounded-full border-[2px] px-3 py-1 text-[12px] font-black uppercase tracking-wide"
-            style={{ borderColor: T.ink, background: t.bg, color: t.text, boxShadow: `2px 2px 0 ${T.ink}` }}>
+        <span className="inline-flex items-center rounded-full border border-gray-200 px-3 py-1 text-[12px] font-black uppercase tracking-wide shadow-soft-sm"
+            style={{ background: t.bg, color: t.text }}>
             {children}
         </span>
     );
@@ -98,13 +98,13 @@ export default function AdminComplaints() {
                         <Breadcrumb><BreadcrumbList>
                             <BreadcrumbItem><BreadcrumbLink href="/admin/dashboard" className="font-semibold text-[#4c5769] text-base">Trang chủ</BreadcrumbLink></BreadcrumbItem>
                             <BreadcrumbSeparator className="text-[#cbcad7]">/</BreadcrumbSeparator>
-                            <BreadcrumbItem><BreadcrumbPage className="font-bold text-[#1A1A2E] text-base">Khiếu nại</BreadcrumbPage></BreadcrumbItem>
+                            <BreadcrumbItem><BreadcrumbPage className="font-bold text-gray-900 text-base">Khiếu nại</BreadcrumbPage></BreadcrumbItem>
                         </BreadcrumbList></Breadcrumb>
                     </TopNavBar>
                     <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-6 nb-fade-in">
                         {/* Header */}
                         <div>
-                            <h1 className="text-[40px] font-black leading-none md:text-[48px]" style={{ color: T.ink }}>⚠️ Khiếu nại</h1>
+                            <h1 className="text-[40px] font-black leading-none md:text-[48px] text-gray-900">⚠️ Khiếu nại</h1>
                             <p className="mt-3 max-w-3xl text-[17px] font-semibold leading-8" style={{ color: T.muted }}>
                                 Xem xét và can thiệp khiếu nại giữa Trường và Nhà cung cấp trong toàn hệ thống.
                             </p>
@@ -117,8 +117,7 @@ export default function AdminComplaints() {
                                 { label: "Đang xử lý", value: data?.inProgressCount ?? 0, color: "#F59E0B" },
                                 { label: "Đã giải quyết", value: data?.resolvedCount ?? 0, color: "#10B981" },
                             ].map((s, i) => (
-                                <div key={i} className="rounded-[16px] border-[3px] p-5"
-                                    style={{ borderColor: T.ink, background: T.surface, boxShadow: `5px 5px 0 ${T.ink}` }}>
+                                <div key={i} className="rounded-2xl border border-gray-200 p-5 shadow-soft-lg">
                                     <p className="text-[12px] font-black uppercase tracking-wide" style={{ color: T.muted }}>{s.label}</p>
                                     <p className="text-[32px] font-black mt-1" style={{ color: s.color }}>{s.value}</p>
                                 </div>
@@ -126,7 +125,7 @@ export default function AdminComplaints() {
                         </div>
 
                         {/* Toolbar */}
-                        <div className="rounded-[18px] border-[3px] p-4" style={{ borderColor: T.ink, background: T.surface, boxShadow: `6px 6px 0 ${T.ink}` }}>
+                        <div className="rounded-2xl border border-gray-200 p-4 shadow-soft-lg">
                             <div className="flex flex-wrap items-center gap-3">
                                 {[
                                     { value: "", label: "Tất cả" },
@@ -137,12 +136,10 @@ export default function AdminComplaints() {
                                 ].map(tab => (
                                     <button key={tab.value}
                                         onClick={() => { setStatusFilter(tab.value); setPage(1); }}
-                                        className="rounded-full border-[2px] px-4 py-1.5 text-[13px] font-extrabold transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#19182B]"
+                                        className="rounded-full border border-gray-200 px-4 py-1.5 text-[13px] font-extrabold transition-all hover:scale-[0.99] hover:shadow-soft-sm"
                                         style={{
-                                            borderColor: T.ink,
                                             background: statusFilter === tab.value ? T.primary : T.surface,
-                                            color: statusFilter === tab.value ? "#fff" : T.ink,
-                                            boxShadow: `2px 2px 0 ${T.ink}`,
+                                            color: statusFilter === tab.value ? "#fff" : "#374151",
                                         }}>
                                         {tab.label}
                                     </button>
@@ -151,10 +148,10 @@ export default function AdminComplaints() {
                         </div>
 
                         {/* Table */}
-                        <div className="overflow-hidden rounded-[18px] border-[3px]" style={{ borderColor: T.ink, background: T.surface, boxShadow: `6px 6px 0 ${T.ink}` }}>
+                        <div className="overflow-hidden rounded-2xl border border-gray-200 shadow-soft-lg">
                             {/* Header */}
-                            <div className="sticky top-0 z-10 hidden lg:grid items-center border-b-[3px] px-5 py-4"
-                                style={{ gridTemplateColumns: gridCols, borderColor: T.ink, background: T.primarySoft }}>
+                            <div className="sticky top-0 z-10 hidden lg:grid items-center border-b border-gray-200 px-5 py-4"
+                                style={{ gridTemplateColumns: gridCols, background: T.primarySoft }}>
                                 {["Tiêu đề", "Trường", "Nhà cung cấp", "Chiến dịch", "Trạng thái", "Ngày tạo", "Hành động"].map((h, i, arr) => (
                                     <div key={h} className={`text-[12px] font-black uppercase tracking-[0.08em]${i === arr.length - 1 ? " text-right" : ""}`} style={{ color: "#4E4A5B" }}>{h}</div>
                                 ))}
@@ -177,8 +174,8 @@ export default function AdminComplaints() {
                             {/* Empty */}
                             {!loading && data?.items.length === 0 && (
                                 <div className="flex min-h-[240px] flex-col items-center justify-center px-6 py-12 text-center">
-                                    <div className="flex h-16 w-16 items-center justify-center rounded-[16px] border-[3px] text-[28px]"
-                                        style={{ borderColor: T.ink, background: T.successSoft, boxShadow: `4px 4px 0 ${T.ink}` }}>✅</div>
+                                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-gray-200 text-[28px] shadow-soft-md"
+                                        style={{ background: T.successSoft }}>✅</div>
                                     <div className="mt-5 text-[28px] font-black">Không có khiếu nại nào</div>
                                     <p className="mt-3 max-w-lg text-[15px] font-semibold leading-7" style={{ color: T.muted }}>
                                         Hệ thống chưa ghi nhận khiếu nại nào phù hợp bộ lọc hiện tại.
@@ -192,7 +189,7 @@ export default function AdminComplaints() {
                                     {data.items.map((c, idx) => (
                                         <div key={c.id} className="hidden lg:grid items-center gap-4 border-b px-5 py-4 transition-colors hover:bg-[#F7F2FF] nb-fade-in"
                                             style={{ gridTemplateColumns: gridCols, borderColor: "#D9D4E6", animationDelay: `${idx * 40}ms` }}>
-                                            <div className="text-[15px] font-black truncate" style={{ color: T.ink }}>{c.title}</div>
+                                            <div className="text-[15px] font-black truncate text-gray-900">{c.title}</div>
                                             <div className="text-[14px] font-semibold" style={{ color: "#3D384A" }}>{c.schoolName}</div>
                                             <div className="text-[14px] font-semibold" style={{ color: "#3D384A" }}>{c.providerName ?? "—"}</div>
                                             <div className="text-[14px] font-semibold truncate" style={{ color: "#3D384A" }}>{c.campaignName ?? "—"}</div>
@@ -200,8 +197,8 @@ export default function AdminComplaints() {
                                             <div className="text-[14px] font-semibold" style={{ color: T.muted }}>{new Date(c.createdAt).toLocaleDateString("vi-VN")}</div>
                                             <div className="flex justify-end">
                                                 <button onClick={() => setSelected(c)}
-                                                    className="rounded-[12px] border-[3px] px-4 py-2 text-[13px] font-extrabold transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
-                                                    style={{ borderColor: T.ink, background: T.surface, color: T.ink, boxShadow: `4px 4px 0 ${T.ink}` }}>
+                                                    className="rounded-xl border border-gray-200 px-4 py-2 text-[13px] font-extrabold transition-all hover:scale-[0.99] hover:shadow-soft-sm active:scale-[0.98] active:shadow-none"
+                                                    style={{ background: T.surface, color: "#374151" }}>
                                                     👁 Chi tiết
                                                 </button>
                                             </div>
@@ -214,7 +211,7 @@ export default function AdminComplaints() {
                                             style={{ borderColor: "#D9D4E6", animationDelay: `${idx * 40}ms` }}>
                                             <div className="flex items-start justify-between gap-3">
                                                 <div className="min-w-0">
-                                                    <div className="text-[16px] font-black truncate" style={{ color: T.ink }}>{c.title}</div>
+                                                    <div className="text-[16px] font-black truncate text-gray-900">{c.title}</div>
                                                     <div className="text-[13px] font-semibold mt-1" style={{ color: "#3D384A" }}>{c.schoolName} • {c.providerName ?? "N/A"}</div>
                                                 </div>
                                                 <Badge tone={STATUS_TONE[c.status]}>{STATUS_LABEL[c.status] || c.status}</Badge>
@@ -222,8 +219,8 @@ export default function AdminComplaints() {
                                             <div className="flex items-center justify-between">
                                                 <span className="text-[13px] font-semibold" style={{ color: T.muted }}>{new Date(c.createdAt).toLocaleDateString("vi-VN")}</span>
                                                 <button onClick={() => setSelected(c)}
-                                                    className="rounded-[12px] border-[3px] px-4 py-2 text-[13px] font-extrabold transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
-                                                    style={{ borderColor: T.ink, background: T.surface, color: T.ink, boxShadow: `4px 4px 0 ${T.ink}` }}>
+                                                    className="rounded-xl border border-gray-200 px-4 py-2 text-[13px] font-extrabold transition-all hover:scale-[0.99] hover:shadow-soft-sm active:scale-[0.98] active:shadow-none"
+                                                    style={{ background: T.surface, color: "#374151" }}>
                                                     👁 Chi tiết
                                                 </button>
                                             </div>
@@ -231,19 +228,19 @@ export default function AdminComplaints() {
                                     ))}
 
                                     {/* Pagination */}
-                                    <div className="flex flex-col gap-3 border-t-[3px] px-5 py-4 md:flex-row md:items-center md:justify-between"
-                                        style={{ borderColor: T.ink, background: T.surfaceSoft }}>
+                                    <div className="flex flex-col gap-3 border-t border-gray-200 px-5 py-4 md:flex-row md:items-center md:justify-between"
+                                        style={{ background: T.surfaceSoft }}>
                                         <div className="text-[14px] font-bold" style={{ color: T.muted }}>
                                             Trang {page}/{totalPages} · {data.totalCount} khiếu nại
                                         </div>
                                         {totalPages > 1 && (
                                             <div className="flex gap-3">
                                                 <button disabled={page <= 1} onClick={() => setPage(p => Math.max(1, p - 1))}
-                                                    className="rounded-[12px] border-[3px] px-4 py-2 text-[13px] font-extrabold transition-all disabled:opacity-40 hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
-                                                    style={{ borderColor: T.ink, background: T.surface, color: T.ink, boxShadow: `4px 4px 0 ${T.ink}` }}>← Trước</button>
+                                                    className="rounded-xl border border-gray-200 px-4 py-2 text-[13px] font-extrabold transition-all disabled:opacity-40 hover:scale-[0.99] hover:shadow-soft-sm active:scale-[0.98] active:shadow-none"
+                                                    style={{ background: T.surface, color: "#374151" }}>← Trước</button>
                                                 <button disabled={page >= totalPages} onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                                                    className="rounded-[12px] border-[3px] px-4 py-2 text-[13px] font-extrabold text-white transition-all disabled:opacity-40 hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
-                                                    style={{ borderColor: T.ink, background: T.primary, boxShadow: `4px 4px 0 ${T.ink}` }}>Sau →</button>
+                                                    className="rounded-xl border border-gray-200 px-4 py-2 text-[13px] font-extrabold text-white transition-all disabled:opacity-40 hover:scale-[0.99] hover:shadow-soft-sm active:scale-[0.98] active:shadow-none"
+                                                    style={{ background: T.primary }}>Sau →</button>
                                             </div>
                                         )}
                                     </div>
@@ -259,30 +256,30 @@ export default function AdminComplaints() {
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 nb-backdrop-enter"
                     style={{ background: "rgba(25, 24, 43, 0.55)" }}
                     onClick={() => setSelected(null)}>
-                    <div className="w-full max-w-lg rounded-[18px] border-[3px] p-6 space-y-5 nb-modal-enter max-h-[90vh] overflow-y-auto"
-                        style={{ borderColor: T.ink, background: T.surface, boxShadow: `6px 6px 0 ${T.ink}` }}
+                    <div className="w-full max-w-lg rounded-2xl border border-gray-200 p-6 space-y-5 nb-modal-enter max-h-[90vh] overflow-y-auto shadow-soft-lg"
+                        style={{ background: T.surface }}
                         onClick={e => e.stopPropagation()}>
                         {/* Header */}
                         <div className="flex justify-between items-center">
-                            <h2 className="text-[24px] font-black" style={{ color: T.ink }}>{selected.title}</h2>
+                            <h2 className="text-[24px] font-black text-gray-900">{selected.title}</h2>
                             <button onClick={() => setSelected(null)}
-                                className="flex h-10 w-10 items-center justify-center rounded-[10px] border-[2px] text-[16px] font-black transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none"
-                                style={{ borderColor: T.ink, background: T.surface, boxShadow: `2px 2px 0 ${T.ink}` }}>✕</button>
+                                className="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 text-[16px] font-black transition-all hover:scale-[0.99] hover:shadow-none"
+                                style={{ background: T.surface }}>✕</button>
                         </div>
                         <p className="text-[14px] font-semibold" style={{ color: T.muted }}>
                             {selected.schoolName} • {selected.providerName ?? "N/A"} • {new Date(selected.createdAt).toLocaleDateString("vi-VN")}
                         </p>
 
                         {/* Description */}
-                        <div className="rounded-[14px] border-[2px] p-4 text-[14px] font-semibold max-h-40 overflow-y-auto"
-                            style={{ borderColor: "#D9D4E6", background: T.surfaceSoft, color: "#3D384A" }}>
+                        <div className="rounded-xl border border-gray-200 p-4 text-[14px] font-semibold max-h-40 overflow-y-auto"
+                            style={{ background: T.surfaceSoft, color: "#3D384A" }}>
                             {selected.description}
                         </div>
 
                         {/* Existing response */}
                         {selected.response && (
-                            <div className="rounded-[14px] border-[2px] p-4 text-[14px] max-h-32 overflow-y-auto"
-                                style={{ borderColor: T.ink, background: T.infoSoft }}>
+                            <div className="rounded-xl border border-gray-200 p-4 text-[14px] max-h-32 overflow-y-auto"
+                                style={{ background: T.infoSoft }}>
                                 <p className="font-black text-[12px] uppercase mb-1" style={{ color: "#2758B8" }}>Phản hồi</p>
                                 <p className="font-semibold whitespace-pre-wrap" style={{ color: "#1A3A6B" }}>{selected.response}</p>
                             </div>
@@ -291,11 +288,11 @@ export default function AdminComplaints() {
                         {/* Intervene form */}
                         <div className="space-y-3">
                             <textarea value={note} onChange={e => setNote(e.target.value)} placeholder="Ghi chú của Admin..."
-                                className="w-full resize-none h-20 rounded-[12px] border-[2px] px-4 py-3 text-[14px] font-semibold outline-none transition-all placeholder:text-[#9A95A8] focus:translate-x-[1px] focus:translate-y-[1px] focus:shadow-[2px_2px_0_#19182B]"
-                                style={{ borderColor: T.ink, background: T.surface, boxShadow: `3px 3px 0 ${T.ink}` }} />
+                                className="w-full resize-none h-20 rounded-xl border border-gray-200 px-4 py-3 text-[14px] font-semibold outline-none transition-all placeholder:text-gray-400 focus:border-purple-400 focus:ring-2 focus:ring-purple-200/50 focus:outline-none"
+                                style={{ background: T.surface }} />
                             <select value={action} onChange={e => setAction(e.target.value)}
-                                className="w-full rounded-[12px] border-[2px] px-4 py-3 text-[14px] font-semibold outline-none transition-all focus:translate-x-[1px] focus:translate-y-[1px] focus:shadow-[2px_2px_0_#19182B]"
-                                style={{ borderColor: T.ink, background: T.surface, boxShadow: `3px 3px 0 ${T.ink}` }}>
+                                className="w-full rounded-xl border border-gray-200 px-4 py-3 text-[14px] font-semibold outline-none transition-all placeholder:text-gray-400 focus:border-purple-400 focus:ring-2 focus:ring-purple-200/50 focus:outline-none"
+                                style={{ background: T.surface }}>
                                 <option value="">Chỉ thêm ghi chú</option>
                                 <option value="escalate">Escalate (chuyển InProgress)</option>
                                 <option value="resolve">Giải quyết</option>
@@ -303,13 +300,13 @@ export default function AdminComplaints() {
                             </select>
                             <div className="flex gap-3">
                                 <button onClick={handleIntervene} disabled={submitting || !note.trim()}
-                                    className="flex-1 rounded-[12px] border-[3px] py-3 text-[15px] font-extrabold text-white transition-all disabled:opacity-50 hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
-                                    style={{ borderColor: T.ink, background: T.primary, boxShadow: `4px 4px 0 ${T.ink}` }}>
+                                    className="flex-1 rounded-xl border border-gray-200 py-3 text-[15px] font-extrabold text-white transition-all disabled:opacity-50 hover:scale-[0.99] hover:shadow-soft-sm active:scale-[0.98] active:shadow-none"
+                                    style={{ background: T.primary }}>
                                     {submitting ? "Đang xử lý..." : "📤 Gửi"}
                                 </button>
                                 <button onClick={() => setSelected(null)}
-                                    className="flex-1 rounded-[12px] border-[3px] py-3 text-[15px] font-extrabold transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#19182B] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
-                                    style={{ borderColor: T.ink, background: T.surface, color: T.ink, boxShadow: `4px 4px 0 ${T.ink}` }}>
+                                    className="flex-1 rounded-xl border border-gray-200 py-3 text-[15px] font-extrabold transition-all hover:scale-[0.99] hover:shadow-soft-sm active:scale-[0.98] active:shadow-none"
+                                    style={{ background: T.surface, color: "#374151" }}>
                                     Đóng
                                 </button>
                             </div>

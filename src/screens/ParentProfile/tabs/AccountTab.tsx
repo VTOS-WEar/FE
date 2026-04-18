@@ -180,17 +180,17 @@ export const AccountTab = (): JSX.Element => {
             {/* Avatar */}
             <div className="flex flex-col items-center gap-3">
               <div className="relative">
-                <div className="w-28 h-28 bg-[#EDE9FE] rounded-xl flex items-center justify-center border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E]">
+                <div className="w-28 h-28 bg-violet-50 rounded-xl flex items-center justify-center border border-gray-200 shadow-soft-md">
                   {user.avatar
                     ? <img src={user.avatar} alt="" className="w-full h-full rounded-xl object-cover" />
-                    : <span className="font-extrabold text-[#1A1A2E] text-3xl">{initials}</span>}
+                    : <span className="font-extrabold text-gray-900 text-3xl">{initials}</span>}
                 </div>
                 <button 
                   type="button"
                   onClick={handleAvatarClick}
                   disabled={avatarSaving}
-                  className="absolute bottom-[-4px] right-[-4px] w-9 h-9 bg-[#C8E44D] border-2 border-[#1A1A2E] rounded-lg flex items-center justify-center shadow-[2px_2px_0_#1A1A2E] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all disabled:opacity-50 disabled:cursor-not-allowed">
-                  <Camera className="w-4 h-4 text-[#1A1A2E]" />
+                  className="absolute bottom-[-4px] right-[-4px] w-9 h-9 bg-emerald-400 border border-gray-200 rounded-lg flex items-center justify-center shadow-sm hover:shadow-none hover:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                  <Camera className="w-4 h-4 text-gray-900" />
                 </button>
                 <input
                   ref={avatarInputRef}
@@ -201,7 +201,7 @@ export const AccountTab = (): JSX.Element => {
                 />
               </div>
               {avatarMsg && (
-                <span className={`font-bold text-xs ${avatarMsg.startsWith("✓") ? "text-[#065F46]" : "text-[#991B1B]"}`}>
+                <span className={`font-bold text-xs ${avatarMsg.startsWith("✓") ? "text-emerald-800" : "text-red-800"}`}>
                   {avatarMsg}
                 </span>
               )}
@@ -210,12 +210,12 @@ export const AccountTab = (): JSX.Element => {
             {/* Form */}
             <div className="flex-1 space-y-5">
               <div className="flex items-center gap-4">
-                <label className="w-28 flex-shrink-0 font-bold text-[#1A1A2E] text-sm text-right">Họ và tên</label>
+                <label className="w-28 flex-shrink-0 font-bold text-gray-900 text-sm text-right">Họ và tên</label>
                 <input type="text" value={fullName} onChange={e => setFullName(e.target.value)}
                   className={inputClass} />
               </div>
               <div className="flex items-center gap-4">
-                <label className="w-28 flex-shrink-0 font-bold text-[#1A1A2E] text-sm text-right">Ngày sinh</label>
+                <label className="w-28 flex-shrink-0 font-bold text-gray-900 text-sm text-right">Ngày sinh</label>
                 <div className="flex items-center gap-3">
                   {([
                     { value: dobDay, set: setDobDay, opts: DAYS },
@@ -230,14 +230,14 @@ export const AccountTab = (): JSX.Element => {
                 </div>
               </div>
               <div className="flex items-center gap-4">
-                <label className="w-28 flex-shrink-0 font-bold text-[#1A1A2E] text-sm text-right">Giới tính</label>
+                <label className="w-28 flex-shrink-0 font-bold text-gray-900 text-sm text-right">Giới tính</label>
                 <div className="flex items-center gap-6">
                   {["Nam", "Nữ", "Khác"].map(g => (
                     <label key={g} className="flex items-center gap-2 cursor-pointer group" onClick={() => setGender(g)}>
-                      <div className={`w-5 h-5 rounded-lg border-2 flex items-center justify-center transition-colors ${gender === g ? "border-[#1A1A2E] bg-[#B8A9E8] shadow-[2px_2px_0_#1A1A2E]" : "border-[#D1D5DB] group-hover:border-[#1A1A2E]"}`}>
-                        {gender === g && <div className="w-2 h-2 rounded-sm bg-[#1A1A2E]" />}
+                      <div className={`w-5 h-5 rounded-lg border-2 flex items-center justify-center transition-colors ${gender === g ? "border-gray-200 bg-purple-400 shadow-sm" : "border-gray-300 group-hover:border-gray-300"}`}>
+                        {gender === g && <div className="w-2 h-2 rounded-sm bg-gray-900" />}
                       </div>
-                      <span className="font-bold text-sm text-[#1A1A2E]">{g}</span>
+                      <span className="font-bold text-sm text-gray-900">{g}</span>
                     </label>
                   ))}
                 </div>
@@ -248,37 +248,37 @@ export const AccountTab = (): JSX.Element => {
                   className="nb-btn nb-btn-purple text-sm disabled:opacity-50 disabled:cursor-not-allowed">
                   {saving ? "Đang lưu..." : "Lưu thay đổi ✦"}
                 </button>
-                {saveMsg && <span className="font-bold text-sm text-[#065F46]">✓ {saveMsg}</span>}
+                {saveMsg && <span className="font-bold text-sm text-emerald-800">✓ {saveMsg}</span>}
               </div>
             </div>
           </div>
 
-          <hr className="border-[#1A1A2E]/10 border-t-2" />
+          <hr className="border-gray-200/10 border-t-2" />
 
           {/* Email */}
           <div className="flex items-center gap-4">
-            <div className="w-10 h-10 bg-[#EDE9FE] rounded-lg flex items-center justify-center border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E] flex-shrink-0"><Mail className="w-5 h-5 text-[#1A1A2E]" /></div>
-            <label className="w-28 flex-shrink-0 font-bold text-[#1A1A2E] text-sm">Địa chỉ email</label>
+            <div className="w-10 h-10 bg-violet-50 rounded-lg flex items-center justify-center border border-gray-200 shadow-sm flex-shrink-0"><Mail className="w-5 h-5 text-gray-900" /></div>
+            <label className="w-28 flex-shrink-0 font-bold text-gray-900 text-sm">Địa chỉ email</label>
             <input type="email" value={email} onChange={e => setEmail(e.target.value)}
               className="nb-input h-11 text-sm flex-1 max-w-xs" />
             <button onClick={handleUpdateEmail} disabled={emailSaving}
               className="nb-btn nb-btn-outline text-sm disabled:opacity-50">
               {emailSaving ? "Đang lưu..." : "Cập nhật"}
             </button>
-            {emailMsg && <span className="font-bold text-sm text-[#065F46]">{emailMsg}</span>}
+            {emailMsg && <span className="font-bold text-sm text-emerald-800">{emailMsg}</span>}
           </div>
 
           {/* Phone */}
           <div className="flex items-center gap-4">
-            <div className="w-10 h-10 bg-[#EDE9FE] rounded-lg flex items-center justify-center border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E] flex-shrink-0"><Phone className="w-5 h-5 text-[#1A1A2E]" /></div>
-            <label className="w-28 flex-shrink-0 font-bold text-[#1A1A2E] text-sm">Số điện thoại</label>
+            <div className="w-10 h-10 bg-violet-50 rounded-lg flex items-center justify-center border border-gray-200 shadow-sm flex-shrink-0"><Phone className="w-5 h-5 text-gray-900" /></div>
+            <label className="w-28 flex-shrink-0 font-bold text-gray-900 text-sm">Số điện thoại</label>
             <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="01234567890"
               className="nb-input h-11 text-sm flex-1 max-w-xs" />
             <button onClick={handleUpdatePhone} disabled={phoneSaving}
               className="nb-btn nb-btn-outline text-sm disabled:opacity-50">
               {phoneSaving ? "Đang lưu..." : "Cập nhật"}
             </button>
-            {phoneMsg && <span className="font-bold text-sm text-[#065F46]">{phoneMsg}</span>}
+            {phoneMsg && <span className="font-bold text-sm text-emerald-800">{phoneMsg}</span>}
           </div>
     </div>
   );

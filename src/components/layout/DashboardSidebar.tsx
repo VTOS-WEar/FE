@@ -60,7 +60,7 @@ export const DashboardSidebar = ({
     });
 
     const renderIcon = (Icon: React.ComponentType<{ className?: string; strokeWidth?: number }>, active: boolean) => (
-        <Icon className={`w-[18px] h-[18px] flex-shrink-0 ${active ? "text-white" : "text-[#9CA3AF]"}`} strokeWidth={1.75} />
+        <Icon className={`w-[18px] h-[18px] flex-shrink-0 ${active ? "text-white" : "text-gray-400"}`} strokeWidth={1.75} />
     );
 
     const IconComponent = iconType === "provider" ? Building2 : School;
@@ -71,19 +71,19 @@ export const DashboardSidebar = ({
         <aside className="nb-sidebar w-full h-full bg-gradient-to-b from-[#171932] via-[#15172E] to-[#12142A]">
             {/* Logo + Name header */}
             <div className={`flex ${isCollapsed ? "flex-col items-center gap-2 px-2 py-3" : "items-center gap-3 px-4 py-4"} border-b border-white/10 bg-white/[0.02]`}>
-                <div className={`${isCollapsed ? "w-8 h-8" : "w-9 h-9"} rounded-md border-2 border-white/20 ${iconBg} flex items-center justify-center flex-shrink-0 shadow-[2px_2px_0_rgba(0,0,0,0.25)]`}>
+                <div className={`${isCollapsed ? "w-8 h-8" : "w-9 h-9"} rounded-md border border-white/20 ${iconBg} flex items-center justify-center flex-shrink-0 shadow-soft-sm`}>
                     <IconComponent className={`${isCollapsed ? "w-4 h-4" : "w-5 h-5"} ${iconColor}`} strokeWidth={1.75} />
                 </div>
                 {!isCollapsed && (
                     <div className="flex-1 min-w-0">
                         <p className="font-bold text-white text-sm leading-tight">{displayOrg}</p>
                         {displayOrg !== personName && personName && (
-                            <p className="font-medium text-[#9CA3AF] text-xs">{personName}</p>
+                            <p className="font-medium text-gray-400 text-xs">{personName}</p>
                         )}
                     </div>
                 )}
                 <button onClick={onToggle}
-                    className="h-7 w-7 rounded-md border-2 border-white/20 bg-white/10 hover:bg-white/20 hover:-translate-y-px flex items-center justify-center flex-shrink-0 transition-all"
+                    className="h-7 w-7 rounded-md border border-white/20 bg-white/10 hover:bg-white/20 hover:-translate-y-px flex items-center justify-center flex-shrink-0 transition-all"
                 >
                     {isCollapsed ? <ChevronRightIcon className="w-3.5 h-3.5 text-white" /> : <ChevronLeftIcon className="w-3.5 h-3.5 text-white" />}
                 </button>
@@ -157,7 +157,7 @@ export const DashboardSidebar = ({
             <div className={`${isCollapsed ? "px-1.5" : "px-2.5"} pb-3 mt-2`}>
                 <div className="relative group">
                     <button onClick={handleLogout}
-                        className={`w-full flex items-center ${isCollapsed ? "justify-center" : "justify-center gap-2"} py-2 rounded-md text-[13px] font-bold text-white bg-gradient-to-r from-[#EF4444] to-[#DC2626] border-2 border-[#EF4444] shadow-[2px_2px_0_rgba(0,0,0,0.25)] hover:-translate-y-px hover:brightness-105 active:bg-[#B91C1C] transition-all`}
+                        className={`w-full flex items-center ${isCollapsed ? "justify-center" : "justify-center gap-2"} py-2 rounded-md text-[13px] font-bold text-white bg-gradient-to-r from-[#EF4444] to-[#DC2626] border border-red-500 shadow-soft-sm hover:-translate-y-px hover:brightness-105 active:bg-[#B91C1C] transition-all`}
                     >
                         <LogOut className="w-4 h-4 text-white" strokeWidth={1.75} />
                         {!isCollapsed && <span>Đăng Xuất</span>}

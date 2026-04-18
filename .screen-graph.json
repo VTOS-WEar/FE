@@ -194,7 +194,7 @@
       "data": {
         "viaRoute": "/schools",
         "trigger": {
-          "element": "<Link to=\"/schools\" className=\"flex w-full items-center gap-3\">\r\n                      <div className=\"flex h-9 w-9 items-center justify-center rounded-lg border-2 border-[#1A1A2E] bg-[#C8E44D] shadow-[2px_2px_0_#1A1A2E]\">\r\n                        <GraduationCap size={16} className=\"text-[#1A1A2E]\" />\r\n                      </div>\r\n                      <div className=\"min-w-0\">\r\n                        <p className=\"text-sm font-bold text-[#1A1A2E]\">Tìm trường</p>\r\n                        <p className=\"text-xs text-[#6B7280]\">Danh sách trường và đối tác đồng phục</p>\r\n                      </div>\r\n                    </Link>",
+          "element": "<Link to=\"/schools\" className=\"flex w-full items-center gap-3\">\n                      <div className=\"flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 bg-emerald-400 shadow-sm\">\n                        <GraduationCap size={16} className=\"text-gray-900\" />\n                      </div>\n                      <div className=\"min-w-0\">\n                        <p className=\"text-sm font-bold text-gray-900\">Tìm trường</p>\n                        <p className=\"text-xs text-gray-500\">Danh sách trường và đối tác đồng phục</p>\n                      </div>\n                    </Link>",
           "line": 266,
           "endLine": 274,
           "column": 20,
@@ -210,7 +210,7 @@
       "data": {
         "viaRoute": "/products",
         "trigger": {
-          "element": "<Link to=\"/products\" className=\"flex w-full items-center gap-3\">\r\n                      <div className=\"flex h-9 w-9 items-center justify-center rounded-lg border-2 border-[#1A1A2E] bg-[#EDE9FE] shadow-[2px_2px_0_#1A1A2E]\">\r\n                        <Package size={16} className=\"text-[#1A1A2E]\" />\r\n                      </div>\r\n                      <div className=\"min-w-0\">\r\n                        <p className=\"text-sm font-bold text-[#1A1A2E]\">Kho đồng phục</p>\r\n                        <p className=\"text-xs text-[#6B7280]\">Mẫu sản phẩm sẵn có để đặt nhanh</p>\r\n                      </div>\r\n                    </Link>",
+          "element": "<Link to=\"/products\" className=\"flex w-full items-center gap-3\">\n                      <div className=\"flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 bg-violet-50 shadow-sm\">\n                        <Package size={16} className=\"text-gray-900\" />\n                      </div>\n                      <div className=\"min-w-0\">\n                        <p className=\"text-sm font-bold text-gray-900\">Kho đồng phục</p>\n                        <p className=\"text-xs text-gray-500\">Mẫu sản phẩm sẵn có để đặt nhanh</p>\n                      </div>\n                    </Link>",
           "line": 277,
           "endLine": 285,
           "column": 20,
@@ -226,7 +226,7 @@
       "data": {
         "viaRoute": "/contact-partnership",
         "trigger": {
-          "element": "<Link to=\"/contact-partnership\" className={`${nbNavLink} ${isContactActive ? nbNavLinkActive : nbNavLinkIdle}`}>\r\n                Liên hệ\r\n              </Link>",
+          "element": "<Link to=\"/contact-partnership\" className={`${nbNavLink} ${isContactActive ? nbNavLinkActive : nbNavLinkIdle}`}>\n                Liên hệ\n              </Link>",
           "line": 290,
           "endLine": 292,
           "column": 14,
@@ -274,7 +274,7 @@
       "data": {
         "viaRoute": "/schools",
         "trigger": {
-          "element": "<Link to=\"/schools\" className=\"flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold text-[#1A1A2E] hover:bg-white transition-colors\">\r\n                  <div className=\"flex h-8 w-8 items-center justify-center rounded-lg border-2 border-[#1A1A2E] bg-[#C8E44D] shadow-[2px_2px_0_#1A1A2E]\">\r\n                    <GraduationCap size={14} />\r\n                  </div>\r\n                  Tìm trường\r\n                </Link>",
+          "element": "<Link to=\"/schools\" className=\"flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold text-gray-900 hover:bg-white transition-colors\">\n                  <div className=\"flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-emerald-400 shadow-sm\">\n                    <GraduationCap size={14} />\n                  </div>\n                  Tìm trường\n                </Link>",
           "line": 587,
           "endLine": 592,
           "column": 16,
@@ -290,7 +290,7 @@
       "data": {
         "viaRoute": "/products",
         "trigger": {
-          "element": "<Link to=\"/products\" className=\"flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold text-[#1A1A2E] hover:bg-white transition-colors\">\r\n                  <div className=\"flex h-8 w-8 items-center justify-center rounded-lg border-2 border-[#1A1A2E] bg-[#EDE9FE] shadow-[2px_2px_0_#1A1A2E]\">\r\n                    <Package size={14} />\r\n                  </div>\r\n                  Kho đồng phục\r\n                </Link>",
+          "element": "<Link to=\"/products\" className=\"flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold text-gray-900 hover:bg-white transition-colors\">\n                  <div className=\"flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-violet-50 shadow-sm\">\n                    <Package size={14} />\n                  </div>\n                  Kho đồng phục\n                </Link>",
           "line": 593,
           "endLine": 598,
           "column": 16,
@@ -306,7 +306,7 @@
       "data": {
         "viaRoute": "/contact-partnership",
         "trigger": {
-          "element": "<Link\r\n                to=\"/contact-partnership\"\r\n                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold transition-all duration-150 ${isContactActive ? \"bg-[#1A1A2E] text-white shadow-[3px_3px_0_#6B7280]\" : \"text-[#1A1A2E] hover:bg-white border border-transparent hover:border-[#1A1A2E]/10\"}`}\r\n              >\r\n                Liên hệ\r\n              </Link>",
+          "element": "<Link\n                to=\"/contact-partnership\"\n                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold transition-all duration-150 ${isContactActive ? \"bg-gray-900 text-white shadow-soft-sm\" : \"text-gray-900 hover:bg-white border border-transparent hover:border-gray-300/10\"}`}\n              >\n                Liên hệ\n              </Link>",
           "line": 601,
           "endLine": 606,
           "column": 14,
@@ -338,7 +338,7 @@
       "data": {
         "viaRoute": "/schools",
         "trigger": {
-          "element": "<a\r\n                href=\"/schools\"\r\n                className=\"group relative inline-flex h-12 items-center justify-center gap-2 overflow-hidden whitespace-nowrap rounded-[10px] border border-[#1A1A2E] bg-gradient-to-r from-[#C8E44D] via-[#FDE68A] to-[#EDE9FE] px-7 text-base font-extrabold text-[#1A1A2E] shadow-[3px_3px_0_#1A1A2E] transition-all duration-200 hover:-translate-y-[1px] hover:shadow-[5px_5px_0_#1A1A2E] active:translate-y-[1px] active:shadow-[2px_2px_0_#1A1A2E]\"\r\n              >\r\n                <span className=\"pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.55),transparent_40%)] opacity-80 transition-opacity duration-150 group-hover:opacity-100\" />\r\n                <span className=\"tracking-wide uppercase\">Thử ngay</span>\r\n                <span className=\"relative transition-transform duration-200 group-hover:translate-x-1\">→</span>\r\n              </a>",
+          "element": "<a\n                href=\"/schools\"\n                className=\"group relative inline-flex h-12 items-center justify-center gap-2 overflow-hidden whitespace-nowrap rounded-[10px] border border-gray-200 bg-gradient-to-r from-[#C8E44D] via-[#FDE68A] to-[#EDE9FE] px-7 text-base font-extrabold text-gray-900 shadow-soft-sm transition-all duration-200 hover:-translate-y-[1px] hover:shadow-soft-md active:translate-y-[1px] active:shadow-sm\"\n              >\n                <span className=\"pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.55),transparent_40%)] opacity-80 transition-opacity duration-150 group-hover:opacity-100\" />\n                <span className=\"tracking-wide uppercase\">Thử ngay</span>\n                <span className=\"relative transition-transform duration-200 group-hover:translate-x-1\">→</span>\n              </a>",
           "line": 18,
           "endLine": 25,
           "column": 14,
@@ -434,7 +434,7 @@
       "data": {
         "viaRoute": "/schools",
         "trigger": {
-          "element": "<Link to=\"/schools\" className=\"flex w-full items-center gap-3\">\r\n                      <div className=\"flex h-9 w-9 items-center justify-center rounded-lg border-2 border-[#1A1A2E] bg-[#C8E44D] shadow-[2px_2px_0_#1A1A2E]\">\r\n                        <GraduationCap size={16} className=\"text-[#1A1A2E]\" />\r\n                      </div>\r\n                      <div className=\"min-w-0\">\r\n                        <p className=\"text-sm font-bold text-[#1A1A2E]\">Tìm trường</p>\r\n                        <p className=\"text-xs text-[#6B7280]\">Danh sách trường và đối tác đồng phục</p>\r\n                      </div>\r\n                    </Link>",
+          "element": "<Link to=\"/schools\" className=\"flex w-full items-center gap-3\">\n                      <div className=\"flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 bg-emerald-400 shadow-sm\">\n                        <GraduationCap size={16} className=\"text-gray-900\" />\n                      </div>\n                      <div className=\"min-w-0\">\n                        <p className=\"text-sm font-bold text-gray-900\">Tìm trường</p>\n                        <p className=\"text-xs text-gray-500\">Danh sách trường và đối tác đồng phục</p>\n                      </div>\n                    </Link>",
           "line": 266,
           "endLine": 274,
           "column": 20,
@@ -450,7 +450,7 @@
       "data": {
         "viaRoute": "/products",
         "trigger": {
-          "element": "<Link to=\"/products\" className=\"flex w-full items-center gap-3\">\r\n                      <div className=\"flex h-9 w-9 items-center justify-center rounded-lg border-2 border-[#1A1A2E] bg-[#EDE9FE] shadow-[2px_2px_0_#1A1A2E]\">\r\n                        <Package size={16} className=\"text-[#1A1A2E]\" />\r\n                      </div>\r\n                      <div className=\"min-w-0\">\r\n                        <p className=\"text-sm font-bold text-[#1A1A2E]\">Kho đồng phục</p>\r\n                        <p className=\"text-xs text-[#6B7280]\">Mẫu sản phẩm sẵn có để đặt nhanh</p>\r\n                      </div>\r\n                    </Link>",
+          "element": "<Link to=\"/products\" className=\"flex w-full items-center gap-3\">\n                      <div className=\"flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 bg-violet-50 shadow-sm\">\n                        <Package size={16} className=\"text-gray-900\" />\n                      </div>\n                      <div className=\"min-w-0\">\n                        <p className=\"text-sm font-bold text-gray-900\">Kho đồng phục</p>\n                        <p className=\"text-xs text-gray-500\">Mẫu sản phẩm sẵn có để đặt nhanh</p>\n                      </div>\n                    </Link>",
           "line": 277,
           "endLine": 285,
           "column": 20,
@@ -466,7 +466,7 @@
       "data": {
         "viaRoute": "/contact-partnership",
         "trigger": {
-          "element": "<Link to=\"/contact-partnership\" className={`${nbNavLink} ${isContactActive ? nbNavLinkActive : nbNavLinkIdle}`}>\r\n                Liên hệ\r\n              </Link>",
+          "element": "<Link to=\"/contact-partnership\" className={`${nbNavLink} ${isContactActive ? nbNavLinkActive : nbNavLinkIdle}`}>\n                Liên hệ\n              </Link>",
           "line": 290,
           "endLine": 292,
           "column": 14,
@@ -514,7 +514,7 @@
       "data": {
         "viaRoute": "/schools",
         "trigger": {
-          "element": "<Link to=\"/schools\" className=\"flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold text-[#1A1A2E] hover:bg-white transition-colors\">\r\n                  <div className=\"flex h-8 w-8 items-center justify-center rounded-lg border-2 border-[#1A1A2E] bg-[#C8E44D] shadow-[2px_2px_0_#1A1A2E]\">\r\n                    <GraduationCap size={14} />\r\n                  </div>\r\n                  Tìm trường\r\n                </Link>",
+          "element": "<Link to=\"/schools\" className=\"flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold text-gray-900 hover:bg-white transition-colors\">\n                  <div className=\"flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-emerald-400 shadow-sm\">\n                    <GraduationCap size={14} />\n                  </div>\n                  Tìm trường\n                </Link>",
           "line": 587,
           "endLine": 592,
           "column": 16,
@@ -530,7 +530,7 @@
       "data": {
         "viaRoute": "/products",
         "trigger": {
-          "element": "<Link to=\"/products\" className=\"flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold text-[#1A1A2E] hover:bg-white transition-colors\">\r\n                  <div className=\"flex h-8 w-8 items-center justify-center rounded-lg border-2 border-[#1A1A2E] bg-[#EDE9FE] shadow-[2px_2px_0_#1A1A2E]\">\r\n                    <Package size={14} />\r\n                  </div>\r\n                  Kho đồng phục\r\n                </Link>",
+          "element": "<Link to=\"/products\" className=\"flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold text-gray-900 hover:bg-white transition-colors\">\n                  <div className=\"flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-violet-50 shadow-sm\">\n                    <Package size={14} />\n                  </div>\n                  Kho đồng phục\n                </Link>",
           "line": 593,
           "endLine": 598,
           "column": 16,
@@ -546,7 +546,7 @@
       "data": {
         "viaRoute": "/contact-partnership",
         "trigger": {
-          "element": "<Link\r\n                to=\"/contact-partnership\"\r\n                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold transition-all duration-150 ${isContactActive ? \"bg-[#1A1A2E] text-white shadow-[3px_3px_0_#6B7280]\" : \"text-[#1A1A2E] hover:bg-white border border-transparent hover:border-[#1A1A2E]/10\"}`}\r\n              >\r\n                Liên hệ\r\n              </Link>",
+          "element": "<Link\n                to=\"/contact-partnership\"\n                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold transition-all duration-150 ${isContactActive ? \"bg-gray-900 text-white shadow-soft-sm\" : \"text-gray-900 hover:bg-white border border-transparent hover:border-gray-300/10\"}`}\n              >\n                Liên hệ\n              </Link>",
           "line": 601,
           "endLine": 606,
           "column": 14,
@@ -578,12 +578,28 @@
       "data": {
         "viaRoute": "/schools",
         "trigger": {
-          "element": "<a\r\n                href=\"/schools\"\r\n                className=\"group relative inline-flex h-12 items-center justify-center gap-2 overflow-hidden whitespace-nowrap rounded-[10px] border border-[#1A1A2E] bg-gradient-to-r from-[#C8E44D] via-[#FDE68A] to-[#EDE9FE] px-7 text-base font-extrabold text-[#1A1A2E] shadow-[3px_3px_0_#1A1A2E] transition-all duration-200 hover:-translate-y-[1px] hover:shadow-[5px_5px_0_#1A1A2E] active:translate-y-[1px] active:shadow-[2px_2px_0_#1A1A2E]\"\r\n              >\r\n                <span className=\"pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.55),transparent_40%)] opacity-80 transition-opacity duration-150 group-hover:opacity-100\" />\r\n                <span className=\"tracking-wide uppercase\">Thử ngay</span>\r\n                <span className=\"relative transition-transform duration-200 group-hover:translate-x-1\">→</span>\r\n              </a>",
+          "element": "<a\n                href=\"/schools\"\n                className=\"group relative inline-flex h-12 items-center justify-center gap-2 overflow-hidden whitespace-nowrap rounded-[10px] border border-gray-200 bg-gradient-to-r from-[#C8E44D] via-[#FDE68A] to-[#EDE9FE] px-7 text-base font-extrabold text-gray-900 shadow-soft-sm transition-all duration-200 hover:-translate-y-[1px] hover:shadow-soft-md active:translate-y-[1px] active:shadow-sm\"\n              >\n                <span className=\"pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.55),transparent_40%)] opacity-80 transition-opacity duration-150 group-hover:opacity-100\" />\n                <span className=\"tracking-wide uppercase\">Thử ngay</span>\n                <span className=\"relative transition-transform duration-200 group-hover:translate-x-1\">→</span>\n              </a>",
           "line": 18,
           "endLine": 25,
           "column": 14,
           "endColumn": 18,
           "sourceFile": "src\\components\\layout\\Footer.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\layout\\DashboardSidebar.tsx:59:8-to-src\\components\\guards\\RoleGuard.tsx",
+      "source": "src\\screens\\AccountSetting\\AccountSetting.tsx",
+      "target": "src\\components\\guards\\RoleGuard.tsx",
+      "data": {
+        "viaRoute": "/signin",
+        "trigger": {
+          "element": "navigate(\"/signin\", { replace: true })",
+          "line": 59,
+          "endLine": 59,
+          "column": 8,
+          "endColumn": 46,
+          "sourceFile": "src\\components\\layout\\DashboardSidebar.tsx"
         }
       }
     },
@@ -626,7 +642,7 @@
       "data": {
         "viaRoute": "/schools",
         "trigger": {
-          "element": "<Link to=\"/schools\" className=\"flex w-full items-center gap-3\">\r\n                      <div className=\"flex h-9 w-9 items-center justify-center rounded-lg border-2 border-[#1A1A2E] bg-[#C8E44D] shadow-[2px_2px_0_#1A1A2E]\">\r\n                        <GraduationCap size={16} className=\"text-[#1A1A2E]\" />\r\n                      </div>\r\n                      <div className=\"min-w-0\">\r\n                        <p className=\"text-sm font-bold text-[#1A1A2E]\">Tìm trường</p>\r\n                        <p className=\"text-xs text-[#6B7280]\">Danh sách trường và đối tác đồng phục</p>\r\n                      </div>\r\n                    </Link>",
+          "element": "<Link to=\"/schools\" className=\"flex w-full items-center gap-3\">\n                      <div className=\"flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 bg-emerald-400 shadow-sm\">\n                        <GraduationCap size={16} className=\"text-gray-900\" />\n                      </div>\n                      <div className=\"min-w-0\">\n                        <p className=\"text-sm font-bold text-gray-900\">Tìm trường</p>\n                        <p className=\"text-xs text-gray-500\">Danh sách trường và đối tác đồng phục</p>\n                      </div>\n                    </Link>",
           "line": 266,
           "endLine": 274,
           "column": 20,
@@ -642,7 +658,7 @@
       "data": {
         "viaRoute": "/products",
         "trigger": {
-          "element": "<Link to=\"/products\" className=\"flex w-full items-center gap-3\">\r\n                      <div className=\"flex h-9 w-9 items-center justify-center rounded-lg border-2 border-[#1A1A2E] bg-[#EDE9FE] shadow-[2px_2px_0_#1A1A2E]\">\r\n                        <Package size={16} className=\"text-[#1A1A2E]\" />\r\n                      </div>\r\n                      <div className=\"min-w-0\">\r\n                        <p className=\"text-sm font-bold text-[#1A1A2E]\">Kho đồng phục</p>\r\n                        <p className=\"text-xs text-[#6B7280]\">Mẫu sản phẩm sẵn có để đặt nhanh</p>\r\n                      </div>\r\n                    </Link>",
+          "element": "<Link to=\"/products\" className=\"flex w-full items-center gap-3\">\n                      <div className=\"flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 bg-violet-50 shadow-sm\">\n                        <Package size={16} className=\"text-gray-900\" />\n                      </div>\n                      <div className=\"min-w-0\">\n                        <p className=\"text-sm font-bold text-gray-900\">Kho đồng phục</p>\n                        <p className=\"text-xs text-gray-500\">Mẫu sản phẩm sẵn có để đặt nhanh</p>\n                      </div>\n                    </Link>",
           "line": 277,
           "endLine": 285,
           "column": 20,
@@ -658,7 +674,7 @@
       "data": {
         "viaRoute": "/contact-partnership",
         "trigger": {
-          "element": "<Link to=\"/contact-partnership\" className={`${nbNavLink} ${isContactActive ? nbNavLinkActive : nbNavLinkIdle}`}>\r\n                Liên hệ\r\n              </Link>",
+          "element": "<Link to=\"/contact-partnership\" className={`${nbNavLink} ${isContactActive ? nbNavLinkActive : nbNavLinkIdle}`}>\n                Liên hệ\n              </Link>",
           "line": 290,
           "endLine": 292,
           "column": 14,
@@ -706,7 +722,7 @@
       "data": {
         "viaRoute": "/schools",
         "trigger": {
-          "element": "<Link to=\"/schools\" className=\"flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold text-[#1A1A2E] hover:bg-white transition-colors\">\r\n                  <div className=\"flex h-8 w-8 items-center justify-center rounded-lg border-2 border-[#1A1A2E] bg-[#C8E44D] shadow-[2px_2px_0_#1A1A2E]\">\r\n                    <GraduationCap size={14} />\r\n                  </div>\r\n                  Tìm trường\r\n                </Link>",
+          "element": "<Link to=\"/schools\" className=\"flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold text-gray-900 hover:bg-white transition-colors\">\n                  <div className=\"flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-emerald-400 shadow-sm\">\n                    <GraduationCap size={14} />\n                  </div>\n                  Tìm trường\n                </Link>",
           "line": 587,
           "endLine": 592,
           "column": 16,
@@ -722,7 +738,7 @@
       "data": {
         "viaRoute": "/products",
         "trigger": {
-          "element": "<Link to=\"/products\" className=\"flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold text-[#1A1A2E] hover:bg-white transition-colors\">\r\n                  <div className=\"flex h-8 w-8 items-center justify-center rounded-lg border-2 border-[#1A1A2E] bg-[#EDE9FE] shadow-[2px_2px_0_#1A1A2E]\">\r\n                    <Package size={14} />\r\n                  </div>\r\n                  Kho đồng phục\r\n                </Link>",
+          "element": "<Link to=\"/products\" className=\"flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold text-gray-900 hover:bg-white transition-colors\">\n                  <div className=\"flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-violet-50 shadow-sm\">\n                    <Package size={14} />\n                  </div>\n                  Kho đồng phục\n                </Link>",
           "line": 593,
           "endLine": 598,
           "column": 16,
@@ -738,7 +754,7 @@
       "data": {
         "viaRoute": "/contact-partnership",
         "trigger": {
-          "element": "<Link\r\n                to=\"/contact-partnership\"\r\n                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold transition-all duration-150 ${isContactActive ? \"bg-[#1A1A2E] text-white shadow-[3px_3px_0_#6B7280]\" : \"text-[#1A1A2E] hover:bg-white border border-transparent hover:border-[#1A1A2E]/10\"}`}\r\n              >\r\n                Liên hệ\r\n              </Link>",
+          "element": "<Link\n                to=\"/contact-partnership\"\n                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold transition-all duration-150 ${isContactActive ? \"bg-gray-900 text-white shadow-soft-sm\" : \"text-gray-900 hover:bg-white border border-transparent hover:border-gray-300/10\"}`}\n              >\n                Liên hệ\n              </Link>",
           "line": 601,
           "endLine": 606,
           "column": 14,
@@ -770,7 +786,7 @@
       "data": {
         "viaRoute": "/schools",
         "trigger": {
-          "element": "<a\r\n                href=\"/schools\"\r\n                className=\"group relative inline-flex h-12 items-center justify-center gap-2 overflow-hidden whitespace-nowrap rounded-[10px] border border-[#1A1A2E] bg-gradient-to-r from-[#C8E44D] via-[#FDE68A] to-[#EDE9FE] px-7 text-base font-extrabold text-[#1A1A2E] shadow-[3px_3px_0_#1A1A2E] transition-all duration-200 hover:-translate-y-[1px] hover:shadow-[5px_5px_0_#1A1A2E] active:translate-y-[1px] active:shadow-[2px_2px_0_#1A1A2E]\"\r\n              >\r\n                <span className=\"pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.55),transparent_40%)] opacity-80 transition-opacity duration-150 group-hover:opacity-100\" />\r\n                <span className=\"tracking-wide uppercase\">Thử ngay</span>\r\n                <span className=\"relative transition-transform duration-200 group-hover:translate-x-1\">→</span>\r\n              </a>",
+          "element": "<a\n                href=\"/schools\"\n                className=\"group relative inline-flex h-12 items-center justify-center gap-2 overflow-hidden whitespace-nowrap rounded-[10px] border border-gray-200 bg-gradient-to-r from-[#C8E44D] via-[#FDE68A] to-[#EDE9FE] px-7 text-base font-extrabold text-gray-900 shadow-soft-sm transition-all duration-200 hover:-translate-y-[1px] hover:shadow-soft-md active:translate-y-[1px] active:shadow-sm\"\n              >\n                <span className=\"pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.55),transparent_40%)] opacity-80 transition-opacity duration-150 group-hover:opacity-100\" />\n                <span className=\"tracking-wide uppercase\">Thử ngay</span>\n                <span className=\"relative transition-transform duration-200 group-hover:translate-x-1\">→</span>\n              </a>",
           "line": 18,
           "endLine": 25,
           "column": 14,

@@ -108,8 +108,8 @@ export const FillInformation = (): JSX.Element => {
   };
 
   return (
-    <GuestLayout bgColor="#FFF8F0">
-      <main className="flex-1 bg-[#FFF8F0] py-8 lg:py-12 px-4 relative overflow-hidden">
+    <GuestLayout bgColor="#f9fafb">
+      <main className="flex-1 bg-gray-50 py-8 lg:py-12 px-4 relative overflow-hidden">
         {/* NB decorative shapes */}
 
         <div className="max-w-4xl mx-auto relative z-10">
@@ -123,7 +123,7 @@ export const FillInformation = (): JSX.Element => {
             </p>
           </div>
 
-          <div className="bg-white rounded-2xl border-2 border-[#1A1A2E] shadow-[4px_4px_0_#1A1A2E] p-6 lg:p-10 max-w-[32rem] mx-auto">
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-soft-md p-6 lg:p-10 max-w-[32rem] mx-auto">
             {/* Avatar section */}
             <div className="flex flex-col items-center mb-8">
               <img
@@ -195,7 +195,7 @@ export const FillInformation = (): JSX.Element => {
                 {isLoading ? (
                   <Loader2 className="w-6 h-6 animate-spin mr-2" />
                 ) : null}
-                <span className="font-semibold text-[#1A1A2E] text-2xl">
+                <span className="font-semibold text-gray-900 text-2xl">
                   {isLoading ? "Đang lưu..." : "Xác nhận số điện thoại"}
                 </span>
                 {!isLoading && (

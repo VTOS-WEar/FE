@@ -81,7 +81,7 @@ function OrderStatusStepper({ orderStatus }: { orderStatus: string }) {
                 {/* Progress line */}
                 {currentIdx >= 2 && (
                     <div
-                        className="absolute top-[18px] h-[3px] bg-[#C8E44D] rounded-full transition-all duration-500"
+                        className="absolute top-[18px] h-[3px] bg-emerald-400 rounded-full transition-all duration-500"
                         style={{
                             left: `${100 / (ORDER_STEPS.length * 2)}%`,
                             width: `${((Math.min(currentIdx, ORDER_STEPS.length) - 1) / (ORDER_STEPS.length - 1)) * (100 - 100 / ORDER_STEPS.length)}%`,
@@ -97,11 +97,11 @@ function OrderStatusStepper({ orderStatus }: { orderStatus: string }) {
                     return (
                         <div key={step.key} className="flex flex-col items-center relative z-10" style={{ flex: 1 }}>
                             <div
-                                className={`w-9 h-9 rounded-lg flex items-center justify-center text-sm font-bold transition-all duration-300 border-2 border-[#1A1A2E] ${isCompleted
-                                    ? "bg-[#C8E44D] shadow-[2px_2px_0_#1A1A2E]"
+                                className={`w-9 h-9 rounded-lg flex items-center justify-center text-sm font-bold transition-all duration-300 border border-gray-200 ${isCompleted
+                                    ? "bg-emerald-400 shadow-sm"
                                     : isCurrent
-                                        ? "bg-[#B8A9E8] shadow-[2px_2px_0_#1A1A2E] animate-pulse"
-                                        : "bg-[#F3F4F6] border-[#D1D5DB]"
+                                        ? "bg-purple-400 shadow-sm animate-pulse"
+                                        : "bg-gray-100 border-gray-300"
                                     }`}
                             >
                                 {isCompleted ? (
@@ -110,7 +110,7 @@ function OrderStatusStepper({ orderStatus }: { orderStatus: string }) {
                                     <span className="text-xs">{step.icon}</span>
                                 )}
                             </div>
-                            <span className={`mt-2 text-[11px] font-bold text-center leading-tight ${isCompleted ? "text-[#065F46]" : isCurrent ? "text-[#1A1A2E]" : "text-[#9CA3AF]"
+                            <span className={`mt-2 text-[11px] font-bold text-center leading-tight ${isCompleted ? "text-emerald-800" : isCurrent ? "text-gray-900" : "text-gray-400"
                                 }`}>
                                 {step.label}
                             </span>
@@ -172,7 +172,7 @@ function OrderCard({
     return (
         <div
             onClick={onExpandToggle}
-            className={`nb-card !rounded-[12px] overflow-hidden transition-all duration-300 shadow-[3px_3px_0_#1A1A2E] hover:shadow-[6px_6px_0_#1A1A2E] hover:-translate-y-1 cursor-pointer select-none ${isExpanded ? 'ring-2 ring-[#B8A9E8]' : ''}`}
+            className={`nb-card !rounded-[12px] overflow-hidden transition-all duration-300 shadow-soft-sm hover:shadow-soft-md hover:-translate-y-1 cursor-pointer select-none ${isExpanded ? 'ring-2 ring-purple-300' : ''}`}
         >
             <div className="p-5">
                 <div className="flex flex-col lg:flex-row gap-6 justify-between items-stretch">
@@ -180,25 +180,25 @@ function OrderCard({
                     <div className="flex flex-row gap-5 items-start flex-1 min-w-0">
                         {/* Image Section */}
                         <div className="relative flex-shrink-0">
-                            <div className="w-24 h-24 rounded-2xl border-2 border-[#1A1A2E] shadow-[3px_3px_0_#1A1A2E] overflow-hidden bg-white flex items-center justify-center group pointer-events-none">
+                            <div className="w-24 h-24 rounded-2xl border border-gray-200 shadow-soft-sm overflow-hidden bg-white flex items-center justify-center group pointer-events-none">
                                 {loadingDetail ? (
-                                    <div className="w-5 h-5 border-2 border-[#B8A9E8] border-t-transparent rounded-full animate-spin" />
+                                    <div className="w-5 h-5 border-2 border-purple-300 border-t-transparent rounded-full animate-spin" />
                                 ) : firstItem?.outfitImage ? (
                                     <img src={firstItem.outfitImage} alt={firstItem.outfitName} className="w-full h-full object-cover transition-transform group-hover:scale-110" />
                                 ) : (
-                                    <Package className="w-8 h-8 text-[#B8A9E8]" />
+                                    <Package className="w-8 h-8 text-purple-400" />
                                 )}
                             </div>
 
                             {/* Items count badge on image */}
                             {orderDetail && orderDetail.items.length > 1 && (
-                                <div className="absolute -top-2 -left-2 bg-[#C8E44D] text-[#1A1A2E] text-[9px] font-black px-1.5 py-0.5 rounded-md border-2 border-[#1A1A2E] shadow-[1.5px_1.5px_0_#1A1A2E] z-20">
+                                <div className="absolute -top-2 -left-2 bg-emerald-400 text-gray-900 text-[9px] font-black px-1.5 py-0.5 rounded-md border border-gray-200 shadow-sm z-20">
                                     +{orderDetail.items.length - 1}
                                 </div>
                             )}
 
                             {orderDetail?.childAvatar && (
-                                <div className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full border-2 border-[#1A1A2E] shadow-[1.5px_1.5px_0_#1A1A2E] overflow-hidden bg-white z-10">
+                                <div className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full border border-gray-200 shadow-sm overflow-hidden bg-white z-10">
                                     <Avatar className="w-full h-full rounded-none">
                                         <AvatarImage src={orderDetail.childAvatar} />
                                         <AvatarFallback className="text-[10px] font-black bg-[#E9D5FF]">
@@ -212,7 +212,7 @@ function OrderCard({
                         {/* Details Section */}
                         <div className="flex-1 space-y-1.5 min-w-0">
                             <div className="flex flex-wrap items-center gap-2 mb-0.5">
-                                <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg border-2 font-black text-[9px] uppercase shadow-[2px_2px_0_#1A1A2E] ${badge.bg} ${badge.text} ${badge.border}`}>
+                                <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg border-2 font-black text-[9px] uppercase shadow-sm ${badge.bg} ${badge.text} ${badge.border}`}>
                                     {badge.icon}
                                     {badge.label}
                                 </span>
@@ -221,7 +221,7 @@ function OrderCard({
                                         e.stopPropagation();
                                         if (firstItem?.campaignId) navigate(`/campaigns/${firstItem.campaignId}`);
                                     }}
-                                    className="text-[9px] font-black text-[#9CA3AF] uppercase tracking-wider flex items-center gap-1 cursor-pointer hover:text-[#1A1A2E] transition-colors"
+                                    className="text-[9px] font-black text-gray-400 uppercase tracking-wider flex items-center gap-1 cursor-pointer hover:text-gray-800 transition-colors"
                                 >
                                     <ShoppingBag className="w-3 h-3" />
                                     {orderDetail?.campaignName || "---"}
@@ -236,7 +236,7 @@ function OrderCard({
                                             navigate(`/outfits/${firstItem.outfitId}`);
                                         }
                                     }}
-                                    className="font-extrabold text-[#1A1A2E] text-lg leading-tight truncate hover:text-[#B8A9E8] transition-colors cursor-pointer decoration-[#B8A9E8] hover:underline underline-offset-4"
+                                    className="font-extrabold text-gray-900 text-lg leading-tight truncate hover:text-purple-500 transition-colors cursor-pointer decoration-[#B8A9E8] hover:underline underline-offset-4"
                                 >
                                     {firstItem?.outfitName || "Mã đơn: #" + p.orderId.substring(0, 8)}
                                 </h3>
@@ -245,40 +245,40 @@ function OrderCard({
                             </div>
                             <div>
                                 {orderDetail?.childName && (
-                                    <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#6B7280]">
-                                        <User className="w-3 h-3 text-[#1A1A2E]" />
-                                        <span> <span className="text-[#1A1A2E] font-gray">{orderDetail.childName}</span></span>
+                                    <div className="flex items-center gap-1.5 text-[11px] font-bold text-gray-500">
+                                        <User className="w-3 h-3 text-gray-900" />
+                                        <span> <span className="text-gray-900 font-gray">{orderDetail.childName}</span></span>
                                     </div>
                                 )}
                             </div>
 
-                            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] font-bold text-[#9CA3AF]">
+                            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] font-bold text-gray-400">
                                 <span className="flex items-center gap-1">
                                     <Calendar className="w-3 h-3" />
                                     {fmtDate(p.timestamp)}
                                 </span>
                                 <span className="text-[#D1D5DB]">|</span>
-                                <span>Size: <span className="text-[#6B7280] font-extrabold">{firstItem?.size || "-"}</span></span>
+                                <span>Size: <span className="text-gray-500 font-extrabold">{firstItem?.size || "-"}</span></span>
                                 <span className="text-[#D1D5DB]">|</span>
-                                <span>SL: <span className="text-[#6B7280] font-extrabold">{firstItem?.quantity || "-"}</span></span>
+                                <span>SL: <span className="text-gray-500 font-extrabold">{firstItem?.quantity || "-"}</span></span>
                             </div>
                         </div>
                     </div>
 
                     {/* Right: Modern Summary Box */}
-                    <div className="flex flex-col justify-between p-4 bg-[#F5F3FF] border-2 border-[#1A1A2E] rounded-[15px] shadow-[2px_2px_0_#1A1A2E] min-w-[220px]">
+                    <div className="flex flex-col justify-between p-4 bg-violet-50 border border-gray-200 rounded-[15px] shadow-sm min-w-[220px]">
                         <div className="flex justify-between items-start mb-4">
                             <div>
-                                <p className="text-[8px] text-[#9CA3AF] font-black uppercase tracking-widest mb-1">Tổng thanh toán</p>
-                                <p className="font-black text-xl text-[#1A1A2E] leading-none mb-1">{fmt(p.amount)}</p>
+                                <p className="text-[8px] text-gray-400 font-black uppercase tracking-widest mb-1">Tổng thanh toán</p>
+                                <p className="font-black text-xl text-gray-900 leading-none mb-1">{fmt(p.amount)}</p>
                                 {orderDetail && (
-                                    <p className="text-[10px] font-bold text-[#6B7280]">
+                                    <p className="text-[10px] font-bold text-gray-500">
                                         {orderDetail.items.reduce((sum, item) => sum + item.quantity, 0)} sản phẩm
                                     </p>
                                 )}
                             </div>
                             <div className="text-right">
-                                <p className="text-[8px] text-[#9CA3AF] font-black uppercase tracking-widest mb-1">Thanh toán</p>
+                                <p className="text-[8px] text-gray-400 font-black uppercase tracking-widest mb-1">Thanh toán</p>
                                 <div className={`text-[10px] font-black ${p.paymentStatus === 'Paid' || p.paymentStatus === 'Completed' ? 'text-green-600' : p.paymentStatus === 'Cancelled' ? 'text-red-500' : 'text-orange-500'}`}>
                                     {p.paymentStatus === 'Paid' || p.paymentStatus === 'Completed' ? 'Đã xong' : p.paymentStatus === 'Pending' ? 'Chờ xử lý' : 'Đã hủy'}
                                 </div>
@@ -288,14 +288,14 @@ function OrderCard({
                         <div className="flex items-center gap-2">
                             <button
                                 onClick={(e) => { e.stopPropagation(); onNavigateDetail(); }}
-                                className="flex-1 py-1.5 bg-white hover:bg-gray-50 text-[9px] font-black text-[#1A1A2E] uppercase tracking-widest rounded-lg border-2 border-[#1A1A2E] shadow-[1px_1px_0_#1A1A2E] transition-all active:translate-y-[1px] active:shadow-none"
+                                className="flex-1 py-1.5 bg-white hover:bg-gray-50 text-[9px] font-black text-gray-900 uppercase tracking-widest rounded-lg border border-gray-200 shadow-sm transition-all active:translate-y-[1px] active:shadow-none"
                             >
                                 Chi tiết
                             </button>
                             {p.orderStatus === "Delivered" && (
                                 <button
                                     onClick={(e) => { e.stopPropagation(); onNavigateFeedback(); }}
-                                    className="flex-1 py-1.5 bg-[#1A1A2E] text-white text-[9px] font-black uppercase tracking-widest rounded-lg border-2 border-[#1A1A2E] shadow-[1px_1px_0_#B8A9E8] hover:scale-[1.02] transition-all"
+                                    className="flex-1 py-1.5 bg-gray-900 text-white text-[9px] font-black uppercase tracking-widest rounded-lg border border-gray-200 shadow-sm hover:scale-[1.02] transition-all"
                                 >
                                     Đánh giá
                                 </button>
@@ -304,7 +304,7 @@ function OrderCard({
                                 <button
                                     onClick={(e) => { e.stopPropagation(); onPay(); }}
                                     disabled={payingId === p.orderId}
-                                    className="flex-1 nb-btn nb-btn-purple !py-1.5 !text-[9px] !rounded-lg !shadow-[1px_1px_0_#1A1A2E] hover:!shadow-[2px_2px_0_#1A1A2E] !font-black uppercase tracking-widest"
+                                    className="flex-1 nb-btn nb-btn-purple !py-1.5 !text-[9px] !rounded-lg !shadow-sm hover:!shadow-sm !font-black uppercase tracking-widest"
                                 >
                                     Thanh toán
                                 </button>
@@ -316,10 +316,10 @@ function OrderCard({
 
             {/* Stepper (Collapsible) */}
             {isExpanded && showStepper && (
-                <div className="px-5 pb-6 border-t-2 border-[#1A1A2E]/5 bg-[#F9FAFB]/50 animate-in slide-in-from-top duration-300">
+                <div className="px-5 pb-6 border-t border-gray-200/5 bg-gray-50/50 animate-in slide-in-from-top duration-300">
                     <div className="flex items-center gap-2 mt-4 mb-2">
-                        <div className="w-1.5 h-4 bg-[#B8A9E8] rounded-full" />
-                        <p className="font-bold text-[#1A1A2E] text-xs">Lộ trình đơn hàng</p>
+                        <div className="w-1.5 h-4 bg-purple-400 rounded-full" />
+                        <p className="font-bold text-gray-900 text-xs">Lộ trình đơn hàng</p>
                     </div>
                     <OrderStatusStepper orderStatus={p.orderStatus} />
                 </div>
@@ -366,13 +366,13 @@ function StatusTabs({
             <button
                 onClick={() => onStatusChange(null)}
                 className={`relative px-4 py-2 rounded-lg font-bold text-sm whitespace-nowrap transition-all ${selectedStatus === null
-                    ? "bg-[#B8A9E8] text-white border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E]"
-                    : "bg-[#F3F4F6] text-[#6B7280] border-2 border-[#D1D5DB]"
+                    ? "bg-purple-400 text-white border border-gray-200 shadow-sm"
+                    : "bg-gray-100 text-gray-500 border-2 border-gray-300"
                     }`}
             >
                 Tất cả
                 {total > 0 && (
-                    <span className="absolute -top-2 -right-2 bg-[#C8E44D] text-[#1A1A2E] text-xs font-bold px-2 py-0.5 rounded-full border-2 border-[#1A1A2E] shadow-[1px_1px_0_#1A1A2E] min-w-[24px] text-center">
+                    <span className="absolute -top-2 -right-2 bg-emerald-400 text-gray-900 text-xs font-bold px-2 py-0.5 rounded-full border border-gray-200 shadow-sm min-w-[24px] text-center">
                         {total}
                     </span>
                 )}
@@ -385,13 +385,13 @@ function StatusTabs({
                         key={status}
                         onClick={() => onStatusChange(status)}
                         className={`relative px-4 py-2 rounded-lg font-bold text-sm whitespace-nowrap transition-all ${selectedStatus === status
-                            ? "bg-[#B8A9E8] text-white border-2 border-[#1A1A2E] shadow-[2px_2px_0_#1A1A2E]"
-                            : "bg-[#F3F4F6] text-[#6B7280] border-2 border-[#D1D5DB]"
+                            ? "bg-purple-400 text-white border border-gray-200 shadow-sm"
+                            : "bg-gray-100 text-gray-500 border-2 border-gray-300"
                             }`}
                     >
                         {STATUS_LABELS[status]}
                         {count > 0 && (
-                            <span className="absolute -top-2 -right-2 bg-[#C8E44D] text-[#1A1A2E] text-xs font-bold px-2 py-0.5 rounded-full border-2 border-[#1A1A2E] shadow-[1px_1px_0_#1A1A2E] min-w-[24px] text-center">
+                            <span className="absolute -top-2 -right-2 bg-emerald-400 text-gray-900 text-xs font-bold px-2 py-0.5 rounded-full border border-gray-200 shadow-sm min-w-[24px] text-center">
                                 {count}
                             </span>
                         )}
@@ -475,7 +475,7 @@ export const OrdersTab = (): JSX.Element => {
     if (loading && payments.length === 0) {
         return (
             <div className="flex items-center justify-center py-16">
-                <div className="w-8 h-8 border-4 border-[#E5E7EB] border-t-[#B8A9E8] rounded-full animate-spin" />
+                <div className="w-8 h-8 border-4 border-gray-200 border-t-[#B8A9E8] rounded-full animate-spin" />
             </div>
         );
     }
@@ -486,23 +486,23 @@ export const OrdersTab = (): JSX.Element => {
             <StatusTabs payments={payments} total={total} statusCounts={statusCounts} selectedStatus={selectedStatus} onStatusChange={handleStatusChange} />
 
             {/* Date Filter Bar */}
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6 bg-white/50 p-3 rounded-2xl border-2 border-[#1A1A2E]/5">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6 bg-white/50 p-3 rounded-2xl border border-gray-200/5">
                 <div className="flex items-center gap-2">
-                    <div className={cn("w-2.5 h-2.5 rounded-full transition-all duration-500", loading ? "bg-[#B8A9E8] animate-ping" : "bg-green-400")} />
-                    <span className="text-[10px] font-black text-[#1A1A2E] uppercase tracking-wider">
+                    <div className={cn("w-2.5 h-2.5 rounded-full transition-all duration-500", loading ? "bg-purple-400 animate-ping" : "bg-green-400")} />
+                    <span className="text-[10px] font-black text-gray-900 uppercase tracking-wider">
                         {loading ? "Đang cập nhật danh sách..." : "Lọc theo thời gian đặt đồ"}
                     </span>
                 </div>
 
-                <div className="flex items-center gap-2 bg-white border-2 border-[#1A1A2E] rounded-xl px-4 py-1.5 shadow-[3px_3px_0_#1A1A2E] group transition-all hover:translate-y-[-1px]">
-                    <Calendar className={cn("w-3.5 h-3.5 transition-colors", loading ? "text-[#B8A9E8]" : "text-[#6B7280]")} />
+                <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-xl px-4 py-1.5 shadow-soft-sm group transition-all hover:translate-y-[-1px]">
+                    <Calendar className={cn("w-3.5 h-3.5 transition-colors", loading ? "text-purple-400" : "text-gray-500")} />
                     <input
                         type="date"
                         value={startDate}
                         onChange={(e) => handleDateChange(e.target.value, endDate)}
                         className="text-[11px] font-bold outline-none bg-transparent cursor-pointer"
                     />
-                    <span className="text-[#1A1A2E]/10 font-black">→</span>
+                    <span className="text-gray-900/10 font-black">→</span>
                     <input
                         type="date"
                         value={endDate}
@@ -512,7 +512,7 @@ export const OrdersTab = (): JSX.Element => {
                     {(startDate || endDate) && (
                         <button
                             onClick={() => handleDateChange("", "")}
-                            className="ml-2 text-[9px] bg-[#FEE2E2] text-[#991B1B] hover:bg-[#FCA5A5] px-2 py-0.5 rounded-lg border-2 border-[#1A1A2E] font-black transition-colors"
+                            className="ml-2 text-[9px] bg-[#FEE2E2] text-red-800 hover:bg-[#FCA5A5] px-2 py-0.5 rounded-lg border border-gray-200 font-black transition-colors"
                         >
                             XÓA
                         </button>
@@ -524,10 +524,10 @@ export const OrdersTab = (): JSX.Element => {
             <div className={cn("space-y-4 transition-all duration-300", loading ? "opacity-40 pointer-events-none scale-[0.99] grayscale-[0.5]" : "opacity-100")}>
                 {payments.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-16 gap-4">
-                        <div className="w-16 h-16 bg-[#F3F4F6] rounded-xl flex items-center justify-center border-2 border-[#1A1A2E] shadow-[3px_3px_0_#1A1A2E]">
-                            <ShoppingBag className="w-8 h-8 text-[#9CA3AF]" />
+                        <div className="w-16 h-16 bg-gray-100 rounded-xl flex items-center justify-center border border-gray-200 shadow-soft-sm">
+                            <ShoppingBag className="w-8 h-8 text-gray-400" />
                         </div>
-                        <p className="font-bold text-[#6B7280] text-sm text-center">
+                        <p className="font-bold text-gray-500 text-sm text-center">
                             {(startDate || endDate || selectedStatus)
                                 ? "Không tìm thấy đơn hàng nào khớp với bộ lọc."
                                 : "Bạn chưa có đơn hàng nào."}
@@ -559,7 +559,7 @@ export const OrdersTab = (): JSX.Element => {
             {totalPages > 1 && (
                 <div className="flex justify-center gap-2 mt-4">
                     <button disabled={page <= 1} onClick={() => setPage(p => p - 1)} className="nb-btn nb-btn-outline text-sm disabled:opacity-50">← Trước</button>
-                    <span className="flex items-center text-sm text-[#6B7280] px-2 font-bold">{page}/{totalPages}</span>
+                    <span className="flex items-center text-sm text-gray-500 px-2 font-bold">{page}/{totalPages}</span>
                     <button disabled={page >= totalPages} onClick={() => setPage(p => p + 1)} className="nb-btn nb-btn-outline text-sm disabled:opacity-50">Sau →</button>
                 </div>
             )}

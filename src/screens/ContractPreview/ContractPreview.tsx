@@ -86,13 +86,13 @@ export function ContractPreview() {
             <div className="nb-card-static p-8 w-full max-w-lg text-center space-y-6">
                 <div>
                     <p className="text-3xl mb-2">📄</p>
-                    <h1 className="font-extrabold text-[#1A1A2E] text-2xl">Contract Template Preview</h1>
-                    <p className="text-sm text-[#6B7280] mt-1">Trang demo — không cần đăng nhập</p>
+                    <h1 className="font-extrabold text-gray-900 text-2xl">Contract Template Preview</h1>
+                    <p className="text-sm text-gray-500 mt-1">Trang demo — không cần đăng nhập</p>
                 </div>
 
                 {/* Role selector */}
                 <div>
-                    <p className="text-xs font-bold text-[#6B7280] mb-2 uppercase">Xem với vai trò</p>
+                    <p className="text-xs font-bold text-gray-500 mb-2 uppercase">Xem với vai trò</p>
                     <div className="flex gap-3 justify-center">
                         {(["school", "provider", "readonly"] as ViewerRole[]).map((r) => (
                             <button
@@ -104,7 +104,7 @@ export function ContractPreview() {
                             </button>
                         ))}
                     </div>
-                    <p className="text-xs text-[#9CA3AF] mt-2">
+                    <p className="text-xs text-gray-400 mt-2">
                         {role === "school" && "→ Hiện nút Ký (Bên A)"}
                         {role === "provider" && "→ Hiện nút Ký (Bên B)"}
                         {role === "readonly" && "→ Chỉ xem, không ký"}
@@ -118,7 +118,7 @@ export function ContractPreview() {
                     📋 Mở Contract Template
                 </button>
 
-                <p className="text-xs text-[#9CA3AF]">
+                <p className="text-xs text-gray-400">
                     Dùng nút <strong>✍️ Ký</strong> để thử ký tên &nbsp;·&nbsp;
                     Dùng nút <strong>🖨️ In / PDF</strong> để xuất PDF
                 </p>

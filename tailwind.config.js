@@ -46,6 +46,9 @@ module.exports = {
         inner: "var(--inner)",
         "shadow-2": "var(--shadow-2)",
         "switch-in-shadow": "var(--switch-in-shadow)",
+        "soft-sm": "0 2px 8px rgba(0, 0, 0, 0.06)",
+        "soft-md": "0 4px 16px rgba(0, 0, 0, 0.08)",
+        "soft-lg": "0 8px 24px rgba(0, 0, 0, 0.12)",
       },
       borderRadius: {
         lg: "var(--radius)",
