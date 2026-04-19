@@ -1,12 +1,12 @@
 import {
     LayoutDashboard, Building2, FileText,
-    Factory, AlertTriangle, Wallet, BarChart3, Settings
+    ClipboardList, AlertTriangle, Wallet, BarChart3, Settings
 } from "lucide-react";
 import type { DashboardSidebarProps } from "../components/layout";
 
 /**
  * Sidebar config for Provider Dashboard screens.
- * 3 sections: Quản lý, Sản xuất, Tài chính
+ * 3 sections: Quản lý, Đơn hàng, Tài chính
  */
 export const PROVIDER_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, 'isCollapsed' | 'onToggle'> = {
     iconType: "provider" as const,
@@ -41,12 +41,12 @@ export const PROVIDER_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, 'isCollapsed' 
             ],
         },
         {
-            title: "SẢN XUẤT",
+            title: "ĐƠN HÀNG",
             items: [
                 {
-                    icon: Factory,
-                    label: "Đơn sản xuất",
-                    href: "/provider/production-orders",
+                    icon: ClipboardList,
+                    label: "Đơn hàng",
+                    href: "/provider/orders",
                 },
                 {
                     icon: AlertTriangle,

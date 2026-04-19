@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { MapPin, Phone, Mail, Calendar, GraduationCap, ArrowRight, Shirt, Building2, CheckCircle, Copy } from "lucide-react";
+import { MapPin, Phone, Mail, Calendar, GraduationCap, ArrowRight, Shirt, Building2, CheckCircle, Copy, BookOpen } from "lucide-react";
 import { GuestLayout } from "../../components/layout/GuestLayout";
 import { PublicPageBreadcrumb } from "@/components/PublicPageBreadcrumb";
 import { getPublicSchoolDetail, getSchoolUniforms, parseContactInfo, type PublicSchoolDetailDto } from "../../lib/api/schools";
+import { getAllSchoolSemesterCatalogs, type SchoolSemesterCatalogResponse } from "../../lib/api/public";
 import { motion, AnimatePresence, useInView } from "framer-motion";
-import { OutfitOrderModal } from "../../components/outfits/OutfitOrderModal";
 
 type UniformItem = {
   outfitId: string;
@@ -13,14 +13,18 @@ type UniformItem = {
   price: number;
   mainImageURL: string | null;
   outfitType: string;
+  averageRating?: number;
+  feedbackCount?: number;
 };
 
 const fmt = (n: number) => n.toLocaleString("vi-VN", { maximumFractionDigits: 0 }) + " VNĐ";
 
 const STATUS_LABEL: Record<string, { label: string; badge: string }> = {
-  Active:    { label: "Đang diễn ra", badge: "nb-badge-green" },
-  Completed: { label: "Hoàn thành",   badge: "nb-badge-blue" },
-  Locked:    { label: "Đã khóa",      badge: "nb-badge-red" },
+  Draft: { label: "Đang soạn thảo", badge: "nb-badge-gray" },
+  Closed: { label: "Đã đóng", badge: "nb-badge-gray" },
+  Active: { label: "Đang mở", badge: "nb-badge-green" },
+  Completed: { label: "Đã kết thúc", badge: "nb-badge-blue" },
+  Locked: { label: "Đã khóa", badge: "nb-badge-red" },
 };
 
 /* ═══════════════════════════════════════════════════════
@@ -109,7 +113,7 @@ export const SchoolDetail = (): JSX.Element => {
   const [error, setError] = useState<string | null>(null);
   const [toast, setToast] = useState({ show: false, message: "" });
   const [uniforms, setUniforms] = useState<UniformItem[]>([]);
-  const [selectedOutfitId, setSelectedOutfitId] = useState<string | null>(null);
+  const [allSemesterCatalogs, setAllSemesterCatalogs] = useState<SchoolSemesterCatalogResponse[]>([]);
 
   useEffect(() => {
     if (!id) return;
@@ -124,6 +128,14 @@ export const SchoolDetail = (): JSX.Element => {
         setUniforms(items);
       })
       .catch(() => { });
+
+    getAllSchoolSemesterCatalogs(id)
+      .then((res) => {
+        setAllSemesterCatalogs(res);
+      })
+      .catch(() => {
+        setAllSemesterCatalogs([]);
+      });
   }, [id]);
 
   const isParent = (() => {
@@ -167,9 +179,6 @@ export const SchoolDetail = (): JSX.Element => {
   );
 
   const contact = parseContactInfo(school.contactInfo);
-  const allCampaigns = school.activeCampaigns ?? [];
-  const activeCampaigns = allCampaigns.filter(c => c.status === "Active");
-  const otherCampaigns = allCampaigns.filter(c => c.status !== "Active");
 
   return (
     <GuestLayout bgColor="#f9fafb">
@@ -190,12 +199,12 @@ export const SchoolDetail = (): JSX.Element => {
 
         {/* ═══ HERO CARD ═══ */}
         <motion.div custom={1} variants={fadeUp} initial="hidden" animate="visible">
-          <div className="nb-card-static p-6 lg:p-10 mb-12 flex flex-col md:flex-row gap-8 items-start relative overflow-hidden">
-            {/* NB decorative shape */}
-            <div className="absolute -top-4 -right-4 w-16 h-16 bg-emerald-400 border-3 border-gray-200 rounded-xl rotate-12 opacity-30 pointer-events-none" />
+          <div className="rounded-[28px] border border-gray-200 bg-white p-6 lg:p-10 mb-12 flex flex-col md:flex-row gap-8 items-start relative overflow-hidden shadow-soft-lg">
+            {/* Soft decorative shape */}
+            <div className="absolute -top-4 -right-4 w-16 h-16 bg-violet-50 border border-gray-100 rounded-xl rotate-12 opacity-60 pointer-events-none" />
 
             {/* Logo */}
-            <div className="relative w-24 h-24 lg:w-32 lg:h-32 rounded-xl overflow-hidden border-3 border-gray-200 flex-shrink-0 bg-white flex items-center justify-center shadow-soft-lg z-10">
+            <div className="relative w-24 h-24 lg:w-32 lg:h-32 rounded-[20px] overflow-hidden border border-gray-200 flex-shrink-0 bg-white flex items-center justify-center shadow-soft-sm z-10">
               {school.logoURL
                 ? <img src={school.logoURL} alt={school.schoolName} className="w-full h-full object-cover" />
                 : <GraduationCap className="w-12 h-12 text-purple-400" />}
@@ -245,8 +254,8 @@ export const SchoolDetail = (): JSX.Element => {
                 </div>
 
                 {/* Actions */}
-                <div className="flex gap-2 shrink-0 self-start lg:mt-0 mt-2">
-                  <button onClick={handleCopyLink} className="nb-btn nb-btn-outline h-10 gap-2 text-sm">
+                <div className="flex gap-3 shrink-0 self-start lg:mt-0 mt-4">
+                  <button onClick={handleCopyLink} className="nb-btn nb-btn-outline h-11 gap-2 text-sm">
                     <Copy className="w-4 h-4" /> Chia sẻ
                   </button>
                 </div>
@@ -255,83 +264,80 @@ export const SchoolDetail = (): JSX.Element => {
           </div>
         </motion.div>
 
-        {/* ═══ CAMPAIGNS SECTION ═══ */}
+        {/* ═══ CATALOG SECTION ═══ */}
         <ScrollSection delay={0.1}>
           <div className="flex items-center gap-3 mb-6">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 bg-violet-50 shadow-soft-sm">
-              <Calendar className="w-5 h-5 text-gray-900" />
+              <BookOpen className="w-5 h-5 text-gray-900" />
             </div>
             <h2 className="font-extrabold text-2xl text-gray-900 tracking-tight">
-              Chương trình đồng phục
+              Danh mục học kỳ
             </h2>
-            {allCampaigns.length > 0 && (
-              <span className="nb-badge nb-badge-purple ml-1">{allCampaigns.length}</span>
+            {allSemesterCatalogs.length > 0 && (
+              <span className="nb-badge nb-badge-purple ml-1">Hiện có {allSemesterCatalogs.length}</span>
             )}
           </div>
 
-          {allCampaigns.length === 0 ? (
+          {allSemesterCatalogs.length === 0 ? (
             <div className="nb-card-static p-12 text-center border-dashed">
               <div className="mx-auto w-16 h-16 flex items-center justify-center rounded-xl border-3 border-gray-200 bg-violet-50 shadow-soft-lg mb-4">
-                <GraduationCap className="w-8 h-8 text-gray-900" />
+                <BookOpen className="w-8 h-8 text-gray-900" />
               </div>
-              <p className="font-bold text-gray-500">Chưa có chương trình đồng phục nào.</p>
+              <p className="font-bold text-gray-500">Trường chưa phát hành danh mục học kỳ nào.</p>
             </div>
           ) : (
-            <motion.div variants={staggerGrid} initial="hidden" animate="visible" className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {[...activeCampaigns, ...otherCampaigns].map(c => {
-                const s = STATUS_LABEL[c.status] ?? { label: c.status, badge: "nb-badge-yellow" };
-                const canViewDetail = isParent;
-                const startYear = new Date(c.startDate).getFullYear();
-                const endYear = new Date(c.endDate).getFullYear();
-                const academicYearStr = startYear === endYear ? `${startYear}` : `${startYear} - ${endYear}`;
-
-                return (
-                  <motion.div key={c.campaignId} variants={cardItem} className="h-full">
-                    <div
-                      onClick={() => canViewDetail && navigate(`/campaigns/${c.campaignId}`)}
-                      className={`nb-card overflow-hidden flex flex-col sm:flex-row h-full ${canViewDetail ? "cursor-pointer" : ""}`}
-                    >
-                      {/* Academic Year Side */}
-                      <div className="bg-purple-400 p-5 flex flex-col justify-center items-center text-gray-900 shrink-0 sm:w-[130px] md:w-[150px] border-r-3 border-gray-200">
-                        <Calendar className="w-6 h-6 mb-2" />
-                        <span className="text-[10px] uppercase tracking-[0.1em] font-extrabold opacity-70 mb-1">Niên khóa</span>
-                        <span className="font-extrabold text-xl leading-none text-center">
-                          {academicYearStr}
-                        </span>
+            <motion.div variants={staggerGrid} initial="hidden" animate="visible" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {allSemesterCatalogs.map((cat) => (
+                <motion.div key={cat.semesterPublicationId} variants={cardItem} className="h-full">
+                  <div className="nb-card overflow-hidden flex flex-col h-full bg-white group hover:border-violet-400 transition-colors">
+                    {/* Compact Header */}
+                    <div className="p-4 bg-slate-50 border-b border-gray-200 flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="p-2 bg-white rounded-lg border border-gray-200 shadow-sm">
+                          <Calendar className="w-4 h-4 text-violet-500" />
+                        </div>
+                        <div>
+                          <p className="text-[10px] font-black uppercase text-gray-400 leading-none">Học kỳ</p>
+                          <h3 className="font-extrabold text-sm text-gray-900 mt-0.5">{cat.semester}</h3>
+                        </div>
                       </div>
-
-                      {/* Content */}
-                      <div className="flex-1 min-w-0 p-5 flex flex-col relative bg-white">
-                        <div className="flex items-start justify-between gap-2 mb-2 flex-wrap">
-                          <h3 className="font-extrabold text-sm text-gray-900 leading-tight line-clamp-2 flex-1">{c.campaignName}</h3>
-                          <span className={`shrink-0 nb-badge ${s.badge}`}>{s.label}</span>
-                        </div>
-
-                        {c.description && <p className="text-[13px] font-medium text-gray-500 mb-3 line-clamp-2 leading-relaxed">{c.description}</p>}
-
-                        <div className="flex items-center gap-3 mt-auto pt-2 flex-wrap">
-                          <div className="nb-badge gap-1.5">
-                            <Shirt className="w-3.5 h-3.5 text-purple-400" />
-                            <span className="font-bold text-[13px]"><span className="text-gray-900">{c.outfitCount}</span> <span className="text-gray-500">mẫu</span></span>
-                          </div>
-                          <div className="nb-badge gap-1.5">
-                            <Calendar className="w-3.5 h-3.5 text-purple-400" />
-                            <span className="font-bold text-[13px] text-gray-500">Hạn: <span className="text-gray-900">{new Date(c.endDate).toLocaleDateString("vi-VN")}</span></span>
-                          </div>
-                        </div>
-
-                        {canViewDetail && (
-                          <div className="absolute bottom-5 right-5 opacity-60 group-hover:opacity-100 transition-opacity">
-                            <div className="w-8 h-8 rounded-lg border border-gray-200 bg-violet-50 flex items-center justify-center shadow-sm">
-                              <ArrowRight className="w-3.5 h-3.5 text-gray-900" />
-                            </div>
-                          </div>
-                        )}
+                      <div className={`px-2 py-0.5 rounded-full border text-[9px] font-black uppercase ${STATUS_LABEL[cat.status]?.badge || 'bg-gray-100'}`}>
+                        {STATUS_LABEL[cat.status]?.label || cat.status}
                       </div>
                     </div>
-                  </motion.div>
-                );
-              })}
+
+                    {/* Compact Content */}
+                    <div className="p-5 flex-1 flex flex-col justify-between">
+                      <div className="grid grid-cols-2 gap-4 mb-5">
+                        <div className="space-y-1">
+                          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Năm học</p>
+                          <p className="text-xs font-bold text-gray-900">{cat.academicYear}</p>
+                        </div>
+                        <div className="space-y-1">
+                          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Hạn đặt hàng</p>
+                          <p className="text-xs font-bold text-gray-900">{new Date(cat.endDate).toLocaleDateString("vi-VN")}</p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between p-3 bg-violet-50 rounded-xl border border-violet-100 mb-5">
+                        <div className="flex items-center gap-2">
+                          <Shirt className="w-4 h-4 text-violet-400" />
+                          <span className="text-xs font-bold text-gray-700">Bộ sưu tập đồng phục</span>
+                        </div>
+                        <span className="text-sm font-black text-violet-600">{cat.outfits.length}</span>
+                      </div>
+
+                      <button
+                        onClick={() => navigate(`/schools/${school.schoolId}/catalog?publicationId=${cat.semesterPublicationId}`)}
+                        className="w-full h-11 bg-gradient-to-r from-[#B8A9E8] to-[#A996E2] border border-gray-200 font-extrabold text-xs uppercase tracking-widest text-gray-900 rounded-xl shadow-soft-sm hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2"
+                      >
+                        <BookOpen className="w-4 h-4" />
+                        Xem chi tiết danh mục
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
             </motion.div>
           )}
         </ScrollSection>
@@ -343,10 +349,10 @@ export const SchoolDetail = (): JSX.Element => {
               <Shirt className="w-5 h-5 text-gray-900" />
             </div>
             <h2 className="font-extrabold text-2xl text-gray-900 tracking-tight">
-              Tất cả đồng phục
+              Tất cả sản phẩm
             </h2>
             {uniforms.length > 0 && (
-              <span className="nb-badge nb-badge-pink ml-1">{uniforms.length}</span>
+              <span className="nb-badge nb-badge-pink ml-1">Tổng {uniforms.length}</span>
             )}
           </div>
 
@@ -355,10 +361,10 @@ export const SchoolDetail = (): JSX.Element => {
               <div className="mx-auto w-16 h-16 flex items-center justify-center rounded-xl border-3 border-gray-200 bg-pink-200 shadow-soft-lg mb-4">
                 <Shirt className="w-8 h-8 text-gray-900" />
               </div>
-              <p className="font-bold text-gray-500">Chưa có đồng phục nào.</p>
+              <p className="font-bold text-gray-500">Chưa có sản phẩm đồng phục nào được liệt kê.</p>
             </div>
           ) : (
-            <motion.div variants={staggerGrid} initial="hidden" animate="visible" className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+            <motion.div variants={staggerGrid} initial="hidden" animate="visible" className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-4">
               {uniforms.map(u => (
                 <motion.div
                   key={u.outfitId}
@@ -366,40 +372,76 @@ export const SchoolDetail = (): JSX.Element => {
                   className="group h-full"
                 >
                   <div
-                    className="nb-card h-full flex flex-col cursor-pointer overflow-hidden"
+                    className="relative flex flex-col h-full bg-white rounded-[20px] border border-gray-100 shadow-soft-sm hover:shadow-soft-md transition-all duration-300 cursor-pointer overflow-hidden"
                     onClick={() => navigate(`/outfits/${u.outfitId}`)}
                   >
-                    <div className="w-full aspect-[5/4] overflow-hidden bg-gray-50 relative shrink-0">
+                    {/* Compact Image Container */}
+                    <div className="relative aspect-square overflow-hidden bg-slate-50">
                       {u.mainImageURL != null ? (
-                        <img src={u.mainImageURL} alt={u.outfitName} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                        <img
+                          src={u.mainImageURL}
+                          alt={u.outfitName}
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center"><Shirt className="w-12 h-12 text-gray-500" /></div>
+                        <div className="w-full h-full flex items-center justify-center bg-violet-50">
+                          <Shirt className="w-10 h-10 text-violet-200" />
+                        </div>
                       )}
-                      <div className="absolute top-3 left-3">
-                        <span className="nb-badge nb-badge-purple text-[10px] uppercase">
-                          {u.outfitType || "Tiêu chuẩn"}
+
+                      {/* Sub-label floating */}
+                      <div className="absolute top-2 left-2 flex flex-col gap-1.5">
+                        <span className="px-2 py-0.5 bg-[#A996E2]/90 backdrop-blur-md rounded-md text-[8px] font-black uppercase tracking-widest text-white border border-white/20 shadow-sm">
+                          {u.outfitType || "BASIC"}
                         </span>
+                        {u.price < 200000 && (
+                          <span className="px-2 py-0.5 bg-emerald-500/90 backdrop-blur-md rounded-md text-[8px] font-black uppercase tracking-widest text-white shadow-sm">
+                            Best Deal
+                          </span>
+                        )}
                       </div>
-                    </div>
-                    <div className="p-5 flex-1 flex flex-col justify-between">
-                      <h3 className="font-extrabold text-gray-900 line-clamp-2 mb-2 group-hover:text-purple-500 transition-colors leading-snug text-sm">{u.outfitName}</h3>
-                      <div className="flex items-center justify-between mt-auto pt-2">
-                        <p className="font-extrabold text-purple-400 text-sm">{fmt(u.price)}</p>
-                        <div className="w-8 h-8 rounded-lg border border-gray-200 bg-violet-50 flex items-center justify-center shadow-sm group-hover:bg-purple-400 transition-colors shrink-0">
-                          <ArrowRight className="w-4 h-4 text-gray-900" />
+
+                      {/* Floating Price Tooltip */}
+                      <div className="absolute bottom-2 right-2">
+                        <div className="px-2 py-1 bg-white border border-gray-100 rounded-lg text-gray-900 font-extrabold text-[11px] shadow-sm transform translate-y-0 group-hover:-translate-y-0.5 transition-transform">
+                          {fmt(u.price)}
                         </div>
                       </div>
-                      {isParent && (
-                        <button
-                          onClick={(event) => {
-                            event.stopPropagation();
-                            setSelectedOutfitId(u.outfitId);
-                          }}
-                          className="mt-3 nb-btn nb-btn-purple text-sm"
-                        >
-                          Đặt hàng
-                        </button>
-                      )}
+                    </div>
+
+                    <div className="p-4 flex flex-col flex-1">
+                      <h3 className="text-[13px] font-extrabold text-gray-900 leading-tight mb-2 group-hover:text-violet-600 transition-colors line-clamp-2 min-h-[32px]">
+                        {u.outfitName}
+                      </h3>
+
+                      {/* Educational/Practical Attributes */}
+                      <div className="mb-3 flex flex-wrap gap-1 md:gap-1.5 opacity-80">
+                        <span className="text-[9px] font-bold text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded leading-none">Cotton 100%</span>
+                        <span className="text-[9px] font-bold text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded leading-none">Unisex</span>
+                      </div>
+
+                      <div className="mt-auto">
+                        {isParent ? (
+                          <button
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              navigate(`/schools/${school.schoolId}/catalog`);
+                            }}
+                            className="w-full h-9 flex items-center justify-center gap-2 bg-gradient-to-r from-[#B8A9E8] to-[#A996E2] text-white rounded-lg text-[10px] font-black uppercase tracking-wider shadow-soft-sm hover:brightness-105 transition-all"
+                          >
+                            <BookOpen className="w-3.5 h-3.5" />
+                            Truy cập danh mục
+                          </button>
+                        ) : (
+                          <div className="pt-2 border-t border-gray-50 flex items-center justify-between">
+                            <div className="flex items-center gap-1">
+                              <CheckCircle className="w-3 h-3 text-emerald-500 fill-emerald-50" />
+                              <span className="text-[9px] font-bold text-gray-400">Đã kiểm định</span>
+                            </div>
+                            <ArrowRight className="w-3.5 h-3.5 text-gray-300 group-hover:text-violet-500 group-hover:translate-x-0.5 transition-all" />
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </motion.div>
@@ -408,11 +450,6 @@ export const SchoolDetail = (): JSX.Element => {
           )}
         </ScrollSection>
       </div>
-      <OutfitOrderModal
-        open={selectedOutfitId !== null}
-        onClose={() => setSelectedOutfitId(null)}
-        outfitId={selectedOutfitId}
-      />
     </GuestLayout>
   );
 };

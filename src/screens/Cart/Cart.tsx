@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   ChevronRight,
@@ -11,16 +11,121 @@ import {
   School,
   ShoppingCart,
   Loader2,
+  Star,
+  CheckCircle2,
+  X,
+  Package,
 } from "lucide-react";
 import { GuestLayout } from "../../components/layout/GuestLayout";
-import { useCart } from "../../contexts/CartContext";
+import { useCart, type CartItem } from "../../contexts/CartContext";
 import { useToast } from "../../contexts/ToastContext";
-import { checkout, type CheckoutRequest } from "../../lib/api/orders";
+import { checkout, createDirectOrder, type CheckoutRequest, type CreateDirectOrderRequest } from "../../lib/api/orders";
 import { getMyChildren, type ChildProfileDto } from "../../lib/api/users";
+import { getProvidersForPublicationOutfit, type SemesterCatalogProviderDto } from "../../lib/api/public";
 
 /* ── Helpers ── */
 const fmt = (n: number) =>
   n.toLocaleString("vi-VN", { maximumFractionDigits: 0 }) + " VNĐ";
+
+/* ── Provider Selection Modal ── */
+type ProviderModalProps = {
+  open: boolean;
+  item: CartItem | null;
+  onClose: () => void;
+  onSelect: (provider: SemesterCatalogProviderDto) => void;
+};
+
+function ProviderSelectionModal({ open, item, onClose, onSelect }: ProviderModalProps) {
+  const [providers, setProviders] = useState<SemesterCatalogProviderDto[]>([]);
+  const [loading, setLoading] = useState(false);
+  const { showToast } = useToast();
+
+  useEffect(() => {
+    if (!open || !item?.semesterPublicationId || !item?.outfitId) return;
+
+    setLoading(true);
+    getProvidersForPublicationOutfit(item.semesterPublicationId, item.outfitId)
+      .then(setProviders)
+      .catch(() => {
+        showToast({ title: "Lỗi", message: "Không thể tải danh sách nhà cung cấp", variant: "error" });
+        onClose();
+      })
+      .finally(() => setLoading(false));
+  }, [open, item, showToast, onClose]);
+
+  if (!open || !item) return null;
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/60 p-4" onClick={onClose}>
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-soft-lg overflow-hidden" onClick={e => e.stopPropagation()}>
+        <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-slate-50">
+          <div>
+            <h3 className="font-montserrat font-extrabold text-lg text-black">Thay đổi nhà cung cấp</h3>
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{item.outfitName}</p>
+          </div>
+          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-400 hover:text-black">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <div className="p-6">
+          {loading ? (
+            <div className="flex flex-col items-center justify-center py-12 gap-3">
+              <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
+              <p className="text-sm font-medium text-gray-500">Đang tìm kiếm nhà cung cấp...</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {providers.map((p) => (
+                <button
+                  key={p.providerId}
+                  onClick={() => onSelect(p)}
+                  className={`w-full p-4 rounded-xl border-2 text-left transition-all group ${
+                    p.providerId === item.providerId
+                      ? "border-purple-500 bg-purple-50"
+                      : "border-gray-100 hover:border-purple-100 hover:bg-slate-50"
+                  }`}
+                >
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="font-montserrat font-bold text-sm text-black group-hover:text-purple-700 transition-colors">
+                          {p.providerName}
+                        </span>
+                        {p.providerId === item.providerId && (
+                          <span className="bg-purple-600 text-white text-[8px] font-black px-1.5 py-0.5 rounded uppercase">Đang chọn</span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-3 text-[11px] text-gray-500">
+                        <span className="flex items-center gap-1">
+                          <Star className="w-3 h-3 text-amber-400 fill-amber-400" /> {p.averageRating.toFixed(1)}
+                        </span>
+                        <span>•</span>
+                        <span>{p.totalCompletedOrders} đơn đã giao</span>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-montserrat font-extrabold text-base text-purple-600">{fmt(p.price)}</p>
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="px-6 py-4 bg-slate-50 border-t border-gray-100 flex justify-end">
+          <button
+            onClick={onClose}
+            className="px-5 py-2 font-montserrat font-bold text-sm text-gray-500 hover:text-black transition-colors"
+          >
+            Đóng
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 /* ================================================================== */
 export const Cart = (): JSX.Element => {
@@ -33,6 +138,9 @@ export const Cart = (): JSX.Element => {
   const [shippingAddress, setShippingAddress] = useState("");
   const [childMap, setChildMap] = useState<Map<string, ChildProfileDto>>(new Map());
   const [initialLoading, setInitialLoading] = useState(true);
+
+  // Provider update state
+  const [editingItem, setEditingItem] = useState<CartItem | null>(null);
 
   /* ── Fetch fresh child data ── */
   useEffect(() => {
@@ -57,7 +165,6 @@ export const Cart = (): JSX.Element => {
   const handleCheckout = async () => {
     if (allItems.length === 0) return;
 
-    // Validate shipping address for home delivery
     if (deliveryMethod === "home" && !shippingAddress.trim()) {
       showToast({ title: "Thiếu thông tin", message: "Vui lòng nhập địa chỉ giao hàng", variant: "error" });
       return;
@@ -65,20 +172,37 @@ export const Cart = (): JSX.Element => {
 
     setCheckingOut(true);
     try {
-      // Group items by childProfileId + campaignId for separate orders
-      const orderGroups = new Map<string, { childProfileId: string; campaignId: string; items: typeof allItems }>();
+      // 1. Separate items into Campaign groups and Marketplace (Direct) groups
+      const campaignGroups = new Map<string, { childProfileId: string; campaignId: string; items: CartItem[] }>();
+      const marketplaceGroups = new Map<string, { childProfileId: string; publicationId: string; providerId: string; items: CartItem[] }>();
+
       for (const item of allItems) {
-        const key = `${item.childProfileId}__${item.campaignId}`;
-        if (!orderGroups.has(key)) {
-          orderGroups.set(key, { childProfileId: item.childProfileId, campaignId: item.campaignId, items: [] });
+        if (item.orderMode === "marketplace" && item.semesterPublicationId && item.providerId) {
+          const key = `${item.childProfileId}__${item.semesterPublicationId}__${item.providerId}`;
+          if (!marketplaceGroups.has(key)) {
+            marketplaceGroups.set(key, { 
+              childProfileId: item.childProfileId, 
+              publicationId: item.semesterPublicationId, 
+              providerId: item.providerId, 
+              items: [] 
+            });
+          }
+          marketplaceGroups.get(key)!.items.push(item);
+        } else {
+          // Standard campaign order
+          const key = `${item.childProfileId}__${item.campaignId}`;
+          if (!campaignGroups.has(key)) {
+            campaignGroups.set(key, { childProfileId: item.childProfileId, campaignId: item.campaignId, items: [] });
+          }
+          campaignGroups.get(key)!.items.push(item);
         }
-        orderGroups.get(key)!.items.push(item);
       }
 
-      // Create one order per child+campaign group
       let lastPaymentLink = "";
       const createdOrderIds: string[] = [];
-      for (const [, group] of orderGroups) {
+
+      // 2. Process Campaign Orders
+      for (const [, group] of campaignGroups) {
         const request: CheckoutRequest = {
           childProfileId: group.childProfileId,
           items: group.items.map(item => ({
@@ -92,15 +216,31 @@ export const Cart = (): JSX.Element => {
 
         const result = await checkout(request);
         lastPaymentLink = result.paymentLink;
-        // Track orderId so /payment/cancel can call cancel API
         createdOrderIds.push(result.orderId);
       }
 
-      // Redirect to PayOS payment page immediately
-      // Don't clear cart here — it causes React re-render + empty cart flash
-      // Cart will be cleared on /payment/success page instead
+      // 3. Process Marketplace Orders (Direct)
+      for (const [, group] of marketplaceGroups) {
+        const request: CreateDirectOrderRequest = {
+          childProfileId: group.childProfileId,
+          semesterPublicationId: group.publicationId,
+          providerId: group.providerId,
+          items: group.items.map(item => ({
+            productVariantId: item.productVariantId,
+            quantity: item.quantity,
+          })),
+          shippingAddress: deliveryMethod === "school" ? "Nhận tại trường" : shippingAddress,
+          deliveryMethod: deliveryMethod === "home" ? "Giao tận nhà" : "Nhận tại trường",
+        };
+
+        const result = await createDirectOrder(request);
+        lastPaymentLink = result.paymentLink;
+        createdOrderIds.push(result.orderId);
+      }
+
+      // 4. Redirect to last payment link (PayOS handles multiple payments or combined UI if backend supports it; 
+      // but here we just go to the last one as per existing logic, assuming user completes them one by one or sequential redirect)
       if (lastPaymentLink) {
-        // Save orderIds so payment return pages can reference them
         sessionStorage.setItem("vtos_pending_order_ids", JSON.stringify(createdOrderIds));
         window.location.href = lastPaymentLink;
         return;
@@ -116,7 +256,14 @@ export const Cart = (): JSX.Element => {
     }
   };
 
-  /* ── Loading state — prevent empty cart flash on navigation ── */
+  const handleProviderSelect = (p: SemesterCatalogProviderDto) => {
+    if (editingItem) {
+      cart.updateProvider(editingItem.id, p.providerId, p.providerName, p.price);
+      showToast({ title: "Cập nhật thành công", message: `Đã đổi sang nhà cung cấp ${p.providerName}`, variant: "success" });
+      setEditingItem(null);
+    }
+  };
+
   if (initialLoading) {
     return (
       <GuestLayout bgColor="#F4F6FF" mainClassName="flex-1">
@@ -130,7 +277,6 @@ export const Cart = (): JSX.Element => {
     );
   }
 
-  /* ── Empty state (skip if mid-checkout to avoid flash) ── */
   if (allItems.length === 0 && !checkingOut) {
     return (
       <GuestLayout bgColor="#f9fafb" mainClassName="flex-1">
@@ -248,9 +394,27 @@ export const Cart = (): JSX.Element => {
                           <h3 className="font-montserrat font-bold text-sm text-black mb-1">
                             {item.outfitName}
                           </h3>
-                          <p className="font-montserrat text-xs text-gray-400 mb-0.5">
-                            Size: {item.size}
-                          </p>
+                          <div className="space-y-1 mb-2">
+                            <p className="font-montserrat text-xs text-gray-400">
+                              Size: <span className="text-black font-semibold">{item.size}</span>
+                            </p>
+                            {item.providerName && (
+                              <div className="flex flex-wrap items-center gap-2">
+                                <p className="font-montserrat text-xs text-gray-400">
+                                  Cung cấp bởi: <span className="text-purple-600 font-bold">{item.providerName}</span>
+                                </p>
+                                {item.semesterPublicationId && (
+                                  <button
+                                    onClick={() => setEditingItem(item)}
+                                    className="text-[10px] font-bold text-blue-500 hover:text-blue-700 underline"
+                                  >
+                                    Thay đổi
+                                  </button>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                          
                           <div className="flex items-center gap-2 mb-2">
                             <span className="font-montserrat text-xs text-gray-400">
                               Số lượng:
@@ -288,6 +452,9 @@ export const Cart = (): JSX.Element => {
                         <div className="flex-shrink-0 text-right">
                           <p className="font-montserrat font-bold text-base text-black">
                             {fmt(item.price * item.quantity)}
+                          </p>
+                          <p className="text-[10px] text-gray-400 mt-1">
+                            {fmt(item.price)} / bộ
                           </p>
                         </div>
                       </div>
@@ -482,6 +649,13 @@ export const Cart = (): JSX.Element => {
           </div>
         </div>
       </div>
+
+      <ProviderSelectionModal
+        open={editingItem !== null}
+        item={editingItem}
+        onClose={() => setEditingItem(null)}
+        onSelect={handleProviderSelect}
+      />
     </GuestLayout>
   );
 };

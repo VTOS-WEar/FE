@@ -53,6 +53,7 @@ const OUTFIT_TYPE_OPTIONS = [
 type OutfitFormData = {
     outfitName: string;
     description: string;
+    materialType: string;
     price: string;
     outfitType: number;
     mainImageURL: string;
@@ -61,6 +62,7 @@ type OutfitFormData = {
 const EMPTY_FORM: OutfitFormData = {
     outfitName: "",
     description: "",
+    materialType: "",
     price: "",
     outfitType: 1,
     mainImageURL: "",
@@ -97,6 +99,7 @@ function OutfitFormModal({
                 setForm({
                     outfitName: editingOutfit.outfitName,
                     description: editingOutfit.description || "",
+                    materialType: editingOutfit.materialType || "",
                     price: String(editingOutfit.price),
                     outfitType: editingOutfit.outfitType,
                     mainImageURL: editingOutfit.mainImageURL || "",
@@ -140,6 +143,7 @@ function OutfitFormModal({
             {
                 outfitName: form.outfitName.trim(),
                 description: form.description.trim() || null,
+                materialType: form.materialType.trim() || null,
                 price: parseFloat(form.price) || 0,
                 outfitType: form.outfitType,
                 mainImageURL: form.mainImageURL.trim() || null,
@@ -256,7 +260,6 @@ function OutfitFormModal({
                             />
                             <div className={`text-xs font-semibold mt-1 text-right ${isNameOver ? 'text-red-500' : nameLength > 40 ? 'text-[#F59E0B]' : 'text-gray-400'}`}>
                                 {nameLength}/50
-                                {isNameOver && <span className="ml-1">⚠️ Vượt quá giới hạn!</span>}
                             </div>
                         </div>
 
@@ -289,7 +292,6 @@ function OutfitFormModal({
                                 </button>
                             </div>
 
-                            {/* ── Always show RichTextEditor (WYSIWYG with toolbar) ── */}
                             <div className={showPreview ? "hidden" : ""}>
                                 <RichTextEditor
                                     value={form.description}
@@ -298,7 +300,6 @@ function OutfitFormModal({
                                 />
                             </div>
 
-                            {/* ── Preview Mode: rendered HTML ── */}
                             {showPreview && (
                                 <div className="rounded-[8px] border border-violet-200 bg-violet-50 shadow-soft-sm min-h-[120px] px-5 py-4">
                                     <div className="flex items-center gap-1.5 mb-3 pb-2 border-b border-violet-100">
@@ -318,37 +319,52 @@ function OutfitFormModal({
 
                             <div className={`text-xs font-semibold mt-1 text-right ${isDescOver ? 'text-red-500' : descLength > 400 ? 'text-[#F59E0B]' : 'text-gray-400'}`}>
                                 {descLength}/500
-                                {isDescOver && <span className="ml-1">⚠️ Vượt quá giới hạn!</span>}
                             </div>
-                            {isDescOver && (
-                                <div className="nb-alert nb-alert-warning mt-2 text-xs">
-                                    <span>⚠️</span>
-                                    <span>Mô tả quá dài ({descLength}/500 ký tự). Hãy rút gọn nội dung hoặc bớt định dạng.</span>
-                                </div>
-                            )}
                         </div>
 
-                        {/* Price */}
-                        <div>
+                        {/* Material Info - Full Width */}
+                        <div className="md:col-span-2">
                             <label className="mb-2 block text-[14px] font-extrabold text-gray-900">
-                                Giá (VND) <span className="ml-1 text-red-500">*</span>
+                                Chất liệu chuẩn
                             </label>
                             <input
-                                type="number"
-                                value={form.price}
-                                onChange={(e) => setForm((f) => ({ ...f, price: e.target.value }))}
-                                placeholder="VD: 250000"
+                                type="text"
+                                value={form.materialType}
+                                onChange={(e) => setForm((f) => ({ ...f, materialType: e.target.value }))}
+                                placeholder="VD: Cotton, Cotton Spandex, Kaki..."
                                 className={modernInputClass}
-                                min="0"
-                                step="1000"
-                                required
+                                maxLength={100}
                             />
+                            <p className="mt-2 text-[12px] font-semibold text-gray-500">
+                                Sản phẩm khi mới thêm sẽ lấy chất liệu này làm mặc định.
+                            </p>
                         </div>
 
-                        {/* Type */}
+                        {/* Price & Category - Same Row */}
                         <div>
                             <label className="mb-2 block text-[14px] font-extrabold text-gray-900">
-                                Loại
+                                Giá bán (VND) <span className="ml-1 text-red-500">*</span>
+                            </label>
+                            <div className="relative">
+                                <input
+                                    type="number"
+                                    value={form.price}
+                                    onChange={(e) => setForm((f) => ({ ...f, price: e.target.value }))}
+                                    placeholder="0"
+                                    className={`${modernInputClass} pr-12`}
+                                    min="0"
+                                    step="1000"
+                                    required
+                                />
+                                <div className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-xs pointer-events-none">
+                                    VNĐ
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="mb-2 block text-[14px] font-extrabold text-gray-900">
+                                Loại đồng phục
                             </label>
                             <select
                                 value={form.outfitType}
@@ -365,19 +381,19 @@ function OutfitFormModal({
                     </section>
                 </form>
 
-                {/* ── Footer ── */}
+                {/* Footer */}
                 <div className="flex flex-col-reverse gap-3 border-t border-gray-200 bg-[#FFFDF9] px-6 py-5 sm:flex-row sm:justify-end">
                     <button
                         type="button"
                         onClick={onClose}
-                        className="rounded-[8px] border border-gray-200 bg-white px-5 py-3 text-[15px] font-extrabold text-gray-900 shadow-soft-sm transition-all hover:scale-[0.99] hover:shadow-soft-sm active:scale-[0.98] active:shadow-none"
+                        className="rounded-[8px] border border-gray-200 bg-white px-5 py-3 text-[15px] font-extrabold text-gray-900 shadow-soft-sm hover:scale-[0.99] transition-all"
                     >
                         Huỷ
                     </button>
                     <button
                         onClick={handleSubmit}
                         disabled={isLoading || !form.outfitName.trim() || isNameOver || isDescOver}
-                        className="flex items-center justify-center gap-2 rounded-[8px] border border-violet-500 bg-violet-500 px-5 py-3 text-[15px] font-extrabold text-white shadow-soft-sm transition-all hover:scale-[0.99] hover:shadow-soft-sm active:scale-[0.98] active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="flex items-center justify-center gap-2 rounded-[8px] bg-violet-500 px-5 py-3 text-[15px] font-extrabold text-white shadow-soft-sm hover:scale-[0.99] transition-all disabled:opacity-50"
                     >
                         {isLoading && (
                             <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -647,6 +663,7 @@ export const UniformManagement = (): JSX.Element => {
                 await updateOutfit(editingOutfit.outfitId, {
                     outfitName: data.outfitName,
                     description: data.description,
+                    materialType: data.materialType,
                     price: data.price,
                     outfitType: data.outfitType,
                     mainImageURL: imageUrl,
@@ -859,7 +876,7 @@ export const UniformManagement = (): JSX.Element => {
             <VariantManager
                 outfitId={variantOutfit?.outfitId || ""}
                 outfitName={variantOutfit?.outfitName || ""}
-                
+                defaultMaterialType={variantOutfit?.materialType || ""}
                 isOpen={!!variantOutfit}
                 onClose={() => setVariantOutfit(null)}
             />

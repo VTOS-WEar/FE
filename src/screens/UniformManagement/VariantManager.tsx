@@ -21,10 +21,11 @@ type MeasurementFormItem = {
 
 type VariantForm = {
     size: string;
+    materialType: string;
     measurements: MeasurementFormItem[];
 };
 
-const EMPTY_FORM: VariantForm = { size: "", measurements: [] };
+const EMPTY_FORM: VariantForm = { size: "", materialType: "", measurements: [] };
 const COMMON_SIZES = ["XS", "S", "M", "L", "XL", "2XL", "3XL", "100", "110", "120", "130", "140", "150", "160"];
 
 function ModernInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
@@ -63,11 +64,13 @@ function normalizeMeasurements(measurements: MeasurementFormItem[]): VariantMeas
 export default function VariantManager({
     outfitId,
     outfitName,
+    defaultMaterialType,
     isOpen,
     onClose,
 }: {
     outfitId: string;
     outfitName: string;
+    defaultMaterialType?: string;
     isOpen: boolean;
     onClose: () => void;
 }) {
@@ -109,6 +112,7 @@ export default function VariantManager({
         setEditingId(variant.productVariantId);
         setForm({
             size: variant.size,
+            materialType: variant.materialType ?? "",
             measurements: variant.measurements.map((measurement) =>
                 toFormMeasurement({
                     fieldKey: measurement.fieldKey,
@@ -124,7 +128,11 @@ export default function VariantManager({
 
     const openCreate = () => {
         setEditingId(null);
-        setForm({ ...EMPTY_FORM, measurements: [] });
+        setForm({
+            ...EMPTY_FORM,
+            materialType: defaultMaterialType ?? "",
+            measurements: [],
+        });
         setShowForm(true);
     };
 
@@ -136,23 +144,24 @@ export default function VariantManager({
         try {
             const payload: CreateVariantRequest = {
                 size: form.size.trim(),
+                materialType: form.materialType.trim() || null,
                 measurements: normalizeMeasurements(form.measurements),
             };
 
             if (editingId) {
                 await updateVariant(outfitId, editingId, payload);
-                showToast("Cap nhat kich co thanh cong", "success");
+                showToast("Cập nhật kích cỡ thành công", "success");
             } else {
                 await createVariant(outfitId, payload);
-                showToast("Them kich co thanh cong", "success");
+                showToast("Thêm kích cỡ thành công", "success");
             }
 
             setShowForm(false);
             setEditingId(null);
-            setForm(EMPTY_FORM);
+            setForm({ ...EMPTY_FORM, materialType: defaultMaterialType ?? "" });
             fetchVariants();
         } catch (err: unknown) {
-            showToast(err instanceof Error ? err.message : "Co loi xay ra", "error");
+            showToast(err instanceof Error ? err.message : "Có lỗi xảy ra", "error");
         } finally {
             setSaving(false);
         }
@@ -163,11 +172,11 @@ export default function VariantManager({
         setSaving(true);
         try {
             await deleteVariant(outfitId, deletingId);
-            showToast("Xoa kich co thanh cong", "success");
+            showToast("Xóa kích cỡ thành công", "success");
             setDeletingId(null);
             fetchVariants();
         } catch (err: unknown) {
-            showToast(err instanceof Error ? err.message : "Co loi xay ra", "error");
+            showToast(err instanceof Error ? err.message : "Có lỗi xảy ra", "error");
         } finally {
             setSaving(false);
         }
@@ -210,7 +219,7 @@ export default function VariantManager({
                 <div className="flex items-start justify-between gap-4 border-b border-gray-200 bg-violet-50 px-6 py-5 sticky top-0 z-10">
                     <div>
                         <div className="mb-2 inline-flex items-center gap-2 rounded-lg border border-yellow-200 bg-yellow-50 px-3 py-1 text-[12px] font-black shadow-soft-sm">
-                            QUAN LY KICH CO
+                            QUẢN LÝ KÍCH CỠ
                         </div>
                         <h2 className="text-[24px] font-black leading-none text-gray-900">Kích cỡ sản phẩm</h2>
                         <p className="mt-2 text-[14px] font-semibold text-gray-500">{outfitName}</p>
@@ -229,7 +238,7 @@ export default function VariantManager({
                             onClick={openCreate}
                             className="flex items-center gap-2 rounded-lg border border-purple-500 bg-violet-500 px-5 py-3 text-[15px] font-extrabold text-white shadow-soft-sm"
                         >
-                            Them kich co
+                            Thêm kích cỡ
                         </button>
                     )}
 
@@ -237,11 +246,11 @@ export default function VariantManager({
                         <form onSubmit={handleSave} className="rounded-xl border border-purple-200 bg-violet-50 p-5 shadow-soft-sm space-y-4">
                             <div className="flex items-center justify-between">
                                 <h3 className="text-[16px] font-black text-gray-900">
-                                    {editingId ? "Sua kich co" : "Them kich co moi"}
+                                    {editingId ? "Sửa kích cỡ" : "Thêm kích cỡ mới"}
                                 </h3>
                                 <button
                                     type="button"
-                                    onClick={() => { setShowForm(false); setEditingId(null); setForm(EMPTY_FORM); }}
+                                    onClick={() => { setShowForm(false); setEditingId(null); setForm({ ...EMPTY_FORM, materialType: defaultMaterialType ?? "" }); }}
                                     className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-200 bg-white shadow-soft-sm"
                                 >
                                     x
@@ -269,9 +278,24 @@ export default function VariantManager({
                                     type="text"
                                     value={form.size}
                                     onChange={(e) => setForm((current) => ({ ...current, size: e.target.value }))}
-                                    placeholder="Nhap size tuy chinh"
+                                    placeholder="Nhập size tùy chỉnh"
                                     required
                                 />
+                            </div>
+
+                            <div>
+                                <label className="mb-2 block text-[14px] font-extrabold text-gray-900">
+                                    Chất liệu
+                                </label>
+                                <ModernInput
+                                    type="text"
+                                    value={form.materialType}
+                                    onChange={(e) => setForm((current) => ({ ...current, materialType: e.target.value }))}
+                                    placeholder="Ví dụ: Cotton, Cotton Spandex, Kaki..."
+                                />
+                                <p className="mt-2 text-[12px] font-semibold text-gray-500">
+                                    Dùng cho hiển thị sản phẩm và phân tích độ co giãn khi gợi ý size.
+                                </p>
                             </div>
 
                             <div className="space-y-3">
@@ -286,15 +310,15 @@ export default function VariantManager({
                                     {STANDARD_MEASUREMENTS
                                         .filter((field) => !form.measurements.some((m) => m.fieldKey === field.fieldKey))
                                         .map((field) => (
-                                        <button
-                                            key={field.fieldKey}
-                                            type="button"
-                                            onClick={() => addMeasurement(field)}
-                                            className="rounded-lg border border-yellow-200 bg-yellow-50 px-3 py-1.5 text-[12px] font-bold text-gray-900 hover:bg-yellow-100 transition-colors"
-                                        >
-                                            + {field.displayName}
-                                        </button>
-                                    ))}
+                                            <button
+                                                key={field.fieldKey}
+                                                type="button"
+                                                onClick={() => addMeasurement(field)}
+                                                className="rounded-lg border border-yellow-200 bg-yellow-50 px-3 py-1.5 text-[12px] font-bold text-gray-900 hover:bg-yellow-100 transition-colors"
+                                            >
+                                                + {field.displayName}
+                                            </button>
+                                        ))}
                                     {STANDARD_MEASUREMENTS.every((field) => form.measurements.some((m) => m.fieldKey === field.fieldKey)) && (
                                         <span className="text-[12px] font-semibold text-gray-500 italic py-1.5">Đã thêm tất cả số đo</span>
                                     )}
@@ -309,76 +333,76 @@ export default function VariantManager({
                                 {form.measurements.map((measurement) => {
                                     const std = MEASUREMENT_BY_KEY.get(measurement.fieldKey);
                                     return (
-                                    <div key={measurement.id} className="rounded-xl border border-gray-200 bg-white p-4 shadow-soft-sm">
-                                        <div className="grid items-end gap-3" style={{ gridTemplateColumns: '2fr 2.5fr 1fr 1.5fr 1.5fr auto' }}>
-                                            <div>
-                                                <label className="mb-2 block text-[12px] font-extrabold text-gray-900">Loại số đo</label>
-                                                <select
-                                                    value={measurement.fieldKey}
-                                                    onChange={(e) => {
-                                                        const selected = MEASUREMENT_BY_KEY.get(e.target.value);
-                                                        updateMeasurement(measurement.id, {
-                                                            fieldKey: e.target.value,
-                                                            displayName: selected?.displayName ?? measurement.displayName,
-                                                            unit: selected?.unit ?? measurement.unit,
-                                                        });
-                                                    }}
-                                                    className="w-full rounded-lg border border-gray-200 bg-white px-3 py-3 text-[14px] font-semibold text-gray-900 shadow-soft-sm outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-200/50 focus:outline-none"
-                                                >
-                                                    <option value="">-- Chọn --</option>
-                                                    {STANDARD_MEASUREMENTS.map((s) => {
-                                                        const alreadyUsed = form.measurements.some((m) => m.fieldKey === s.fieldKey && m.id !== measurement.id);
-                                                        return (
-                                                            <option key={s.fieldKey} value={s.fieldKey} disabled={alreadyUsed}>
-                                                                {s.displayName} ({s.fieldKey})
-                                                            </option>
-                                                        );
-                                                    })}
-                                                </select>
-                                            </div>
-                                            <div>
-                                                <label className="mb-2 block text-[12px] font-extrabold text-gray-900">Tên hiển thị</label>
-                                                <ModernInput
-                                                    value={measurement.displayName}
-                                                    onChange={(e) => updateMeasurement(measurement.id, { displayName: e.target.value })}
-                                                    placeholder={std?.displayName ?? "Tên hiển thị"}
-                                                />
-                                            </div>
-                                            <div>
-                                                <label className="mb-2 block text-[12px] font-extrabold text-gray-900">Đơn vị</label>
-                                                <div className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-3 text-[14px] font-semibold text-gray-500">
-                                                    {measurement.unit}
+                                        <div key={measurement.id} className="rounded-xl border border-gray-200 bg-white p-4 shadow-soft-sm">
+                                            <div className="grid items-end gap-3" style={{ gridTemplateColumns: '2fr 2.5fr 1fr 1.5fr 1.5fr auto' }}>
+                                                <div>
+                                                    <label className="mb-2 block text-[12px] font-extrabold text-gray-900">Loại số đo</label>
+                                                    <select
+                                                        value={measurement.fieldKey}
+                                                        onChange={(e) => {
+                                                            const selected = MEASUREMENT_BY_KEY.get(e.target.value);
+                                                            updateMeasurement(measurement.id, {
+                                                                fieldKey: e.target.value,
+                                                                displayName: selected?.displayName ?? measurement.displayName,
+                                                                unit: selected?.unit ?? measurement.unit,
+                                                            });
+                                                        }}
+                                                        className="w-full rounded-lg border border-gray-200 bg-white px-3 py-3 text-[14px] font-semibold text-gray-900 shadow-soft-sm outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-200/50 focus:outline-none"
+                                                    >
+                                                        <option value="">-- Chọn --</option>
+                                                        {STANDARD_MEASUREMENTS.map((s) => {
+                                                            const alreadyUsed = form.measurements.some((m) => m.fieldKey === s.fieldKey && m.id !== measurement.id);
+                                                            return (
+                                                                <option key={s.fieldKey} value={s.fieldKey} disabled={alreadyUsed}>
+                                                                    {s.displayName} ({s.fieldKey})
+                                                                </option>
+                                                            );
+                                                        })}
+                                                    </select>
                                                 </div>
+                                                <div>
+                                                    <label className="mb-2 block text-[12px] font-extrabold text-gray-900">Tên hiển thị</label>
+                                                    <ModernInput
+                                                        value={measurement.displayName}
+                                                        onChange={(e) => updateMeasurement(measurement.id, { displayName: e.target.value })}
+                                                        placeholder={std?.displayName ?? "Tên hiển thị"}
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="mb-2 block text-[12px] font-extrabold text-gray-900">Đơn vị</label>
+                                                    <div className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-3 text-[14px] font-semibold text-gray-500">
+                                                        {measurement.unit}
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <label className="mb-2 block text-[12px] font-extrabold text-gray-900">Min</label>
+                                                    <ModernInput
+                                                        type="number"
+                                                        step="0.01"
+                                                        min={1}
+                                                        value={measurement.minValue}
+                                                        onChange={(e) => updateMeasurement(measurement.id, { minValue: e.target.value })}
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="mb-2 block text-[12px] font-extrabold text-gray-900">Max</label>
+                                                    <ModernInput
+                                                        type="number"
+                                                        step="0.01"
+                                                        min={1}
+                                                        value={measurement.maxValue}
+                                                        onChange={(e) => updateMeasurement(measurement.id, { maxValue: e.target.value })}
+                                                    />
+                                                </div>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeMeasurement(measurement.id)}
+                                                    className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-[13px] font-extrabold text-red-600 whitespace-nowrap shadow-soft-sm"
+                                                >
+                                                    Xóa
+                                                </button>
                                             </div>
-                                            <div>
-                                                <label className="mb-2 block text-[12px] font-extrabold text-gray-900">Min</label>
-                                                <ModernInput
-                                                    type="number"
-                                                    step="0.01"
-                                                    min={1}
-                                                    value={measurement.minValue}
-                                                    onChange={(e) => updateMeasurement(measurement.id, { minValue: e.target.value })}
-                                                />
-                                            </div>
-                                            <div>
-                                                <label className="mb-2 block text-[12px] font-extrabold text-gray-900">Max</label>
-                                                <ModernInput
-                                                    type="number"
-                                                    step="0.01"
-                                                    min={1}
-                                                    value={measurement.maxValue}
-                                                    onChange={(e) => updateMeasurement(measurement.id, { maxValue: e.target.value })}
-                                                />
-                                            </div>
-                                            <button
-                                                type="button"
-                                                onClick={() => removeMeasurement(measurement.id)}
-                                                className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-[13px] font-extrabold text-red-600 whitespace-nowrap shadow-soft-sm"
-                                            >
-                                                Xóa
-                                            </button>
                                         </div>
-                                    </div>
                                     );
                                 })}
                             </div>
@@ -386,10 +410,10 @@ export default function VariantManager({
                             <div className="flex justify-end gap-3 pt-1">
                                 <button
                                     type="button"
-                                    onClick={() => { setShowForm(false); setEditingId(null); setForm(EMPTY_FORM); }}
+                                    onClick={() => { setShowForm(false); setEditingId(null); setForm({ ...EMPTY_FORM, materialType: defaultMaterialType ?? "" }); }}
                                     className="rounded-lg border border-gray-200 bg-white px-5 py-3 text-[15px] font-extrabold text-gray-700 shadow-soft-sm hover:scale-[0.99] hover:shadow-soft-sm active:scale-[0.98] active:shadow-none"
                                 >
-                                    Huy
+                                    Hủy
                                 </button>
                                 <button
                                     type="submit"
@@ -416,8 +440,9 @@ export default function VariantManager({
                                 <thead>
                                     <tr className="bg-violet-50 border-b border-gray-200">
                                         <th className="px-5 py-3.5 text-left text-[12px] font-black text-gray-900 uppercase tracking-wider">Kích cỡ</th>
-                                        <th className="px-5 py-3.5 text-left text-[12px] font-black text-gray-900 uppercase tracking-wider">So do</th>
-                                        <th className="px-5 py-3.5 text-right text-[12px] font-black text-gray-900 uppercase tracking-wider">Thao tac</th>
+                                        <th className="px-5 py-3.5 text-left text-[12px] font-black text-gray-900 uppercase tracking-wider">Chất liệu</th>
+                                        <th className="px-5 py-3.5 text-left text-[12px] font-black text-gray-900 uppercase tracking-wider">Số đo</th>
+                                        <th className="px-5 py-3.5 text-right text-[12px] font-black text-gray-900 uppercase tracking-wider">Thao tác</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -427,6 +452,15 @@ export default function VariantManager({
                                                 <span className="inline-flex items-center justify-center min-w-[44px] px-3 py-1.5 rounded-lg border border-purple-200 bg-violet-100 text-[14px] font-extrabold text-purple-600">
                                                     {variant.size}
                                                 </span>
+                                            </td>
+                                            <td className="px-5 py-3.5">
+                                                {variant.materialType ? (
+                                                    <span className="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-[12px] font-bold text-emerald-700">
+                                                        {variant.materialType}
+                                                    </span>
+                                                ) : (
+                                                    <span className="text-[13px] font-semibold text-gray-400 italic">Chưa cập nhật</span>
+                                                )}
                                             </td>
                                             <td className="px-5 py-3.5">
                                                 {variant.measurements.length === 0 ? (
@@ -460,7 +494,7 @@ export default function VariantManager({
 
                     {!loading && variants.length === 0 && (
                         <div className="rounded-xl border-2 border-dashed border-purple-300 bg-violet-50/50 py-12 text-center">
-                            <p className="font-extrabold text-gray-900 text-[15px]">Chưa có kích cỡ nào</p>
+                            <p className="font-extrabold text-gray-900 text-[15px]">ChÆ°a cÃ³ kÃ­ch cá»¡ nÃ o</p>
                             <p className="font-semibold text-gray-500 text-[13px] mt-1">Nhan Them kich co de bat dau</p>
                         </div>
                     )}
@@ -476,14 +510,14 @@ export default function VariantManager({
                         </div>
                         <div className="px-6 py-5">
                             <p className="font-semibold text-gray-500 text-[15px] mb-5">
-                                Kích cỡ và các chỉ số đã cấu hình sẽ bị xoá.
+                                KÃ­ch cá»¡ vÃ  cÃ¡c chá»‰ sá»‘ Ä‘Ã£ cáº¥u hÃ¬nh sáº½ bá»‹ xoÃ¡.
                             </p>
                             <div className="flex justify-end gap-3">
                                 <button onClick={() => setDeletingId(null)} className="rounded-lg border border-gray-200 bg-white px-5 py-3 text-[15px] font-extrabold text-gray-700 shadow-soft-sm hover:scale-[0.99] hover:shadow-soft-sm active:scale-[0.98] active:shadow-none">
                                     Huy
                                 </button>
                                 <button onClick={handleDelete} disabled={saving} className="rounded-lg border border-red-500 bg-red-500 px-5 py-3 text-[15px] font-extrabold text-white disabled:opacity-50 shadow-soft-sm hover:scale-[0.99] hover:shadow-soft-sm active:scale-[0.98] active:shadow-none">
-                                    {saving ? "Đang xoá..." : "Xoá"}
+                                    {saving ? "Äang xoÃ¡..." : "XoÃ¡"}
                                 </button>
                             </div>
                         </div>

@@ -72,6 +72,14 @@ export type ParentPaymentDto = {
     paymentStatus: string;
     orderStatus: string;
     timestamp: string;
+    campaignName?: string | null;
+    providerName?: string | null;
+    firstItemImageUrl?: string | null;
+    itemCount: number;
+    campaignId?: string | null;
+    providerId?: string | null;
+    childFullName?: string | null;
+    childAvatarUrl?: string | null;
 };
 
 export type StatusCountDto = {

@@ -76,6 +76,11 @@ import { SearchPage } from "./screens/Search/SearchPage";
 import { useEffect, useRef } from "react";
 import { BodygramScannerPage } from "./screens/BodygramScanner/BodygramScannerPage";
 import { BodygramScanDetailPage } from "./screens/ParentProfile/pages/BodygramScanDetailPage";
+import { SemesterCatalog } from "./screens/SemesterCatalog/SemesterCatalog";
+import { MyOrders } from "./screens/DirectOrders/MyOrders";
+import { MyOrderDetail } from "./screens/DirectOrders/MyOrderDetail";
+import { ProviderOrders } from "./screens/ProviderOrders/ProviderOrders";
+import { ProviderOrderDetail } from "./screens/ProviderOrders/ProviderOrderDetail";
 
 /** Smart root redirect: School→dashboard, others→homepage */
 function RootRedirect() {
@@ -314,14 +319,19 @@ const router = createBrowserRouter([
   { path: "/signin", element: <RoleGuard allowedRoles={[]} allowGuest><SignIn /></RoleGuard> },
   { path: "/schools", element: <RoleGuard allowedRoles={["Parent"]} allowGuest><SchoolList /></RoleGuard> },
   { path: "/schools/:id", element: <RoleGuard allowedRoles={["Parent"]} allowGuest><SchoolDetail /></RoleGuard> },
+  { path: "/schools/:id/catalog", element: <RoleGuard allowedRoles={["Parent"]} allowGuest><SemesterCatalog /></RoleGuard> },
   { path: "/campaigns/:campaignId", element: <RoleGuard allowedRoles={["Parent"]} allowGuest><PublicCampaignDetail /></RoleGuard> },
   { path: "/outfits/:id", element: <RoleGuard allowedRoles={["Parent"]} allowGuest><OutfitDetail /></RoleGuard> },
+  { path: "/my-orders", element: <RoleGuard allowedRoles={["Parent"]}><MyOrders /></RoleGuard> },
+  { path: "/my-orders/:id", element: <RoleGuard allowedRoles={["Parent"]}><MyOrderDetail /></RoleGuard> },
   { path: "/cart", element: <RoleGuard allowedRoles={["Parent"]}><Cart /></RoleGuard> },
   { path: "/payment/success", element: <RoleGuard allowedRoles={["Parent"]} allowGuest><PaymentSuccess /></RoleGuard> },
   { path: "/payment/cancel", element: <RoleGuard allowedRoles={["Parent"]} allowGuest><PaymentCancel /></RoleGuard> },
   { path: "/products", element: <RoleGuard allowedRoles={["Parent"]} allowGuest><ProductList /></RoleGuard> },
   { path: "/products/:id", element: <RoleGuard allowedRoles={["Parent"]} allowGuest><ProductDetail /></RoleGuard> },
   { path: "/search", element: <RoleGuard allowedRoles={["Parent"]} allowGuest><SearchPage /></RoleGuard> },
+  { path: "/provider/orders", element: <RoleGuard allowedRoles={["Provider"]}><ProviderOrders /></RoleGuard> },
+  { path: "/provider/orders/:id", element: <RoleGuard allowedRoles={["Provider"]}><ProviderOrderDetail /></RoleGuard> },
   // ── Catch-all: redirect unknown routes to homepage ──
   { path: "*", element: <RootRedirect /> },
 ]);
