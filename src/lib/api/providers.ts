@@ -71,6 +71,7 @@ export type ProviderIncomingOrdersResponse = {
 export type ProviderDirectOrderDetailItemDto = {
     orderItemId: string;
     outfitName: string;
+    imageUrl?: string | null;
     size: string;
     quantity: number;
     unitPrice: number;
@@ -100,6 +101,7 @@ export type ProviderOrderStatsDto = {
     inProgressOrders: number;
     completedShipmentOrders: number;
     totalRevenue: number;
+    statusCounts: Record<string, number>;
 };
 
 export async function getProviderDirectOrders(
