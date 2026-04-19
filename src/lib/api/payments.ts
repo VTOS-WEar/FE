@@ -82,6 +82,7 @@ export type StatusCountDto = {
 export type ParentPaymentHistoryResponse = {
     items: ParentPaymentDto[];
     total: number;
+    totalOrder: number;
     statusCounts: StatusCountDto[];
 };
 //#endregion

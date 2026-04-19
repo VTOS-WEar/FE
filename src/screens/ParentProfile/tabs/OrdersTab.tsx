@@ -343,12 +343,14 @@ const STATUS_LABELS: Record<string, string> = {
 function StatusTabs({
     payments,
     total,
+    totalOrder,
     statusCounts,
     selectedStatus,
     onStatusChange
 }: {
     payments: ParentPaymentDto[],
     total: number,
+    totalOrder: number,
     statusCounts: StatusCountDto[],
     selectedStatus: string | null,
     onStatusChange: (status: string | null) => void
@@ -371,9 +373,9 @@ function StatusTabs({
                     }`}
             >
                 Tất cả
-                {total > 0 && (
+                {totalOrder > 0 && (
                     <span className="absolute -top-2 -right-2 bg-emerald-400 text-gray-900 text-xs font-bold px-2 py-0.5 rounded-full border border-gray-200 shadow-sm min-w-[24px] text-center">
-                        {total}
+                        {totalOrder}
                     </span>
                 )}
             </button>
@@ -409,6 +411,7 @@ export const OrdersTab = (): JSX.Element => {
     const [payments, setPayments] = useState<ParentPaymentDto[]>([]);
     const [statusCounts, setStatusCounts] = useState<StatusCountDto[]>([]);
     const [total, setTotal] = useState(0);
+    const [totalOrder, setTotalOrder] = useState(0);
     const [page, setPage] = useState(1);
     const [pageSize] = useState(2); // Increased for better UX
     const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
@@ -430,6 +433,7 @@ export const OrdersTab = (): JSX.Element => {
             );
             setPayments(res.items || []);
             setTotal(res.total || 0);
+            setTotalOrder(res.totalOrder || 0);
             setStatusCounts(res.statusCounts || []);
         } catch { /* ignore */ }
         finally { setLoading(false); }
@@ -483,7 +487,7 @@ export const OrdersTab = (): JSX.Element => {
     return (
         <div className="relative">
             {/* Status Tabs */}
-            <StatusTabs payments={payments} total={total} statusCounts={statusCounts} selectedStatus={selectedStatus} onStatusChange={handleStatusChange} />
+            <StatusTabs payments={payments} total={total} totalOrder={totalOrder} statusCounts={statusCounts} selectedStatus={selectedStatus} onStatusChange={handleStatusChange} />
 
             {/* Date Filter Bar */}
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6 bg-white/50 p-3 rounded-2xl border border-gray-200/5">
