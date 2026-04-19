@@ -300,15 +300,6 @@ function OrderCard({
                                     Đánh giá
                                 </button>
                             )}
-                            {isPending && (
-                                <button
-                                    onClick={(e) => { e.stopPropagation(); onPay(); }}
-                                    disabled={payingId === p.orderId}
-                                    className="flex-1 nb-btn nb-btn-purple !py-1.5 !text-[9px] !rounded-lg !shadow-sm hover:!shadow-sm !font-black uppercase tracking-widest"
-                                >
-                                    Thanh toán
-                                </button>
-                            )}
                         </div>
                     </div>
                 </div>

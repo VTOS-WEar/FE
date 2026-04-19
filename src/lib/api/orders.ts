@@ -83,6 +83,40 @@ export async function cancelOrder(orderId: string, reason?: string): Promise<voi
   );
 }
 
+/** PUT /api/orders/{orderId}/cancel-transaction — Cancel only the payment transaction, leave order Pending */
+export async function cancelPaymentTransaction(orderId: string): Promise<void> {
+  await api(
+    `${endpoints.orders.cancelTransaction}/${orderId}/cancel-transaction`,
+    {
+      method: "PUT",
+      auth: true,
+    }
+  );
+}
+
+export type RetryPaymentResponse = {
+  orderId: string;
+  paymentTransactionId: string;
+  totalAmount: number;
+  paymentLink: string;
+  orderCode: number;
+};
+
+/** POST /api/orders/{orderId}/retry-payment — Create new payment link for a cancelled/pending order */
+export async function retryPayment(orderId: string): Promise<RetryPaymentResponse> {
+  const result = await api<{ isSuccess: boolean; value: RetryPaymentResponse; error?: string }>(
+    `${endpoints.orders.retryPayment}/${orderId}/retry-payment`,
+    {
+      method: "POST",
+      auth: true,
+    }
+  );
+  if (result && typeof result === "object" && "value" in result) {
+    return result.value;
+  }
+  return result as unknown as RetryPaymentResponse;
+}
+
 /** GET /api/orders/{orderId}/detail — Get parent's order details with items and campaign outfits */
 export async function getOrderDetail(orderId: string): Promise<OrderDetailDto> {
   const result = await api<{ isSuccess: boolean; value: OrderDetailDto }>(
