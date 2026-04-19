@@ -43,6 +43,7 @@ export function OutfitOrderModal({
   const [outfit, setOutfit] = useState<OutfitDetailDto | null>(preloadedOutfit ?? null);
   const [loadingOutfit, setLoadingOutfit] = useState(false);
   const [children, setChildren] = useState<ChildProfileDto[]>([]);
+  const [loadingChildren, setLoadingChildren] = useState(false);
   const [selectedChildId, setSelectedChildId] = useState("");
   const [selectedVariantId, setSelectedVariantId] = useState("");
   const [selectedCampaignId, setSelectedCampaignId] = useState("");
@@ -97,7 +98,11 @@ export function OutfitOrderModal({
 
   useEffect(() => {
     if (!open || !isParent) return;
-    getMyChildren().then(setChildren).catch(() => setChildren([]));
+    setLoadingChildren(true);
+    getMyChildren()
+      .then(setChildren)
+      .catch(() => setChildren([]))
+      .finally(() => setLoadingChildren(false));
   }, [open, isParent]);
 
   useEffect(() => {
@@ -213,7 +218,7 @@ export function OutfitOrderModal({
       return emptyRecommendation;
     }
 
-    if (loadingScans || bodygramScans === null) {
+    if (loadingChildren || loadingScans || bodygramScans === null) {
       return emptyRecommendation;
     }
 
@@ -249,7 +254,7 @@ export function OutfitOrderModal({
     }
 
     return recommendSize(selectedChild.heightCm, selectedChild.weightKg, outfit.variants);
-  }, [bodygramScans, loadingScans, loadingScanDetail, outfit, selectedChild, selectedScanDetail, selectedScanRecordId]);
+  }, [bodygramScans, loadingChildren, loadingScans, loadingScanDetail, outfit, selectedChild, selectedScanDetail, selectedScanRecordId]);
 
   useEffect(() => {
     if (!outfit) return;
@@ -404,7 +409,12 @@ export function OutfitOrderModal({
                       <User className="w-3 h-3" />
                       Thông tin học sinh
                     </label>
-                    {!isParent || children.length === 0 ? (
+                    {loadingChildren ? (
+                      <div className="flex items-center gap-2 py-3 px-3 bg-white border border-gray-200 rounded-[6px] shadow-sm">
+                        <div className="w-4 h-4 border-2 border-gray-200 border-t-[#8B6BFF] rounded-full animate-spin" />
+                        <span className="text-[11px] font-bold text-gray-400">Đang tải hồ sơ học sinh...</span>
+                      </div>
+                    ) : !isParent || children.length === 0 ? (
                       <div className="nb-alert nb-alert-warning p-3 text-xs leading-snug">
                         Chưa có hồ sơ học sinh liên kết.
                       </div>
@@ -447,7 +457,7 @@ export function OutfitOrderModal({
                 </div>
 
                 {/* 3. Smart Advisor (Bodygram) Section */}
-                {selectedChild && (
+                {(selectedChild || loadingChildren) && (
                   <div className="bg-sky-100 border border-gray-200 rounded-[10px] p-4 shadow-soft-sm relative z-20">
                     <div className="flex items-center gap-2 mb-3">
                       <div className="w-8 h-8 bg-white border border-gray-200 rounded-md flex items-center justify-center">
@@ -460,7 +470,7 @@ export function OutfitOrderModal({
                     </div>
 
                     <div className="space-y-4">
-                      {loadingScans || ((bodygramScans?.length ?? 0) > 0 && !selectedScanRecordId) ? (
+                      {loadingChildren || loadingScans || ((bodygramScans?.length ?? 0) > 0 && !selectedScanRecordId) ? (
                         <div className="flex items-center gap-2 py-3 text-sky-700 text-xs font-bold italic">
                           <div className="w-3 h-3 border-2 border-white/50 border-t-[#0369A1] rounded-full animate-spin" />
                           Đang tìm kiếm dữ liệu đo lường...
