@@ -332,6 +332,7 @@ export type OutfitDto = {
     outfitId: string;
     outfitName: string;
     description: string | null;
+    materialType: string | null;
     price: number;
     outfitType: number; // 1=Uniform, 2=Sportswear, 3=Accessory, 4=Other
     mainImageURL: string | null;
@@ -360,6 +361,7 @@ export async function getSchoolOutfits(isAvailable?: boolean): Promise<OutfitLis
 export type CreateOutfitRequest = {
     outfitName: string;
     description?: string | null;
+    materialType?: string | null;
     price: number;
     outfitType: number; // 1=Uniform, 2=Sportswear, 3=Accessory, 4=Other
     mainImageURL?: string | null;
@@ -397,6 +399,7 @@ export async function createOutfit(data: CreateOutfitRequest): Promise<OutfitDto
 export type UpdateOutfitRequest = {
     outfitName?: string;
     description?: string | null;
+    materialType?: string | null;
     price?: number;
     outfitType?: number;
     mainImageURL?: string | null;

@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useEffect, useCallback, useRef, ty
 
 /* ── Types ── */
 export type CartItem = {
-  id: string; // unique key = `${campaignOutfitId}-${productVariantId}-${childProfileId}`
+  id: string; // unique key = `${campaignOutfitId}-${productVariantId}-${childProfileId}-${providerId ?? "default"}`
   campaignOutfitId: string;
   outfitId: string;
   outfitName: string;
@@ -18,6 +18,10 @@ export type CartItem = {
   schoolId: string;
   schoolName: string;
   campaignLabel: string;
+  providerId?: string;
+  providerName?: string;
+  semesterPublicationId?: string;
+  orderMode?: "campaign" | "marketplace";
 };
 
 export type CartSchoolGroup = {
@@ -34,6 +38,7 @@ type CartContextType = {
   addItem: (item: Omit<CartItem, "id">) => void;
   removeItem: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
+  updateProvider: (id: string, providerId: string, providerName: string, price: number) => void;
   clearCart: () => void;
   getItemCount: () => number;
 };
@@ -72,8 +77,8 @@ function saveCartFor(userId: string | null, items: CartItem[]) {
   }
 }
 
-function makeId(item: { campaignOutfitId: string; productVariantId: string; childProfileId: string }) {
-  return `${item.campaignOutfitId}-${item.productVariantId}-${item.childProfileId}`;
+function makeId(item: { campaignOutfitId: string; productVariantId: string; childProfileId: string; providerId?: string }) {
+  return `${item.campaignOutfitId}-${item.productVariantId}-${item.childProfileId}-${item.providerId ?? "default"}`;
 }
 
 function groupItems(items: CartItem[]): CartSchoolGroup[] {
@@ -158,6 +163,25 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setItems(prev => prev.map(i => i.id === id ? { ...i, quantity } : i));
   }, []);
 
+  const updateProvider = useCallback((id: string, providerId: string, providerName: string, price: number) => {
+    setItems(prev => {
+      const item = prev.find(i => i.id === id);
+      if (!item) return prev;
+
+      const newItemData = { ...item, providerId, providerName, price };
+      const newId = makeId(newItemData);
+
+      const existing = prev.find(i => i.id === newId && i.id !== id);
+      if (existing) {
+        return prev
+          .filter(i => i.id !== id)
+          .map(i => i.id === newId ? { ...i, quantity: i.quantity + item.quantity } : i);
+      }
+
+      return prev.map(i => i.id === id ? { ...newItemData, id: newId } : i);
+    });
+  }, []);
+
   const clearCart = useCallback(() => { setItems([]); }, []);
 
   const getItemCount = useCallback(() => {
@@ -167,7 +191,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const groups = groupItems(items);
 
   return (
-    <CartContext.Provider value={{ items, groups, addItem, removeItem, updateQuantity, clearCart, getItemCount }}>
+    <CartContext.Provider value={{ items, groups, addItem, removeItem, updateQuantity, updateProvider, clearCart, getItemCount }}>
       {children}
     </CartContext.Provider>
   );

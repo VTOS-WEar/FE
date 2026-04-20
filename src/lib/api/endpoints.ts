@@ -25,6 +25,9 @@ export const endpoints = {
         outfits: "/api/public/outfits",
         search: "/api/public/search",
         uniformWarehouse: "/api/public/uniform-warehouse",
+        semesterCatalog: "/api/public/schools", // append /{schoolId}/semester-catalog
+        publicationOutfitProviders: "/api/public/semester-publications", // append /{publicationId}/outfits/{outfitId}/providers
+        providerProfile: "/api/public/providers", // append /{providerId}/profile
     },
     tryOn: {
         request: "/api/tryOn/request",
@@ -75,11 +78,17 @@ export const endpoints = {
     orders: {
         checkout: "/api/orders/checkout",
         cancel: "/api/orders", // append /{orderId}/cancel at call time
+        retryPayment: "/api/orders", // append /{orderId}/retry-payment at call time
+        cancelTransaction: "/api/orders", // append /{orderId}/cancel-transaction at call time
+        direct: "/api/orders/direct",
+        myDirectOrders: "/api/orders/my-orders",
     },
     providers: {
         me: "/api/providers/me",
         contracts: "/api/providers/me/contracts",
         productionOrders: "/api/providers/me/production-orders",
+        directOrders: "/api/providers/me/orders",
+        directOrderStats: "/api/providers/me/order-stats",
     },
     payments: {
         payOrder: "/api/payments/orders", // append /{orderId}/pay

@@ -1050,3 +1050,13 @@
 .group:hover .nb-role-sparkle {
   animation: nb-role-sparkle 1.2s ease-out both;
 }
+
+/* ── Shine Sweep Effect ── */
+@keyframes nb-shine {
+  from { transform: translateX(-100%) skewX(-15deg); }
+  to   { transform: translateX(200%) skewX(-15deg); }
+}
+
+.nb-animate-shine {
+  animation: nb-shine 1.5s ease-in-out infinite;
+}
