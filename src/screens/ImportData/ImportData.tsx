@@ -348,6 +348,45 @@ export const ImportData = (): JSX.Element => {
                                         ))}
                                     </ul>
                                 </div>
+
+                                <div className="rounded-[14px] border border-violet-200 bg-[linear-gradient(180deg,_#ffffff_0%,_#faf7ff_100%)] p-5 shadow-soft-sm space-y-4">
+                                    <div className="flex items-center gap-3">
+                                        <div className="flex h-9 w-9 items-center justify-center rounded-[10px] border border-violet-200 bg-violet-50 shadow-soft-sm">
+                                            <svg className="w-5 h-5 text-violet-600" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" />
+                                            </svg>
+                                        </div>
+                                        <h3 className="font-black text-gray-900 text-base">
+                                            Huong dan dien GVCN theo lop
+                                        </h3>
+                                    </div>
+
+                                    <div className="space-y-2 text-sm font-semibold leading-relaxed text-gray-700">
+                                        <p>Ban chi can nhap <span className="font-black text-violet-700">Ten GVCN</span> va <span className="font-black text-violet-700">Email GVCN</span> mot lan cho moi lop.</p>
+                                        <p>Cac dong hoc sinh con lai trong cung lop co the de trong 2 cot nay, he thong se tu dong gan giao vien theo truong <span className="font-black text-violet-700">Class</span>.</p>
+                                        <p>Neu cung mot giao vien phu trach nhieu lop, hay dung cung mot email o cac lop do.</p>
+                                    </div>
+
+                                    <div className="rounded-[12px] border border-gray-200 bg-white p-4 shadow-soft-sm">
+                                        <p className="font-black text-gray-900 text-sm mb-3">
+                                            Vi du cho lop 6A1
+                                        </p>
+                                        <div className="space-y-2 text-[12px] leading-relaxed">
+                                            <div className="rounded-[8px] bg-violet-50 px-3 py-2 font-extrabold text-violet-700">
+                                                Nguyen Khoi | 6A1 | Nguyen Van Minh | minh1@school.edu.vn
+                                            </div>
+                                            <div className="rounded-[8px] bg-gray-50 px-3 py-2 font-semibold text-gray-700">
+                                                Nguyen Cam | 6A1 | de trong | de trong
+                                            </div>
+                                            <div className="rounded-[8px] bg-gray-50 px-3 py-2 font-semibold text-gray-700">
+                                                Le Anh | 6A1 | de trong | de trong
+                                            </div>
+                                        </div>
+                                        <p className="mt-3 text-xs font-semibold leading-relaxed text-gray-600">
+                                            Ban khong can nhap lap lai thong tin giao vien 30 lan cho 30 hoc sinh trong cung mot lop.
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
 
                             {/* Right column: Upload zone */}

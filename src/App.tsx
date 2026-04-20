@@ -30,11 +30,22 @@ import { ImportData } from "./screens/ImportData";
 import { ConfirmSave } from "./screens/ConfirmSave";
 import { ConfirmReimport } from "./screens/ConfirmReimport";
 import { CheckAndPreview } from "./screens/CheckAndPreview";
+import {
+  SchoolClassDetail,
+  SchoolClassDirectory,
+  TeacherClassDetail,
+  TeacherClasses,
+} from "./screens/ClassDirectory";
 import { SchoolProfile } from "./screens/SchoolProfile";
 import { UniformManagement } from "./screens/UniformManagement/UniformManagement";
 import { CampaignList } from "./screens/CampaignManagement/CampaignList";
 import { CampaignManagement } from "./screens/CampaignManagement/CampaignManagement";
 import { CampaignDetail } from "./screens/CampaignManagement/CampaignDetail";
+import {
+  SemesterPublicationDetail,
+  SemesterPublicationList,
+  SemesterPublicationWorkspace,
+} from "./screens/SemesterPublications";
 import { SchoolDashboard } from "./screens/SchoolDashboard/SchoolDashboard";
 import { RoleGuard } from "./components/guards/RoleGuard";
 import { ProviderDashboard } from "./screens/ProviderDashboard/ProviderDashboard";
@@ -91,6 +102,7 @@ function RootRedirect() {
       if (user.role === "Admin") return <Navigate to="/admin/dashboard" replace />;
       if (user.role === "School") return <Navigate to="/school/dashboard" replace />;
       if (user.role === "Provider") return <Navigate to="/provider/dashboard" replace />;
+      if (user.role === "HomeroomTeacher") return <Navigate to="/teacher/classes" replace />;
     } catch { /* ignore */ }
   }
   return <Navigate to="/homepage" replace />;
@@ -190,6 +202,14 @@ const router = createBrowserRouter([
   },
   {
     path: "/school/students",
+    element: <RoleGuard allowedRoles={["School"]}><SchoolClassDirectory /></RoleGuard>,
+  },
+  {
+    path: "/school/students/classes/:id",
+    element: <RoleGuard allowedRoles={["School"]}><SchoolClassDetail /></RoleGuard>,
+  },
+  {
+    path: "/school/students/all",
     element: <RoleGuard allowedRoles={["School"]}><StudentList /></RoleGuard>,
   },
   {
@@ -209,6 +229,14 @@ const router = createBrowserRouter([
   {
     path: "/provider/dashboard",
     element: <RoleGuard allowedRoles={["Provider"]}><ProviderDashboard /></RoleGuard>,
+  },
+  {
+    path: "/teacher/classes",
+    element: <RoleGuard allowedRoles={["HomeroomTeacher"]}><TeacherClasses /></RoleGuard>,
+  },
+  {
+    path: "/teacher/classes/:id",
+    element: <RoleGuard allowedRoles={["HomeroomTeacher"]}><TeacherClassDetail /></RoleGuard>,
   },
   {
     path: "/provider/contracts",
@@ -310,6 +338,22 @@ const router = createBrowserRouter([
   {
     path: "/school/campaigns/:id",
     element: <RoleGuard allowedRoles={["School"]}><CampaignDetail /></RoleGuard>,
+  },
+  {
+    path: "/school/semester-publications",
+    element: <RoleGuard allowedRoles={["School"]}><SemesterPublicationList /></RoleGuard>,
+  },
+  {
+    path: "/school/semester-publications/new",
+    element: <RoleGuard allowedRoles={["School"]}><SemesterPublicationWorkspace /></RoleGuard>,
+  },
+  {
+    path: "/school/semester-publications/:id/edit",
+    element: <RoleGuard allowedRoles={["School"]}><SemesterPublicationWorkspace /></RoleGuard>,
+  },
+  {
+    path: "/school/semester-publications/:id",
+    element: <RoleGuard allowedRoles={["School"]}><SemesterPublicationDetail /></RoleGuard>,
   },
   { path: "/forgot-password", element: <RoleGuard allowedRoles={[]} allowGuest><ForgotPassword /></RoleGuard> },
   { path: "/forgot-password/sent", element: <RoleGuard allowedRoles={[]} allowGuest><ForgotPasswordSent /></RoleGuard> },

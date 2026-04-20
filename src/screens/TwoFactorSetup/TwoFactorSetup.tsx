@@ -122,6 +122,7 @@ export const TwoFactorSetup = (): JSX.Element => {
             if (u.role === "Admin") navigate("/admin/dashboard", { replace: true });
             else if (u.role === "School") navigate("/school/dashboard", { replace: true });
             else if (u.role === "Provider") navigate("/provider/dashboard", { replace: true });
+            else if (u.role === "HomeroomTeacher") navigate("/teacher/classes", { replace: true });
             else navigate("/homepage", { replace: true });
         } else {
             navigate("/login", { replace: true });

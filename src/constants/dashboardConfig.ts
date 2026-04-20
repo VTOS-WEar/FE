@@ -1,47 +1,56 @@
 import {
-    LayoutDashboard, Users, Shirt, School,
-    Megaphone, FileText, Factory,
-    AlertTriangle, ShoppingBag, Wallet, Settings
+    FileText,
+    LayoutDashboard,
+    School,
+    Settings,
+    Shirt,
+    ShoppingBag,
+    Users,
+    Wallet,
 } from "lucide-react";
 import type { DashboardSidebarProps } from "../components/layout";
 
 /**
  * Sidebar config for School Dashboard screens.
- * 4 sections: Quản lý, Kinh doanh, Vận hành, Tài chính
+ *
+ * Hidden legacy routes still exist via direct URL:
+ * - /school/campaigns
+ * - /school/production-orders
+ * - /school/complaints
  */
-export const DASHBOARD_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, 'isCollapsed' | 'onToggle'> = {
+export const DASHBOARD_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, "isCollapsed" | "onToggle"> = {
     iconType: "school" as const,
-    greeting: "Xin chào!",
+    greeting: "Xin chao!",
     name: "",
     topNavItems: [
         {
             icon: LayoutDashboard,
-            label: "Tổng quan",
+            label: "Tong quan",
             href: "/school/dashboard",
         },
     ],
     navSections: [
         {
-            title: "QUẢN LÝ",
+            title: "QUAN LY",
             items: [
                 {
                     icon: Users,
-                    label: "Học sinh",
+                    label: "Hoc sinh",
                     href: "/school/students",
                 },
                 {
                     icon: Shirt,
-                    label: "Đồng phục",
+                    label: "Dong phuc",
                     href: "/school/uniforms",
                 },
                 {
                     icon: School,
-                    label: "Hồ sơ trường",
+                    label: "Ho so truong",
                     href: "/school/profile",
                 },
                 {
                     icon: Settings,
-                    label: "Cài đặt tài khoản",
+                    label: "Tai khoan",
                     href: "/school/account-settings",
                 },
             ],
@@ -50,43 +59,33 @@ export const DASHBOARD_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, 'isCollapsed'
             title: "KINH DOANH",
             items: [
                 {
-                    icon: Megaphone,
-                    label: "Chiến dịch",
-                    href: "/school/campaigns",
+                    icon: FileText,
+                    label: "Cong bo hoc ky",
+                    href: "/school/semester-publications",
                 },
                 {
                     icon: FileText,
-                    label: "Hợp đồng",
+                    label: "Hop dong",
                     href: "/school/contracts",
-                },
-                {
-                    icon: Factory,
-                    label: "Đơn sản xuất",
-                    href: "/school/production-orders",
                 },
             ],
         },
         {
-            title: "VẬN HÀNH",
+            title: "VAN HANH",
             items: [
                 {
-                    icon: AlertTriangle,
-                    label: "Khiếu nại",
-                    href: "/school/complaints",
-                },
-                {
                     icon: ShoppingBag,
-                    label: "Đơn hàng",
+                    label: "Don hang",
                     href: "/school/orders",
                 },
             ],
         },
         {
-            title: "TÀI CHÍNH",
+            title: "TAI CHINH",
             items: [
                 {
                     icon: Wallet,
-                    label: "Ví trường học",
+                    label: "Vi truong hoc",
                     href: "/school/wallet",
                 },
             ],

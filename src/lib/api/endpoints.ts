@@ -41,6 +41,7 @@ export const endpoints = {
         me: "/api/schools/me",
         logo: "/api/schools/me/logo",
         students: "/api/schools/me/students",
+        classes: "/api/schools/me/classes",
         importTemplate: "/api/schools/me/students/import/template",
         importStudents: "/api/schools/me/students/import",
         importHistory: "/api/schools/me/students/import/history",
@@ -49,6 +50,7 @@ export const endpoints = {
         outfits: "/api/schools/me/outfits",
         outfitImageUpload: "/api/schools/me/outfits/upload-image",
         campaigns: "/api/schools/me/campaigns",
+        semesterPublications: "/api/schools/me/semester-publications",
         campaignProgress: "/api/schools/me/campaigns/{id}/progress",
         providers: "/api/schools/me/providers",
         outfitVariants: "/api/schools/me/outfits", // append /{outfitId}/variants at call time
@@ -89,6 +91,9 @@ export const endpoints = {
         productionOrders: "/api/providers/me/production-orders",
         directOrders: "/api/providers/me/orders",
         directOrderStats: "/api/providers/me/order-stats",
+    },
+    teacher: {
+        classes: "/api/teacher/classes",
     },
     payments: {
         payOrder: "/api/payments/orders", // append /{orderId}/pay

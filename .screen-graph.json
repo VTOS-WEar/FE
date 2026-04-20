@@ -23,10 +23,14 @@
         "/school/students/import/confirm-reimport",
         "/school/students/import/check-preview",
         "/school/students",
+        "/school/students/classes/:id",
+        "/school/students/all",
         "/school/students/import",
         "/school/orders",
         "/school/dashboard",
         "/provider/dashboard",
+        "/teacher/classes",
+        "/teacher/classes/:id",
         "/provider/contracts",
         "/school/contracts",
         "/school/production-orders",
@@ -51,6 +55,10 @@
         "/school/campaigns/new",
         "/school/campaigns/:id/edit",
         "/school/campaigns/:id",
+        "/school/semester-publications",
+        "/school/semester-publications/new",
+        "/school/semester-publications/:id/edit",
+        "/school/semester-publications/:id",
         "/forgot-password",
         "/forgot-password/sent",
         "/reset-password",
@@ -145,15 +153,31 @@
       }
     },
     {
-      "id": "src\\components\\guards\\RoleGuard.tsx:71:11-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\components\\guards\\RoleGuard.tsx:72:15-to-src\\components\\guards\\RoleGuard.tsx",
+      "source": "src\\components\\guards\\RoleGuard.tsx",
+      "target": "src\\components\\guards\\RoleGuard.tsx",
+      "data": {
+        "viaRoute": "/teacher/classes",
+        "trigger": {
+          "element": "<Navigate to=\"/teacher/classes\" replace />",
+          "line": 72,
+          "endLine": 72,
+          "column": 15,
+          "endColumn": 57,
+          "sourceFile": "src\\components\\guards\\RoleGuard.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\components\\guards\\RoleGuard.tsx:74:11-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\components\\guards\\RoleGuard.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/homepage",
         "trigger": {
           "element": "<Navigate to=\"/homepage\" replace />",
-          "line": 71,
-          "endLine": 71,
+          "line": 74,
+          "endLine": 74,
           "column": 11,
           "endColumn": 46,
           "sourceFile": "src\\components\\guards\\RoleGuard.tsx"
@@ -401,15 +425,31 @@
       }
     },
     {
-      "id": "src\\screens\\TwoFactorSetup\\TwoFactorSetup.tsx:125:17-to-src\\components\\guards\\RoleGuard.tsx",
+      "id": "src\\screens\\TwoFactorSetup\\TwoFactorSetup.tsx:125:51-to-src\\components\\guards\\RoleGuard.tsx",
+      "source": "src\\screens\\TwoFactorSetup\\TwoFactorSetup.tsx",
+      "target": "src\\components\\guards\\RoleGuard.tsx",
+      "data": {
+        "viaRoute": "/teacher/classes",
+        "trigger": {
+          "element": "navigate(\"/teacher/classes\", { replace: true })",
+          "line": 125,
+          "endLine": 125,
+          "column": 51,
+          "endColumn": 98,
+          "sourceFile": "src\\screens\\TwoFactorSetup\\TwoFactorSetup.tsx"
+        }
+      }
+    },
+    {
+      "id": "src\\screens\\TwoFactorSetup\\TwoFactorSetup.tsx:126:17-to-src\\components\\guards\\RoleGuard.tsx",
       "source": "src\\screens\\TwoFactorSetup\\TwoFactorSetup.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
         "viaRoute": "/homepage",
         "trigger": {
           "element": "navigate(\"/homepage\", { replace: true })",
-          "line": 125,
-          "endLine": 125,
+          "line": 126,
+          "endLine": 126,
           "column": 17,
           "endColumn": 57,
           "sourceFile": "src\\screens\\TwoFactorSetup\\TwoFactorSetup.tsx"
@@ -589,22 +629,6 @@
           "column": 14,
           "endColumn": 18,
           "sourceFile": "src\\components\\layout\\Footer.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\DashboardSidebar.tsx:59:8-to-src\\components\\guards\\RoleGuard.tsx",
-      "source": "src\\screens\\AccountSetting\\AccountSetting.tsx",
-      "target": "src\\components\\guards\\RoleGuard.tsx",
-      "data": {
-        "viaRoute": "/signin",
-        "trigger": {
-          "element": "navigate(\"/signin\", { replace: true })",
-          "line": 59,
-          "endLine": 59,
-          "column": 8,
-          "endColumn": 46,
-          "sourceFile": "src\\components\\layout\\DashboardSidebar.tsx"
         }
       }
     },
