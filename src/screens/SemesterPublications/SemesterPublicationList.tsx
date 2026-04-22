@@ -1,3 +1,4 @@
+import { AlertTriangle, ArrowRight, CalendarRange, CircleDot, ClipboardList, Layers3, Plus, Search } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -21,17 +22,11 @@ import {
 } from "../../lib/api/schools";
 
 const FILTER_TABS = [
-    { key: "all", label: "Tat ca" },
-    { key: "Draft", label: "Ban nhap" },
-    { key: "Active", label: "Dang mo" },
-    { key: "Closed", label: "Da dong" },
-];
-
-const STATUS_CONFIG: Record<string, { label: string; badge: string }> = {
-    Draft: { label: "Ban nhap", badge: "nb-badge text-gray-500 bg-gray-100" },
-    Active: { label: "Dang mo", badge: "nb-badge nb-badge-green" },
-    Closed: { label: "Da dong", badge: "nb-badge nb-badge-blue" },
-};
+    { key: "all", label: "Tất cả" },
+    { key: "Draft", label: "Bản nháp" },
+    { key: "Active", label: "Đang mở" },
+    { key: "Closed", label: "Đã đóng" },
+] as const;
 
 function formatDate(value: string) {
     return new Date(value).toLocaleDateString("vi-VN", {
@@ -42,9 +37,65 @@ function formatDate(value: string) {
     });
 }
 
-function StatusBadge({ status }: { status: string }) {
-    const cfg = STATUS_CONFIG[status] ?? STATUS_CONFIG.Draft;
-    return <span className={cfg.badge}>{cfg.label}</span>;
+function getDaysRemaining(value: string) {
+    const now = Date.now();
+    const diff = new Date(value).getTime() - now;
+    return Math.ceil(diff / (1000 * 60 * 60 * 24));
+}
+
+function getPublicationStatusMeta(status: string) {
+    switch (status) {
+        case "Active":
+            return {
+                label: "Đang mở",
+                badgeClass: "nb-badge nb-badge-green",
+                surfaceClass: "border-emerald-200 bg-emerald-50/70",
+                actionLabel: "Theo dõi vận hành",
+            };
+        case "Closed":
+            return {
+                label: "Đã đóng",
+                badgeClass: "nb-badge nb-badge-blue",
+                surfaceClass: "border-slate-200 bg-slate-50",
+                actionLabel: "Xem tổng kết",
+            };
+        default:
+            return {
+                label: "Bản nháp",
+                badgeClass: "nb-badge text-amber-700 bg-amber-50 border border-amber-200",
+                surfaceClass: "border-amber-200 bg-amber-50/60",
+                actionLabel: "Hoàn thiện để phát hành",
+            };
+    }
+}
+
+function SummaryCard({
+    label,
+    value,
+    hint,
+    tone,
+}: {
+    label: string;
+    value: number;
+    hint: string;
+    tone: "violet" | "green" | "amber" | "slate";
+}) {
+    const toneClass =
+        tone === "green"
+            ? "border-emerald-200 bg-emerald-50"
+            : tone === "amber"
+              ? "border-amber-200 bg-amber-50"
+              : tone === "slate"
+                ? "border-slate-200 bg-slate-50"
+                : "border-violet-200 bg-violet-50";
+
+    return (
+        <div className={`rounded-[22px] border p-4 shadow-soft-sm ${toneClass}`}>
+            <p className="text-[11px] font-extrabold uppercase tracking-[0.18em] text-gray-500">{label}</p>
+            <p className="mt-3 text-3xl font-extrabold text-gray-900">{value}</p>
+            <p className="mt-2 text-sm font-medium leading-6 text-[#5b6475]">{hint}</p>
+        </div>
+    );
 }
 
 function PublicationCard({
@@ -60,54 +111,109 @@ function PublicationCard({
     onPublish: () => void;
     onDelete: () => void;
 }) {
+    const meta = getPublicationStatusMeta(publication.status);
+    const daysRemaining = getDaysRemaining(publication.endDate);
     const isDraft = publication.status === "Draft";
+    const isActive = publication.status === "Active";
+    const isClosingSoon = isActive && daysRemaining >= 0 && daysRemaining <= 7;
+    const progressLabel =
+        publication.outfitCount > 0 && publication.providerCount > 0
+            ? "Sẵn sàng vận hành"
+            : publication.outfitCount > 0 || publication.providerCount > 0
+              ? "Cần hoàn thiện thêm"
+              : "Chưa có dữ liệu vận hành";
+
     return (
-        <div onClick={onOpen} className="nb-card p-5 cursor-pointer group">
+        <div
+            onClick={onOpen}
+            className={`group cursor-pointer rounded-[26px] border p-5 shadow-soft-md transition-all hover:-translate-y-0.5 hover:shadow-soft-lg ${meta.surfaceClass}`}
+        >
             <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                        <h3 className="font-bold text-gray-900 text-base truncate group-hover:text-violet-600 transition-colors">
-                            {publication.semester} / {publication.academicYear}
-                        </h3>
-                        <StatusBadge status={publication.status} />
+                        <span className={meta.badgeClass}>{meta.label}</span>
+                        {isClosingSoon && (
+                            <span className="rounded-full border border-amber-200 bg-white px-2.5 py-1 text-[11px] font-extrabold text-amber-700 shadow-soft-sm">
+                                Cần theo dõi đóng kỳ
+                            </span>
+                        )}
                     </div>
-                    <p className="font-medium text-[#97A3B6] text-sm mt-1 line-clamp-2">
-                        {publication.description || "Chua co mo ta cho dot cong bo nay."}
+                    <h3 className="mt-4 text-xl font-extrabold leading-tight text-gray-900 transition-colors group-hover:text-violet-700">
+                        {publication.semester} / {publication.academicYear}
+                    </h3>
+                    <p className="mt-2 line-clamp-2 text-sm font-medium leading-6 text-[#5b6475]">
+                        {publication.description || "Chưa có mô tả. Nên bổ sung phạm vi áp dụng và lưu ý vận hành cho đợt công bố này."}
                     </p>
                 </div>
+
+                <button
+                    type="button"
+                    onClick={(event) => {
+                        event.stopPropagation();
+                        onOpen();
+                    }}
+                    className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-600 shadow-soft-sm transition-colors hover:text-violet-700"
+                >
+                    <ArrowRight className="h-4 w-4" />
+                </button>
             </div>
 
-            <div className="mt-4 grid grid-cols-2 gap-3">
-                <div className="rounded-[12px] border border-gray-200 bg-white px-3 py-3 shadow-soft-sm">
-                    <p className="text-[11px] font-extrabold uppercase tracking-wider text-gray-500">Thoi gian</p>
-                    <p className="mt-1 text-sm font-bold text-gray-900">
+            <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div className="rounded-[18px] border border-white/70 bg-white/90 p-4 shadow-soft-sm">
+                    <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-gray-500">Khung thời gian</p>
+                    <p className="mt-2 text-sm font-bold text-gray-900">
                         {formatDate(publication.startDate)} - {formatDate(publication.endDate)}
                     </p>
-                </div>
-                <div className="rounded-[12px] border border-gray-200 bg-white px-3 py-3 shadow-soft-sm">
-                    <p className="text-[11px] font-extrabold uppercase tracking-wider text-gray-500">Pham vi</p>
-                    <p className="mt-1 text-sm font-bold text-gray-900">
-                        {publication.outfitCount} dong phuc · {publication.providerCount} nha cung cap
+                    <p className="mt-2 text-xs font-semibold text-[#5b6475]">
+                        {isActive
+                            ? daysRemaining >= 0
+                                ? `Còn khoảng ${daysRemaining} ngày mở bán`
+                                : "Đã quá hạn đóng, cần rà soát trạng thái"
+                            : publication.status === "Closed"
+                              ? "Đợt công bố đã khép lại"
+                              : "Bản nháp chưa phát hành"}
                     </p>
+                </div>
+                <div className="rounded-[18px] border border-white/70 bg-white/90 p-4 shadow-soft-sm">
+                    <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-gray-500">Phạm vi hiện tại</p>
+                    <p className="mt-2 text-sm font-bold text-gray-900">
+                        {publication.outfitCount} đồng phục · {publication.providerCount} nhà cung cấp
+                    </p>
+                    <p className="mt-2 text-xs font-semibold text-[#5b6475]">{progressLabel}</p>
                 </div>
             </div>
 
-            {isDraft && (
-                <div
-                    className="flex items-center gap-2 mt-4 pt-4 border-t border-gray-200"
-                    onClick={(event) => event.stopPropagation()}
-                >
-                    <button onClick={onEdit} className="nb-btn nb-btn-outline nb-btn-sm text-xs">
-                        Chinh sua
-                    </button>
-                    <button onClick={onPublish} className="nb-btn nb-btn-green nb-btn-sm text-xs">
-                        Cong khai
-                    </button>
-                    <button onClick={onDelete} className="nb-btn nb-btn-red nb-btn-sm text-xs">
-                        Xoa
-                    </button>
+            <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-white/70 pt-4">
+                <div className="inline-flex items-center gap-2 text-sm font-semibold text-[#4c5769]">
+                    <CircleDot className="h-4 w-4 text-violet-600" />
+                    {meta.actionLabel}
                 </div>
-            )}
+
+                {isDraft ? (
+                    <div className="flex flex-wrap gap-2" onClick={(event) => event.stopPropagation()}>
+                        <button onClick={onEdit} className="nb-btn nb-btn-outline nb-btn-sm text-xs">
+                            Chỉnh sửa
+                        </button>
+                        <button onClick={onPublish} className="nb-btn nb-btn-green nb-btn-sm text-xs">
+                            Công khai
+                        </button>
+                        <button onClick={onDelete} className="nb-btn nb-btn-red nb-btn-sm text-xs">
+                            Xóa
+                        </button>
+                    </div>
+                ) : (
+                    <button
+                        type="button"
+                        onClick={(event) => {
+                            event.stopPropagation();
+                            onOpen();
+                        }}
+                        className="nb-btn nb-btn-outline nb-btn-sm text-xs"
+                    >
+                        Mở overview
+                    </button>
+                )}
+            </div>
         </div>
     );
 }
@@ -120,7 +226,7 @@ export const SemesterPublicationList = (): JSX.Element => {
     const [publications, setPublications] = useState<SemesterPublicationDto[]>([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("");
-    const [activeTab, setActiveTab] = useState("all");
+    const [activeTab, setActiveTab] = useState<(typeof FILTER_TABS)[number]["key"]>("all");
     const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
 
     const showToast = useCallback((message: string, type: "success" | "error") => {
@@ -131,15 +237,15 @@ export const SemesterPublicationList = (): JSX.Element => {
     const loadPublications = useCallback(async () => {
         setLoading(true);
         try {
-            const response = await getSemesterPublications(1, 50, activeTab);
+            const response = await getSemesterPublications(1, 50);
             setPublications(response.items);
         } catch {
             setPublications([]);
-            showToast("Khong the tai danh sach cong bo hoc ky.", "error");
+            showToast("Không thể tải danh sách công bố học kỳ.", "error");
         } finally {
             setLoading(false);
         }
-    }, [activeTab, showToast]);
+    }, [showToast]);
 
     useEffect(() => {
         getSchoolProfile()
@@ -151,25 +257,45 @@ export const SemesterPublicationList = (): JSX.Element => {
         loadPublications();
     }, [loadPublications]);
 
-    const filteredPublications = useMemo(() => {
-        const query = search.trim().toLowerCase();
-        if (!query) {
-            return publications;
-        }
-
-        return publications.filter((publication) =>
-            `${publication.semester} ${publication.academicYear} ${publication.description || ""}`
-                .toLowerCase()
-                .includes(query)
-        );
-    }, [publications, search]);
-
     const statusCounts = useMemo(() => {
         return publications.reduce<Record<string, number>>((accumulator, publication) => {
             accumulator[publication.status] = (accumulator[publication.status] ?? 0) + 1;
             return accumulator;
         }, {});
     }, [publications]);
+
+    const filteredPublications = useMemo(() => {
+        const query = search.trim().toLowerCase();
+
+        return publications.filter((publication) => {
+            const matchesTab = activeTab === "all" ? true : publication.status === activeTab;
+            if (!matchesTab) {
+                return false;
+            }
+
+            if (!query) {
+                return true;
+            }
+
+            return `${publication.semester} ${publication.academicYear} ${publication.description || ""}`
+                .toLowerCase()
+                .includes(query);
+        });
+    }, [activeTab, publications, search]);
+
+    const draftCount = statusCounts.Draft ?? 0;
+    const activeCount = statusCounts.Active ?? 0;
+    const closedCount = statusCounts.Closed ?? 0;
+    const nearEndingActive = useMemo(
+        () =>
+            publications.filter(
+                (publication) =>
+                    publication.status === "Active" &&
+                    getDaysRemaining(publication.endDate) >= 0 &&
+                    getDaysRemaining(publication.endDate) <= 7
+            ),
+        [publications]
+    );
 
     const handleLogout = () => {
         localStorage.removeItem("access_token");
@@ -184,26 +310,26 @@ export const SemesterPublicationList = (): JSX.Element => {
     const handlePublish = async (publication: SemesterPublicationDto) => {
         try {
             await publishSemesterPublication(publication.id);
-            showToast("Dot cong bo da duoc kich hoat.", "success");
+            showToast("Đợt công bố đã được kích hoạt.", "success");
             await loadPublications();
         } catch (error) {
-            const message = error instanceof Error ? error.message : "Khong the cong khai dot cong bo.";
+            const message = error instanceof Error ? error.message : "Không thể công khai đợt công bố.";
             showToast(message, "error");
         }
     };
 
     const handleDelete = async (publication: SemesterPublicationDto) => {
-        const confirmed = window.confirm(`Xoa dot cong bo ${publication.semester} / ${publication.academicYear}?`);
+        const confirmed = window.confirm(`Xóa đợt công bố ${publication.semester} / ${publication.academicYear}?`);
         if (!confirmed) {
             return;
         }
 
         try {
             await deleteSemesterPublication(publication.id);
-            showToast("Da xoa ban nhap.", "success");
+            showToast("Đã xóa bản nháp.", "success");
             await loadPublications();
         } catch (error) {
-            const message = error instanceof Error ? error.message : "Khong the xoa dot cong bo.";
+            const message = error instanceof Error ? error.message : "Không thể xóa đợt công bố.";
             showToast(message, "error");
         }
     };
@@ -212,10 +338,10 @@ export const SemesterPublicationList = (): JSX.Element => {
         <div className="nb-page flex flex-col">
             {toast && (
                 <div
-                    className={`fixed top-6 right-6 z-[99999] flex items-center gap-3 rounded-[12px] border border-gray-200 px-5 py-3 text-sm font-extrabold shadow-soft-md ${
+                    className={`fixed right-6 top-6 z-[99999] flex items-center gap-3 rounded-[12px] border px-5 py-3 text-sm font-extrabold shadow-soft-md ${
                         toast.type === "success"
-                            ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                            : "bg-red-50 text-red-700 border-red-200"
+                            ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                            : "border-red-200 bg-red-50 text-red-700"
                     }`}
                 >
                     {toast.message}
@@ -223,7 +349,7 @@ export const SemesterPublicationList = (): JSX.Element => {
             )}
 
             <div className="flex flex-1 flex-col lg:flex-row">
-                <div className={`${isCollapsed ? "lg:w-16" : "lg:w-[16rem]"} flex-shrink-0 lg:sticky lg:top-0 lg:h-screen transition-all duration-300`}>
+                <div className={`${isCollapsed ? "lg:w-16" : "lg:w-[16rem]"} flex-shrink-0 transition-all duration-300 lg:sticky lg:top-0 lg:h-screen`}>
                     <DashboardSidebar
                         {...sidebarConfig}
                         name={schoolName}
@@ -233,103 +359,149 @@ export const SemesterPublicationList = (): JSX.Element => {
                     />
                 </div>
 
-                <div className="flex-1 flex flex-col min-w-0">
+                <div className="flex min-w-0 flex-1 flex-col">
                     <TopNavBar>
                         <Breadcrumb>
                             <BreadcrumbList>
                                 <BreadcrumbItem>
-                                    <BreadcrumbLink href="/school/dashboard" className="font-semibold text-[#4c5769] text-base">
-                                        Trang chu
+                                    <BreadcrumbLink href="/school/dashboard" className="text-base font-semibold text-[#4c5769]">
+                                        Trang chủ
                                     </BreadcrumbLink>
                                 </BreadcrumbItem>
                                 <BreadcrumbSeparator className="text-[#cbcad7]">/</BreadcrumbSeparator>
                                 <BreadcrumbItem>
-                                    <BreadcrumbPage className="font-bold text-gray-900 text-base">
-                                        Cong bo hoc ky
-                                    </BreadcrumbPage>
+                                    <BreadcrumbPage className="text-base font-bold text-gray-900">Công bố học kỳ</BreadcrumbPage>
                                 </BreadcrumbItem>
                             </BreadcrumbList>
                         </Breadcrumb>
                     </TopNavBar>
 
-                    <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-6">
-                        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-                            <div className="max-w-3xl">
-                                <div className="inline-flex items-center gap-2 rounded-full border border-violet-200 bg-violet-50 px-3 py-1 text-xs font-extrabold text-violet-700 shadow-soft-sm">
-                                    Marketplace governance
+                    <main className="flex-1 space-y-6 px-4 py-6 sm:px-6 lg:px-10 lg:py-8">
+                        <section className="overflow-hidden rounded-[30px] border border-violet-200 bg-[radial-gradient(circle_at_top_left,_rgba(139,92,246,0.18),_transparent_35%),linear-gradient(135deg,_#ffffff_5%,_#f8f4ff_50%,_#eef6ff_100%)] p-6 shadow-soft-lg lg:p-7">
+                            <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
+                                <div className="max-w-3xl">
+                                    <div className="inline-flex items-center gap-2 rounded-full border border-violet-200 bg-white/80 px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.16em] text-violet-700">
+                                        <Layers3 className="h-4 w-4" />
+                                        Publication Command Center
+                                    </div>
+                                    <h1 className="mt-4 text-[28px] font-extrabold leading-tight text-gray-900 lg:text-[34px]">
+                                        Quản lý đợt công bố học kỳ theo vòng đời vận hành
+                                    </h1>
+                                    <p className="mt-3 max-w-2xl text-sm font-medium leading-6 text-[#4c5769] lg:text-base">
+                                        Theo dõi toàn bộ bản nháp, đợt đang mở và đợt đã đóng trong một bề mặt quản trị chung. Mỗi công bố nên có đủ khung thời gian, danh mục đồng phục và nhà cung cấp trước khi phát hành.
+                                    </p>
                                 </div>
-                                <h1 className="mt-3 text-[28px] lg:text-[32px] font-extrabold text-gray-900 leading-tight">
-                                    Cong bo danh muc hoc ky va nha cung cap
-                                </h1>
-                                <p className="mt-2 text-sm lg:text-base font-medium text-[#4c5769]">
-                                    Tao dot mo ban theo hoc ky, chon dong phuc da co hop dong va kich hoat nha cung cap phu hop.
-                                </p>
+
+                                <div className="flex w-full max-w-[420px] flex-col gap-3 xl:items-end">
+                                    <button
+                                        onClick={() => navigate("/school/semester-publications/new")}
+                                        className="nb-btn nb-btn-purple min-w-[220px] text-sm"
+                                    >
+                                        <Plus className="h-4 w-4" />
+                                        Tạo công bố mới
+                                    </button>
+                                    <div className="rounded-[20px] border border-white/80 bg-white/85 p-4 shadow-soft-sm">
+                                        <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-gray-500">Trọng tâm hôm nay</p>
+                                        <p className="mt-2 text-sm font-bold text-gray-900">
+                                            {draftCount > 0
+                                                ? `${draftCount} bản nháp cần hoàn thiện trước khi phát hành`
+                                                : activeCount > 0
+                                                  ? `${activeCount} đợt đang mở cần theo dõi vận hành`
+                                                  : "Chưa có đợt công bố nào đang hoạt động"}
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
 
-                            <button onClick={() => navigate("/school/semester-publications/new")} className="nb-btn nb-btn-purple text-sm whitespace-nowrap">
-                                Tao cong bo moi
-                            </button>
-                        </div>
+                            <div className="mt-6 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+                                <SummaryCard label="Tổng công bố" value={publications.length} hint="Toàn bộ kỳ bán đã tạo cho trường." tone="violet" />
+                                <SummaryCard label="Đang mở" value={activeCount} hint="Các đợt đang hiển thị cho phụ huynh." tone="green" />
+                                <SummaryCard label="Bản nháp" value={draftCount} hint="Cần rà soát trước khi phát hành." tone="amber" />
+                                <SummaryCard label="Đã đóng" value={closedCount} hint="Các đợt đã khép lại để tra cứu sau này." tone="slate" />
+                            </div>
+                        </section>
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div className="nb-stat-card nb-stat-primary">
-                                <div className="nb-stat-label">Tong dot cong bo</div>
-                                <div className="nb-stat-value">{publications.length}</div>
-                            </div>
-                            <div className="nb-stat-card">
-                                <div className="nb-stat-label">Dang mo</div>
-                                <div className="nb-stat-value">{statusCounts.Active ?? 0}</div>
-                            </div>
-                            <div className="nb-stat-card">
-                                <div className="nb-stat-label">Ban nhap</div>
-                                <div className="nb-stat-value">{statusCounts.Draft ?? 0}</div>
-                            </div>
-                        </div>
+                        {(draftCount > 0 || nearEndingActive.length > 0) && (
+                            <section className="rounded-[24px] border border-amber-200 bg-amber-50 p-5 shadow-soft-sm">
+                                <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+                                    <div className="flex items-start gap-3">
+                                        <div className="rounded-2xl bg-white p-3 text-amber-700 shadow-soft-sm">
+                                            <AlertTriangle className="h-5 w-5" />
+                                        </div>
+                                        <div>
+                                            <h2 className="text-lg font-extrabold text-gray-900">Hạng mục cần lưu ý</h2>
+                                            <p className="mt-1 text-sm font-medium leading-6 text-[#6b5b2a]">
+                                                {draftCount > 0 && nearEndingActive.length > 0
+                                                    ? `${draftCount} bản nháp cần hoàn thiện và ${nearEndingActive.length} đợt đang mở sắp chạm mốc kết thúc.`
+                                                    : draftCount > 0
+                                                      ? `${draftCount} bản nháp vẫn chưa được phát hành.`
+                                                      : `${nearEndingActive.length} đợt đang mở sắp đến hạn đóng.`}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={() => setActiveTab(draftCount > 0 ? "Draft" : "Active")}
+                                        className="nb-btn nb-btn-outline text-sm"
+                                    >
+                                        Xem ngay
+                                    </button>
+                                </div>
+                            </section>
+                        )}
 
-                        <div className="nb-card-static p-4 space-y-4">
+                        <section className="nb-card-static sticky top-0 z-20 space-y-4 rounded-[24px] bg-white/85 p-4 backdrop-blur-sm">
                             <div className="flex items-center gap-2 nb-input py-2.5">
-                                <svg className="w-5 h-5 text-[#97A3B6] flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
-                                </svg>
+                                <Search className="h-5 w-5 flex-shrink-0 text-[#97A3B6]" />
                                 <input
                                     type="text"
                                     value={search}
                                     onChange={(event) => setSearch(event.target.value)}
-                                    placeholder="Tim theo hoc ky, nam hoc hoac mo ta..."
-                                    className="flex-1 bg-transparent outline-none font-medium text-sm text-[#1a1a2e] placeholder:text-[#97A3B6]"
+                                    placeholder="Tìm theo học kỳ, năm học hoặc mô tả..."
+                                    className="flex-1 bg-transparent text-sm font-medium text-[#1a1a2e] outline-none placeholder:text-[#97A3B6]"
                                 />
                             </div>
 
-                            <div className="nb-tabs w-fit">
-                                {FILTER_TABS.map((tab) => {
-                                    const isActive = activeTab === tab.key;
-                                    const badge = tab.key === "all" ? publications.length : statusCounts[tab.key] ?? 0;
-                                    return (
-                                        <button key={tab.key} onClick={() => setActiveTab(tab.key)} className={`nb-tab ${isActive ? "nb-tab-active" : ""}`}>
-                                            {tab.label}
-                                            <span
-                                                className={`ml-1.5 min-w-[20px] h-5 flex items-center justify-center rounded-full text-xs font-bold px-1.5 ${
-                                                    isActive ? "bg-white/20 text-white" : "bg-[#E5E7EB] text-gray-600"
-                                                }`}
-                                            >
-                                                {badge}
-                                            </span>
-                                        </button>
-                                    );
-                                })}
+                            <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                                <div className="nb-tabs w-fit">
+                                    {FILTER_TABS.map((tab) => {
+                                        const isActive = activeTab === tab.key;
+                                        const badge =
+                                            tab.key === "all"
+                                                ? publications.length
+                                                : statusCounts[tab.key] ?? 0;
+
+                                        return (
+                                            <button key={tab.key} onClick={() => setActiveTab(tab.key)} className={`nb-tab ${isActive ? "nb-tab-active" : ""}`}>
+                                                {tab.label}
+                                                <span
+                                                    className={`ml-1.5 flex h-5 min-w-[20px] items-center justify-center rounded-full px-1.5 text-xs font-bold ${
+                                                        isActive ? "bg-white/20 text-white" : "bg-[#E5E7EB] text-gray-600"
+                                                    }`}
+                                                >
+                                                    {badge}
+                                                </span>
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+
+                                <div className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-gray-50 px-3 py-2 text-xs font-bold text-[#5b6475]">
+                                    <CalendarRange className="h-4 w-4 text-violet-600" />
+                                    {filteredPublications.length} công bố trong chế độ xem hiện tại
+                                </div>
                             </div>
-                        </div>
+                        </section>
 
                         {loading && (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+                            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
                                 {[1, 2, 3].map((item) => (
-                                    <div key={item} className="nb-skeleton p-5 h-[200px]" />
+                                    <div key={item} className="nb-skeleton h-[280px] rounded-[26px]" />
                                 ))}
                             </div>
                         )}
 
                         {!loading && filteredPublications.length > 0 && (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+                            <section className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
                                 {filteredPublications.map((publication) => (
                                     <PublicationCard
                                         key={publication.id}
@@ -340,24 +512,40 @@ export const SemesterPublicationList = (): JSX.Element => {
                                         onDelete={() => handleDelete(publication)}
                                     />
                                 ))}
-                            </div>
+                            </section>
                         )}
 
                         {!loading && filteredPublications.length === 0 && (
-                            <div className="nb-card-static p-12 text-center">
-                                <div className="w-14 h-14 rounded-full bg-violet-50 flex items-center justify-center mx-auto mb-4 border border-gray-200 shadow-soft-sm">
-                                    <svg className="w-7 h-7 text-violet-600" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
-                                    </svg>
+                            <section className="rounded-[26px] border border-gray-200 bg-white p-12 text-center shadow-soft-md">
+                                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border border-violet-200 bg-violet-50 text-violet-600 shadow-soft-sm">
+                                    {publications.length === 0 ? <Plus className="h-8 w-8" /> : <ClipboardList className="h-8 w-8" />}
                                 </div>
-                                <p className="font-bold text-gray-600 text-base">Chua co cong bo hoc ky nao</p>
-                                <p className="font-medium text-[#97A3B6] text-sm mt-1 mb-4">
-                                    Tao ban nhap dau tien de chuan bi dot mo ban moi.
+                                <h2 className="mt-5 text-xl font-extrabold text-gray-900">
+                                    {publications.length === 0 ? "Chưa có công bố học kỳ nào" : "Không tìm thấy công bố phù hợp"}
+                                </h2>
+                                <p className="mx-auto mt-2 max-w-xl text-sm font-medium leading-6 text-[#4c5769]">
+                                    {publications.length === 0
+                                        ? "Tạo bản nháp đầu tiên để chuẩn bị kỳ bán mới cho phụ huynh và nhà cung cấp."
+                                        : "Không có công bố nào khớp với bộ lọc hiện tại. Thử đổi trạng thái hoặc xóa từ khóa tìm kiếm."}
                                 </p>
-                                <button onClick={() => navigate("/school/semester-publications/new")} className="nb-btn nb-btn-purple text-sm">
-                                    Tao cong bo moi
-                                </button>
-                            </div>
+                                <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
+                                    {publications.length === 0 ? (
+                                        <button onClick={() => navigate("/school/semester-publications/new")} className="nb-btn nb-btn-purple text-sm">
+                                            Tạo công bố mới
+                                        </button>
+                                    ) : (
+                                        <button
+                                            onClick={() => {
+                                                setSearch("");
+                                                setActiveTab("all");
+                                            }}
+                                            className="nb-btn nb-btn-outline text-sm"
+                                        >
+                                            Xóa bộ lọc
+                                        </button>
+                                    )}
+                                </div>
+                            </section>
                         )}
                     </main>
                 </div>
