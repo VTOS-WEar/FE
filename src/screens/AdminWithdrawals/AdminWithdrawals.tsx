@@ -1,77 +1,80 @@
-import { useState, useEffect, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbList,
+    BreadcrumbPage,
+    BreadcrumbSeparator,
+} from "../../components/ui/breadcrumb";
 import { DashboardSidebar } from "../../components/layout";
 import { TopNavBar } from "../../components/layout/TopNavBar";
 import { useAdminSidebarConfig } from "../../hooks/useAdminSidebarConfig";
 import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
 import {
-    Breadcrumb, BreadcrumbItem, BreadcrumbLink,
-    BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator,
-} from "../../components/ui/breadcrumb";
-import {
-    getWithdrawalRequests, approveWithdrawal, rejectWithdrawal,
+    approveWithdrawal,
+    getWithdrawalRequests,
+    rejectWithdrawal,
     type WithdrawalRequestDto,
 } from "../../lib/api/admin";
+import {
+    ADMIN_TONE,
+    AdminBadge,
+    AdminEmptyState,
+    AdminHero,
+    AdminSummaryCard,
+} from "../AdminShared/adminWorkspace";
 
-/* ── Design tokens ── */
-const T = {
-    surface: "#FFFFFF", surfaceSoft: "#FFFDF9",
-    primary: "#8B6BFF", primarySoft: "#E9E1FF",
-    successSoft: "#D9F8E8", warningSoft: "#FFF1BF", dangerSoft: "#FFE3D8",
-    muted: "#6F6A7D",
+const statusTone: Record<string, { bg: string; text: string; label: string }> = {
+    Pending: { bg: ADMIN_TONE.amberSoft, text: "#9A6506", label: "Chờ duyệt" },
+    Approved: { bg: ADMIN_TONE.emeraldSoft, text: "#0C7A5D", label: "Đã duyệt" },
+    Rejected: { bg: ADMIN_TONE.roseSoft, text: "#B23148", label: "Từ chối" },
 };
 
-const STATUS_TONE: Record<string, { bg: string; text: string }> = {
-    Pending: { bg: T.warningSoft, text: "#9A590E" },
-    Approved: { bg: T.successSoft, text: "#187A4C" },
-    Rejected: { bg: T.dangerSoft, text: "#B2452D" },
-};
-const STATUS_LABEL: Record<string, string> = {
-    Pending: "Chờ duyệt", Approved: "Đã duyệt", Rejected: "Từ chối",
-};
-
-function Badge({ children, tone }: { children: React.ReactNode; tone?: { bg: string; text: string } }) {
-    const t = tone || { bg: T.surface, text: "#374151" };
-    return (
-        <span className="inline-flex items-center rounded-full border border-gray-200 px-3 py-1 text-[12px] font-black uppercase tracking-wide shadow-soft-sm"
-            style={{ background: t.bg, color: t.text }}>
-            {children}
-        </span>
-    );
+function formatCurrency(value: number) {
+    return `${value.toLocaleString("vi-VN")} ₫`;
 }
 
-function fmt(n: number) { return n.toLocaleString("vi-VN") + " ₫"; }
-function fmtDate(iso: string) {
-    return new Date(iso).toLocaleString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
+function formatDate(value: string) {
+    return new Date(value).toLocaleString("vi-VN", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+    });
 }
 
 export function AdminWithdrawals() {
     const navigate = useNavigate();
     const sidebarConfig = useAdminSidebarConfig();
     const [isCollapsed, toggle] = useSidebarCollapsed();
-
     const [items, setItems] = useState<WithdrawalRequestDto[]>([]);
     const [total, setTotal] = useState(0);
     const [page, setPage] = useState(1);
-    const [filter, setFilter] = useState<string>("");
+    const [filter, setFilter] = useState("");
     const [loading, setLoading] = useState(true);
-
     const [actionItem, setActionItem] = useState<WithdrawalRequestDto | null>(null);
     const [actionType, setActionType] = useState<"approve" | "reject">("approve");
     const [adminNote, setAdminNote] = useState("");
     const [processing, setProcessing] = useState(false);
-
     const pageSize = 10;
 
     const fetchData = useCallback(async () => {
         setLoading(true);
         try {
-            const res = await getWithdrawalRequests({ page, pageSize, status: filter || undefined });
-            setItems(res.items || []); setTotal(res.total || 0);
-        } catch { /* */ } finally { setLoading(false); }
+            const response = await getWithdrawalRequests({ page, pageSize, status: filter || undefined });
+            setItems(response.items || []);
+            setTotal(response.total || 0);
+        } finally {
+            setLoading(false);
+        }
     }, [page, filter]);
 
-    useEffect(() => { fetchData(); }, [fetchData]);
+    useEffect(() => {
+        fetchData();
+    }, [fetchData]);
 
     const handleAction = async () => {
         if (!actionItem) return;
@@ -79,18 +82,27 @@ export function AdminWithdrawals() {
         try {
             if (actionType === "approve") await approveWithdrawal(actionItem.id, adminNote || undefined);
             else await rejectWithdrawal(actionItem.id, adminNote || undefined);
-            setActionItem(null); setAdminNote(""); await fetchData();
-        } catch { /* */ } finally { setProcessing(false); }
+            setActionItem(null);
+            setAdminNote("");
+            await fetchData();
+        } finally {
+            setProcessing(false);
+        }
     };
 
     const handleLogout = () => {
-        localStorage.removeItem("access_token"); localStorage.removeItem("user"); localStorage.removeItem("expires_in");
-        sessionStorage.removeItem("access_token"); sessionStorage.removeItem("user"); sessionStorage.removeItem("expires_in");
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("user");
+        localStorage.removeItem("expires_in");
+        sessionStorage.removeItem("access_token");
+        sessionStorage.removeItem("user");
+        sessionStorage.removeItem("expires_in");
         navigate("/signin", { replace: true });
     };
 
     const totalPages = Math.max(1, Math.ceil(total / pageSize));
-    const gridCols = "2fr 1.5fr 2fr 1.5fr 1.2fr 1.3fr";
+    const pendingCount = items.filter((item) => item.status === "Pending").length;
+    const gridCols = "2fr 1.3fr 2fr 1.4fr 1.15fr 1.35fr";
 
     return (
         <div className="nb-page flex flex-col">
@@ -100,211 +112,341 @@ export function AdminWithdrawals() {
                 </div>
                 <div className="flex-1 flex flex-col min-w-0">
                     <TopNavBar>
-                        <Breadcrumb><BreadcrumbList>
-                            <BreadcrumbItem><BreadcrumbLink href="/admin/dashboard" className="font-semibold text-[#4c5769] text-base">Trang chủ</BreadcrumbLink></BreadcrumbItem>
-                            <BreadcrumbSeparator className="text-[#cbcad7]">/</BreadcrumbSeparator>
-                            <BreadcrumbItem><BreadcrumbPage className="font-bold text-gray-900 text-base">Yêu cầu rút tiền</BreadcrumbPage></BreadcrumbItem>
-                        </BreadcrumbList></Breadcrumb>
+                        <Breadcrumb>
+                            <BreadcrumbList>
+                                <BreadcrumbItem>
+                                    <BreadcrumbLink href="/admin/dashboard" className="font-semibold text-[#4c5769] text-base">
+                                        Trang chủ
+                                    </BreadcrumbLink>
+                                </BreadcrumbItem>
+                                <BreadcrumbSeparator className="text-[#cbcad7]">/</BreadcrumbSeparator>
+                                <BreadcrumbItem>
+                                    <BreadcrumbPage className="font-bold text-gray-900 text-base">Yêu cầu rút tiền</BreadcrumbPage>
+                                </BreadcrumbItem>
+                            </BreadcrumbList>
+                        </Breadcrumb>
                     </TopNavBar>
-                    <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-6 nb-fade-in">
-                        {/* Header */}
-                        <div>
-                            <h1 className="text-[40px] font-black leading-none md:text-[48px] text-gray-900">💸 Yêu cầu rút tiền</h1>
-                            <p className="mt-3 max-w-3xl text-[17px] font-semibold leading-8" style={{ color: T.muted }}>
-                                Duyệt hoặc từ chối yêu cầu rút tiền từ Trường học và Nhà cung cấp.
-                            </p>
-                        </div>
 
-                        {/* Filter tabs */}
-                        <div className="rounded-2xl border border-gray-200 p-4 shadow-soft-lg">
+                    <main className="flex-1 px-4 py-6 sm:px-6 lg:px-10 lg:py-8 space-y-6 nb-fade-in">
+                        <AdminHero
+                            eyebrow="Payout"
+                            title="Duyệt payout theo độ sẵn sàng và độ tồn đọng, không theo modal rời rạc."
+                            description="Màn hình này tập trung vào quyết định payout: hồ sơ nào đang chờ, số tiền nào cần ưu tiên và tài khoản ngân hàng nào sẽ nhận chuyển khoản."
+                            stats={[
+                                { label: "Đang hiển thị", value: loading ? "…" : String(items.length) },
+                                { label: "Chờ duyệt", value: loading ? "…" : String(pendingCount) },
+                            ]}
+                        />
+
+                        <section className="grid gap-4 md:grid-cols-3">
+                            <AdminSummaryCard
+                                label="Tổng yêu cầu"
+                                value={loading ? "…" : total.toLocaleString("vi-VN")}
+                                detail="Tổng số payout trong danh sách quản trị ở trạng thái lọc hiện tại."
+                                accent={ADMIN_TONE.sky}
+                            />
+                            <AdminSummaryCard
+                                label="Cần duyệt ngay"
+                                value={loading ? "…" : pendingCount.toLocaleString("vi-VN")}
+                                detail="Đây là nhóm Admin cần quyết định sớm để tránh kéo dài chu kỳ thanh toán."
+                                accent={ADMIN_TONE.amber}
+                            />
+                            <AdminSummaryCard
+                                label="Đã xử lý"
+                                value={loading ? "…" : (items.filter((item) => item.status !== "Pending").length).toLocaleString("vi-VN")}
+                                detail="Giúp đọc nhanh nhịp độ xử lý payout trên màn hình vận hành tài chính."
+                                accent={ADMIN_TONE.emerald}
+                            />
+                        </section>
+
+                        <section className="rounded-[24px] border p-4 shadow-soft-lg" style={{ borderColor: ADMIN_TONE.line, background: ADMIN_TONE.shell }}>
                             <div className="flex flex-wrap items-center gap-3">
                                 {[
                                     { value: "", label: "Tất cả" },
                                     { value: "Pending", label: "Chờ duyệt" },
                                     { value: "Approved", label: "Đã duyệt" },
                                     { value: "Rejected", label: "Từ chối" },
-                                ].map(tab => (
-                                    <button key={tab.value}
-                                        onClick={() => { setFilter(tab.value); setPage(1); }}
-                                        className="rounded-full border border-gray-200 px-4 py-1.5 text-[13px] font-extrabold transition-all hover:scale-[0.99] hover:shadow-soft-sm"
+                                ].map((tab) => (
+                                    <button
+                                        key={tab.value}
+                                        onClick={() => {
+                                            setFilter(tab.value);
+                                            setPage(1);
+                                        }}
+                                        className="rounded-full border px-4 py-1.5 text-[13px] font-extrabold transition-all hover:scale-[0.99]"
                                         style={{
-                                            background: filter === tab.value ? T.primary : T.surface,
-                                            color: filter === tab.value ? "#fff" : "#374151",
-                                        }}>
+                                            borderColor: filter === tab.value ? ADMIN_TONE.violet : ADMIN_TONE.line,
+                                            background: filter === tab.value ? ADMIN_TONE.violet : ADMIN_TONE.shell,
+                                            color: filter === tab.value ? "#fff" : ADMIN_TONE.pageInk,
+                                        }}
+                                    >
                                         {tab.label}
                                     </button>
                                 ))}
                             </div>
-                        </div>
+                        </section>
 
-                        {/* Table */}
-                        <div className="overflow-hidden rounded-2xl border border-gray-200 shadow-soft-lg">
-                            {/* Header */}
-                            <div className="sticky top-0 z-10 hidden lg:grid items-center border-b border-gray-200 px-5 py-4"
-                                style={{ gridTemplateColumns: gridCols, background: T.primarySoft }}>
-                                {["Tổ chức", "Số tiền", "Ngân hàng", "Ngày yêu cầu", "Trạng thái", "Hành động"].map((h, i, arr) => (
-                                    <div key={h} className={`text-[12px] font-black uppercase tracking-[0.08em]${i === arr.length - 1 ? " text-right" : ""}`} style={{ color: "#4E4A5B" }}>{h}</div>
+                        <section className="overflow-hidden rounded-[24px] border shadow-soft-lg" style={{ borderColor: ADMIN_TONE.line, background: ADMIN_TONE.shell }}>
+                            <div
+                                className="sticky top-0 z-10 hidden lg:grid items-center border-b px-5 py-4"
+                                style={{ gridTemplateColumns: gridCols, borderColor: ADMIN_TONE.line, background: ADMIN_TONE.violetSoft }}
+                            >
+                                {["Tổ chức", "Số tiền", "Ngân hàng", "Ngày yêu cầu", "Trạng thái", "Hành động"].map((header, index, arr) => (
+                                    <div
+                                        key={header}
+                                        className={`text-[12px] font-black uppercase tracking-[0.08em]${index === arr.length - 1 ? " text-right" : ""}`}
+                                        style={{ color: ADMIN_TONE.muted }}
+                                    >
+                                        {header}
+                                    </div>
                                 ))}
                             </div>
 
-                            {/* Loading */}
                             {loading && (
                                 <div className="space-y-3 px-5 py-5">
-                                    {Array.from({ length: 5 }).map((_, i) => (
-                                        <div key={i} className="hidden lg:grid items-center gap-4 rounded-[14px] border px-4 py-4"
-                                            style={{ gridTemplateColumns: gridCols, borderColor: "#D9D4E6", background: T.surfaceSoft }}>
-                                            {Array.from({ length: 6 }).map((_, j) => (
-                                                <div key={j} className="h-5 rounded animate-pulse" style={{ background: "#EAE3FF" }} />
+                                    {Array.from({ length: 5 }).map((_, index) => (
+                                        <div
+                                            key={index}
+                                            className="hidden lg:grid items-center gap-4 rounded-[14px] border px-4 py-4"
+                                            style={{ gridTemplateColumns: gridCols, borderColor: ADMIN_TONE.line, background: ADMIN_TONE.soft }}
+                                        >
+                                            {Array.from({ length: 6 }).map((__, cellIndex) => (
+                                                <div key={cellIndex} className="h-5 rounded animate-pulse" style={{ background: ADMIN_TONE.violetSoft }} />
                                             ))}
                                         </div>
                                     ))}
                                 </div>
                             )}
 
-                            {/* Empty */}
                             {!loading && items.length === 0 && (
-                                <div className="flex min-h-[240px] flex-col items-center justify-center px-6 py-12 text-center">
-                                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-gray-200 text-[28px] shadow-soft-md"
-                                        style={{ background: T.warningSoft }}>📭</div>
-                                    <div className="mt-5 text-[28px] font-black">Chưa có yêu cầu rút tiền nào</div>
-                                    <p className="mt-3 max-w-lg text-[15px] font-semibold leading-7" style={{ color: T.muted }}>
-                                        Không tìm thấy yêu cầu rút tiền phù hợp bộ lọc hiện tại.
-                                    </p>
-                                </div>
+                                <AdminEmptyState
+                                    title="Chưa có yêu cầu rút tiền nào"
+                                    detail="Không tìm thấy yêu cầu rút tiền phù hợp bộ lọc hiện tại."
+                                    icon="📭"
+                                    bg={ADMIN_TONE.amberSoft}
+                                />
                             )}
 
-                            {/* Rows */}
                             {!loading && items.length > 0 && (
                                 <div>
-                                    {items.map((item, idx) => (
-                                        <div key={item.id} className="hidden lg:grid items-center gap-4 border-b px-5 py-4 transition-colors hover:bg-[#F7F2FF] nb-fade-in"
-                                            style={{ gridTemplateColumns: gridCols, borderColor: "#D9D4E6", animationDelay: `${idx * 40}ms` }}>
+                                    {items.map((item, index) => (
+                                        <div
+                                            key={item.id}
+                                            className="hidden lg:grid items-center gap-4 border-b px-5 py-4 transition-colors hover:bg-[#F7F2FF] nb-fade-in"
+                                            style={{ gridTemplateColumns: gridCols, borderColor: ADMIN_TONE.line, animationDelay: `${index * 40}ms` }}
+                                        >
                                             <div className="text-[15px] font-black text-gray-900">{item.schoolName || "—"}</div>
-                                            <div className="text-[16px] font-black" style={{ color: "#EF4444" }}>{fmt(item.amount)}</div>
+                                            <div className="text-[16px] font-black" style={{ color: ADMIN_TONE.rose }}>
+                                                {formatCurrency(item.amount)}
+                                            </div>
                                             <div>
                                                 <div className="text-[14px] font-bold text-gray-900">{item.bankName || "—"}</div>
-                                                <div className="text-[12px] font-semibold" style={{ color: T.muted }}>{item.bankAccount || "—"}</div>
+                                                <div className="text-[12px] font-semibold" style={{ color: ADMIN_TONE.muted }}>
+                                                    {item.bankAccount || "—"}
+                                                </div>
                                             </div>
-                                            <div className="text-[14px] font-semibold" style={{ color: "#3D384A" }}>{fmtDate(item.requestedAt)}</div>
-                                            <div><Badge tone={STATUS_TONE[item.status]}>{STATUS_LABEL[item.status] || item.status}</Badge></div>
+                                            <div className="text-[14px] font-semibold" style={{ color: "#3D384A" }}>
+                                                {formatDate(item.requestedAt)}
+                                            </div>
+                                            <div>
+                                                <AdminBadge bg={statusTone[item.status]?.bg} text={statusTone[item.status]?.text}>
+                                                    {statusTone[item.status]?.label || item.status}
+                                                </AdminBadge>
+                                            </div>
                                             <div className="flex justify-end">
                                                 {item.status === "Pending" ? (
                                                     <div className="flex gap-2">
-                                                        <button onClick={() => { setActionItem(item); setActionType("approve"); }}
-                                                            className="rounded-xl border border-gray-200 px-3 py-2 text-[12px] font-extrabold text-white transition-all hover:scale-[0.99] hover:shadow-soft-sm active:scale-[0.98] active:shadow-none"
-                                                            style={{ background: "#10B981" }}>
-                                                            ✅ Duyệt
+                                                        <button
+                                                            onClick={() => {
+                                                                setActionItem(item);
+                                                                setActionType("approve");
+                                                            }}
+                                                            className="rounded-xl border px-3 py-2 text-[12px] font-extrabold text-white transition-all hover:scale-[0.99]"
+                                                            style={{ borderColor: ADMIN_TONE.emerald, background: ADMIN_TONE.emerald }}
+                                                        >
+                                                            Duyệt
                                                         </button>
-                                                        <button onClick={() => { setActionItem(item); setActionType("reject"); }}
-                                                            className="rounded-xl border border-gray-200 px-3 py-2 text-[12px] font-extrabold text-white transition-all hover:scale-[0.99] hover:shadow-soft-sm active:scale-[0.98] active:shadow-none"
-                                                            style={{ background: "#EF4444" }}>
-                                                            ❌ Từ chối
+                                                        <button
+                                                            onClick={() => {
+                                                                setActionItem(item);
+                                                                setActionType("reject");
+                                                            }}
+                                                            className="rounded-xl border px-3 py-2 text-[12px] font-extrabold text-white transition-all hover:scale-[0.99]"
+                                                            style={{ borderColor: ADMIN_TONE.rose, background: ADMIN_TONE.rose }}
+                                                        >
+                                                            Từ chối
                                                         </button>
                                                     </div>
                                                 ) : (
-                                                    <span className="text-[12px] font-semibold" style={{ color: T.muted }}>
-                                                        {item.processedAt ? fmtDate(item.processedAt) : "—"}
+                                                    <span className="text-[12px] font-semibold" style={{ color: ADMIN_TONE.muted }}>
+                                                        {item.processedAt ? formatDate(item.processedAt) : "—"}
                                                     </span>
                                                 )}
                                             </div>
                                         </div>
                                     ))}
 
-                                    {/* Mobile cards */}
-                                    {items.map((item, idx) => (
-                                        <div key={`m-${item.id}`} className="lg:hidden border-b p-4 space-y-3 nb-fade-in"
-                                            style={{ borderColor: "#D9D4E6", animationDelay: `${idx * 40}ms` }}>
+                                    {items.map((item, index) => (
+                                        <div
+                                            key={`mobile-${item.id}`}
+                                            className="lg:hidden border-b p-4 space-y-3 nb-fade-in"
+                                            style={{ borderColor: ADMIN_TONE.line, animationDelay: `${index * 40}ms` }}
+                                        >
                                             <div className="flex items-start justify-between gap-3">
                                                 <div>
                                                     <div className="text-[16px] font-black text-gray-900">{item.schoolName || "—"}</div>
-                                                    <div className="text-[18px] font-black mt-1" style={{ color: "#EF4444" }}>{fmt(item.amount)}</div>
+                                                    <div className="mt-1 text-[18px] font-black" style={{ color: ADMIN_TONE.rose }}>
+                                                        {formatCurrency(item.amount)}
+                                                    </div>
                                                 </div>
-                                                <Badge tone={STATUS_TONE[item.status]}>{STATUS_LABEL[item.status] || item.status}</Badge>
+                                                <AdminBadge bg={statusTone[item.status]?.bg} text={statusTone[item.status]?.text}>
+                                                    {statusTone[item.status]?.label || item.status}
+                                                </AdminBadge>
                                             </div>
-                                            <div className="text-[13px] font-semibold" style={{ color: T.muted }}>
-                                                {item.bankName} — {item.bankAccount} • {fmtDate(item.requestedAt)}
+                                            <div className="text-[13px] font-semibold" style={{ color: ADMIN_TONE.muted }}>
+                                                {(item.bankName || "—") + " — " + (item.bankAccount || "—") + " · " + formatDate(item.requestedAt)}
                                             </div>
                                             {item.status === "Pending" && (
                                                 <div className="flex gap-2">
-                                                    <button onClick={() => { setActionItem(item); setActionType("approve"); }}
-                                                        className="flex-1 rounded-xl border border-gray-200 py-2 text-[13px] font-extrabold text-white transition-all hover:scale-[0.99] hover:shadow-soft-sm"
-                                                        style={{ background: "#10B981" }}>✅ Duyệt</button>
-                                                    <button onClick={() => { setActionItem(item); setActionType("reject"); }}
-                                                        className="flex-1 rounded-xl border border-gray-200 py-2 text-[13px] font-extrabold text-white transition-all hover:scale-[0.99] hover:shadow-soft-sm"
-                                                        style={{ background: "#EF4444" }}>❌ Từ chối</button>
+                                                    <button
+                                                        onClick={() => {
+                                                            setActionItem(item);
+                                                            setActionType("approve");
+                                                        }}
+                                                        className="flex-1 rounded-xl border py-2 text-[13px] font-extrabold text-white transition-all hover:scale-[0.99]"
+                                                        style={{ borderColor: ADMIN_TONE.emerald, background: ADMIN_TONE.emerald }}
+                                                    >
+                                                        Duyệt
+                                                    </button>
+                                                    <button
+                                                        onClick={() => {
+                                                            setActionItem(item);
+                                                            setActionType("reject");
+                                                        }}
+                                                        className="flex-1 rounded-xl border py-2 text-[13px] font-extrabold text-white transition-all hover:scale-[0.99]"
+                                                        style={{ borderColor: ADMIN_TONE.rose, background: ADMIN_TONE.rose }}
+                                                    >
+                                                        Từ chối
+                                                    </button>
                                                 </div>
                                             )}
                                         </div>
                                     ))}
 
-                                    {/* Pagination */}
-                                    <div className="flex flex-col gap-3 border-t border-gray-200 px-5 py-4 md:flex-row md:items-center md:justify-between"
-                                        style={{ background: T.surfaceSoft }}>
-                                        <div className="text-[14px] font-bold" style={{ color: T.muted }}>
+                                    <div
+                                        className="flex flex-col gap-3 border-t px-5 py-4 md:flex-row md:items-center md:justify-between"
+                                        style={{ borderColor: ADMIN_TONE.line, background: ADMIN_TONE.soft }}
+                                    >
+                                        <div className="text-[14px] font-bold" style={{ color: ADMIN_TONE.muted }}>
                                             Trang {page}/{totalPages} · {total} yêu cầu
                                         </div>
                                         {totalPages > 1 && (
                                             <div className="flex gap-3">
-                                                <button disabled={page <= 1} onClick={() => setPage(p => p - 1)}
-                                                    className="rounded-xl border border-gray-200 px-4 py-2 text-[13px] font-extrabold transition-all disabled:opacity-40 hover:scale-[0.99] hover:shadow-soft-sm active:scale-[0.98] active:shadow-none"
-                                                    style={{ background: T.surface, color: "#374151" }}>← Trước</button>
-                                                <button disabled={page >= totalPages} onClick={() => setPage(p => p + 1)}
-                                                    className="rounded-xl border border-gray-200 px-4 py-2 text-[13px] font-extrabold text-white transition-all disabled:opacity-40 hover:scale-[0.99] hover:shadow-soft-sm active:scale-[0.98] active:shadow-none"
-                                                    style={{ background: T.primary }}>Sau →</button>
+                                                <button
+                                                    disabled={page <= 1}
+                                                    onClick={() => setPage((current) => current - 1)}
+                                                    className="rounded-xl border px-4 py-2 text-[13px] font-extrabold transition-all disabled:opacity-40 hover:scale-[0.99]"
+                                                    style={{ borderColor: ADMIN_TONE.line, background: ADMIN_TONE.shell, color: ADMIN_TONE.pageInk }}
+                                                >
+                                                    ← Trước
+                                                </button>
+                                                <button
+                                                    disabled={page >= totalPages}
+                                                    onClick={() => setPage((current) => current + 1)}
+                                                    className="rounded-xl border px-4 py-2 text-[13px] font-extrabold text-white transition-all disabled:opacity-40 hover:scale-[0.99]"
+                                                    style={{ borderColor: ADMIN_TONE.violet, background: ADMIN_TONE.violet }}
+                                                >
+                                                    Sau →
+                                                </button>
                                             </div>
                                         )}
                                     </div>
                                 </div>
                             )}
-                        </div>
+                        </section>
                     </main>
                 </div>
             </div>
 
-            {/* ── Action Modal ── */}
             {actionItem && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 nb-backdrop-enter"
+                <div
+                    className="fixed inset-0 z-50 flex items-center justify-center p-4 nb-backdrop-enter"
                     style={{ background: "rgba(25, 24, 43, 0.55)" }}
-                    onClick={() => { setActionItem(null); setAdminNote(""); }}>
-                    <div className="w-full max-w-md rounded-2xl border border-gray-200 p-6 space-y-5 nb-modal-enter shadow-soft-lg"
-                        style={{ background: T.surface }}
-                        onClick={e => e.stopPropagation()}>
-                        <div className="flex justify-between items-center">
+                    onClick={() => {
+                        setActionItem(null);
+                        setAdminNote("");
+                    }}
+                >
+                    <div
+                        className="w-full max-w-md rounded-2xl border p-6 space-y-5 nb-modal-enter shadow-soft-lg"
+                        style={{ borderColor: ADMIN_TONE.line, background: ADMIN_TONE.shell }}
+                        onClick={(event) => event.stopPropagation()}
+                    >
+                        <div className="flex items-center justify-between">
                             <h3 className="text-[22px] font-black text-gray-900">
-                                {actionType === "approve" ? "✅ Duyệt yêu cầu rút tiền" : "❌ Từ chối yêu cầu rút tiền"}
+                                {actionType === "approve" ? "Duyệt yêu cầu rút tiền" : "Từ chối yêu cầu rút tiền"}
                             </h3>
-                            <button onClick={() => { setActionItem(null); setAdminNote(""); }}
-                                className="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 text-[16px] font-black transition-all hover:scale-[0.99] hover:shadow-none"
-                                style={{ background: T.surface }}>✕</button>
+                            <button
+                                onClick={() => {
+                                    setActionItem(null);
+                                    setAdminNote("");
+                                }}
+                                className="flex h-10 w-10 items-center justify-center rounded-xl border text-[16px] font-black transition-all hover:scale-[0.99]"
+                                style={{ borderColor: ADMIN_TONE.line, background: ADMIN_TONE.shell }}
+                            >
+                                ×
+                            </button>
                         </div>
 
-                        {/* Info */}
                         <div className="grid grid-cols-2 gap-3">
                             {[
-                                { label: "Tổ chức", value: actionItem.schoolName },
-                                { label: "Số tiền", value: fmt(actionItem.amount), color: "#EF4444" },
-                                { label: "Ngân hàng", value: `${actionItem.bankName} — ${actionItem.bankAccount}`, span: true },
-                            ].map((item, i) => (
-                                <div key={i} className={item.span ? "col-span-2" : ""}>
-                                    <p className="text-[12px] font-black uppercase mb-1 tracking-wide" style={{ color: T.muted }}>{item.label}</p>
-                                    <p className="text-[15px] font-bold" style={{ color: item.color || "#374151" }}>{item.value}</p>
+                                { label: "Tổ chức", value: actionItem.schoolName || "—" },
+                                { label: "Số tiền", value: formatCurrency(actionItem.amount), color: ADMIN_TONE.rose },
+                                { label: "Ngân hàng", value: `${actionItem.bankName || "—"} — ${actionItem.bankAccount || "—"}`, span: true },
+                            ].map((item, index) => (
+                                <div key={index} className={item.span ? "col-span-2" : ""}>
+                                    <p className="mb-1 text-[12px] font-black uppercase tracking-wide" style={{ color: ADMIN_TONE.muted }}>
+                                        {item.label}
+                                    </p>
+                                    <p className="text-[15px] font-bold" style={{ color: item.color || ADMIN_TONE.pageInk }}>
+                                        {item.value}
+                                    </p>
                                 </div>
                             ))}
                         </div>
 
                         <div>
-                            <label className="block text-[12px] font-black uppercase mb-2 tracking-wide" style={{ color: T.muted }}>Ghi chú (tùy chọn)</label>
-                            <textarea value={adminNote} onChange={e => setAdminNote(e.target.value)} placeholder="Nhập ghi chú..."
-                                className="w-full resize-none h-20 rounded-xl border border-gray-200 px-4 py-3 text-[14px] font-semibold outline-none transition-all placeholder:text-gray-400 focus:border-purple-400 focus:ring-2 focus:ring-purple-200/50 focus:outline-none"
-                                style={{ background: T.surface }} />
+                            <label className="mb-2 block text-[12px] font-black uppercase tracking-wide" style={{ color: ADMIN_TONE.muted }}>
+                                Ghi chú (tùy chọn)
+                            </label>
+                            <textarea
+                                value={adminNote}
+                                onChange={(event) => setAdminNote(event.target.value)}
+                                placeholder="Nhập ghi chú..."
+                                className="h-20 w-full resize-none rounded-xl border px-4 py-3 text-[14px] font-semibold outline-none"
+                                style={{ borderColor: ADMIN_TONE.line, background: ADMIN_TONE.shell }}
+                            />
                         </div>
                         <div className="flex gap-3">
-                            <button onClick={() => { setActionItem(null); setAdminNote(""); }}
-                                className="flex-1 rounded-xl border border-gray-200 py-3 text-[15px] font-extrabold transition-all hover:scale-[0.99] hover:shadow-soft-sm active:scale-[0.98] active:shadow-none"
-                                style={{ background: T.surface, color: "#374151" }}>Hủy</button>
-                            <button onClick={handleAction} disabled={processing}
-                                className="flex-1 rounded-xl border border-gray-200 py-3 text-[15px] font-extrabold text-white transition-all disabled:opacity-50 hover:scale-[0.99] hover:shadow-soft-sm active:scale-[0.98] active:shadow-none"
-                                style={{ background: actionType === "approve" ? "#10B981" : "#EF4444" }}>
+                            <button
+                                onClick={() => {
+                                    setActionItem(null);
+                                    setAdminNote("");
+                                }}
+                                className="flex-1 rounded-xl border py-3 text-[15px] font-extrabold transition-all hover:scale-[0.99]"
+                                style={{ borderColor: ADMIN_TONE.line, background: ADMIN_TONE.shell, color: ADMIN_TONE.pageInk }}
+                            >
+                                Hủy
+                            </button>
+                            <button
+                                onClick={handleAction}
+                                disabled={processing}
+                                className="flex-1 rounded-xl border py-3 text-[15px] font-extrabold text-white transition-all disabled:opacity-50 hover:scale-[0.99]"
+                                style={{
+                                    borderColor: actionType === "approve" ? ADMIN_TONE.emerald : ADMIN_TONE.rose,
+                                    background: actionType === "approve" ? ADMIN_TONE.emerald : ADMIN_TONE.rose,
+                                }}
+                            >
                                 {processing ? "Đang xử lý..." : actionType === "approve" ? "Xác nhận duyệt" : "Xác nhận từ chối"}
                             </button>
                         </div>
