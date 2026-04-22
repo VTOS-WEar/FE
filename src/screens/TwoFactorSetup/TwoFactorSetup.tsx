@@ -122,7 +122,7 @@ export const TwoFactorSetup = (): JSX.Element => {
             if (u.role === "Admin") navigate("/admin/dashboard", { replace: true });
             else if (u.role === "School") navigate("/school/dashboard", { replace: true });
             else if (u.role === "Provider") navigate("/provider/dashboard", { replace: true });
-            else if (u.role === "HomeroomTeacher") navigate("/teacher/classes", { replace: true });
+            else if (u.role === "HomeroomTeacher") navigate("/teacher/dashboard", { replace: true });
             else navigate("/homepage", { replace: true });
         } else {
             navigate("/login", { replace: true });
@@ -151,7 +151,7 @@ export const TwoFactorSetup = (): JSX.Element => {
     const stepLabels = ["Khởi tạo", "Quét mã", "Xác minh", "Hoàn tất"];
 
     return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4" style={{ fontFamily: "'Space Grotesk Variable', sans-serif" }}>
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4" style={{ fontFamily: "'Be Vietnam Pro', system-ui, sans-serif" }}>
             <div className="bg-white w-full max-w-lg p-8 lg:p-10 border border-gray-200 rounded-2xl shadow-soft-lg">
                 {/* Header */}
                 <div className="text-center mb-6">

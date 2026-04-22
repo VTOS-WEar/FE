@@ -45,7 +45,7 @@ export const SignIn = (): JSX.Element => {
         else if (role === "Admin") navigate("/admin/dashboard", { replace: true });
         else if (role === "School") navigate("/school/dashboard", { replace: true });
         else if (role === "Provider") navigate("/provider/dashboard", { replace: true });
-        else if (role === "HomeroomTeacher") navigate("/teacher/classes", { replace: true });
+        else if (role === "HomeroomTeacher") navigate("/teacher/dashboard", { replace: true });
         else navigate("/homepage", { replace: true });
       } catch {
         // Invalid user JSON — let them re-login
@@ -134,7 +134,7 @@ export const SignIn = (): JSX.Element => {
       redirectTo = "/provider/dashboard";
       getProviderProfile().then(p => { if (p.providerName) localStorage.setItem("vtos_org_name", p.providerName); }).catch(() => {});
     } else if (data.user.role === "HomeroomTeacher") {
-      redirectTo = "/teacher/classes";
+      redirectTo = "/teacher/dashboard";
     } else if (data.user.role === "Parent" && !data.user.phone) {
       redirectTo = "/fillphonenumber";
     } else if (data.user.role === "Parent" && redirect) {
