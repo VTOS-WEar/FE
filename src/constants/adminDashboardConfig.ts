@@ -1,14 +1,19 @@
 import {
-    LayoutDashboard, Users, UserPlus,
-    CreditCard, AlertTriangle, Wallet
+    AlertTriangle,
+    CreditCard,
+    LayoutDashboard,
+    Settings,
+    UserPlus,
+    Users,
+    Wallet,
 } from "lucide-react";
 import type { DashboardSidebarProps } from "../components/layout";
 
 /**
- * Sidebar config for Admin Dashboard screens.
- * 3 sections: Tài khoản, Tài chính, Hệ thống
+ * Sidebar config for Admin workspace screens.
+ * Keep route targets stable while grouping the IA around Admin responsibilities.
  */
-export const ADMIN_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, 'isCollapsed' | 'onToggle'> = {
+export const ADMIN_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, "isCollapsed" | "onToggle"> = {
     avatarSrc: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/frame-239353.png",
     avatarAlt: "Admin avatar",
     greeting: "Xin chào,",
@@ -31,7 +36,7 @@ export const ADMIN_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, 'isCollapsed' | '
                 },
                 {
                     icon: UserPlus,
-                    label: "Yêu cầu hợp tác",
+                    label: "Yêu cầu cấp tài khoản",
                     href: "/admin/account-requests",
                 },
             ],
@@ -52,12 +57,22 @@ export const ADMIN_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, 'isCollapsed' | '
             ],
         },
         {
-            title: "HỆ THỐNG",
+            title: "VẬN HÀNH",
             items: [
                 {
                     icon: AlertTriangle,
-                    label: "Khiếu nại",
+                    label: "Hỗ trợ",
                     href: "/admin/complaints",
+                },
+            ],
+        },
+        {
+            title: "THIẾT LẬP",
+            items: [
+                {
+                    icon: Settings,
+                    label: "Tài khoản",
+                    href: "/admin/account-settings",
                 },
             ],
         },
