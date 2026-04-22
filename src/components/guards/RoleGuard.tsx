@@ -69,7 +69,7 @@ export const RoleGuard = ({
         return <Navigate to="/provider/dashboard" replace />;
     }
     if (user.role === "HomeroomTeacher") {
-        return <Navigate to="/teacher/classes" replace />;
+        return <Navigate to="/teacher/dashboard" replace />;
     }
     return <Navigate to="/homepage" replace />;
 };

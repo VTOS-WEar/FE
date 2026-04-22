@@ -43,7 +43,7 @@ export class ErrorBoundary extends Component<Props, State> {
                 <div
                     className="min-h-screen flex items-center justify-center p-6"
                     style={{
-                        fontFamily: "'Space Grotesk Variable', 'Space Grotesk', sans-serif",
+                        fontFamily: "'Be Vietnam Pro', system-ui, sans-serif",
                         background: "#f9fafb",
                     }}
                 >
