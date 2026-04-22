@@ -1,7 +1,6 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-@import "@fontsource-variable/geist";
-@import "@fontsource-variable/space-grotesk";
+/* Font loaded via Google Fonts in index.html: Be Vietnam Pro */
 @import "./src/styles/modern.css";
 @tailwind components;
 @tailwind utilities;
@@ -251,13 +250,13 @@
   }
   .theme {
     --font-heading: var(--font-sans);
-    --font-sans: 'Geist Variable', sans-serif;
+    --font-sans: 'Be Vietnam Pro', system-ui, sans-serif;
   }
   .nb-page {
-    font-family: 'Geist Variable', 'Geist', system-ui, sans-serif;
+    font-family: 'Be Vietnam Pro', system-ui, sans-serif;
   }
   .nb-sidebar {
-    font-family: 'Geist Variable', 'Geist', system-ui, sans-serif;
+    font-family: 'Be Vietnam Pro', system-ui, sans-serif;
   }
   * {
     @apply border-border outline-ring/50;

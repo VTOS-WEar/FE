@@ -73,7 +73,7 @@
 
 /* ── Page Root ── */
 .nb-page {
-  font-family: 'Geist Variable', 'Geist', system-ui, sans-serif;
+  font-family: 'Be Vietnam Pro', system-ui, sans-serif;
   background: var(--nb-bg-page);
   min-height: 100vh;
   width: 100%;
