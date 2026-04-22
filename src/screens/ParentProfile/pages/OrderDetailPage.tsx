@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Package, Calendar, MapPin, DollarSign } from "lucide-react";
+import { ArrowLeft, Package, Calendar, MapPin, DollarSign, ShoppingBag } from "lucide-react";
 import { getOrderDetail, type OrderDetailDto } from "../../../lib/api/orders";
 
 function fmt(n: number) { return n.toLocaleString("vi-VN") + " ₫"; }
@@ -198,7 +198,7 @@ export function OrderDetailPage(): JSX.Element {
                     <OrderStatusStepper orderStatus={order.orderStatus} />
                 </div>
 
-                {/* Source Info (Campaign / Provider) */}
+                {/* Source Info (Catalog / Provider) */}
                 <div className="nb-card p-5 mb-6">
                     <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Đơn hàng được cung cấp bởi</p>
                     <div className="flex items-center gap-4">
@@ -210,7 +210,7 @@ export function OrderDetailPage(): JSX.Element {
                                 {order.providerName || order.campaignName || "Hệ thống VTOS"}
                             </p>
                             <p className="text-xs font-bold text-gray-400 mt-0.5">
-                                {order.providerId ? "Mua trực tiếp từ nhà cung cấp" : "Đơn hàng thuộc chiến dịch trường học"}
+                                {order.providerId ? "Mua trực tiếp từ nhà cung cấp" : "Đơn hàng thuộc danh mục học kỳ của trường"}
                             </p>
                         </div>
                     </div>

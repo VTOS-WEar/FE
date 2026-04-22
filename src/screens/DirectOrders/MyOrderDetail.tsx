@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, CalendarDays, Loader2, MapPin, Package, Phone, ShieldCheck, Truck } from "lucide-react";
+import { ArrowLeft, CalendarDays, Loader2, MapPin, MessageSquareText, Package, Phone, ShieldCheck, Star, Truck } from "lucide-react";
 import { GuestLayout } from "../../components/layout/GuestLayout";
 import { useToast } from "../../contexts/ToastContext";
-import { cancelDirectOrder, getMyDirectOrderDetail, type MyDirectOrderDetailDto } from "../../lib/api/orders";
+import { cancelDirectOrder, getMyDirectOrderDetail, submitProviderRating, type MyDirectOrderDetailDto } from "../../lib/api/orders";
 
 function formatCurrency(value: number) {
     return `${value.toLocaleString("vi-VN")} ₫`;
@@ -18,6 +18,9 @@ export function MyOrderDetail(): JSX.Element {
     const [order, setOrder] = useState<MyDirectOrderDetailDto | null>(null);
     const [loading, setLoading] = useState(true);
     const [cancelling, setCancelling] = useState(false);
+    const [submittingRating, setSubmittingRating] = useState(false);
+    const [ratingValue, setRatingValue] = useState(5);
+    const [ratingComment, setRatingComment] = useState("");
 
     useEffect(() => {
         if (!id) return;
@@ -25,7 +28,11 @@ export function MyOrderDetail(): JSX.Element {
         setLoading(true);
         getMyDirectOrderDetail(id)
             .then((response) => {
-                if (!disposed) setOrder(response);
+                if (!disposed) {
+                    setOrder(response);
+                    setRatingValue(response.existingProviderRating?.rating ?? 5);
+                    setRatingComment(response.existingProviderRating?.comment ?? "");
+                }
             })
             .catch((error: unknown) => {
                 if (!disposed) {
@@ -64,6 +71,43 @@ export function MyOrderDetail(): JSX.Element {
         }
     };
 
+    const handleSubmitRating = async () => {
+        if (!order || !order.canRateProvider || ratingValue < 1 || ratingValue > 5) return;
+
+        setSubmittingRating(true);
+        try {
+            const response = await submitProviderRating(order.orderId, {
+                rating: ratingValue,
+                comment: ratingComment.trim() || null,
+            });
+
+            setOrder({
+                ...order,
+                canRateProvider: false,
+                existingProviderRating: {
+                    providerRatingId: response.providerRatingId,
+                    rating: response.rating,
+                    comment: response.comment ?? null,
+                    createdAt: response.createdAt,
+                },
+            });
+
+            showToast({
+                title: "Đã gửi đánh giá",
+                message: "Đánh giá của bạn đã được lưu vào hồ sơ nhà cung cấp.",
+                variant: "success",
+            });
+        } catch (error: unknown) {
+            showToast({
+                title: "Không thể gửi đánh giá",
+                message: error instanceof Error ? error.message : "Đã có lỗi xảy ra.",
+                variant: "error",
+            });
+        } finally {
+            setSubmittingRating(false);
+        }
+    };
+
     return (
         <GuestLayout bgColor="#f8fafc">
             <div className="mx-auto max-w-[980px] px-6 py-10 lg:px-8">
@@ -97,6 +141,9 @@ export function MyOrderDetail(): JSX.Element {
                                     <div className="rounded-[20px] border border-gray-200 bg-white p-4 shadow-soft-sm">
                                         <p className="text-[11px] font-black uppercase tracking-[0.14em] text-gray-400">Nhà cung cấp</p>
                                         <p className="mt-2 text-lg font-extrabold text-gray-900">{order.providerName}</p>
+                                        <Link to={`/providers/${order.providerId}/ratings`} className="mt-3 inline-flex items-center gap-1 text-xs font-extrabold text-violet-600 hover:text-violet-700">
+                                            Xem hồ sơ đánh giá
+                                        </Link>
                                     </div>
                                     <div className="rounded-[20px] border border-gray-200 bg-white p-4 shadow-soft-sm">
                                         <p className="text-[11px] font-black uppercase tracking-[0.14em] text-gray-400">Tổng tiền</p>
@@ -163,6 +210,78 @@ export function MyOrderDetail(): JSX.Element {
                                         {order.shippingCompany && <p>Đơn vị vận chuyển: <span className="font-bold text-gray-900">{order.shippingCompany}</span></p>}
                                         {order.trackingCode && <p>Mã vận đơn: <span className="font-bold text-gray-900">{order.trackingCode}</span></p>}
                                     </div>
+                                </div>
+
+                                <div className="rounded-[24px] border border-gray-200 bg-white p-6 shadow-soft-sm">
+                                    <div className="mb-5 flex items-center gap-3">
+                                        <div className="flex h-10 w-10 items-center justify-center rounded-[14px] border border-gray-200 bg-amber-50">
+                                            <MessageSquareText className="h-4.5 w-4.5 text-amber-500" />
+                                        </div>
+                                        <div>
+                                            <p className="text-[11px] font-black uppercase tracking-[0.14em] text-gray-400">Provider Rating</p>
+                                            <h2 className="text-lg font-extrabold text-gray-900">Đánh giá nhà cung cấp</h2>
+                                        </div>
+                                    </div>
+
+                                    {order.existingProviderRating ? (
+                                        <div className="rounded-[18px] border border-emerald-200 bg-emerald-50 p-4">
+                                            <div className="flex items-center gap-1">
+                                                {Array.from({ length: 5 }, (_, index) => (
+                                                    <Star
+                                                        key={index}
+                                                        className={`h-4 w-4 ${index < order.existingProviderRating!.rating ? "fill-amber-400 text-amber-400" : "text-gray-300"}`}
+                                                    />
+                                                ))}
+                                            </div>
+                                            <p className="mt-2 text-sm font-bold text-gray-900">
+                                                Bạn đã đánh giá vào {new Date(order.existingProviderRating.createdAt).toLocaleString("vi-VN")}
+                                            </p>
+                                            {order.existingProviderRating.comment && (
+                                                <p className="mt-2 text-sm font-medium leading-relaxed text-gray-600">{order.existingProviderRating.comment}</p>
+                                            )}
+                                        </div>
+                                    ) : order.canRateProvider ? (
+                                        <div className="space-y-4">
+                                            <div className="flex gap-2">
+                                                {Array.from({ length: 5 }, (_, index) => {
+                                                    const value = index + 1;
+                                                    return (
+                                                        <button
+                                                            key={value}
+                                                            type="button"
+                                                            onClick={() => setRatingValue(value)}
+                                                            className={`rounded-[14px] border px-3 py-2 transition-all ${value <= ratingValue ? "border-amber-300 bg-amber-50" : "border-gray-200 bg-slate-50"}`}
+                                                        >
+                                                            <Star className={`h-5 w-5 ${value <= ratingValue ? "fill-amber-400 text-amber-400" : "text-gray-300"}`} />
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
+                                            <textarea
+                                                value={ratingComment}
+                                                onChange={(event) => setRatingComment(event.target.value)}
+                                                rows={4}
+                                                maxLength={1000}
+                                                placeholder="Chia sẻ trải nghiệm về tốc độ xử lý, chất lượng hỗ trợ hoặc giao hàng của nhà cung cấp."
+                                                className="w-full rounded-[16px] border border-gray-200 bg-slate-50 px-4 py-3 text-sm font-medium text-gray-700 outline-none transition-all focus:border-violet-400 focus:bg-white"
+                                            />
+                                            <div className="flex items-center justify-between gap-3">
+                                                <span className="text-xs font-bold text-gray-400">{ratingComment.length}/1000 ký tự</span>
+                                                <button
+                                                    type="button"
+                                                    onClick={handleSubmitRating}
+                                                    disabled={submittingRating}
+                                                    className="rounded-[16px] border border-gray-200 bg-violet-500 px-4 py-3 text-sm font-extrabold text-white shadow-soft-sm disabled:opacity-60"
+                                                >
+                                                    {submittingRating ? "Đang gửi..." : "Gửi đánh giá"}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="rounded-[18px] border border-dashed border-gray-300 bg-slate-50 p-4 text-sm font-medium text-gray-500">
+                                            Bạn sẽ có thể đánh giá khi đơn hàng ở trạng thái <span className="font-extrabold text-gray-900">Delivered</span>.
+                                        </div>
+                                    )}
                                 </div>
 
                                 <div className="rounded-[24px] border border-dashed border-violet-300 bg-violet-50 p-6">

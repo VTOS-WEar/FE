@@ -123,7 +123,7 @@ function ReviewCard({ feedback, onRefresh }: ReviewCardProps) {
           <div className="flex items-center gap-2">
             <Calendar className="w-4 h-4 text-purple-400" />
             <span className="font-bold text-xs uppercase text-gray-900">
-              📁 {feedback.campaignName}
+              📁 Danh mục: {feedback.campaignName}
             </span>
           </div>
           <button onClick={handleCancel} className="text-gray-400 hover:text-gray-800">
@@ -232,7 +232,7 @@ function ReviewCard({ feedback, onRefresh }: ReviewCardProps) {
 
           <div className="flex-1 min-w-0">
             <p className="text-[10px] font-black text-gray-400 mb-1 uppercase tracking-wider truncate">
-              📁 {feedback.campaignName}
+              📁 Danh mục: {feedback.campaignName}
             </p>
             <h3
               className="font-bold text-gray-900 text-sm truncate hover:text-[#8B6BFF] transition-colors cursor-pointer mb-2"
@@ -390,7 +390,7 @@ export const ReviewsTab = (): JSX.Element => {
           </p>
         </div>
 
-        {/* Campaign Filter */}
+        {/* Semester catalog filter */}
         <div className="relative w-full md:w-[320px]">
           <button
             onClick={() => setShowFilters(!showFilters)}
@@ -421,7 +421,7 @@ export const ReviewsTab = (): JSX.Element => {
                   ? "bg-purple-400 text-white"
                   : "text-gray-900 hover:bg-gray-100"
                   }`}
-                title="Xem tất cả chiến dịch"
+                title="Xem tất cả danh mục"
               >
                 Tất cả (tổng số)
               </button>

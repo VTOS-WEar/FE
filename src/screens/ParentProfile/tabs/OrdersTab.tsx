@@ -206,21 +206,17 @@ function OrderCard({
                                     </span>
                                 ) : (
                                     <span
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            if (p.campaignId) navigate(`/campaigns/${p.campaignId}`);
-                                        }}
-                                        className="text-[9px] font-black text-gray-400 uppercase tracking-wider flex items-center gap-1 cursor-pointer hover:text-gray-800 transition-colors"
+                                        className="text-[9px] font-black text-gray-400 uppercase tracking-wider flex items-center gap-1"
                                     >
                                         <ShoppingBag className="w-3 h-3" />
-                                        {p.campaignName || "Chiến dịch trường"}
+                                        {p.campaignName || "Danh mục trường"}
                                     </span>
                                 )}
                             </div>
 
                             <div className="space-y-0.5">
                                 <h3 className="font-extrabold text-gray-900 text-lg leading-tight truncate decoration-[#B8A9E8] underline-offset-4">
-                                    {isMarketplace ? `Đơn hàng từ ${p.providerName}` : (p.campaignName || "Đơn hàng nội bộ")}
+                                    {isMarketplace ? `Đơn hàng từ ${p.providerName}` : (p.campaignName || "Đơn hàng theo danh mục")}
                                 </h3>
                                 <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
                                     Mã đơn: #{p.orderId.substring(0, 8).toUpperCase()}
