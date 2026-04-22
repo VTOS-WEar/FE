@@ -24,20 +24,22 @@
         "/school/students/import/check-preview",
         "/school/students",
         "/school/students/classes/:id",
-        "/school/students/all",
         "/school/students/import",
         "/school/orders",
         "/school/dashboard",
         "/provider/dashboard",
+        "/teacher/dashboard",
         "/teacher/classes",
         "/teacher/classes/:id",
+        "/teacher/reports",
+        "/teacher/reports/new",
+        "/teacher/messages",
+        "/teacher/reminders",
+        "/teacher/account",
         "/provider/contracts",
         "/school/contracts",
-        "/school/production-orders",
-        "/provider/production-orders",
-        "/school/complaints",
         "/provider/complaints",
-        "/school/wallet",
+        "/school/teacher-reports",
         "/provider/revenue",
         "/provider/wallet",
         "/provider/profile",
@@ -51,10 +53,6 @@
         "/admin/complaints",
         "/school/profile",
         "/school/uniforms",
-        "/school/campaigns",
-        "/school/campaigns/new",
-        "/school/campaigns/:id/edit",
-        "/school/campaigns/:id",
         "/school/semester-publications",
         "/school/semester-publications/new",
         "/school/semester-publications/:id/edit",
@@ -66,7 +64,7 @@
         "/schools",
         "/schools/:id",
         "/schools/:id/catalog",
-        "/campaigns/:campaignId",
+        "/providers/:id/ratings",
         "/outfits/:id",
         "/my-orders",
         "/my-orders/:id",
@@ -157,13 +155,13 @@
       "source": "src\\components\\guards\\RoleGuard.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
-        "viaRoute": "/teacher/classes",
+        "viaRoute": "/teacher/dashboard",
         "trigger": {
-          "element": "<Navigate to=\"/teacher/classes\" replace />",
+          "element": "<Navigate to=\"/teacher/dashboard\" replace />",
           "line": 72,
           "endLine": 72,
           "column": 15,
-          "endColumn": 57,
+          "endColumn": 59,
           "sourceFile": "src\\components\\guards\\RoleGuard.tsx"
         }
       }
@@ -429,13 +427,13 @@
       "source": "src\\screens\\TwoFactorSetup\\TwoFactorSetup.tsx",
       "target": "src\\components\\guards\\RoleGuard.tsx",
       "data": {
-        "viaRoute": "/teacher/classes",
+        "viaRoute": "/teacher/dashboard",
         "trigger": {
-          "element": "navigate(\"/teacher/classes\", { replace: true })",
+          "element": "navigate(\"/teacher/dashboard\", { replace: true })",
           "line": 125,
           "endLine": 125,
           "column": 51,
-          "endColumn": 98,
+          "endColumn": 100,
           "sourceFile": "src\\screens\\TwoFactorSetup\\TwoFactorSetup.tsx"
         }
       }
@@ -629,22 +627,6 @@
           "column": 14,
           "endColumn": 18,
           "sourceFile": "src\\components\\layout\\Footer.tsx"
-        }
-      }
-    },
-    {
-      "id": "src\\components\\layout\\DashboardSidebar.tsx:59:8-to-src\\components\\guards\\RoleGuard.tsx",
-      "source": "src\\screens\\AccountSetting\\AccountSetting.tsx",
-      "target": "src\\components\\guards\\RoleGuard.tsx",
-      "data": {
-        "viaRoute": "/signin",
-        "trigger": {
-          "element": "navigate(\"/signin\", { replace: true })",
-          "line": 59,
-          "endLine": 59,
-          "column": 8,
-          "endColumn": 46,
-          "sourceFile": "src\\components\\layout\\DashboardSidebar.tsx"
         }
       }
     },
