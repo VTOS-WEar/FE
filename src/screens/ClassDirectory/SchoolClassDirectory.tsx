@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowRight, FolderTree, GraduationCap, Upload, Users } from "lucide-react";
+import { ArrowRight, FolderTree, GraduationCap, Upload } from "lucide-react";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "../../components/ui/breadcrumb";
 import { DashboardSidebar } from "../../components/layout";
 import { TopNavBar } from "../../components/layout/TopNavBar";
@@ -36,7 +36,7 @@ export const SchoolClassDirectory = (): JSX.Element => {
         getSchoolProfile().then((profile) => setSchoolName(profile.schoolName || "")).catch(() => {});
         getSchoolClassesOverview()
             .then((data) => setOverview(data))
-            .catch((err: unknown) => setError(err instanceof Error ? err.message : "Khong the tai danh sach lop"))
+            .catch((err: unknown) => setError(err instanceof Error ? err.message : "Không thể tải danh sách lớp"))
             .finally(() => setLoading(false));
     }, []);
 
@@ -60,59 +60,55 @@ export const SchoolClassDirectory = (): JSX.Element => {
                     <TopNavBar>
                         <Breadcrumb>
                             <BreadcrumbList>
-                                <BreadcrumbItem><BreadcrumbLink href="/school/dashboard" className="font-semibold text-[#4c5769] text-base">Trang chu</BreadcrumbLink></BreadcrumbItem>
+                                <BreadcrumbItem><BreadcrumbLink href="/school/dashboard" className="font-semibold text-[#4c5769] text-base">Trang chủ</BreadcrumbLink></BreadcrumbItem>
                                 <BreadcrumbSeparator className="text-[#cbcad7]">/</BreadcrumbSeparator>
-                                <BreadcrumbItem><BreadcrumbPage className="font-bold text-gray-900 text-base">Hoc sinh theo lop</BreadcrumbPage></BreadcrumbItem>
+                                <BreadcrumbItem><BreadcrumbPage className="font-bold text-gray-900 text-base">Học sinh theo lớp</BreadcrumbPage></BreadcrumbItem>
                             </BreadcrumbList>
                         </Breadcrumb>
                     </TopNavBar>
 
                     <main className="flex-1 px-4 py-6 sm:px-6 lg:px-10 lg:py-8">
-                        <section className="rounded-[28px] border border-violet-200 bg-[radial-gradient(circle_at_top_left,_rgba(139,92,246,0.18),_transparent_38%),linear-gradient(135deg,_#ffffff_10%,_#f8f5ff_55%,_#eef7ff_100%)] p-6 shadow-soft-lg">
-                            <div className="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
+                        <section className="rounded-[28px] border border-violet-200 bg-[radial-gradient(circle_at_top_left,_rgba(139,92,246,0.18),_transparent_38%),linear-gradient(135deg,_#ffffff_10%,_#f8f5ff_55%,_#eef7ff_100%)] p-5 shadow-soft-lg lg:p-6">
+                            <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
                                 <div className="max-w-3xl">
-                                    <div className="inline-flex items-center gap-2 rounded-full border border-violet-200 bg-white/80 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-violet-700">
+                                    <div className="inline-flex items-center gap-2 rounded-full border border-violet-200 bg-white/80 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.16em] text-violet-700">
                                         <FolderTree className="h-4 w-4" />
-                                        So do lop hoc
+                                        Sơ đồ lớp học
                                     </div>
-                                    <h1 className="mt-4 text-[30px] font-extrabold leading-tight text-gray-900 lg:text-[38px]">
-                                        Quan ly hoc sinh theo khoi va lop
+                                    <h1 className="mt-3 text-[26px] font-extrabold leading-tight text-gray-900 lg:text-[34px]">
+                                        Quản lý học sinh theo khối và lớp
                                     </h1>
-                                    <p className="mt-3 max-w-2xl text-sm font-medium leading-6 text-[#4c5769] lg:text-base">
-                                        Chuyen tu danh sach phang sang cau truc khoi - lop de truong theo doi giao vien chu nhiem, do ao va tinh trang lien ket phu huynh ro rang hon.
+                                    <p className="mt-2 max-w-2xl text-sm font-medium leading-6 text-[#4c5769]">
+                                        Chuyển từ danh sách phẳng sang cấu trúc khối - lớp để trường theo dõi giáo viên chủ nhiệm, đo áo và tình trạng liên kết phụ huynh rõ ràng hơn.
                                     </p>
                                 </div>
                                 <div className="flex flex-wrap gap-3">
                                     <button onClick={() => navigate("/school/students/import")} className="nb-btn nb-btn-outline text-sm">
                                         <Upload className="h-4 w-4" />
-                                        Nhap tu Excel
-                                    </button>
-                                    <button onClick={() => navigate("/school/students/all")} className="nb-btn nb-btn-purple text-sm">
-                                        <Users className="h-4 w-4" />
-                                        Xem danh sach cu
+                                        Nhập từ Excel
                                     </button>
                                 </div>
                             </div>
 
                             {overview && (
-                                <div className="mt-6 grid gap-4 md:grid-cols-3">
-                                    <StatCard label="Nam hoc" value={overview.academicYear || "Chua co"} tone="violet" />
-                                    <StatCard label="Tong lop" value={overview.totalClasses} tone="blue" />
-                                    <StatCard label="Tong hoc sinh" value={overview.totalStudents} tone="amber" />
+                                <div className="mt-5 grid gap-3 md:grid-cols-3">
+                                    <StatCard label="Năm học" value={overview.academicYear || "Chưa có"} tone="violet" />
+                                    <StatCard label="Tổng lớp" value={overview.totalClasses} tone="blue" />
+                                    <StatCard label="Tổng học sinh" value={overview.totalStudents} tone="amber" />
                                 </div>
                             )}
                         </section>
 
                         {overview && overview.unassignedStudentCount > 0 && (
                             <section className="mt-6 rounded-2xl border border-amber-200 bg-amber-50/80 p-4 text-sm font-medium text-amber-800 shadow-soft-sm">
-                                Co <span className="font-extrabold">{overview.unassignedStudentCount}</span> hoc sinh chua duoc gan vao lop. Ban co the kiem tra trong trang danh sach cu de xu ly bo sung.
+                                Có <span className="font-extrabold">{overview.unassignedStudentCount}</span> học sinh chưa được gán vào lớp. Bạn có thể kiểm tra trong trang danh sách cũ để xử lý bổ sung.
                             </section>
                         )}
 
                         {loading && (
                             <section className="mt-6 rounded-2xl border border-gray-200 bg-white p-10 text-center shadow-soft-md">
                                 <div className="mx-auto mb-3 h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-violet-600" />
-                                <p className="text-sm font-semibold text-[#4c5769]">Dang tai cau truc lop hoc...</p>
+                                <p className="text-sm font-semibold text-[#4c5769]">Đang tải cấu trúc lớp học...</p>
                             </section>
                         )}
 
@@ -125,9 +121,9 @@ export const SchoolClassDirectory = (): JSX.Element => {
                         {!loading && !error && overview && overview.grades.length === 0 && (
                             <section className="mt-6 rounded-2xl border border-gray-200 bg-white p-10 text-center shadow-soft-md">
                                 <GraduationCap className="mx-auto h-10 w-10 text-violet-600" />
-                                <h2 className="mt-4 text-xl font-extrabold text-gray-900">Chua co lop hoc nao</h2>
+                                <h2 className="mt-4 text-xl font-extrabold text-gray-900">Chưa có lớp học nào</h2>
                                 <p className="mt-2 text-sm font-medium text-[#4c5769]">
-                                    Session 8 da san sang cho import giao vien chu nhiem. Ban hay tai file mau va nhap du lieu de he thong tao lop hoc.
+                                    Hệ thống đã sẵn sàng cho import giáo viên chủ nhiệm. Bạn hãy tải file mẫu và nhập dữ liệu để hệ thống tạo lớp học.
                                 </p>
                             </section>
                         )}
@@ -136,13 +132,10 @@ export const SchoolClassDirectory = (): JSX.Element => {
                             <section className="mt-6 space-y-5">
                                 {overview.grades.map((grade) => (
                                     <div key={grade.grade} className="rounded-[26px] border border-gray-200 bg-white p-5 shadow-soft-md">
-                                        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                                        <div className="flex flex-col gap-2">
                                             <div>
-                                                <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-violet-600">Khoi {grade.grade}</p>
-                                                <h2 className="mt-1 text-2xl font-extrabold text-gray-900">{grade.classCount} lop, {grade.studentCount} hoc sinh</h2>
-                                            </div>
-                                            <div className="rounded-full border border-gray-200 bg-[#faf7ff] px-4 py-2 text-sm font-semibold text-[#4c5769]">
-                                                {overview.academicYear || "Nam hoc hien tai"}
+                                                <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-violet-600">Khối {grade.grade}</p>
+                                                <h2 className="mt-1 text-2xl font-extrabold text-gray-900">{grade.classCount} lớp, {grade.studentCount} học sinh</h2>
                                             </div>
                                         </div>
 
@@ -156,8 +149,8 @@ export const SchoolClassDirectory = (): JSX.Element => {
                                                 >
                                                     <div className="flex items-start justify-between gap-3">
                                                         <div>
-                                                            <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#7c3aed]">Lop {classGroup.className}</p>
-                                                            <h3 className="mt-2 text-xl font-extrabold text-gray-900">{classGroup.studentCount} hoc sinh</h3>
+                                                            <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#7c3aed]">Lớp {classGroup.className}</p>
+                                                            <h3 className="mt-2 text-xl font-extrabold text-gray-900">{classGroup.studentCount} học sinh</h3>
                                                         </div>
                                                         <div className="rounded-full bg-violet-50 p-2 text-violet-700">
                                                             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
@@ -167,18 +160,18 @@ export const SchoolClassDirectory = (): JSX.Element => {
                                                     <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
                                                         <div className="rounded-xl bg-[#f8f5ff] p-3">
                                                             <dt className="font-semibold text-[#6b7280]">GVCN</dt>
-                                                            <dd className="mt-1 font-bold text-gray-900">{classGroup.homeroomTeacherName || "Chua gan"}</dd>
+                                                            <dd className="mt-1 font-bold text-gray-900">{classGroup.homeroomTeacherName || "Chưa gán"}</dd>
                                                         </div>
                                                         <div className="rounded-xl bg-[#eef7ff] p-3">
-                                                            <dt className="font-semibold text-[#6b7280]">Do ao</dt>
+                                                            <dt className="font-semibold text-[#6b7280]">Đo áo</dt>
                                                             <dd className="mt-1 font-bold text-gray-900">{classGroup.measurementReadyCount}/{classGroup.studentCount}</dd>
                                                         </div>
                                                         <div className="rounded-xl bg-[#f7faf7] p-3">
-                                                            <dt className="font-semibold text-[#6b7280]">PH lien ket</dt>
+                                                            <dt className="font-semibold text-[#6b7280]">PH liên kết</dt>
                                                             <dd className="mt-1 font-bold text-gray-900">{classGroup.parentLinkedCount}/{classGroup.studentCount}</dd>
                                                         </div>
                                                         <div className="rounded-xl bg-[#fff8eb] p-3">
-                                                            <dt className="font-semibold text-[#6b7280]">Nam hoc</dt>
+                                                            <dt className="font-semibold text-[#6b7280]">Năm học</dt>
                                                             <dd className="mt-1 font-bold text-gray-900">{classGroup.academicYear}</dd>
                                                         </div>
                                                     </dl>
