@@ -3,36 +3,77 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { XCircle, ShoppingCart, Home, RotateCcw, Loader2 } from "lucide-react";
 import { GuestLayout } from "../../components/layout/GuestLayout";
 import { useCart } from "../../contexts/CartContext";
-import { cancelOrder } from "../../lib/api/orders";
+import { retryPayment, cancelOrder } from "../../lib/api/orders";
 
 export const PaymentCancel = (): JSX.Element => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const cart = useCart();
-  const [cancelling, setCancelling] = useState(true);
+  const [processing, setProcessing] = useState(true);
+  const [retrying, setRetrying] = useState(false);
+  const [retryError, setRetryError] = useState<string | null>(null);
+
+  // Store pending order IDs so we can retry
+  const [pendingOrderIds, setPendingOrderIds] = useState<string[]>([]);
 
   const orderCode = searchParams.get("orderCode") || searchParams.get("code");
 
   useEffect(() => {
-    const autoCancelOrders = async () => {
+    const processOrders = async () => {
       try {
         const raw = sessionStorage.getItem("vtos_pending_order_ids");
         if (raw) {
           const orderIds: string[] = JSON.parse(raw);
+          setPendingOrderIds(orderIds);
+          // Hủy toàn bộ order khi user quay lại từ màn hình PayOS
           await Promise.allSettled(
-            orderIds.map((id) => cancelOrder(id, "Người dùng huỷ trên trang thanh toán PayOS"))
+            orderIds.map((id) => cancelOrder(id, "Người dùng hủy trên trang thanh toán PayOS"))
           );
-          sessionStorage.removeItem("vtos_pending_order_ids");
         }
       } catch {
         // Silently ignore
       } finally {
-        setCancelling(false);
+        setProcessing(false);
       }
     };
-    autoCancelOrders();
+    processOrders();
     cart.clearCart();
   }, []);
+
+  const handleRetryPayment = async () => {
+    if (pendingOrderIds.length === 0) {
+      // No order IDs available — redirect to orders page
+      navigate("/parentprofile/orders");
+      return;
+    }
+
+    setRetrying(true);
+    setRetryError(null);
+
+    try {
+      // Retry payment for each order and collect payment links
+      const results = await Promise.all(
+        pendingOrderIds.map((id) => retryPayment(id))
+      );
+
+      // Store new order IDs for the payment success/cancel flow
+      const newOrderIds = results.map((r) => r.orderId);
+      sessionStorage.setItem("vtos_pending_order_ids", JSON.stringify(newOrderIds));
+
+      // Redirect to the first payment link (PayOS checkout)
+      // If multiple orders, they each have their own links — use the first one
+      const paymentLink = results[0]?.paymentLink;
+      if (paymentLink) {
+        window.location.href = paymentLink;
+      } else {
+        setRetryError("Không thể tạo liên kết thanh toán mới.");
+      }
+    } catch (err: any) {
+      setRetryError(err?.message || "Có lỗi xảy ra khi thử lại thanh toán.");
+    } finally {
+      setRetrying(false);
+    }
+  };
 
   return (
     <GuestLayout bgColor="#f9fafb">
@@ -55,7 +96,7 @@ export const PaymentCancel = (): JSX.Element => {
             </p>
 
             {/* Cancel status */}
-            {cancelling ? (
+            {processing ? (
               <div className="flex items-center justify-center gap-2 mb-6 text-gray-500">
                 <Loader2 className="w-4 h-4 animate-spin" />
                 <span className="text-sm font-medium">Đang huỷ đơn hàng...</span>
@@ -67,7 +108,7 @@ export const PaymentCancel = (): JSX.Element => {
                   <p className="font-extrabold text-lg text-gray-900">
                     #{orderCode}
                   </p>
-                  <span className="inline-block mt-2 px-3 py-1 bg-red-100 text-gray-900 font-bold text-xs rounded-lg border border-gray-200 shadow-sm">
+                  <span className="inline-block mt-2 px-3 py-1 bg-red-100 text-red-800 font-bold text-xs rounded-lg border border-red-200 shadow-sm">
                     ✓ Đã huỷ
                   </span>
                 </div>
@@ -95,14 +136,31 @@ export const PaymentCancel = (): JSX.Element => {
               </ul>
             </div>
 
+            {/* Retry error */}
+            {retryError && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4 text-left">
+                <p className="text-xs font-bold text-red-700">❌ {retryError}</p>
+              </div>
+            )}
+
             {/* Action buttons */}
             <div className="space-y-3">
               <button
-                onClick={() => navigate("/cart")}
-                className="nb-btn nb-btn-purple w-full text-sm flex items-center justify-center gap-2"
+                onClick={handleRetryPayment}
+                disabled={processing || retrying}
+                className="nb-btn nb-btn-purple w-full text-sm flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <RotateCcw className="w-4 h-4" />
-                Thử thanh toán lại ✦
+                {retrying ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Đang tạo giao dịch mới...
+                  </>
+                ) : (
+                  <>
+                    <RotateCcw className="w-4 h-4" />
+                    Thử thanh toán lại ✦
+                  </>
+                )}
               </button>
               <button
                 onClick={() => navigate("/parentprofile/orders")}

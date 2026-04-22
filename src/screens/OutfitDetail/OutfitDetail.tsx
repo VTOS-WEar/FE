@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, useNavigate, Link, useSearchParams } from "react-router-dom";
 import {
   ChevronRight,
   Heart,
@@ -404,6 +404,8 @@ function TryOnModal({
 export const OutfitDetail = (): JSX.Element => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const publicationId = searchParams.get("publicationId");
 
   const [outfit, setOutfit] = useState<OutfitDetailDto | null>(null);
   const [loading, setLoading] = useState(true);
@@ -1265,6 +1267,7 @@ export const OutfitDetail = (): JSX.Element => {
         open={showOrderModal}
         onClose={() => setShowOrderModal(false)}
         outfitId={outfit.outfitId}
+        semesterPublicationId={publicationId}
         preloadedOutfit={outfit}
       />
     </GuestLayout>

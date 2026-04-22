@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Star, AlertCircle, ChevronDown, Package, Calendar, Clock, ShoppingBag, MessageSquare, Edit2, History, XCircle } from "lucide-react";
+import { Star, AlertCircle, ChevronDown, Package, Calendar, Clock, ShoppingBag, MessageSquare, Edit2, History, XCircle, ShieldCheck } from "lucide-react";
 import { useToast } from "../../../contexts/ToastContext";
 import { getParentFeedbacks, submitOutfitFeedback, type ParentFeedbackDto, type CampaignFilterDto, type RatingCountDto } from "../../../lib/api/feedback";
 
@@ -121,9 +121,9 @@ function ReviewCard({ feedback, onRefresh }: ReviewCardProps) {
         {/* Header */}
         <div className="p-4 border-b border-gray-200/10 flex items-center justify-between rounded-t-[12px]">
           <div className="flex items-center gap-2">
-            <ShoppingBag className="w-4 h-4 text-purple-400" />
+            <Calendar className="w-4 h-4 text-purple-400" />
             <span className="font-bold text-xs uppercase text-gray-900">
-              📦 Chiến dịch: <span className="text-purple-400">{feedback.campaignName}</span>
+              📁 Danh mục: {feedback.campaignName}
             </span>
           </div>
           <button onClick={handleCancel} className="text-gray-400 hover:text-gray-800">
@@ -154,6 +154,13 @@ function ReviewCard({ feedback, onRefresh }: ReviewCardProps) {
                 <span className="px-2 py-0.5 bg-gray-100 border border-gray-300 rounded text-[10px] font-bold text-gray-900">x{feedback.quantity}</span>
                 <span className="px-2 py-0.5 bg-emerald-400/20 border border-emerald-400 rounded text-[10px] font-bold text-gray-900">{fmt(feedback.outfitPrice)}</span>
               </div>
+
+              {feedback.providerName && (
+                <div className="mt-3 flex items-center gap-1.5 px-2 py-1 bg-violet-50 border border-violet-100 rounded-md w-fit">
+                   <ShieldCheck className="w-3 h-3 text-violet-500" />
+                   <span className="text-[10px] font-black text-violet-700 uppercase tracking-wider">Cung cấp bởi: {feedback.providerName}</span>
+                </div>
+              )}
             </div>
           </div>
 
@@ -224,15 +231,21 @@ function ReviewCard({ feedback, onRefresh }: ReviewCardProps) {
           </div>
 
           <div className="flex-1 min-w-0">
-            <p className="text-[10px] font-bold text-gray-400 mb-1 uppercase truncate">
-              📦 {feedback.campaignName}
+            <p className="text-[10px] font-black text-gray-400 mb-1 uppercase tracking-wider truncate">
+              📁 Danh mục: {feedback.campaignName}
             </p>
             <h3
-              className="font-bold text-gray-900 text-sm truncate hover:text-purple-500 transition-colors cursor-pointer mb-2"
+              className="font-bold text-gray-900 text-sm truncate hover:text-[#8B6BFF] transition-colors cursor-pointer mb-2"
               onClick={() => navigate(`/outfits/${feedback.outfitId}`)}
             >
               {feedback.outfitName}
             </h3>
+            {feedback.providerName && (
+               <div className="flex items-center gap-1 mb-2">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
+                  <span className="text-[11px] font-bold text-emerald-600 italic">Bản phối từ {feedback.providerName}</span>
+               </div>
+            )}
             <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-[11px] font-medium text-gray-500">
               <span className="flex items-center gap-1">
                 <ShoppingBag className="w-3.5 h-3.5" />
@@ -371,25 +384,25 @@ export const ReviewsTab = (): JSX.Element => {
       {/* Header & Filter Row */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
-          <h2 className="font-bold text-gray-900 text-xl">Đánh giá sản phẩm sáng tạo</h2>
-          <p className="text-sm text-gray-400 mt-1">
-            Quản lý và xem các đánh giá của bạn về sản phẩm từ các đơn hàng
+          <h2 className="font-black text-gray-900 text-2xl">Đánh giá sản phẩm sáng tạo</h2>
+          <p className="text-sm font-semibold text-gray-400 mt-1">
+            Gửi phản hồi về chất lượng trang phục từ các nhà cung cấp học kỳ
           </p>
         </div>
 
-        {/* Campaign Filter */}
+        {/* Semester catalog filter */}
         <div className="relative w-full md:w-[320px]">
           <button
             onClick={() => setShowFilters(!showFilters)}
             className="w-full bg-white border border-gray-200 p-3 rounded-lg shadow-soft-sm flex items-center justify-between transition-all hover:-translate-y-0.5 hover:shadow-soft-md active:shadow-none"
-            title="Lọc theo chiến dịch"
+            title="Lọc theo danh mục"
           >
             <div className="text-left">
-              <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Bộ lọc chiến dịch</p>
+              <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Lọc theo học kỳ</p>
               <p className="text-sm font-bold text-gray-900 mt-0.5 truncate max-w-[220px]">
                 {selectedCampaignId
-                  ? campaigns.find((c) => c.campaignId === selectedCampaignId)?.campaignName || "Chọn chiến dịch"
-                  : "Tất cả chiến dịch"}
+                  ? campaigns.find((c) => c.campaignId === selectedCampaignId)?.campaignName || "Chọn học kỳ"
+                  : "Tất cả danh mục"}
               </p>
             </div>
             <ChevronDown
@@ -408,7 +421,7 @@ export const ReviewsTab = (): JSX.Element => {
                   ? "bg-purple-400 text-white"
                   : "text-gray-900 hover:bg-gray-100"
                   }`}
-                title="Xem tất cả chiến dịch"
+                title="Xem tất cả danh mục"
               >
                 Tất cả (tổng số)
               </button>

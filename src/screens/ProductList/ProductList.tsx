@@ -179,35 +179,35 @@ const SectionHeader = ({ title, icon: Icon, subtitle, badge }: { title: string; 
   </div>
 );
 
-const CampaignCard = ({ campaign }: { campaign: CampaignSummaryDto }) => {
+const CatalogCard = ({ catalog }: { catalog: CampaignSummaryDto }) => {
   const navigate = useNavigate();
   return (
     <motion.div
-      onClick={() => navigate(`/campaigns/${campaign.campaignId}`)}
+      onClick={() => navigate(`/schools/${catalog.schoolId}/catalog`)}
       whileHover={{ y: -5, scale: 1.01 }}
       className="group relative h-full flex flex-col rounded-2xl border border-gray-200 bg-white p-5 shadow-soft-md transition-all hover:shadow-soft-lg cursor-pointer"
     >
     <div className="mb-4 flex items-center justify-between">
       <div className="flex -space-x-2">
         <div className="h-10 w-10 rounded-full border border-gray-200 bg-white p-1 shadow-sm">
-          {campaign.schoolLogoUrl ? (
-            <img src={campaign.schoolLogoUrl} alt={campaign.schoolName} className="h-full w-full object-contain" />
+          {catalog.schoolLogoUrl ? (
+            <img src={catalog.schoolLogoUrl} alt={catalog.schoolName} className="h-full w-full object-contain" />
           ) : (
             <School className="h-full w-full p-1 opacity-20" />
           )}
         </div>
       </div>
       <div className="rounded-full border border-gray-200 bg-[#FFD700] px-2.5 py-0.5 text-[9px] font-black uppercase text-gray-900">
-        PRE-ORDER
+        DANH MỤC
       </div>
     </div>
 
     <h3 className="mb-2 line-clamp-1 text-lg font-black text-gray-900 group-hover:text-[#7C3AED] transition-colors">
-      {campaign.campaignName}
+      {catalog.campaignName}
     </h3>
     <p className="mb-4 flex items-center gap-1.5 text-xs font-bold text-gray-500">
       <School className="h-3.5 w-3.5" />
-      {campaign.schoolName}
+      {catalog.schoolName}
     </p>
 
     <div className="mt-auto space-y-3">
@@ -217,7 +217,7 @@ const CampaignCard = ({ campaign }: { campaign: CampaignSummaryDto }) => {
           <Calendar className="h-3 w-3" />
         </div>
         <p className="mt-1 text-sm font-black text-gray-900">
-          {new Date(campaign.endDate).toLocaleDateString("vi-VN")}
+          {new Date(catalog.endDate).toLocaleDateString("vi-VN")}
         </p>
       </div>
 
@@ -355,7 +355,7 @@ export default function ProductList() {
 
     const query = activeFilters.search.toLowerCase().trim();
     
-    const filterCampaign = (c: CampaignSummaryDto) => {
+    const filterCatalog = (c: CampaignSummaryDto) => {
       const matchesSearch = !query || c.campaignName.toLowerCase().includes(query) || c.schoolName.toLowerCase().includes(query);
       const matchesSchool = activeFilters.schoolId === "all" || c.schoolId === activeFilters.schoolId;
       return matchesSearch && matchesSchool;
@@ -369,7 +369,7 @@ export default function ProductList() {
     };
 
     return {
-      activeCampaigns: (data?.activeCampaigns || []).filter(filterCampaign),
+      activeCampaigns: (data?.activeCampaigns || []).filter(filterCatalog),
       featuredOutfits: (data?.featuredOutfits || []).filter(filterOutfit),
       allOutfits: (data?.allOutfits || []).filter(filterOutfit),
       totalOutfits: data?.allOutfits?.length || 0
@@ -409,7 +409,7 @@ export default function ProductList() {
               {/* Search */}
               <div className="min-w-[200px] flex-1 space-y-1.5">
                 <label className="block text-[10px] font-bold text-gray-500 ml-1 uppercase tracking-widest leading-tight">
-                  Sản phẩm / Chiến dịch
+                  Sản phẩm / Danh mục
                 </label>
                 <div className="group relative w-full transition-transform duration-200 hover:-translate-y-px">
                   <Search className="pointer-events-none absolute left-3 top-1/2 z-[2] h-3.5 w-3.5 -translate-y-1/2 text-gray-900" />
@@ -481,24 +481,24 @@ export default function ProductList() {
           </div>
         ) : (
           <div className="space-y-20">
-            {/* Active Campaigns */}
+            {/* Active catalogs */}
             <AnimatePresence>
               {filteredData?.activeCampaigns && filteredData.activeCampaigns.length > 0 && (
                 <motion.section 
-                  key="campaigns"
+                  key="catalogs"
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
                 >
                   <SectionHeader 
-                    title="Chiến dịch đang chạy" 
+                    title="Danh mục đang mở" 
                     icon={Flame} 
-                    subtitle="Đăng ký mua đồng phục tập trung với giá ưu đãi."
+                    subtitle="Theo dõi các danh mục đang nhận đơn từ trường."
                     badge="HOT & LIMITED"
                   />
                   <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
                     {filteredData.activeCampaigns.map((c) => (
-                      <CampaignCard key={c.campaignId} campaign={c} />
+                      <CatalogCard key={c.campaignId} catalog={c} />
                     ))}
                   </div>
                 </motion.section>

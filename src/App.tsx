@@ -7,7 +7,6 @@ import { AccountSetting } from "./screens/AccountSetting";
 import { FillInformation } from "./screens/FillInformation";
 import { Homepage } from "./screens/Homepage";
 import { MyProfile } from "./screens/MyProfile";
-import { OrderManagement } from "./screens/OrderManagement";
 import { SignIn } from "./screens/SignIn";
 import { TwoFactorSetup } from "./screens/TwoFactorSetup/TwoFactorSetup";
 import { SignUp, RoleSelect } from "./screens/SignUp";
@@ -16,7 +15,6 @@ import { SchoolList } from "./screens/SchoolList";
 import { ProductList } from "./screens/ProductList";
 import { ProductDetail } from "./screens/ProductDetail";
 import { SchoolDetail } from "./screens/SchoolDetail/SchoolDetail";
-import { CampaignDetail as PublicCampaignDetail } from "./screens/CampaignDetail/CampaignDetail";
 import { OutfitDetail } from "./screens/OutfitDetail/OutfitDetail";
 import { Cart } from "./screens/Cart/Cart";
 import { PaymentSuccess } from "./screens/Payment/PaymentSuccess";
@@ -25,27 +23,29 @@ import { VerifyOTP } from "./screens/OtpField";
 import { ForgotPassword } from "./screens/ForgotPassword/ForgotPassword";
 import { ForgotPasswordSent } from "./screens/ForgotPasswordSent/ForgotPasswordSent";
 import { ResetPassword } from "./screens/ResetPassword/ResetPassword";
-import { StudentList } from "./screens/StudentList";
 import { ImportData } from "./screens/ImportData";
 import { ConfirmSave } from "./screens/ConfirmSave";
 import { ConfirmReimport } from "./screens/ConfirmReimport";
 import { CheckAndPreview } from "./screens/CheckAndPreview";
+import {
+  SchoolClassDetail,
+  SchoolClassDirectory,
+  TeacherClassDetail,
+  TeacherClasses,
+} from "./screens/ClassDirectory";
 import { SchoolProfile } from "./screens/SchoolProfile";
 import { UniformManagement } from "./screens/UniformManagement/UniformManagement";
-import { CampaignList } from "./screens/CampaignManagement/CampaignList";
-import { CampaignManagement } from "./screens/CampaignManagement/CampaignManagement";
-import { CampaignDetail } from "./screens/CampaignManagement/CampaignDetail";
+import {
+  SemesterPublicationDetail,
+  SemesterPublicationList,
+  SemesterPublicationWorkspace,
+} from "./screens/SemesterPublications";
 import { SchoolDashboard } from "./screens/SchoolDashboard/SchoolDashboard";
 import { RoleGuard } from "./components/guards/RoleGuard";
 import { ProviderDashboard } from "./screens/ProviderDashboard/ProviderDashboard";
 import { SchoolContracts } from "./screens/SchoolContracts/SchoolContracts";
 import { ProviderContracts } from "./screens/ProviderContracts/ProviderContracts";
 import { ContractPreview } from "./screens/ContractPreview/ContractPreview";
-import { SchoolProductionOrders } from "./screens/SchoolProductionOrders/SchoolProductionOrders";
-import SchoolProductionOrderDetail from "./screens/SchoolProductionOrders/SchoolProductionOrderDetail";
-import SchoolProductionOrdersLayout from "./screens/SchoolProductionOrders/SchoolProductionOrdersLayout";
-import { ProviderProductionOrders } from "./screens/ProviderProductionOrders/ProviderProductionOrders";
-import { SchoolComplaints } from "./screens/SchoolComplaints/SchoolComplaints";
 import { ProviderComplaints } from "./screens/ProviderComplaints/ProviderComplaints";
 import { ParentProfile } from "./screens/ParentProfile/ParentProfile";
 import { AccountTab } from "./screens/ParentProfile/tabs/AccountTab";
@@ -58,7 +58,6 @@ import { BodygramHistoryTab } from "./screens/ParentProfile/tabs/BodygramHistory
 import { FeedbackPage } from "./screens/ParentProfile/pages/FeedbackPage";
 import { OrderDetailPage } from "./screens/ParentProfile/pages/OrderDetailPage";
 import { BodygramScanComparePage } from "./screens/ParentProfile/pages/BodygramScanComparePage";
-import SchoolWallet from "./screens/SchoolWallet/SchoolWallet";
 import ProviderRevenue from "./screens/ProviderRevenue/ProviderRevenue";
 import ProviderWallet from "./screens/ProviderWallet/ProviderWallet";
 import { AdminDashboard } from "./screens/AdminDashboard/AdminDashboard";
@@ -68,6 +67,7 @@ import { ContactPartnership } from "./screens/ContactPartnership";
 import { AdminAccountRequests } from "./screens/AdminAccountRequests";
 import AdminTransactions from "./screens/AdminTransactions/AdminTransactions";
 import AdminComplaints from "./screens/AdminComplaints/AdminComplaints";
+import { AdminAccountSettings } from "./screens/AdminProfile/AdminAccountSettings";
 import { ProviderProfile } from "./screens/ProviderProfile/ProviderProfile";
 import { ProviderAccountSettings } from "./screens/ProviderProfile/ProviderAccountSettings";
 import { SchoolAccountSettings } from "./screens/SchoolProfile/SchoolAccountSettings";
@@ -76,6 +76,14 @@ import { SearchPage } from "./screens/Search/SearchPage";
 import { useEffect, useRef } from "react";
 import { BodygramScannerPage } from "./screens/BodygramScanner/BodygramScannerPage";
 import { BodygramScanDetailPage } from "./screens/ParentProfile/pages/BodygramScanDetailPage";
+import { SemesterCatalog } from "./screens/SemesterCatalog/SemesterCatalog";
+import { MyOrders } from "./screens/DirectOrders/MyOrders";
+import { MyOrderDetail } from "./screens/DirectOrders/MyOrderDetail";
+import { ProviderOrders } from "./screens/ProviderOrders/ProviderOrders";
+import { ProviderOrderDetail } from "./screens/ProviderOrders/ProviderOrderDetail";
+import { ProviderRatings } from "./screens/ProviderRatings/ProviderRatings";
+import { SchoolTeacherReports } from "./screens/SchoolTeacherReports";
+import { SubmitTeacherReportPage, TeacherAccount, TeacherDashboard, TeacherMessages, TeacherReminders, TeacherReports } from "./screens/TeacherWorkspace";
 
 /** Smart root redirect: School→dashboard, others→homepage */
 function RootRedirect() {
@@ -86,6 +94,7 @@ function RootRedirect() {
       if (user.role === "Admin") return <Navigate to="/admin/dashboard" replace />;
       if (user.role === "School") return <Navigate to="/school/dashboard" replace />;
       if (user.role === "Provider") return <Navigate to="/provider/dashboard" replace />;
+      if (user.role === "HomeroomTeacher") return <Navigate to="/teacher/dashboard" replace />;
     } catch { /* ignore */ }
   }
   return <Navigate to="/homepage" replace />;
@@ -185,7 +194,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/school/students",
-    element: <RoleGuard allowedRoles={["School"]}><StudentList /></RoleGuard>,
+    element: <RoleGuard allowedRoles={["School"]}><SchoolClassDirectory /></RoleGuard>,
+  },
+  {
+    path: "/school/students/classes/:id",
+    element: <RoleGuard allowedRoles={["School"]}><SchoolClassDetail /></RoleGuard>,
   },
   {
     path: "/school/students/import",
@@ -194,7 +207,7 @@ const router = createBrowserRouter([
   ,
   {
     path: "/school/orders",
-    element: <RoleGuard allowedRoles={["School"]}><OrderManagement /></RoleGuard>,
+    element: <RoleGuard allowedRoles={["School"]}><Navigate to="/school/dashboard" replace /></RoleGuard>,
   }
   ,
   {
@@ -206,6 +219,38 @@ const router = createBrowserRouter([
     element: <RoleGuard allowedRoles={["Provider"]}><ProviderDashboard /></RoleGuard>,
   },
   {
+    path: "/teacher/dashboard",
+    element: <RoleGuard allowedRoles={["HomeroomTeacher"]}><TeacherDashboard /></RoleGuard>,
+  },
+  {
+    path: "/teacher/classes",
+    element: <RoleGuard allowedRoles={["HomeroomTeacher"]}><TeacherClasses /></RoleGuard>,
+  },
+  {
+    path: "/teacher/classes/:id",
+    element: <RoleGuard allowedRoles={["HomeroomTeacher"]}><TeacherClassDetail /></RoleGuard>,
+  },
+  {
+    path: "/teacher/reports",
+    element: <RoleGuard allowedRoles={["HomeroomTeacher"]}><TeacherReports /></RoleGuard>,
+  },
+  {
+    path: "/teacher/reports/new",
+    element: <RoleGuard allowedRoles={["HomeroomTeacher"]}><SubmitTeacherReportPage /></RoleGuard>,
+  },
+  {
+    path: "/teacher/messages",
+    element: <RoleGuard allowedRoles={["HomeroomTeacher"]}><TeacherMessages /></RoleGuard>,
+  },
+  {
+    path: "/teacher/reminders",
+    element: <RoleGuard allowedRoles={["HomeroomTeacher"]}><TeacherReminders /></RoleGuard>,
+  },
+  {
+    path: "/teacher/account",
+    element: <RoleGuard allowedRoles={["HomeroomTeacher"]}><TeacherAccount /></RoleGuard>,
+  },
+  {
     path: "/provider/contracts",
     element: <RoleGuard allowedRoles={["Provider"]}><ProviderContracts /></RoleGuard>,
   },
@@ -214,28 +259,12 @@ const router = createBrowserRouter([
     element: <RoleGuard allowedRoles={["School"]}><SchoolContracts /></RoleGuard>,
   },
   {
-    path: "/school/production-orders",
-    element: <RoleGuard allowedRoles={["School"]}><SchoolProductionOrdersLayout /></RoleGuard>,
-    children: [
-      { index: true, element: <SchoolProductionOrders /> },
-      { path: ":batchId", element: <SchoolProductionOrderDetail /> },
-    ],
-  },
-  {
-    path: "/provider/production-orders",
-    element: <RoleGuard allowedRoles={["Provider"]}><ProviderProductionOrders /></RoleGuard>,
-  },
-  {
-    path: "/school/complaints",
-    element: <RoleGuard allowedRoles={["School"]}><SchoolComplaints /></RoleGuard>,
-  },
-  {
     path: "/provider/complaints",
     element: <RoleGuard allowedRoles={["Provider"]}><ProviderComplaints /></RoleGuard>,
   },
   {
-    path: "/school/wallet",
-    element: <RoleGuard allowedRoles={["School"]}><SchoolWallet /></RoleGuard>,
+    path: "/school/teacher-reports",
+    element: <RoleGuard allowedRoles={["School"]}><SchoolTeacherReports /></RoleGuard>,
   },
   {
     path: "/provider/revenue",
@@ -283,6 +312,10 @@ const router = createBrowserRouter([
     element: <RoleGuard allowedRoles={["Admin"]}><AdminComplaints /></RoleGuard>,
   },
   {
+    path: "/admin/account-settings",
+    element: <RoleGuard allowedRoles={["Admin"]}><AdminAccountSettings /></RoleGuard>,
+  },
+  {
     path: "/school/profile",
     element: <RoleGuard allowedRoles={["School"]}><SchoolProfile /></RoleGuard>,
   },
@@ -291,20 +324,20 @@ const router = createBrowserRouter([
     element: <RoleGuard allowedRoles={["School"]}><UniformManagement /></RoleGuard>,
   },
   {
-    path: "/school/campaigns",
-    element: <RoleGuard allowedRoles={["School"]}><CampaignList /></RoleGuard>,
+    path: "/school/semester-publications",
+    element: <RoleGuard allowedRoles={["School"]}><SemesterPublicationList /></RoleGuard>,
   },
   {
-    path: "/school/campaigns/new",
-    element: <RoleGuard allowedRoles={["School"]}><CampaignManagement /></RoleGuard>,
+    path: "/school/semester-publications/new",
+    element: <RoleGuard allowedRoles={["School"]}><SemesterPublicationWorkspace /></RoleGuard>,
   },
   {
-    path: "/school/campaigns/:id/edit",
-    element: <RoleGuard allowedRoles={["School"]}><CampaignManagement /></RoleGuard>,
+    path: "/school/semester-publications/:id/edit",
+    element: <RoleGuard allowedRoles={["School"]}><SemesterPublicationWorkspace /></RoleGuard>,
   },
   {
-    path: "/school/campaigns/:id",
-    element: <RoleGuard allowedRoles={["School"]}><CampaignDetail /></RoleGuard>,
+    path: "/school/semester-publications/:id",
+    element: <RoleGuard allowedRoles={["School"]}><SemesterPublicationDetail /></RoleGuard>,
   },
   { path: "/forgot-password", element: <RoleGuard allowedRoles={[]} allowGuest><ForgotPassword /></RoleGuard> },
   { path: "/forgot-password/sent", element: <RoleGuard allowedRoles={[]} allowGuest><ForgotPasswordSent /></RoleGuard> },
@@ -314,14 +347,19 @@ const router = createBrowserRouter([
   { path: "/signin", element: <RoleGuard allowedRoles={[]} allowGuest><SignIn /></RoleGuard> },
   { path: "/schools", element: <RoleGuard allowedRoles={["Parent"]} allowGuest><SchoolList /></RoleGuard> },
   { path: "/schools/:id", element: <RoleGuard allowedRoles={["Parent"]} allowGuest><SchoolDetail /></RoleGuard> },
-  { path: "/campaigns/:campaignId", element: <RoleGuard allowedRoles={["Parent"]} allowGuest><PublicCampaignDetail /></RoleGuard> },
+  { path: "/schools/:id/catalog", element: <RoleGuard allowedRoles={["Parent"]} allowGuest><SemesterCatalog /></RoleGuard> },
+  { path: "/providers/:id/ratings", element: <RoleGuard allowedRoles={["Parent"]} allowGuest><ProviderRatings /></RoleGuard> },
   { path: "/outfits/:id", element: <RoleGuard allowedRoles={["Parent"]} allowGuest><OutfitDetail /></RoleGuard> },
+  { path: "/my-orders", element: <RoleGuard allowedRoles={["Parent"]}><MyOrders /></RoleGuard> },
+  { path: "/my-orders/:id", element: <RoleGuard allowedRoles={["Parent"]}><MyOrderDetail /></RoleGuard> },
   { path: "/cart", element: <RoleGuard allowedRoles={["Parent"]}><Cart /></RoleGuard> },
   { path: "/payment/success", element: <RoleGuard allowedRoles={["Parent"]} allowGuest><PaymentSuccess /></RoleGuard> },
   { path: "/payment/cancel", element: <RoleGuard allowedRoles={["Parent"]} allowGuest><PaymentCancel /></RoleGuard> },
   { path: "/products", element: <RoleGuard allowedRoles={["Parent"]} allowGuest><ProductList /></RoleGuard> },
   { path: "/products/:id", element: <RoleGuard allowedRoles={["Parent"]} allowGuest><ProductDetail /></RoleGuard> },
   { path: "/search", element: <RoleGuard allowedRoles={["Parent"]} allowGuest><SearchPage /></RoleGuard> },
+  { path: "/provider/orders", element: <RoleGuard allowedRoles={["Provider"]}><ProviderOrders /></RoleGuard> },
+  { path: "/provider/orders/:id", element: <RoleGuard allowedRoles={["Provider"]}><ProviderOrderDetail /></RoleGuard> },
   // ── Catch-all: redirect unknown routes to homepage ──
   { path: "*", element: <RootRedirect /> },
 ]);

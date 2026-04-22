@@ -32,6 +32,7 @@ export type ParentFeedbackDto = {
   outfitType: string;
   size: string;
   quantity: number;
+  providerName?: string;
 };
 
 export type CampaignFilterDto = {

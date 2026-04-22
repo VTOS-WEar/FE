@@ -45,6 +45,7 @@ export const SignIn = (): JSX.Element => {
         else if (role === "Admin") navigate("/admin/dashboard", { replace: true });
         else if (role === "School") navigate("/school/dashboard", { replace: true });
         else if (role === "Provider") navigate("/provider/dashboard", { replace: true });
+        else if (role === "HomeroomTeacher") navigate("/teacher/dashboard", { replace: true });
         else navigate("/homepage", { replace: true });
       } catch {
         // Invalid user JSON — let them re-login
@@ -116,6 +117,7 @@ export const SignIn = (): JSX.Element => {
     localStorage.setItem("access_token", data.accessToken);
     localStorage.setItem("user", JSON.stringify(data.user));
     localStorage.setItem("expires_in", String(data.expiresIn));
+    localStorage.removeItem("vtos_org_name");
     // Cache 2FA status so AccountSecuritySettings shows correct status immediately on page load
     if (data.user.twoFactorEnabled !== undefined) {
         localStorage.setItem("vtos_2fa_enabled", data.user.twoFactorEnabled ? "true" : "false");
@@ -131,6 +133,8 @@ export const SignIn = (): JSX.Element => {
     } else if (data.user.role === "Provider") {
       redirectTo = "/provider/dashboard";
       getProviderProfile().then(p => { if (p.providerName) localStorage.setItem("vtos_org_name", p.providerName); }).catch(() => {});
+    } else if (data.user.role === "HomeroomTeacher") {
+      redirectTo = "/teacher/dashboard";
     } else if (data.user.role === "Parent" && !data.user.phone) {
       redirectTo = "/fillphonenumber";
     } else if (data.user.role === "Parent" && redirect) {

@@ -1,14 +1,21 @@
 import {
-    LayoutDashboard, Building2, FileText,
-    Factory, AlertTriangle, Wallet, BarChart3, Settings
+    AlertTriangle,
+    BarChart3,
+    Building2,
+    ClipboardList,
+    FileText,
+    LayoutDashboard,
+    Settings,
+    Wallet,
 } from "lucide-react";
 import type { DashboardSidebarProps } from "../components/layout";
 
 /**
- * Sidebar config for Provider Dashboard screens.
- * 3 sections: Quản lý, Sản xuất, Tài chính
+ * Sidebar config for Provider workspace screens.
+ * Grouped by the Provider operator mental model:
+ * tracking, contract operations, finance, and settings.
  */
-export const PROVIDER_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, 'isCollapsed' | 'onToggle'> = {
+export const PROVIDER_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, "isCollapsed" | "onToggle"> = {
     iconType: "provider" as const,
     greeting: "Xin chào!",
     name: "",
@@ -21,32 +28,12 @@ export const PROVIDER_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, 'isCollapsed' 
     ],
     navSections: [
         {
-            title: "QUẢN LÝ",
+            title: "THEO DÕI",
             items: [
                 {
-                    icon: Building2,
-                    label: "Hồ sơ Nhà Cung Cấp",
-                    href: "/provider/profile",
-                },
-                {
-                    icon: FileText,
-                    label: "Hợp đồng",
-                    href: "/provider/contracts",
-                },
-                {
-                    icon: Settings,
-                    label: "Cài đặt tài khoản",
-                    href: "/provider/account-settings",
-                },
-            ],
-        },
-        {
-            title: "SẢN XUẤT",
-            items: [
-                {
-                    icon: Factory,
-                    label: "Đơn sản xuất",
-                    href: "/provider/production-orders",
+                    icon: ClipboardList,
+                    label: "Đơn hàng",
+                    href: "/provider/orders",
                 },
                 {
                     icon: AlertTriangle,
@@ -56,17 +43,42 @@ export const PROVIDER_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, 'isCollapsed' 
             ],
         },
         {
+            title: "VẬN HÀNH HỢP ĐỒNG",
+            items: [
+                {
+                    icon: FileText,
+                    label: "Hợp đồng",
+                    href: "/provider/contracts",
+                },
+            ],
+        },
+        {
             title: "TÀI CHÍNH",
             items: [
                 {
                     icon: Wallet,
-                    label: "Ví Nhà Cung Cấp",
+                    label: "Ví nhà cung cấp",
                     href: "/provider/wallet",
                 },
                 {
                     icon: BarChart3,
                     label: "Doanh thu",
                     href: "/provider/revenue",
+                },
+            ],
+        },
+        {
+            title: "THIẾT LẬP",
+            items: [
+                {
+                    icon: Building2,
+                    label: "Hồ sơ nhà cung cấp",
+                    href: "/provider/profile",
+                },
+                {
+                    icon: Settings,
+                    label: "Tài khoản",
+                    href: "/provider/account-settings",
                 },
             ],
         },

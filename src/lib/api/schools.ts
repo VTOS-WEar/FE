@@ -264,6 +264,95 @@ export async function getSchoolStudents(params: GetStudentsParams = {}): Promise
 }
 //#endregion
 
+//#region Class Directory
+
+export type ClassTeacherDto = {
+    id: string;
+    fullName: string;
+    email: string;
+};
+
+export type ClassStudentItemDto = {
+    id: string;
+    fullName: string;
+    studentCode: string | null;
+    grade: string;
+    gender: string;
+    dateOfBirth: string | null;
+    hasMeasurements: boolean;
+    parentName: string | null;
+    parentPhone: string | null;
+    isParentLinked: boolean;
+};
+
+export type ClassGroupSummaryDto = {
+    id: string;
+    className: string;
+    grade: string;
+    academicYear: string;
+    homeroomTeacherName: string | null;
+    homeroomTeacherEmail: string | null;
+    studentCount: number;
+    measurementReadyCount: number;
+    parentLinkedCount: number;
+    orderedStudentCount: number;
+};
+
+export type GradeClassGroupDto = {
+    grade: string;
+    classCount: number;
+    studentCount: number;
+    classes: ClassGroupSummaryDto[];
+};
+
+export type SchoolClassesOverviewDto = {
+    academicYear: string;
+    totalClasses: number;
+    totalStudents: number;
+    unassignedStudentCount: number;
+    grades: GradeClassGroupDto[];
+};
+
+export type TeacherClassesOverviewDto = {
+    teacherId: string;
+    teacherName: string;
+    teacherEmail: string;
+    totalClasses: number;
+    totalStudents: number;
+    classes: ClassGroupSummaryDto[];
+};
+
+export type ClassGroupDetailDto = {
+    id: string;
+    schoolID: string;
+    schoolName: string;
+    className: string;
+    grade: string;
+    academicYear: string;
+    homeroomTeacher: ClassTeacherDto | null;
+    studentCount: number;
+    measurementReadyCount: number;
+    parentLinkedCount: number;
+    students: ClassStudentItemDto[];
+};
+
+export async function getSchoolClassesOverview(academicYear?: string): Promise<SchoolClassesOverviewDto> {
+    const suffix = academicYear ? `?academicYear=${encodeURIComponent(academicYear)}` : "";
+    return api<SchoolClassesOverviewDto>(`${endpoints.schools.classes}${suffix}`, {
+        method: "GET",
+        auth: true,
+    });
+}
+
+export async function getSchoolClassDetail(id: string): Promise<ClassGroupDetailDto> {
+    return api<ClassGroupDetailDto>(`${endpoints.schools.classes}/${id}`, {
+        method: "GET",
+        auth: true,
+    });
+}
+
+//#endregion
+
 //#region Student CRUD
 
 export type StudentDetailDto = {
@@ -332,6 +421,7 @@ export type OutfitDto = {
     outfitId: string;
     outfitName: string;
     description: string | null;
+    materialType: string | null;
     price: number;
     outfitType: number; // 1=Uniform, 2=Sportswear, 3=Accessory, 4=Other
     mainImageURL: string | null;
@@ -360,7 +450,7 @@ export async function getSchoolOutfits(isAvailable?: boolean): Promise<OutfitLis
 export type CreateOutfitRequest = {
     outfitName: string;
     description?: string | null;
-    price: number;
+    materialType?: string | null;
     outfitType: number; // 1=Uniform, 2=Sportswear, 3=Accessory, 4=Other
     mainImageURL?: string | null;
     sizeChartID?: string | null;
@@ -397,7 +487,7 @@ export async function createOutfit(data: CreateOutfitRequest): Promise<OutfitDto
 export type UpdateOutfitRequest = {
     outfitName?: string;
     description?: string | null;
-    price?: number;
+    materialType?: string | null;
     outfitType?: number;
     mainImageURL?: string | null;
     isAvailable?: boolean;
@@ -513,25 +603,7 @@ export async function deleteVariant(outfitId: string, variantId: string): Promis
 
 //#endregion
 
-//#region ── Campaigns ──
-
-export type CampaignListItemDto = {
-    campaignId: string;
-    campaignName: string;
-    status: string;
-    startDate: string;
-    endDate: string;
-    description: string | null;
-    outfitCount: number;
-    orderCount: number;
-};
-
-export type CampaignListResponse = {
-    items: CampaignListItemDto[];
-    total: number;
-    page: number;
-    pageSize: number;
-};
+//#region ── Public campaign compatibility types ──
 
 export type CampaignOutfitDetailDto = {
     campaignOutfitId: string;
@@ -542,144 +614,6 @@ export type CampaignOutfitDetailDto = {
     maxQuantity: number | null;
     providerId: string | null;
 };
-
-export type CampaignDetailDto = {
-    campaignId: string;
-    campaignName: string;
-    status: string;
-    startDate: string;
-    endDate: string;
-    description: string | null;
-    createdAt: string;
-    totalOrders: number;
-    outfits: CampaignOutfitDetailDto[];
-};
-
-export type CampaignOutfitInput = {
-    outfitId: string;
-    providerId?: string | null;
-    campaignPrice: number;
-    maxQuantity?: number | null;
-};
-
-export type CampaignOutfitRequestItem = {
-    outfitId: string;
-    providerId?: string | null;
-    campaignPrice: number;
-    maxQuantity?: number | null;
-};
-
-export type PublishCampaignRequest = {
-    campaignName: string;
-    description?: string | null;
-    startDate: string;
-    endDate: string;
-    saveAsDraft: boolean;
-    outfits: CampaignOutfitInput[];
-};
-
-export type PublishCampaignResponse = {
-    campaignId: string;
-    campaignName: string;
-    description: string | null;
-    status: string;
-    startDate: string;
-    endDate: string;
-    outfitCount: number;
-    createdAt: string;
-};
-
-/** Get campaign list */
-export async function getCampaigns(page = 1, pageSize = 10, status?: string): Promise<CampaignListResponse> {
-    let url = `${endpoints.schools.campaigns}?page=${page}&pageSize=${pageSize}`;
-    if (status) url += `&status=${status}`;
-    return api<CampaignListResponse>(url, { auth: true });
-}
-
-/** Get campaign detail */
-export async function getCampaignDetail(id: string): Promise<CampaignDetailDto> {
-    return api<CampaignDetailDto>(`${endpoints.schools.campaigns}/${id}`, { auth: true });
-}
-
-/** Publish or save-as-draft a campaign */
-export async function publishCampaign(data: PublishCampaignRequest): Promise<PublishCampaignResponse> {
-    return api<PublishCampaignResponse>(endpoints.schools.campaigns, {
-        method: "POST",
-        body: JSON.stringify(data),
-        auth: true,
-    });
-}
-
-/** Lock a campaign (no more orders accepted) */
-export async function lockCampaign(id: string): Promise<{ message: string }> {
-    return api<{ message: string }>(`${endpoints.schools.campaigns}/${id}/lock`, {
-        method: "POST",
-        auth: true,
-    });
-}
-
-/** Edit a draft campaign */
-export type UpdateCampaignPayload = {
-    campaignName: string;
-    description?: string | null;
-    startDate: string;
-    endDate: string;
-    outfits: CampaignOutfitRequestItem[];
-};
-
-export async function updateCampaign(id: string, payload: UpdateCampaignPayload): Promise<CampaignDetailDto> {
-    return api<CampaignDetailDto>(`${endpoints.schools.campaigns}/${id}`, {
-        method: "PUT",
-        auth: true,
-        body: payload,
-    });
-}
-
-/** Publish a draft campaign (Draft → Active) */
-export async function publishDraftCampaign(id: string): Promise<PublishCampaignResponse> {
-    return api<PublishCampaignResponse>(`${endpoints.schools.campaigns}/${id}/publish`, {
-        method: "POST",
-        auth: true,
-    });
-}
-
-/** Delete a draft campaign (no orders only) */
-export async function deleteCampaign(id: string): Promise<void> {
-    await api<void>(`${endpoints.schools.campaigns}/${id}`, {
-        method: "DELETE",
-        auth: true,
-    });
-}
-
-/** Campaign progress stats (UC-46) */
-export type CampaignProgressDto = {
-    campaignId: string;
-    campaignName: string;
-    status: string;
-    startDate: string;
-    endDate: string;
-    totalOrders: number;
-    totalStudents: number;
-    totalRevenue: number;
-    pendingOrders: number;
-    totalChildProfiles: number;
-    outfitBreakdown: {
-        outfitId: string;
-        outfitName: string;
-        quantityOrdered: number;
-        maxQuantity: number | null;
-        revenue: number;
-        category: string | null;
-    }[];
-};
-
-/** Get campaign progress / stats */
-export async function getCampaignProgress(id: string): Promise<CampaignProgressDto> {
-    return api<CampaignProgressDto>(
-        endpoints.schools.campaignProgress.replace("{id}", id),
-        { auth: true }
-    );
-}
 
 //#endregion
 
@@ -735,17 +669,6 @@ export type PublicSchoolDetailDto = {
     activeCampaigns: PublicCampaignSummaryDto[];
 };
 
-export type PublicCampaignDetailDto = {
-    campaignId: string;
-    campaignName: string;
-    status: string;
-    startDate: string;
-    endDate: string;
-    description: string | null;
-    school: { id: string; schoolName: string; logoURL: string | null };
-    outfits: CampaignOutfitDetailDto[];
-};
-
 /** Guest & Parent: list all public schools (paginated) */
 export type PublicSchoolsResponse = {
     schools: PublicSchoolDto[];
@@ -763,14 +686,6 @@ export async function getPublicSchools(page?: number, pageSize?: number): Promis
 /** Guest & Parent: public school detail with active campaigns */
 export async function getPublicSchoolDetail(id: string): Promise<PublicSchoolDetailDto> {
     return api<PublicSchoolDetailDto>(`${endpoints.public.schools}/${id}`, { method: "GET" });
-}
-
-/** Parent only: public campaign detail with outfits */
-export async function getPublicCampaignDetail(campaignId: string): Promise<PublicCampaignDetailDto> {
-    return api<PublicCampaignDetailDto>(
-        `/api/public/campaigns/${campaignId}`,
-        { method: "GET", auth: true }
-    );
 }
 
 // ── Outfit Detail (public) ──
@@ -898,6 +813,250 @@ export async function getSchoolUniforms(schoolId: string, page = 1, pageSize = 1
 /** Guest & Parent: uniform warehouse (summary data) */
 export async function getUniformWarehouse(pageSize = 12): Promise<UniformWarehouseResponse> {
     return api<UniformWarehouseResponse>(`${endpoints.public.uniformWarehouse}?pageSize=${pageSize}`, { method: "GET" });
+}
+
+//#region -- Semester Publications --
+
+export type SemesterPublicationDto = {
+    id: string;
+    schoolID: string;
+    semester: string;
+    academicYear: string;
+    startDate: string;
+    endDate: string;
+    status: string;
+    description: string | null;
+    rules: string | null;
+    outfitCount: number;
+    providerCount: number;
+    createdAt: string;
+    updatedAt: string | null;
+};
+
+export type PublicationOutfitDto = {
+    id: string;
+    outfitID: string;
+    outfitName: string;
+    mainImageURL: string | null;
+    price: number;
+    outfitType: string;
+    notes: string | null;
+    addedAt: string;
+};
+
+export type PublicationProviderDto = {
+    id: string;
+    providerID: string;
+    providerName: string;
+    contactEmail: string | null;
+    contractID: string | null;
+    contractName: string | null;
+    status: string;
+    approvedAt: string;
+    suspendedAt: string | null;
+    suspendReason: string | null;
+};
+
+export type SemesterPublicationDetailDto = {
+    id: string;
+    schoolID: string;
+    semester: string;
+    academicYear: string;
+    startDate: string;
+    endDate: string;
+    status: string;
+    description: string | null;
+    rules: string | null;
+    outfits: PublicationOutfitDto[];
+    providers: PublicationProviderDto[];
+    createdAt: string;
+    updatedAt: string | null;
+};
+
+export type ContractedOutfitSuggestionDto = {
+    outfitID: string;
+    outfitName: string;
+    mainImageURL: string | null;
+    outfitType: string;
+    contractName: string;
+    contractID: string;
+};
+
+export type ContractedProviderSuggestionDto = {
+    providerID: string;
+    providerName: string;
+    contactEmail: string | null;
+    contractID: string;
+    contractName: string;
+    contractStatus: string;
+};
+
+export type GetSemesterPublicationsResponse = {
+    items: SemesterPublicationDto[];
+    total: number;
+    page: number;
+    pageSize: number;
+};
+
+export type CreateSemesterPublicationRequest = {
+    semester: string;
+    academicYear: string;
+    startDate: string;
+    endDate: string;
+    description?: string | null;
+    rules?: string | null;
+};
+
+export type UpdateSemesterPublicationRequest = {
+    semester?: string | null;
+    academicYear?: string | null;
+    startDate?: string | null;
+    endDate?: string | null;
+    description?: string | null;
+    rules?: string | null;
+};
+
+export type AddOutfitsToPublicationRequest = {
+    outfitIds: string[];
+    notes?: string | null;
+};
+
+export type ApprovePublicationProviderRequest = {
+    providerID: string;
+    contractID?: string | null;
+};
+
+export type SuspendPublicationProviderRequest = {
+    reason?: string | null;
+};
+
+export async function getSemesterPublications(
+    page = 1,
+    pageSize = 12,
+    status?: string
+): Promise<GetSemesterPublicationsResponse> {
+    const params = new URLSearchParams({
+        page: String(page),
+        pageSize: String(pageSize),
+    });
+    if (status && status !== "all") {
+        params.set("status", status);
+    }
+
+    return api<GetSemesterPublicationsResponse>(
+        `${endpoints.schools.semesterPublications}?${params.toString()}`,
+        { method: "GET", auth: true }
+    );
+}
+
+export async function getSemesterPublicationDetail(id: string): Promise<SemesterPublicationDetailDto> {
+    return api<SemesterPublicationDetailDto>(
+        `${endpoints.schools.semesterPublications}/${id}`,
+        { method: "GET", auth: true }
+    );
+}
+
+export async function createSemesterPublication(
+    payload: CreateSemesterPublicationRequest
+): Promise<SemesterPublicationDto> {
+    return api<SemesterPublicationDto>(endpoints.schools.semesterPublications, {
+        method: "POST",
+        body: JSON.stringify(payload),
+        auth: true,
+    });
+}
+
+export async function updateSemesterPublication(
+    id: string,
+    payload: UpdateSemesterPublicationRequest
+): Promise<SemesterPublicationDto> {
+    return api<SemesterPublicationDto>(`${endpoints.schools.semesterPublications}/${id}`, {
+        method: "PUT",
+        body: JSON.stringify(payload),
+        auth: true,
+    });
+}
+
+export async function deleteSemesterPublication(id: string): Promise<{ message: string }> {
+    return api<{ message: string }>(`${endpoints.schools.semesterPublications}/${id}`, {
+        method: "DELETE",
+        auth: true,
+    });
+}
+
+export async function publishSemesterPublication(id: string): Promise<SemesterPublicationDto> {
+    return api<SemesterPublicationDto>(`${endpoints.schools.semesterPublications}/${id}/publish`, {
+        method: "POST",
+        auth: true,
+    });
+}
+
+export async function closeSemesterPublication(id: string): Promise<SemesterPublicationDto> {
+    return api<SemesterPublicationDto>(`${endpoints.schools.semesterPublications}/${id}/close`, {
+        method: "POST",
+        auth: true,
+    });
+}
+
+export async function addOutfitsToSemesterPublication(
+    id: string,
+    payload: AddOutfitsToPublicationRequest
+): Promise<SemesterPublicationDetailDto> {
+    return api<SemesterPublicationDetailDto>(`${endpoints.schools.semesterPublications}/${id}/outfits`, {
+        method: "POST",
+        body: JSON.stringify(payload),
+        auth: true,
+    });
+}
+
+export async function removeOutfitFromSemesterPublication(
+    publicationId: string,
+    publicationOutfitId: string
+): Promise<SemesterPublicationDetailDto> {
+    return api<SemesterPublicationDetailDto>(
+        `${endpoints.schools.semesterPublications}/${publicationId}/outfits/${publicationOutfitId}`,
+        { method: "DELETE", auth: true }
+    );
+}
+
+export async function approveSemesterPublicationProvider(
+    publicationId: string,
+    payload: ApprovePublicationProviderRequest
+): Promise<SemesterPublicationDetailDto> {
+    return api<SemesterPublicationDetailDto>(`${endpoints.schools.semesterPublications}/${publicationId}/providers`, {
+        method: "POST",
+        body: JSON.stringify(payload),
+        auth: true,
+    });
+}
+
+export async function suspendSemesterPublicationProvider(
+    publicationId: string,
+    publicationProviderId: string,
+    payload: SuspendPublicationProviderRequest
+): Promise<SemesterPublicationDetailDto> {
+    return api<SemesterPublicationDetailDto>(
+        `${endpoints.schools.semesterPublications}/${publicationId}/providers/${publicationProviderId}/suspend`,
+        {
+            method: "POST",
+            body: JSON.stringify(payload),
+            auth: true,
+        }
+    );
+}
+
+export async function getSemesterPublicationOutfitSuggestions(): Promise<ContractedOutfitSuggestionDto[]> {
+    return api<ContractedOutfitSuggestionDto[]>(
+        `${endpoints.schools.semesterPublications}/suggestions/outfits`,
+        { method: "GET", auth: true }
+    );
+}
+
+export async function getSemesterPublicationProviderSuggestions(): Promise<ContractedProviderSuggestionDto[]> {
+    return api<ContractedProviderSuggestionDto[]>(
+        `${endpoints.schools.semesterPublications}/suggestions/providers`,
+        { method: "GET", auth: true }
+    );
 }
 
 //#endregion

@@ -1,261 +1,425 @@
-import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
-import { useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import {
- Breadcrumb,
- BreadcrumbItem,
- BreadcrumbLink,
- BreadcrumbList,
- BreadcrumbPage,
- BreadcrumbSeparator,
+    AlertTriangle,
+    ArrowRight,
+    Building2,
+    CheckCircle2,
+    ChevronRight,
+    ClipboardList,
+    FileText,
+    Package,
+    ShieldCheck,
+    Wallet,
+} from "lucide-react";
+import {
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbList,
+    BreadcrumbPage,
+    BreadcrumbSeparator,
 } from "../../components/ui/breadcrumb";
 import { DashboardSidebar } from "../../components/layout";
 import { TopNavBar } from "../../components/layout/TopNavBar";
 import { useProviderSidebarConfig } from "../../hooks/useProviderSidebarConfig";
-import { getProviderProfile, type ProviderProfileDto } from "../../lib/api/providers";
+import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
+import { getProviderComplaints } from "../../lib/api/complaints";
+import { getProviderContracts } from "../../lib/api/contracts";
+import {
+    getProviderDirectOrderStats,
+    getProviderProfile,
+    type ProviderOrderStatsDto,
+    type ProviderProfileDto,
+} from "../../lib/api/providers";
 
-/* ── Stats Card (Neubrutalism) ── */
-function StatsCard({
- icon,
- iconBg,
- label,
- value,
- subtext,
- primary,
+type DashboardData = {
+    profile: ProviderProfileDto | null;
+    stats: ProviderOrderStatsDto | null;
+    contractsCount: number;
+    contractsWaitingOnProvider: number;
+    activeContracts: number;
+    openComplaints: number;
+    inProgressComplaints: number;
+};
+
+function MetricCard({
+    label,
+    value,
+    note,
+    icon,
+    tone,
 }: {
- icon: React.ReactNode;
- iconBg: string;
- label: string;
- value: string;
- subtext?: string;
- primary?: boolean;
+    label: string;
+    value: string | number;
+    note: string;
+    icon: React.ReactNode;
+    tone: string;
 }) {
- return (
- <div className={`nb-stat-card ${primary ? "nb-stat-primary" : ""}`}>
- <div className="flex items-start justify-between mb-3">
- <p className="nb-stat-label">{label}</p>
- <div className={`nb-stat-icon ${iconBg}`}>
- {icon}
- </div>
- </div>
- <p className="nb-stat-value">
- {value}
- </p>
- {subtext && (
- <p className=" font-medium text-gray-500 text-xs mt-1">
- {subtext}
- </p>
- )}
- </div>
- );
+    return (
+        <div className="group relative overflow-hidden rounded-[26px] border border-gray-200 bg-white p-5 shadow-soft-sm transition-all hover:-translate-y-1">
+            <div className="flex items-start justify-between gap-4">
+                <div>
+                    <p className="text-[11px] font-black uppercase tracking-[0.18em] text-gray-400">{label}</p>
+                    <p className="mt-2 text-3xl font-black text-gray-900">{value}</p>
+                    <p className="mt-2 text-sm font-semibold text-gray-500">{note}</p>
+                </div>
+                <div className={`flex h-11 w-11 items-center justify-center rounded-2xl border border-white/60 ${tone}`}>
+                    {icon}
+                </div>
+            </div>
+        </div>
+    );
 }
 
-/* ── Quick Action Card (Neubrutalism) ── */
-function QuickActionCard({
- emoji,
- title,
- description,
- href,
- tint,
+function ActionCard({
+    title,
+    description,
+    href,
+    badge,
+    icon,
+    tone,
 }: {
- emoji: string;
- title: string;
- description: string;
- href?: string;
- tint?: string;
+    title: string;
+    description: string;
+    href: string;
+    badge?: string;
+    icon: React.ReactNode;
+    tone: string;
 }) {
- const navigate = useNavigate();
- return (
- <button
- onClick={() => href && navigate(href)}
- className={`nb-action-card group ${!href ? "opacity-50 cursor-not-allowed" : ""}`}
- disabled={!href}
- >
- <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-xl mb-3 border border-gray-200 shadow-sm ${tint || "bg-violet-50"}`}>
- {emoji}
- </div>
- <h3 className=" font-bold text-gray-900 text-base mb-1">
- {title}
- </h3>
- <p className=" font-medium text-gray-500 text-sm leading-relaxed">
- {description}
- </p>
- </button>
- );
+    return (
+        <Link
+            to={href}
+            className="group flex h-full flex-col justify-between rounded-[24px] border border-gray-200 bg-white p-5 shadow-soft-sm transition-all hover:-translate-y-1 hover:border-violet-200"
+        >
+            <div>
+                <div className="flex items-start justify-between gap-3">
+                    <div className={`flex h-11 w-11 items-center justify-center rounded-2xl ${tone}`}>
+                        {icon}
+                    </div>
+                    {badge ? (
+                        <span className="inline-flex items-center rounded-full border border-violet-200 bg-violet-50 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-violet-700">
+                            {badge}
+                        </span>
+                    ) : null}
+                </div>
+                <h3 className="mt-5 text-lg font-black text-gray-900">{title}</h3>
+                <p className="mt-2 text-sm font-medium leading-6 text-gray-500">{description}</p>
+            </div>
+            <div className="mt-6 inline-flex items-center gap-2 text-sm font-black text-violet-700">
+                Mở khu vực này
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </div>
+        </Link>
+    );
 }
 
-/* ── Main Page ── */
+function formatStatus(status?: string | null) {
+    switch (status) {
+        case "Approved":
+            return "Đã duyệt";
+        case "Pending":
+            return "Chờ duyệt";
+        default:
+            return status || "Chưa cập nhật";
+    }
+}
+
 export const ProviderDashboard = (): JSX.Element => {
- const navigate = useNavigate();
- const sidebarConfig = useProviderSidebarConfig();
- const [isCollapsed, toggle] = useSidebarCollapsed();
- const [providerName, setProviderName] = useState("");
- const [loading, setLoading] = useState(true);
- const [profile, setProfile] = useState<ProviderProfileDto | null>(null);
+    const navigate = useNavigate();
+    const sidebarConfig = useProviderSidebarConfig();
+    const [isCollapsed, toggle] = useSidebarCollapsed();
+    const [loading, setLoading] = useState(true);
+    const [providerName, setProviderName] = useState("");
+    const [data, setData] = useState<DashboardData>({
+        profile: null,
+        stats: null,
+        contractsCount: 0,
+        contractsWaitingOnProvider: 0,
+        activeContracts: 0,
+        openComplaints: 0,
+        inProgressComplaints: 0,
+    });
 
- const fetchData = useCallback(async () => {
- setLoading(true);
- try {
- const data = await getProviderProfile();
- setProfile(data);
- setProviderName(data.providerName || "");
- if (data.providerName) localStorage.setItem("vtos_org_name", data.providerName);
- } catch {
- // Profile API might fail if not set up yet
- } finally {
- setLoading(false);
- }
- }, []);
+    const fetchData = useCallback(async () => {
+        setLoading(true);
+        try {
+            const [profile, stats, contracts, complaints] = await Promise.all([
+                getProviderProfile(),
+                getProviderDirectOrderStats(),
+                getProviderContracts(),
+                getProviderComplaints(1, 50),
+            ]);
 
- useEffect(() => { fetchData(); }, [fetchData]);
+            const contractsWaitingOnProvider = contracts.filter(
+                (contract) => contract.status === "Pending" || contract.status === "PendingProviderSign",
+            ).length;
 
- const handleLogout = () => {
- localStorage.removeItem("access_token"); localStorage.removeItem("user"); localStorage.removeItem("expires_in");
- sessionStorage.removeItem("access_token"); sessionStorage.removeItem("user"); sessionStorage.removeItem("expires_in");
- navigate("/signin", { replace: true });
- };
+            const activeContracts = contracts.filter(
+                (contract) => contract.status === "Active" || contract.status === "InUse",
+            ).length;
 
- return (
- <div className="nb-page flex flex-col">
- <div className="flex flex-1 flex-col lg:flex-row">
- {/* Sidebar */}
- <div className={`${isCollapsed ? "lg:w-16" : "lg:w-[16rem]"} flex-shrink-0 lg:sticky lg:top-0 lg:h-screen transition-all duration-300`}>
- <DashboardSidebar {...sidebarConfig} name={providerName} isCollapsed={isCollapsed} onToggle={toggle} onLogout={handleLogout} />
- </div>
+            const openComplaints = complaints.items.filter((complaint) => complaint.status === "Open").length;
+            const inProgressComplaints = complaints.items.filter((complaint) => complaint.status === "InProgress").length;
 
- <div className="flex-1 flex flex-col min-w-0">
- {/* Breadcrumb */}
- <TopNavBar>
- <Breadcrumb>
- <BreadcrumbList>
- <BreadcrumbItem><BreadcrumbLink href="/provider/dashboard" className=" font-semibold text-[#4c5769] text-base">Trang chủ</BreadcrumbLink></BreadcrumbItem>
- <BreadcrumbSeparator className="text-[#cbcad7]">/</BreadcrumbSeparator>
- <BreadcrumbItem><BreadcrumbPage className=" font-bold text-gray-900 text-base">Tổng quan</BreadcrumbPage></BreadcrumbItem>
- </BreadcrumbList>
- </Breadcrumb>
- </TopNavBar>
+            setProviderName(profile.providerName || "");
+            if (profile.providerName) {
+                localStorage.setItem("vtos_org_name", profile.providerName);
+            }
 
- {/* Content */}
- <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-6 nb-fade-in">
- {/* Greeting */}
- <div>
- <h1 className=" font-extrabold text-gray-900 text-[28px] lg:text-[32px] leading-[1.22]">
- Xin chào, {providerName || "Nhà cung cấp"} 🏭
- </h1>
- <p className="mt-1 font-medium text-[#4c5769] text-sm lg:text-base">
- Dưới đây là tổng quan hoạt động sản xuất của bạn.
- </p>
- </div>
+            setData({
+                profile,
+                stats,
+                contractsCount: contracts.length,
+                contractsWaitingOnProvider,
+                activeContracts,
+                openComplaints,
+                inProgressComplaints,
+            });
+        } catch {
+            setData((current) => ({ ...current }));
+        } finally {
+            setLoading(false);
+        }
+    }, []);
 
- {/* Stats Cards */}
- {loading ? (
- <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
- {[1, 2, 3, 4].map((i) => (
- <div key={i} className="nb-skeleton p-5 h-[120px]" />
- ))}
- </div>
- ) : (
- <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 nb-stagger">
- <StatsCard
- label="Hợp đồng"
- value="0"
- subtext="Chưa có hợp đồng"
- primary
- icon={<svg className="w-5 h-5 text-[#F59E0B]" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm4 18H6V4h7v5h5v11z" /></svg>}
- iconBg="bg-[#FEF3C7]"
- />
- <StatsCard
- label="Đơn sản xuất"
- value="0"
- subtext="Chưa có đơn mới"
- icon={<svg className="w-5 h-5 text-[#3B82F6]" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l4.59-4.58L18 11l-6 6z" /></svg>}
- iconBg="bg-[#DBEAFE]"
- />
- <StatsCard
- label="Đang sản xuất"
- value="0"
- subtext="Không có đơn đang xử lý"
- icon={<svg className="w-5 h-5 text-[#10B981]" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" /></svg>}
- iconBg="bg-[#D1FAE5]"
- />
- <StatsCard
- label="Khiếu nại"
- value="0"
- subtext="Không có khiếu nại"
- icon={<svg className="w-5 h-5 text-red-500" viewBox="0 0 24 24" fill="currentColor"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z" /></svg>}
- iconBg="bg-[#FEE2E2]"
- />
- </div>
- )}
+    useEffect(() => {
+        fetchData();
+    }, [fetchData]);
 
- {/* Quick Actions */}
- <div>
- <h2 className="nb-section-title text-xl mb-4">
- ⚡ Thao tác nhanh
- </h2>
- <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 nb-stagger">
- <QuickActionCard
- emoji="📋"
- title="Hợp đồng"
- description="Xem và duyệt hợp đồng từ trường"
- href="/provider/contracts"
- tint="bg-[#FEF3C7]"
- />
- <QuickActionCard
- emoji="🏭"
- title="Đơn sản xuất"
- description="Quản lý các đơn sản xuất đồng phục"
- href="/provider/production-orders"
- tint="bg-[#DBEAFE]"
- />
- <QuickActionCard
- emoji="📦"
- title="Giao hàng"
- description="Xác nhận giao hàng cho trường"
- tint="bg-[#D1FAE5]"
- />
- <QuickActionCard
- emoji="👤"
- title="Hồ sơ"
- description="Cập nhật thông tin nhà cung cấp"
- href="/provider/profile"
- tint="bg-violet-50"
- />
- </div>
- </div>
+    const handleLogout = () => {
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("user");
+        localStorage.removeItem("expires_in");
+        sessionStorage.removeItem("access_token");
+        sessionStorage.removeItem("user");
+        sessionStorage.removeItem("expires_in");
+        navigate("/signin", { replace: true });
+    };
 
- {/* Profile Summary Card */}
- {profile && (
- <div className="nb-card-static p-6 nb-slide-up">
- <h2 className=" font-bold text-gray-900 text-lg mb-4">
- 📇 Thông tin nhà cung cấp
- </h2>
- <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
- {[
- { label: "Tên", value: profile.providerName },
- { label: "Email", value: profile.email || "Chưa cập nhật" },
- { label: "Điện thoại", value: profile.phone || "Chưa cập nhật" },
- { label: "Người liên hệ", value: profile.contactPersonName || "Chưa cập nhật" },
- { label: "Địa chỉ", value: profile.address || "Chưa cập nhật" },
- { label: "Trạng thái", value: profile.status },
- ].map((item) => (
- <div key={item.label} className="p-3 rounded-lg bg-gray-50 border border-gray-200">
- <p className=" font-bold text-gray-500 text-xs uppercase tracking-wider mb-1">
- {item.label}
- </p>
- <p className=" font-semibold text-gray-900 text-sm">
- {item.value}
- </p>
- </div>
- ))}
- </div>
- </div>
- )}
- </main>
- </div>
- </div>
- </div>
- );
+    const metrics = useMemo(
+        () => [
+            {
+                label: "Chờ tiếp nhận",
+                value: data.stats?.paidOrders ?? 0,
+                note: "Đơn đã thanh toán cần bạn xác nhận xử lý.",
+                tone: "bg-amber-50 text-amber-600",
+                icon: <ClipboardList className="h-5 w-5" />,
+            },
+            {
+                label: "Đang sản xuất",
+                value: data.stats?.inProgressOrders ?? 0,
+                note: "Các đơn đang trong công đoạn chuẩn bị hoặc hoàn thiện.",
+                tone: "bg-violet-50 text-violet-600",
+                icon: <Package className="h-5 w-5" />,
+            },
+            {
+                label: "Hợp đồng cần xử lý",
+                value: data.contractsWaitingOnProvider,
+                note: "Bao gồm hợp đồng chờ duyệt giá hoặc chờ ký phía bạn.",
+                tone: "bg-blue-50 text-blue-600",
+                icon: <FileText className="h-5 w-5" />,
+            },
+            {
+                label: "Khiếu nại mở",
+                value: data.openComplaints + data.inProgressComplaints,
+                note: "Các vấn đề cần phản hồi hoặc tiếp tục xử lý.",
+                tone: "bg-rose-50 text-rose-600",
+                icon: <AlertTriangle className="h-5 w-5" />,
+            },
+        ],
+        [data],
+    );
+
+    const actionCards = [
+        {
+            title: "Đi tới hàng chờ sản xuất",
+            description: "Ưu tiên các đơn đã thanh toán và chuyển nhanh sang trạng thái sản xuất.",
+            href: "/provider/orders",
+            badge: data.stats?.paidOrders ? `${data.stats.paidOrders} đơn chờ` : undefined,
+            tone: "bg-amber-50 text-amber-600 border border-amber-100",
+            icon: <ClipboardList className="h-5 w-5" />,
+        },
+        {
+            title: "Kiểm tra hợp đồng với trường",
+            description: "Xem các hợp đồng đang chờ duyệt giá, ký số hoặc đang có hiệu lực.",
+            href: "/provider/contracts",
+            badge: data.contractsWaitingOnProvider ? `${data.contractsWaitingOnProvider} việc cần làm` : undefined,
+            tone: "bg-blue-50 text-blue-600 border border-blue-100",
+            icon: <FileText className="h-5 w-5" />,
+        },
+        {
+            title: "Theo dõi dòng tiền",
+            description: "Xem số dư ví, lịch sử tiền về và rà soát các mốc thanh toán gần đây.",
+            href: "/provider/wallet",
+            tone: "bg-emerald-50 text-emerald-600 border border-emerald-100",
+            icon: <Wallet className="h-5 w-5" />,
+        },
+        {
+            title: "Cập nhật hồ sơ vận hành",
+            description: "Bổ sung thông tin doanh nghiệp và đảm bảo tài khoản luôn sẵn sàng giao dịch.",
+            href: "/provider/profile",
+            tone: "bg-violet-50 text-violet-600 border border-violet-100",
+            icon: <Building2 className="h-5 w-5" />,
+        },
+    ];
+
+    return (
+        <div className="nb-page flex flex-col">
+            <div className="flex flex-1 flex-col lg:flex-row">
+                <div className={`${isCollapsed ? "lg:w-16" : "lg:w-[16rem]"} flex-shrink-0 lg:sticky lg:top-0 lg:h-screen transition-all duration-300`}>
+                    <DashboardSidebar
+                        {...sidebarConfig}
+                        name={providerName}
+                        isCollapsed={isCollapsed}
+                        onToggle={toggle}
+                        onLogout={handleLogout}
+                    />
+                </div>
+
+                <div className="flex-1 flex flex-col min-w-0">
+                    <TopNavBar>
+                        <Breadcrumb>
+                            <BreadcrumbList>
+                                <BreadcrumbItem>
+                                    <BreadcrumbLink href="/provider/dashboard" className="font-semibold text-[#4c5769] text-base">
+                                        Trang chủ
+                                    </BreadcrumbLink>
+                                </BreadcrumbItem>
+                                <BreadcrumbSeparator className="text-[#cbcad7]">/</BreadcrumbSeparator>
+                                <BreadcrumbItem>
+                                    <BreadcrumbPage className="font-bold text-gray-900 text-base">Tổng quan</BreadcrumbPage>
+                                </BreadcrumbItem>
+                            </BreadcrumbList>
+                        </Breadcrumb>
+                    </TopNavBar>
+
+                    <main className="flex-1 space-y-6 px-4 py-6 sm:px-6 lg:px-10 lg:py-8">
+                        <section className="overflow-hidden rounded-[32px] border border-slate-900/70 bg-slate-950 bg-gradient-to-br from-slate-950 via-slate-800 to-violet-900 px-6 py-7 text-white shadow-soft-lg lg:px-8">
+                            <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+                                <div className="max-w-3xl">
+                                    <span className="inline-flex items-center rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-white">
+                                        Workspace nhà cung cấp
+                                    </span>
+                                    <h1 className="mt-4 text-3xl font-black leading-tight text-white sm:text-4xl">
+                                        {providerName || "Nhà cung cấp"} đang vận hành {data.stats?.totalOrders ?? 0} đơn hàng trong hệ thống.
+                                    </h1>
+                                    <p className="mt-3 max-w-2xl text-sm font-medium leading-7 text-slate-100 sm:text-base">
+                                        Tập trung vào ba việc chính: xử lý hợp đồng với trường, đẩy đơn hàng qua dây chuyền sản xuất, và theo dõi dòng tiền để không bỏ lỡ điểm nghẽn nào.
+                                    </p>
+                                </div>
+                                <div className="grid gap-3 sm:grid-cols-3 lg:w-[440px]">
+                                    <div className="rounded-[22px] border border-white/10 bg-white/8 p-4">
+                                        <p className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-300">Doanh thu</p>
+                                        <p className="mt-2 text-2xl font-black text-white">
+                                            {(data.stats?.totalRevenue ?? 0).toLocaleString("vi-VN")} ₫
+                                        </p>
+                                    </div>
+                                    <div className="rounded-[22px] border border-white/10 bg-white/8 p-4">
+                                        <p className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-300">Hợp đồng hiệu lực</p>
+                                        <p className="mt-2 text-2xl font-black text-white">{data.activeContracts}</p>
+                                    </div>
+                                    <div className="rounded-[22px] border border-white/10 bg-white/8 p-4">
+                                        <p className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-300">Hồ sơ</p>
+                                        <p className="mt-2 text-2xl font-black text-white">{formatStatus(data.profile?.status)}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        {loading ? (
+                            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                                {[1, 2, 3, 4].map((item) => (
+                                    <div key={item} className="nb-skeleton h-[150px] rounded-[26px]" />
+                                ))}
+                            </div>
+                        ) : (
+                            <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                                {metrics.map((metric) => (
+                                    <MetricCard key={metric.label} {...metric} />
+                                ))}
+                            </section>
+                        )}
+
+                        <section className="grid gap-6 xl:grid-cols-[1.6fr_1fr]">
+                            <div className="rounded-[28px] border border-gray-200 bg-white p-6 shadow-soft-sm">
+                                <div className="flex items-center justify-between gap-4">
+                                    <div>
+                                        <p className="text-[11px] font-black uppercase tracking-[0.18em] text-gray-400">Việc ưu tiên</p>
+                                        <h2 className="mt-2 text-2xl font-black text-gray-900">Bảng điều phối hôm nay</h2>
+                                    </div>
+                                    <Link
+                                        to="/provider/orders"
+                                        className="inline-flex items-center gap-2 rounded-full border border-gray-200 px-4 py-2 text-sm font-black text-gray-700 transition-all hover:border-violet-200 hover:text-violet-700"
+                                    >
+                                        Xem tất cả đơn
+                                        <ChevronRight className="h-4 w-4" />
+                                    </Link>
+                                </div>
+
+                                <div className="mt-6 grid gap-4 md:grid-cols-2">
+                                    {actionCards.map((card) => (
+                                        <ActionCard key={card.title} {...card} />
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="rounded-[28px] border border-gray-200 bg-white p-6 shadow-soft-sm">
+                                <p className="text-[11px] font-black uppercase tracking-[0.18em] text-gray-400">Trạng thái vận hành</p>
+                                <h2 className="mt-2 text-2xl font-black text-gray-900">Sẵn sàng giao dịch</h2>
+
+                                <div className="mt-6 space-y-4">
+                                    <div className="rounded-[22px] border border-emerald-100 bg-emerald-50/70 p-4">
+                                        <div className="flex items-start gap-3">
+                                            <div className="mt-0.5 flex h-10 w-10 items-center justify-center rounded-2xl bg-white text-emerald-600 shadow-soft-sm">
+                                                <CheckCircle2 className="h-5 w-5" />
+                                            </div>
+                                            <div>
+                                                <h3 className="text-base font-black text-emerald-900">Luồng đơn hàng đang mở</h3>
+                                                <p className="mt-1 text-sm font-medium leading-6 text-emerald-900/80">
+                                                    {data.stats?.paidOrders ?? 0} đơn đang chờ tiếp nhận và {data.stats?.inProgressOrders ?? 0} đơn đang trong quá trình sản xuất.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="rounded-[22px] border border-blue-100 bg-blue-50/70 p-4">
+                                        <div className="flex items-start gap-3">
+                                            <div className="mt-0.5 flex h-10 w-10 items-center justify-center rounded-2xl bg-white text-blue-600 shadow-soft-sm">
+                                                <ShieldCheck className="h-5 w-5" />
+                                            </div>
+                                            <div>
+                                                <h3 className="text-base font-black text-blue-900">Hồ sơ và hợp đồng</h3>
+                                                <p className="mt-1 text-sm font-medium leading-6 text-blue-900/80">
+                                                    {data.contractsCount} hợp đồng đã vào hệ thống. Hồ sơ hiện ở trạng thái {formatStatus(data.profile?.status).toLowerCase()}.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="rounded-[22px] border border-amber-100 bg-amber-50/80 p-4">
+                                        <div className="flex items-start gap-3">
+                                            <div className="mt-0.5 flex h-10 w-10 items-center justify-center rounded-2xl bg-white text-amber-600 shadow-soft-sm">
+                                                <AlertTriangle className="h-5 w-5" />
+                                            </div>
+                                            <div>
+                                                <h3 className="text-base font-black text-amber-900">Điểm cần theo dõi</h3>
+                                                <p className="mt-1 text-sm font-medium leading-6 text-amber-900/80">
+                                                    {data.openComplaints + data.inProgressComplaints > 0
+                                                        ? `${data.openComplaints + data.inProgressComplaints} khiếu nại đang mở hoặc đang xử lý cần rà soát thêm.`
+                                                        : "Chưa có khiếu nại nào đang mở. Bạn có thể tập trung vào hợp đồng và tiến độ sản xuất."}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </main>
+                </div>
+            </div>
+        </div>
+    );
 };
 
 export default ProviderDashboard;

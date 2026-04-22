@@ -1,15 +1,21 @@
 import {
-    LayoutDashboard, Users, Shirt, School,
-    Megaphone, FileText, Factory,
-    AlertTriangle, ShoppingBag, Wallet, Settings
+    ClipboardList,
+    FileText,
+    LayoutDashboard,
+    School,
+    Settings,
+    Shirt,
+    Users,
 } from "lucide-react";
 import type { DashboardSidebarProps } from "../components/layout";
 
 /**
  * Sidebar config for School Dashboard screens.
- * 4 sections: Quản lý, Kinh doanh, Vận hành, Tài chính
+ *
+ * Legacy campaign/production-order/complaint management routes are intentionally
+ * omitted from the active school navigation during the marketplace migration.
  */
-export const DASHBOARD_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, 'isCollapsed' | 'onToggle'> = {
+export const DASHBOARD_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, "isCollapsed" | "onToggle"> = {
     iconType: "school" as const,
     greeting: "Xin chào!",
     name: "",
@@ -22,7 +28,7 @@ export const DASHBOARD_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, 'isCollapsed'
     ],
     navSections: [
         {
-            title: "QUẢN LÝ",
+            title: "THEO DÕI",
             items: [
                 {
                     icon: Users,
@@ -30,10 +36,35 @@ export const DASHBOARD_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, 'isCollapsed'
                     href: "/school/students",
                 },
                 {
+                    icon: ClipboardList,
+                    label: "Báo cáo GVCN",
+                    href: "/school/teacher-reports",
+                },
+            ],
+        },
+        {
+            title: "KẾ HOẠCH HỌC KỲ",
+            items: [
+                {
                     icon: Shirt,
                     label: "Đồng phục",
                     href: "/school/uniforms",
                 },
+                {
+                    icon: FileText,
+                    label: "Công bố học kỳ",
+                    href: "/school/semester-publications",
+                },
+                {
+                    icon: FileText,
+                    label: "Hợp đồng",
+                    href: "/school/contracts",
+                },
+            ],
+        },
+        {
+            title: "THIẾT LẬP",
+            items: [
                 {
                     icon: School,
                     label: "Hồ sơ trường",
@@ -41,53 +72,8 @@ export const DASHBOARD_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, 'isCollapsed'
                 },
                 {
                     icon: Settings,
-                    label: "Cài đặt tài khoản",
+                    label: "Tài khoản",
                     href: "/school/account-settings",
-                },
-            ],
-        },
-        {
-            title: "KINH DOANH",
-            items: [
-                {
-                    icon: Megaphone,
-                    label: "Chiến dịch",
-                    href: "/school/campaigns",
-                },
-                {
-                    icon: FileText,
-                    label: "Hợp đồng",
-                    href: "/school/contracts",
-                },
-                {
-                    icon: Factory,
-                    label: "Đơn sản xuất",
-                    href: "/school/production-orders",
-                },
-            ],
-        },
-        {
-            title: "VẬN HÀNH",
-            items: [
-                {
-                    icon: AlertTriangle,
-                    label: "Khiếu nại",
-                    href: "/school/complaints",
-                },
-                {
-                    icon: ShoppingBag,
-                    label: "Đơn hàng",
-                    href: "/school/orders",
-                },
-            ],
-        },
-        {
-            title: "TÀI CHÍNH",
-            items: [
-                {
-                    icon: Wallet,
-                    label: "Ví trường học",
-                    href: "/school/wallet",
                 },
             ],
         },

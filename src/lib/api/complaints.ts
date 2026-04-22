@@ -1,8 +1,6 @@
 import { api } from "./clients";
 import { endpoints } from "./endpoints";
 
-// ── Types ──
-
 export type ComplaintDto = {
     complaintId: string;
     campaignId: string;
@@ -13,7 +11,7 @@ export type ComplaintDto = {
     title: string;
     description: string;
     response?: string | null;
-    status: string; // Open | InProgress | Resolved | Closed
+    status: string;
     createdAt: string;
     respondedAt?: string | null;
     resolvedAt?: string | null;
@@ -29,24 +27,6 @@ export type ComplaintsResponse = {
     page: number;
     pageSize: number;
 };
-
-// ── School Complaint APIs ──
-
-export async function getSchoolComplaints(page = 1, pageSize = 10, status?: string): Promise<ComplaintsResponse> {
-    const params = new URLSearchParams({ page: String(page), pageSize: String(pageSize) });
-    if (status) params.set("status", status);
-    return api<ComplaintsResponse>(`${endpoints.schools.me}/complaints?${params}`, { method: "GET", auth: true });
-}
-
-export async function getSchoolComplaintDetail(id: string): Promise<ComplaintDetailDto> {
-    return api<ComplaintDetailDto>(`${endpoints.schools.me}/complaints/${id}`, { method: "GET", auth: true });
-}
-
-export async function closeComplaint(id: string): Promise<{ message: string }> {
-    return api<{ message: string }>(`${endpoints.schools.me}/complaints/${id}/close`, { method: "PUT", auth: true });
-}
-
-// ── Provider Complaint APIs ──
 
 export async function getProviderComplaints(page = 1, pageSize = 10, status?: string): Promise<ComplaintsResponse> {
     const params = new URLSearchParams({ page: String(page), pageSize: String(pageSize) });

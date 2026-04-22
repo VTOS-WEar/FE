@@ -72,10 +72,6 @@ function fmtDateShort(dateStr?: string | null): string {
     return new Date(dateStr).toLocaleDateString("vi-VN");
 }
 
-function fmtCurrency(n: number): string {
-    return n.toLocaleString("vi-VN") + " đồng";
-}
-
 function genContractNumber(c: ContractTemplateData): string {
     if (c.contractNumber) return c.contractNumber;
     const year = new Date(c.createdAt).getFullYear();
@@ -159,14 +155,6 @@ export function ContractTemplate({
     const contractNumber = genContractNumber(contract);
 
     // Totals
-    const totalMin = contract.items.reduce(
-        (s, i) => s + i.pricePerUnit * i.minQuantity,
-        0
-    );
-    const totalMax = contract.items.reduce(
-        (s, i) => s + i.pricePerUnit * i.maxQuantity,
-        0
-    );
 
     // ── Sign handlers ──
 
@@ -363,7 +351,7 @@ export function ContractTemplate({
                                 ───────────────────
                             </p>
                             <p style={{ fontWeight: "bold", fontSize: "17px", textTransform: "uppercase", letterSpacing: "0.08em" }}>
-                                Hợp đồng cung ứng đồng phục
+                                Thỏa thuận cung ứng đồng phục
                             </p>
                             <p style={{ fontSize: "13px", marginTop: "4px", color: "#374151" }}>
                                 Số: <strong>{contractNumber}</strong>
@@ -435,7 +423,7 @@ export function ContractTemplate({
                         </div>
 
                         <p style={{ marginBottom: "24px" }}>
-                            Hai bên thống nhất ký kết hợp đồng cung ứng đồng phục học sinh với các điều khoản và điều kiện dưới đây:
+                            Hai bên thống nhất ký kết thỏa thuận cung ứng đồng phục học sinh với các điều khoản và điều kiện dưới đây:
                         </p>
 
                         <hr style={{ border: "none", borderTop: "1px solid #E5E7EB", margin: "20px 0" }} />
@@ -446,15 +434,15 @@ export function ContractTemplate({
                                 Điều 1. ĐỐI TƯỢNG VÀ PHẠM VI HỢP ĐỒNG
                             </p>
                             <p style={{ paddingLeft: "20px" }}>
-                                Bên B cung cấp cho Bên A các sản phẩm đồng phục học sinh theo danh mục, số lượng và điều kiện quy định tại Điều 2 của hợp đồng này. Sản phẩm phục vụ nhu cầu mặc đồng phục của học sinh tại{" "}
-                                <strong>{contract.schoolName ?? "trường"}</strong>, theo từng đợt đặt hàng do Bên A khởi tạo trên nền tảng VTOS.
+                                Bên B xác nhận đồng ý là đơn vị cung ứng cho Bên A trong thời hạn hiệu lực của thỏa thuận này, đối với các mẫu đồng phục tham chiếu tại Điều 2. Giá bán, số lượng đặt thực tế và từng đợt mở bán sẽ được vận hành riêng trên nền tảng VTOS cho{" "}
+                                <strong>{contract.schoolName ?? "trường"}</strong>.
                             </p>
                         </div>
 
                         {/* ── Article 2 — Products table ── */}
                         <div style={{ marginBottom: "20px" }}>
                             <p style={{ fontWeight: "bold", marginBottom: "12px" }}>
-                                Điều 2. DANH MỤC SẢN PHẨM VÀ GIÁ CẢ THỎA THUẬN
+                                Điều 2. MẪU ĐỒNG PHỤC THAM CHIẾU
                             </p>
                             <table style={{
                                 width: "100%",
@@ -464,7 +452,7 @@ export function ContractTemplate({
                             }}>
                                 <thead>
                                     <tr style={{ background: "#F3F4F6" }}>
-                                        {["STT", "Tên sản phẩm", "Đơn giá (₫)", "SL tối thiểu", "SL tối đa", "Thành tiền tối thiểu"].map((h) => (
+                                        {["STT", "Tên mẫu đồng phục", "Ghi chú"].map((h) => (
                                             <th
                                                 key={h}
                                                 style={{
@@ -484,28 +472,15 @@ export function ContractTemplate({
                                         <tr key={item.itemId} style={{ background: idx % 2 === 0 ? "#fff" : "#F9FAFB" }}>
                                             <td style={{ border: "1px solid #D1D5DB", padding: "7px 10px", textAlign: "center" }}>{idx + 1}</td>
                                             <td style={{ border: "1px solid #D1D5DB", padding: "7px 10px", fontWeight: "600" }}>{item.outfitName}</td>
-                                            <td style={{ border: "1px solid #D1D5DB", padding: "7px 10px", textAlign: "right" }}>
-                                                {item.pricePerUnit.toLocaleString("vi-VN")}
-                                            </td>
-                                            <td style={{ border: "1px solid #D1D5DB", padding: "7px 10px", textAlign: "center" }}>{item.minQuantity}</td>
-                                            <td style={{ border: "1px solid #D1D5DB", padding: "7px 10px", textAlign: "center" }}>{item.maxQuantity}</td>
-                                            <td style={{ border: "1px solid #D1D5DB", padding: "7px 10px", textAlign: "right" }}>
-                                                {(item.pricePerUnit * item.minQuantity).toLocaleString("vi-VN")}
+                                            <td style={{ border: "1px solid #D1D5DB", padding: "7px 10px" }}>
+                                                Mẫu đính kèm để hai bên xác nhận phạm vi cung ứng trong kỳ.
                                             </td>
                                         </tr>
                                     ))}
-                                    <tr style={{ background: "#EDE9FE", fontWeight: "bold" }}>
-                                        <td colSpan={5} style={{ border: "1px solid #D1D5DB", padding: "8px 10px", textAlign: "right" }}>
-                                            Tổng giá trị ước tính (tối thiểu — tối đa):
-                                        </td>
-                                        <td style={{ border: "1px solid #D1D5DB", padding: "8px 10px", textAlign: "right" }}>
-                                            {fmtCurrency(totalMin)} — {fmtCurrency(totalMax)}
-                                        </td>
-                                    </tr>
                                 </tbody>
                             </table>
                             <p style={{ paddingLeft: "20px", fontStyle: "italic", fontSize: "12px", color: "#6B7280" }}>
-                                * Giá trị thực tế phụ thuộc vào số lượng đặt hàng từng đợt trong giới hạn quy định.
+                                * Hợp đồng này không khóa trước giá hoặc số lượng; các đợt công bố và đơn hàng thực tế sẽ được xử lý theo dữ liệu vận hành trên hệ thống.
                             </p>
                         </div>
 
@@ -538,7 +513,7 @@ export function ContractTemplate({
                             </p>
                             <p style={{ paddingLeft: "20px", fontWeight: "600", marginBottom: "4px" }}>5.1. Bên A có trách nhiệm:</p>
                             <ul style={{ paddingLeft: "40px", marginBottom: "10px" }}>
-                                <li>Đặt hàng trong giới hạn số lượng đã thỏa thuận tại Điều 2;</li>
+                                <li>Chỉ công bố và mở bán các mẫu đồng phục đã được hai bên thống nhất tại Điều 2;</li>
                                 <li>Thanh toán đúng hạn theo từng đơn hàng trên hệ thống;</li>
                                 <li>Tiếp nhận, kiểm tra và xác nhận hàng hóa khi nhận giao;</li>
                                 <li>Thông báo kịp thời nếu phát sinh vấn đề về chất lượng sản phẩm.</li>

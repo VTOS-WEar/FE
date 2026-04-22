@@ -7,9 +7,9 @@ export type ContractItemDto = {
     itemId: string;
     outfitId: string;
     outfitName: string;
-    pricePerUnit: number;
-    minQuantity: number;
-    maxQuantity: number;
+    pricePerUnit?: number | null;
+    minQuantity?: number | null;
+    maxQuantity?: number | null;
 };
 
 export type ContractDto = {
@@ -61,9 +61,6 @@ export type ContractDto = {
 
 export type CreateContractItemRequest = {
     outfitId: string;
-    pricePerUnit: number;
-    minQuantity: number;
-    maxQuantity: number;
 };
 
 export type CreateContractRequest = {
@@ -71,6 +68,15 @@ export type CreateContractRequest = {
     providerId: string;
     expiresAt: string;
     items: CreateContractItemRequest[];
+};
+
+export type UpdateContractPricingItemRequest = {
+    itemId: string;
+    pricePerUnit: number;
+};
+
+export type UpdateContractPricingRequest = {
+    items: UpdateContractPricingItemRequest[];
 };
 
 export type SignContractRequest = {
@@ -139,6 +145,14 @@ export async function getProviderContracts(status?: string): Promise<ContractDto
 
 export async function getProviderContractDetail(id: string): Promise<ContractDto> {
     return api<ContractDto>(`${endpoints.providers.contracts}/${id}`, { method: "GET", auth: true });
+}
+
+export async function updateContractPricing(id: string, payload: UpdateContractPricingRequest): Promise<ContractDto> {
+    return api<ContractDto>(`${endpoints.providers.contracts}/${id}/pricing`, {
+        method: "PUT",
+        body: JSON.stringify(payload),
+        auth: true,
+    });
 }
 
 export async function approveContract(id: string): Promise<ContractDto> {

@@ -1,7 +1,19 @@
 import { api } from "./clients";
 import { endpoints } from "./endpoints";
 
-// ── Provider Profile ──
+type ResultEnvelope<T> = {
+    isSuccess?: boolean;
+    value: T;
+    error?: string;
+    errorCode?: string;
+};
+
+function unwrapResult<T>(payload: ResultEnvelope<T> | T): T {
+    if (payload && typeof payload === "object" && "value" in (payload as Record<string, unknown>)) {
+        return (payload as ResultEnvelope<T>).value;
+    }
+    return payload as T;
+}
 
 export type ProviderProfileDto = {
     providerId: string;
@@ -35,4 +47,117 @@ export async function updateProviderProfile(payload: UpdateProviderProfileReques
         auth: true,
         body: JSON.stringify(payload),
     });
+}
+
+export type ProviderIncomingOrderItemDto = {
+    orderId: string;
+    orderDate: string;
+    orderStatus: string;
+    totalAmount: number;
+    parentName: string;
+    childName: string;
+    itemCount: number;
+    trackingCode?: string | null;
+};
+
+export type ProviderIncomingOrdersResponse = {
+    items: ProviderIncomingOrderItemDto[];
+    totalCount: number;
+    page: number;
+    pageSize: number;
+    totalPages: number;
+};
+
+export type ProviderDirectOrderDetailItemDto = {
+    orderItemId: string;
+    outfitName: string;
+    imageUrl?: string | null;
+    size: string;
+    quantity: number;
+    unitPrice: number;
+};
+
+export type ProviderDirectOrderDetailDto = {
+    orderId: string;
+    orderDate: string;
+    orderStatus: string;
+    totalAmount: number;
+    parentName: string;
+    parentPhone?: string | null;
+    childName: string;
+    shippingAddress: string;
+    recipientName?: string | null;
+    recipientPhone?: string | null;
+    deliveryMethod?: string | null;
+    trackingCode?: string | null;
+    shippingCompany?: string | null;
+    items: ProviderDirectOrderDetailItemDto[];
+};
+
+export type ProviderOrderStatsDto = {
+    totalOrders: number;
+    pendingOrders: number;
+    paidOrders: number;
+    inProgressOrders: number;
+    completedShipmentOrders: number;
+    totalRevenue: number;
+    statusCounts: Record<string, number>;
+};
+
+export async function getProviderDirectOrders(
+    page = 1,
+    pageSize = 10,
+    status?: string,
+): Promise<ProviderIncomingOrdersResponse> {
+    const params = new URLSearchParams({ page: String(page), pageSize: String(pageSize) });
+    if (status) params.set("status", status);
+
+    const result = await api<ResultEnvelope<ProviderIncomingOrdersResponse>>(
+        `${endpoints.providers.directOrders}?${params}`,
+        {
+            method: "GET",
+            auth: true,
+        },
+    );
+    return unwrapResult(result);
+}
+
+export async function getProviderDirectOrderDetail(orderId: string): Promise<ProviderDirectOrderDetailDto> {
+    const result = await api<ResultEnvelope<ProviderDirectOrderDetailDto>>(`${endpoints.providers.directOrders}/${orderId}`, {
+        method: "GET",
+        auth: true,
+    });
+    return unwrapResult(result);
+}
+
+export async function getProviderDirectOrderStats(): Promise<ProviderOrderStatsDto> {
+    const result = await api<ResultEnvelope<ProviderOrderStatsDto>>(endpoints.providers.directOrderStats, {
+        method: "GET",
+        auth: true,
+    });
+    return unwrapResult(result);
+}
+
+async function putOrderAction<T = void>(path: string, body?: unknown): Promise<T> {
+    return api<T>(path, {
+        method: "PUT",
+        auth: true,
+        body: body ? JSON.stringify(body) : undefined,
+    });
+}
+
+export async function acceptDirectOrder(orderId: string): Promise<void> {
+    await putOrderAction(`${endpoints.providers.directOrders}/${orderId}/accept`);
+}
+
+export async function markDirectOrderInProduction(orderId: string): Promise<void> {
+    await putOrderAction(`${endpoints.providers.directOrders}/${orderId}/in-production`);
+}
+
+export async function markDirectOrderReadyToShip(orderId: string): Promise<void> {
+    await putOrderAction(`${endpoints.providers.directOrders}/${orderId}/ready-to-ship`);
+}
+
+export async function shipDirectOrder(orderId: string, payload: { trackingCode: string; shippingCompany: string }): Promise<void> {
+    await putOrderAction(`${endpoints.providers.directOrders}/${orderId}/ship`, payload);
 }

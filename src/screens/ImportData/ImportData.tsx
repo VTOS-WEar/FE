@@ -348,6 +348,45 @@ export const ImportData = (): JSX.Element => {
                                         ))}
                                     </ul>
                                 </div>
+
+                                <div className="rounded-[14px] border border-violet-200 bg-[linear-gradient(180deg,_#ffffff_0%,_#faf7ff_100%)] p-5 shadow-soft-sm space-y-4">
+                                    <div className="flex items-center gap-3">
+                                        <div className="flex h-9 w-9 items-center justify-center rounded-[10px] border border-violet-200 bg-violet-50 shadow-soft-sm">
+                                            <svg className="w-5 h-5 text-violet-600" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" />
+                                            </svg>
+                                        </div>
+                                        <h3 className="font-black text-gray-900 text-base">
+                                            Hướng dẫn điền GVCN theo lớp
+                                        </h3>
+                                    </div>
+
+                                    <div className="space-y-2 text-sm font-semibold leading-relaxed text-gray-700">
+                                        <p>Bạn chỉ cần nhập <span className="font-black text-violet-700">Tên GVCN</span> và <span className="font-black text-violet-700">Email GVCN</span> một lần cho mỗi lớp.</p>
+                                        <p>Các dòng học sinh còn lại trong cùng lớp có thể để trống 2 cột này, hệ thống sẽ tự động gán giáo viên theo trường <span className="font-black text-violet-700">Class</span>.</p>
+                                        <p>Nếu cùng một giáo viên phụ trách nhiều lớp, hãy dùng cùng một email ở các lớp đó.</p>
+                                    </div>
+
+                                    <div className="rounded-[12px] border border-gray-200 bg-white p-4 shadow-soft-sm">
+                                        <p className="font-black text-gray-900 text-sm mb-3">
+                                            Ví dụ cho lớp 6A1
+                                        </p>
+                                        <div className="space-y-2 text-[12px] leading-relaxed">
+                                            <div className="rounded-[8px] bg-violet-50 px-3 py-2 font-extrabold text-violet-700">
+                                                Nguyễn Khôi | 6A1 | Nguyễn Văn Minh | minh1@school.edu.vn
+                                            </div>
+                                            <div className="rounded-[8px] bg-gray-50 px-3 py-2 font-semibold text-gray-700">
+                                                Nguyễn Cẩm | 6A1 | để trống | để trống
+                                            </div>
+                                            <div className="rounded-[8px] bg-gray-50 px-3 py-2 font-semibold text-gray-700">
+                                                Lê Anh | 6A1 | để trống | để trống
+                                            </div>
+                                        </div>
+                                        <p className="mt-3 text-xs font-semibold leading-relaxed text-gray-600">
+                                            Bạn không cần nhập lặp lại thông tin giáo viên 30 lần cho 30 học sinh trong cùng một lớp.
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
 
                             {/* Right column: Upload zone */}

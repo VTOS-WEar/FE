@@ -148,26 +148,9 @@ function OrderCard({
 }: OrderCardProps) {
     const navigate = useNavigate();
     const badge = statusBadge(p.orderStatus);
-    const isPending = p.paymentStatus === "Pending" || p.paymentStatus === "Unpaid";
-    const [orderDetail, setOrderDetail] = useState<OrderDetailDto | null>(null);
-    const [loadingDetail, setLoadingDetail] = useState(false);
-
-    useEffect(() => {
-        const fetchDetail = async () => {
-            setLoadingDetail(true);
-            try {
-                const data = await getOrderDetail(p.orderId);
-                setOrderDetail(data);
-            } catch (err) {
-                console.error("Failed to fetch order detail:", err);
-            } finally {
-                setLoadingDetail(false);
-            }
-        };
-        fetchDetail();
-    }, [p.orderId]);
-
-    const firstItem = orderDetail?.items[0];
+    
+    // Determine if this is a Marketplace (Direct) order
+    const isMarketplace = !!p.providerId;
 
     return (
         <div
@@ -181,32 +164,32 @@ function OrderCard({
                         {/* Image Section */}
                         <div className="relative flex-shrink-0">
                             <div className="w-24 h-24 rounded-2xl border border-gray-200 shadow-soft-sm overflow-hidden bg-white flex items-center justify-center group pointer-events-none">
-                                {loadingDetail ? (
-                                    <div className="w-5 h-5 border-2 border-purple-300 border-t-transparent rounded-full animate-spin" />
-                                ) : firstItem?.outfitImage ? (
-                                    <img src={firstItem.outfitImage} alt={firstItem.outfitName} className="w-full h-full object-cover transition-transform group-hover:scale-110" />
+                                {p.firstItemImageUrl ? (
+                                    <img src={p.firstItemImageUrl} alt="Order item" className="w-full h-full object-cover transition-transform group-hover:scale-110" />
                                 ) : (
                                     <Package className="w-8 h-8 text-purple-400" />
                                 )}
                             </div>
 
                             {/* Items count badge on image */}
-                            {orderDetail && orderDetail.items.length > 1 && (
-                                <div className="absolute -top-2 -left-2 bg-emerald-400 text-gray-900 text-[9px] font-black px-1.5 py-0.5 rounded-md border border-gray-200 shadow-sm z-20">
-                                    +{orderDetail.items.length - 1}
+                            {p.itemCount > 1 && (
+                                <div className="absolute -top-1.5 -left-1.5 bg-emerald-400 text-gray-900 text-[9px] font-black px-1.5 py-0.5 rounded-md border border-gray-200 shadow-sm z-20">
+                                    +{p.itemCount - 1}
                                 </div>
                             )}
 
-                            {orderDetail?.childAvatar && (
-                                <div className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full border border-gray-200 shadow-sm overflow-hidden bg-white z-10">
-                                    <Avatar className="w-full h-full rounded-none">
-                                        <AvatarImage src={orderDetail.childAvatar} />
-                                        <AvatarFallback className="text-[10px] font-black bg-[#E9D5FF]">
-                                            {orderDetail.childName.charAt(0)}
-                                        </AvatarFallback>
-                                    </Avatar>
-                                </div>
-                            )}
+                            {/* Child Identity (Overlapping Bottom Right) */}
+                            <div className="absolute -bottom-1 -right-1 flex items-center bg-white/90 backdrop-blur-sm border border-gray-200 p-0.5 rounded-full shadow-soft-md scale-95 origin-bottom-right">
+                                <Avatar className="w-6 h-6 border-2 border-white shadow-sm">
+                                    <AvatarImage src={p.childAvatarUrl || ""} />
+                                    <AvatarFallback className="bg-purple-100 text-[9px] font-black text-purple-600">
+                                        {p.childFullName?.substring(0, 2).toUpperCase() || "??"}
+                                    </AvatarFallback>
+                                </Avatar>
+                                <span className="text-[8px] font-black text-gray-900 px-1 pr-2 truncate max-w-[50px] hidden sm:block">
+                                    {p.childFullName?.split(" ").pop()}
+                                </span>
+                            </div>
                         </div>
 
                         {/* Details Section */}
@@ -216,40 +199,28 @@ function OrderCard({
                                     {badge.icon}
                                     {badge.label}
                                 </span>
-                                <span
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        if (firstItem?.campaignId) navigate(`/campaigns/${firstItem.campaignId}`);
-                                    }}
-                                    className="text-[9px] font-black text-gray-400 uppercase tracking-wider flex items-center gap-1 cursor-pointer hover:text-gray-800 transition-colors"
-                                >
-                                    <ShoppingBag className="w-3 h-3" />
-                                    {orderDetail?.campaignName || "---"}
-                                </span>
+                                {isMarketplace ? (
+                                    <span className="text-[9px] font-black text-blue-500 uppercase tracking-wider flex items-center gap-1 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-100">
+                                        <Package className="w-3 h-3" />
+                                        Mua trực tiếp
+                                    </span>
+                                ) : (
+                                    <span
+                                        className="text-[9px] font-black text-gray-400 uppercase tracking-wider flex items-center gap-1"
+                                    >
+                                        <ShoppingBag className="w-3 h-3" />
+                                        {p.campaignName || "Danh mục trường"}
+                                    </span>
+                                )}
                             </div>
 
                             <div className="space-y-0.5">
-                                <h3
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        if (firstItem?.outfitId) {
-                                            navigate(`/outfits/${firstItem.outfitId}`);
-                                        }
-                                    }}
-                                    className="font-extrabold text-gray-900 text-lg leading-tight truncate hover:text-purple-500 transition-colors cursor-pointer decoration-[#B8A9E8] hover:underline underline-offset-4"
-                                >
-                                    {firstItem?.outfitName || "Mã đơn: #" + p.orderId.substring(0, 8)}
+                                <h3 className="font-extrabold text-gray-900 text-lg leading-tight truncate decoration-[#B8A9E8] underline-offset-4">
+                                    {isMarketplace ? `Đơn hàng từ ${p.providerName}` : (p.campaignName || "Đơn hàng theo danh mục")}
                                 </h3>
-
-
-                            </div>
-                            <div>
-                                {orderDetail?.childName && (
-                                    <div className="flex items-center gap-1.5 text-[11px] font-bold text-gray-500">
-                                        <User className="w-3 h-3 text-gray-900" />
-                                        <span> <span className="text-gray-900 font-gray">{orderDetail.childName}</span></span>
-                                    </div>
-                                )}
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                                    Mã đơn: #{p.orderId.substring(0, 8).toUpperCase()}
+                                </p>
                             </div>
 
                             <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] font-bold text-gray-400">
@@ -258,9 +229,7 @@ function OrderCard({
                                     {fmtDate(p.timestamp)}
                                 </span>
                                 <span className="text-[#D1D5DB]">|</span>
-                                <span>Size: <span className="text-gray-500 font-extrabold">{firstItem?.size || "-"}</span></span>
-                                <span className="text-[#D1D5DB]">|</span>
-                                <span>SL: <span className="text-gray-500 font-extrabold">{firstItem?.quantity || "-"}</span></span>
+                                <span>{p.itemCount} sản phẩm</span>
                             </div>
                         </div>
                     </div>
@@ -271,11 +240,6 @@ function OrderCard({
                             <div>
                                 <p className="text-[8px] text-gray-400 font-black uppercase tracking-widest mb-1">Tổng thanh toán</p>
                                 <p className="font-black text-xl text-gray-900 leading-none mb-1">{fmt(p.amount)}</p>
-                                {orderDetail && (
-                                    <p className="text-[10px] font-bold text-gray-500">
-                                        {orderDetail.items.reduce((sum, item) => sum + item.quantity, 0)} sản phẩm
-                                    </p>
-                                )}
                             </div>
                             <div className="text-right">
                                 <p className="text-[8px] text-gray-400 font-black uppercase tracking-widest mb-1">Thanh toán</p>
@@ -298,15 +262,6 @@ function OrderCard({
                                     className="flex-1 py-1.5 bg-gray-900 text-white text-[9px] font-black uppercase tracking-widest rounded-lg border border-gray-200 shadow-sm hover:scale-[1.02] transition-all"
                                 >
                                     Đánh giá
-                                </button>
-                            )}
-                            {isPending && (
-                                <button
-                                    onClick={(e) => { e.stopPropagation(); onPay(); }}
-                                    disabled={payingId === p.orderId}
-                                    className="flex-1 nb-btn nb-btn-purple !py-1.5 !text-[9px] !rounded-lg !shadow-sm hover:!shadow-sm !font-black uppercase tracking-widest"
-                                >
-                                    Thanh toán
                                 </button>
                             )}
                         </div>
@@ -343,12 +298,14 @@ const STATUS_LABELS: Record<string, string> = {
 function StatusTabs({
     payments,
     total,
+    totalOrder,
     statusCounts,
     selectedStatus,
     onStatusChange
 }: {
     payments: ParentPaymentDto[],
     total: number,
+    totalOrder: number,
     statusCounts: StatusCountDto[],
     selectedStatus: string | null,
     onStatusChange: (status: string | null) => void
@@ -371,9 +328,9 @@ function StatusTabs({
                     }`}
             >
                 Tất cả
-                {total > 0 && (
+                {totalOrder > 0 && (
                     <span className="absolute -top-2 -right-2 bg-emerald-400 text-gray-900 text-xs font-bold px-2 py-0.5 rounded-full border border-gray-200 shadow-sm min-w-[24px] text-center">
-                        {total}
+                        {totalOrder}
                     </span>
                 )}
             </button>
@@ -409,6 +366,7 @@ export const OrdersTab = (): JSX.Element => {
     const [payments, setPayments] = useState<ParentPaymentDto[]>([]);
     const [statusCounts, setStatusCounts] = useState<StatusCountDto[]>([]);
     const [total, setTotal] = useState(0);
+    const [totalOrder, setTotalOrder] = useState(0);
     const [page, setPage] = useState(1);
     const [pageSize] = useState(2); // Increased for better UX
     const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
@@ -430,6 +388,7 @@ export const OrdersTab = (): JSX.Element => {
             );
             setPayments(res.items || []);
             setTotal(res.total || 0);
+            setTotalOrder(res.totalOrder || 0);
             setStatusCounts(res.statusCounts || []);
         } catch { /* ignore */ }
         finally { setLoading(false); }
@@ -483,7 +442,7 @@ export const OrdersTab = (): JSX.Element => {
     return (
         <div className="relative">
             {/* Status Tabs */}
-            <StatusTabs payments={payments} total={total} statusCounts={statusCounts} selectedStatus={selectedStatus} onStatusChange={handleStatusChange} />
+            <StatusTabs payments={payments} total={total} totalOrder={totalOrder} statusCounts={statusCounts} selectedStatus={selectedStatus} onStatusChange={handleStatusChange} />
 
             {/* Date Filter Bar */}
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6 bg-white/50 p-3 rounded-2xl border border-gray-200/5">

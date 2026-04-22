@@ -109,7 +109,7 @@ function EditableFeedbackCard({
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1">
                 <p className="font-bold text-gray-900 text-sm">{feedback.outfitName}</p>
-                <p className="text-xs text-gray-400 mt-0.5">{feedback.campaignName}</p>
+                <p className="text-xs text-gray-400 mt-0.5">Danh mục: {feedback.campaignName}</p>
                 <p className="text-xs text-gray-500 font-medium mt-1">{fmt(feedback.outfitPrice)}</p>
               </div>
 
@@ -174,7 +174,7 @@ function EditableFeedbackCard({
         />
         <div className="flex-1">
           <p className="font-bold text-gray-900 text-sm">{feedback.outfitName}</p>
-          <p className="font-medium text-gray-400 text-xs mt-1">{feedback.campaignName}</p>
+          <p className="font-medium text-gray-400 text-xs mt-1">Danh mục: {feedback.campaignName}</p>
           <p className="font-bold text-gray-900 text-sm mt-2">{fmt(feedback.outfitPrice)}</p>
         </div>
       </div>
