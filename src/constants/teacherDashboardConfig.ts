@@ -1,25 +1,30 @@
-import { GraduationCap, LayoutDashboard } from "lucide-react";
+import { ClipboardList, GraduationCap, LayoutDashboard } from "lucide-react";
 import type { DashboardSidebarProps } from "../components/layout";
 
 export const TEACHER_DASHBOARD_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, "isCollapsed" | "onToggle"> = {
     iconType: "school" as const,
-    greeting: "Xin chao!",
+    greeting: "Xin chào!",
     name: "",
     topNavItems: [
         {
             icon: LayoutDashboard,
-            label: "Lop hoc",
-            href: "/teacher/classes",
+            label: "Tổng quan",
+            href: "/teacher/dashboard",
         },
     ],
     navSections: [
         {
-            title: "GIANG DAY",
+            title: "GIẢNG DẠY",
             items: [
                 {
                     icon: GraduationCap,
-                    label: "Lop chu nhiem",
+                    label: "Lớp chủ nhiệm",
                     href: "/teacher/classes",
+                },
+                {
+                    icon: ClipboardList,
+                    label: "Báo cáo",
+                    href: "/teacher/reports",
                 },
             ],
         },
