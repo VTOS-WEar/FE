@@ -15,7 +15,7 @@ function unwrapResult<T>(payload: ResultEnvelope<T> | T): T {
   return payload as T;
 }
 
-/* ── Types ── */
+/* Types */
 export type CheckoutItemRequest = {
   productVariantId: string;
   quantity: number;
@@ -148,9 +148,23 @@ export type MyDirectOrderDetailDto = {
   items: MyDirectOrderDetailItemDto[];
 };
 
-/* ── API Calls ── */
+export type SubmitProviderRatingRequest = {
+  rating: number;
+  comment?: string | null;
+};
 
-/** POST /api/orders/checkout — Create order + PayOS payment link */
+export type SubmitProviderRatingResponse = {
+  providerRatingId: string;
+  orderId: string;
+  providerId: string;
+  rating: number;
+  comment?: string | null;
+  createdAt: string;
+};
+
+/* API Calls */
+
+/** POST /api/orders/checkout - Create order + PayOS payment link */
 export async function checkout(request: CheckoutRequest): Promise<CheckoutResponse> {
   const result = await api<ResultEnvelope<CheckoutResponse>>(
     endpoints.orders.checkout,
@@ -163,7 +177,7 @@ export async function checkout(request: CheckoutRequest): Promise<CheckoutRespon
   return unwrapResult(result);
 }
 
-/** PUT /api/orders/{orderId}/cancel — Cancel a pending/paid order */
+/** PUT /api/orders/{orderId}/cancel - Cancel a pending/paid order */
 export async function cancelOrder(orderId: string, reason?: string): Promise<void> {
   await api(
     `${endpoints.orders.cancel}/${orderId}/cancel`,
@@ -175,7 +189,7 @@ export async function cancelOrder(orderId: string, reason?: string): Promise<voi
   );
 }
 
-/** PUT /api/orders/{orderId}/cancel-transaction — Cancel only the payment transaction, leave order Pending */
+/** PUT /api/orders/{orderId}/cancel-transaction - Cancel only the payment transaction, leave order Pending */
 export async function cancelPaymentTransaction(orderId: string): Promise<void> {
   await api(
     `${endpoints.orders.cancelTransaction}/${orderId}/cancel-transaction`,
@@ -194,7 +208,7 @@ export type RetryPaymentResponse = {
   orderCode: number;
 };
 
-/** POST /api/orders/{orderId}/retry-payment — Create new payment link for a cancelled/pending order */
+/** POST /api/orders/{orderId}/retry-payment - Create new payment link for a cancelled/pending order */
 export async function retryPayment(orderId: string): Promise<RetryPaymentResponse> {
   const result = await api<ResultEnvelope<RetryPaymentResponse>>(
     `${endpoints.orders.retryPayment}/${orderId}/retry-payment`,
@@ -206,48 +220,10 @@ export async function retryPayment(orderId: string): Promise<RetryPaymentRespons
   return unwrapResult(result);
 }
 
-/** GET /api/orders/{orderId}/detail — Get parent's order details with items and campaign outfits */
+/** GET /api/orders/{orderId}/detail - Get parent's order details with items and campaign outfits */
 export async function getOrderDetail(orderId: string): Promise<OrderDetailDto> {
   const result = await api<ResultEnvelope<OrderDetailDto>>(
     `${endpoints.orders.cancel}/${orderId}/detail`,
-    { method: "GET", auth: true },
-  );
-  return unwrapResult(result);
-}
-
-/* ── School Order Management (UC-45) ── */
-
-export type SchoolOrderDto = {
-  orderId: string;
-  parentName: string;
-  childName: string;
-  totalAmount: number;
-  orderDate: string;
-  orderStatus: string;
-  campaignName: string | null;
-  itemCount: number;
-};
-
-export type SchoolOrderListResponse = {
-  items: SchoolOrderDto[];
-  totalCount: number;
-  page: number;
-  pageSize: number;
-};
-
-/** GET /api/schools/me/orders — School views parent orders */
-export async function getSchoolOrders(
-  page = 1,
-  pageSize = 10,
-  status?: string,
-  search?: string,
-): Promise<SchoolOrderListResponse> {
-  const params = new URLSearchParams({ page: String(page), pageSize: String(pageSize) });
-  if (status) params.set("status", status);
-  if (search) params.set("search", search);
-
-  const result = await api<ResultEnvelope<SchoolOrderListResponse>>(
-    `${endpoints.schools.schoolOrders}?${params}`,
     { method: "GET", auth: true },
   );
   return unwrapResult(result);
@@ -287,4 +263,19 @@ export async function cancelDirectOrder(orderId: string, reason?: string): Promi
     body: JSON.stringify({ reason: reason ?? "Người dùng hủy đơn hàng trực tiếp" }),
     auth: true,
   });
+}
+
+export async function submitProviderRating(
+  orderId: string,
+  payload: SubmitProviderRatingRequest,
+): Promise<SubmitProviderRatingResponse> {
+  const result = await api<ResultEnvelope<SubmitProviderRatingResponse>>(
+    `${endpoints.orders.cancel}/${orderId}/rate-provider`,
+    {
+      method: "POST",
+      body: JSON.stringify(payload),
+      auth: true,
+    },
+  );
+  return unwrapResult(result);
 }

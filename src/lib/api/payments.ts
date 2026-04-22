@@ -33,16 +33,6 @@ export type PayOrderResponse = {
     status: string;
 };
 
-export type PayProviderResponse = {
-    paymentId: string;
-    amount: number;
-    providerName: string;
-};
-
-export type RefundOrderResponse = {
-    refundId: string;
-    refundAmount: number;
-};
 
 export type ProviderRevenueDto = {
     totalRevenue: number;
@@ -93,52 +83,6 @@ export type ParentPaymentHistoryResponse = {
     totalOrder: number;
     statusCounts: StatusCountDto[];
 };
-//#endregion
-
-//#region School Wallet
-export async function getSchoolWallet(): Promise<WalletDto> {
-    return api<WalletDto>(endpoints.payments.schoolWallet, { auth: true });
-}
-
-export async function getWalletTransactions(page = 1, pageSize = 20): Promise<WalletTransactionsResponse> {
-    return api<WalletTransactionsResponse>(
-        `${endpoints.payments.walletTransactions}?page=${page}&pageSize=${pageSize}`,
-        { auth: true }
-    );
-}
-
-export async function updateWalletBankInfo(data: {
-    bankCode: string; bankName: string; accountNumber: string; accountName: string;
-}): Promise<{ success: boolean }> {
-    return api<{ success: boolean }>(endpoints.payments.walletBankInfo, {
-        method: "PUT",
-        body: JSON.stringify(data),
-        auth: true,
-    });
-}
-
-export async function payProvider(orderId: string): Promise<PayProviderResponse> {
-    return api<PayProviderResponse>(`${endpoints.payments.payProvider}/${orderId}/pay-provider`, {
-        method: "POST",
-        auth: true,
-    });
-}
-
-export async function refundOrder(orderId: string, reason?: string): Promise<RefundOrderResponse> {
-    return api<RefundOrderResponse>(`${endpoints.payments.refundOrder}/${orderId}/refund`, {
-        method: "POST",
-        body: JSON.stringify({ reason }),
-        auth: true,
-    });
-}
-
-export async function requestSchoolWithdrawal(amount: number): Promise<{ id: string }> {
-    return api<{ id: string }>("/api/schools/me/wallet/withdrawals", {
-        method: "POST",
-        body: JSON.stringify({ amount }),
-        auth: true,
-    });
-}
 //#endregion
 
 //#region Parent

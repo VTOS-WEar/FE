@@ -28,6 +28,8 @@ export const endpoints = {
         semesterCatalog: "/api/public/schools", // append /{schoolId}/semester-catalog
         publicationOutfitProviders: "/api/public/semester-publications", // append /{publicationId}/outfits/{outfitId}/providers
         providerProfile: "/api/public/providers", // append /{providerId}/profile
+        providerRatings: "/api/public/providers", // append /{providerId}/ratings
+        providerRanking: "/api/public/schools", // append /{schoolId}/provider-ranking
     },
     tryOn: {
         request: "/api/tryOn/request",
@@ -49,13 +51,9 @@ export const endpoints = {
         grades: "/api/schools/me/students/grades",
         outfits: "/api/schools/me/outfits",
         outfitImageUpload: "/api/schools/me/outfits/upload-image",
-        campaigns: "/api/schools/me/campaigns",
         semesterPublications: "/api/schools/me/semester-publications",
-        campaignProgress: "/api/schools/me/campaigns/{id}/progress",
         providers: "/api/schools/me/providers",
         outfitVariants: "/api/schools/me/outfits", // append /{outfitId}/variants at call time
-        productionOrders: "/api/schools/me/production-orders",
-        schoolOrders: "/api/schools/me/orders",
     },
     users: {
         me: "/api/users/me",
@@ -88,21 +86,21 @@ export const endpoints = {
     providers: {
         me: "/api/providers/me",
         contracts: "/api/providers/me/contracts",
-        productionOrders: "/api/providers/me/production-orders",
         directOrders: "/api/providers/me/orders",
         directOrderStats: "/api/providers/me/order-stats",
     },
     teacher: {
+        dashboard: "/api/teacher/dashboard",
         classes: "/api/teacher/classes",
+        reports: "/api/teacher/reports",
+        reminders: "/api/teacher/reminders",
+    },
+    schoolManager: {
+        teacherReports: "/api/school-manager/teacher-reports",
     },
     payments: {
         payOrder: "/api/payments/orders", // append /{orderId}/pay
         parentHistory: "/api/payments/parent/history",
-        schoolWallet: "/api/payments/school/wallet",
-        walletTransactions: "/api/payments/school/wallet/transactions",
-        walletBankInfo: "/api/payments/school/wallet/bank-info",
-        payProvider: "/api/payments/school/orders", // append /{orderId}/pay-provider
-        refundOrder: "/api/payments/school/orders", // append /{orderId}/refund
         providerRevenue: "/api/payments/provider/revenue",
         providerPayments: "/api/payments/provider/payments",
         providerInvoice: "/api/payments/provider/orders", // append /{orderId}/invoice

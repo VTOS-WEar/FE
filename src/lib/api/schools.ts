@@ -295,6 +295,7 @@ export type ClassGroupSummaryDto = {
     studentCount: number;
     measurementReadyCount: number;
     parentLinkedCount: number;
+    orderedStudentCount: number;
 };
 
 export type GradeClassGroupDto = {
@@ -450,7 +451,6 @@ export type CreateOutfitRequest = {
     outfitName: string;
     description?: string | null;
     materialType?: string | null;
-    price: number;
     outfitType: number; // 1=Uniform, 2=Sportswear, 3=Accessory, 4=Other
     mainImageURL?: string | null;
     sizeChartID?: string | null;
@@ -488,7 +488,6 @@ export type UpdateOutfitRequest = {
     outfitName?: string;
     description?: string | null;
     materialType?: string | null;
-    price?: number;
     outfitType?: number;
     mainImageURL?: string | null;
     isAvailable?: boolean;
@@ -604,25 +603,7 @@ export async function deleteVariant(outfitId: string, variantId: string): Promis
 
 //#endregion
 
-//#region ── Campaigns ──
-
-export type CampaignListItemDto = {
-    campaignId: string;
-    campaignName: string;
-    status: string;
-    startDate: string;
-    endDate: string;
-    description: string | null;
-    outfitCount: number;
-    orderCount: number;
-};
-
-export type CampaignListResponse = {
-    items: CampaignListItemDto[];
-    total: number;
-    page: number;
-    pageSize: number;
-};
+//#region ── Public campaign compatibility types ──
 
 export type CampaignOutfitDetailDto = {
     campaignOutfitId: string;
@@ -633,144 +614,6 @@ export type CampaignOutfitDetailDto = {
     maxQuantity: number | null;
     providerId: string | null;
 };
-
-export type CampaignDetailDto = {
-    campaignId: string;
-    campaignName: string;
-    status: string;
-    startDate: string;
-    endDate: string;
-    description: string | null;
-    createdAt: string;
-    totalOrders: number;
-    outfits: CampaignOutfitDetailDto[];
-};
-
-export type CampaignOutfitInput = {
-    outfitId: string;
-    providerId?: string | null;
-    campaignPrice: number;
-    maxQuantity?: number | null;
-};
-
-export type CampaignOutfitRequestItem = {
-    outfitId: string;
-    providerId?: string | null;
-    campaignPrice: number;
-    maxQuantity?: number | null;
-};
-
-export type PublishCampaignRequest = {
-    campaignName: string;
-    description?: string | null;
-    startDate: string;
-    endDate: string;
-    saveAsDraft: boolean;
-    outfits: CampaignOutfitInput[];
-};
-
-export type PublishCampaignResponse = {
-    campaignId: string;
-    campaignName: string;
-    description: string | null;
-    status: string;
-    startDate: string;
-    endDate: string;
-    outfitCount: number;
-    createdAt: string;
-};
-
-/** Get campaign list */
-export async function getCampaigns(page = 1, pageSize = 10, status?: string): Promise<CampaignListResponse> {
-    let url = `${endpoints.schools.campaigns}?page=${page}&pageSize=${pageSize}`;
-    if (status) url += `&status=${status}`;
-    return api<CampaignListResponse>(url, { auth: true });
-}
-
-/** Get campaign detail */
-export async function getCampaignDetail(id: string): Promise<CampaignDetailDto> {
-    return api<CampaignDetailDto>(`${endpoints.schools.campaigns}/${id}`, { auth: true });
-}
-
-/** Publish or save-as-draft a campaign */
-export async function publishCampaign(data: PublishCampaignRequest): Promise<PublishCampaignResponse> {
-    return api<PublishCampaignResponse>(endpoints.schools.campaigns, {
-        method: "POST",
-        body: JSON.stringify(data),
-        auth: true,
-    });
-}
-
-/** Lock a campaign (no more orders accepted) */
-export async function lockCampaign(id: string): Promise<{ message: string }> {
-    return api<{ message: string }>(`${endpoints.schools.campaigns}/${id}/lock`, {
-        method: "POST",
-        auth: true,
-    });
-}
-
-/** Edit a draft campaign */
-export type UpdateCampaignPayload = {
-    campaignName: string;
-    description?: string | null;
-    startDate: string;
-    endDate: string;
-    outfits: CampaignOutfitRequestItem[];
-};
-
-export async function updateCampaign(id: string, payload: UpdateCampaignPayload): Promise<CampaignDetailDto> {
-    return api<CampaignDetailDto>(`${endpoints.schools.campaigns}/${id}`, {
-        method: "PUT",
-        auth: true,
-        body: payload,
-    });
-}
-
-/** Publish a draft campaign (Draft → Active) */
-export async function publishDraftCampaign(id: string): Promise<PublishCampaignResponse> {
-    return api<PublishCampaignResponse>(`${endpoints.schools.campaigns}/${id}/publish`, {
-        method: "POST",
-        auth: true,
-    });
-}
-
-/** Delete a draft campaign (no orders only) */
-export async function deleteCampaign(id: string): Promise<void> {
-    await api<void>(`${endpoints.schools.campaigns}/${id}`, {
-        method: "DELETE",
-        auth: true,
-    });
-}
-
-/** Campaign progress stats (UC-46) */
-export type CampaignProgressDto = {
-    campaignId: string;
-    campaignName: string;
-    status: string;
-    startDate: string;
-    endDate: string;
-    totalOrders: number;
-    totalStudents: number;
-    totalRevenue: number;
-    pendingOrders: number;
-    totalChildProfiles: number;
-    outfitBreakdown: {
-        outfitId: string;
-        outfitName: string;
-        quantityOrdered: number;
-        maxQuantity: number | null;
-        revenue: number;
-        category: string | null;
-    }[];
-};
-
-/** Get campaign progress / stats */
-export async function getCampaignProgress(id: string): Promise<CampaignProgressDto> {
-    return api<CampaignProgressDto>(
-        endpoints.schools.campaignProgress.replace("{id}", id),
-        { auth: true }
-    );
-}
 
 //#endregion
 
@@ -826,17 +669,6 @@ export type PublicSchoolDetailDto = {
     activeCampaigns: PublicCampaignSummaryDto[];
 };
 
-export type PublicCampaignDetailDto = {
-    campaignId: string;
-    campaignName: string;
-    status: string;
-    startDate: string;
-    endDate: string;
-    description: string | null;
-    school: { id: string; schoolName: string; logoURL: string | null };
-    outfits: CampaignOutfitDetailDto[];
-};
-
 /** Guest & Parent: list all public schools (paginated) */
 export type PublicSchoolsResponse = {
     schools: PublicSchoolDto[];
@@ -854,14 +686,6 @@ export async function getPublicSchools(page?: number, pageSize?: number): Promis
 /** Guest & Parent: public school detail with active campaigns */
 export async function getPublicSchoolDetail(id: string): Promise<PublicSchoolDetailDto> {
     return api<PublicSchoolDetailDto>(`${endpoints.public.schools}/${id}`, { method: "GET" });
-}
-
-/** Parent only: public campaign detail with outfits */
-export async function getPublicCampaignDetail(campaignId: string): Promise<PublicCampaignDetailDto> {
-    return api<PublicCampaignDetailDto>(
-        `/api/public/campaigns/${campaignId}`,
-        { method: "GET", auth: true }
-    );
 }
 
 // ── Outfit Detail (public) ──
@@ -1054,7 +878,6 @@ export type ContractedOutfitSuggestionDto = {
     outfitName: string;
     mainImageURL: string | null;
     outfitType: string;
-    pricePerUnit: number;
     contractName: string;
     contractID: string;
 };

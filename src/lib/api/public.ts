@@ -69,6 +69,37 @@ export type PublicProviderProfileDto = {
     totalCompletedOrders: number;
 };
 
+export type ProviderRatingItemDto = {
+    providerRatingId: string;
+    orderId: string;
+    rating: number;
+    comment?: string | null;
+    createdAt: string;
+    parentName: string;
+};
+
+export type ProviderRatingsResponse = {
+    providerId: string;
+    providerName: string;
+    averageRating: number;
+    totalRatings: number;
+    totalCompletedOrders: number;
+    items: ProviderRatingItemDto[];
+};
+
+export type ProviderRankingItemDto = {
+    providerId: string;
+    providerName: string;
+    averageRating: number;
+    totalRatings: number;
+    totalCompletedOrders: number;
+};
+
+export type ProviderRankingResponse = {
+    schoolId: string;
+    items: ProviderRankingItemDto[];
+};
+
 export async function searchPublic(q: string, page = 1, pageSize = 10): Promise<PublicSearchResponse> {
     const params = new URLSearchParams({ q, page: String(page), pageSize: String(pageSize) });
     return api<PublicSearchResponse>(`${endpoints.public.search}?${params}`, {
@@ -100,6 +131,18 @@ export async function getProvidersForPublicationOutfit(
 
 export async function getProviderPublicProfile(providerId: string): Promise<PublicProviderProfileDto> {
     return api<PublicProviderProfileDto>(`${endpoints.public.providerProfile}/${providerId}/profile`, {
+        method: "GET",
+    });
+}
+
+export async function getProviderRatings(providerId: string): Promise<ProviderRatingsResponse> {
+    return api<ProviderRatingsResponse>(`${endpoints.public.providerRatings}/${providerId}/ratings`, {
+        method: "GET",
+    });
+}
+
+export async function getProviderRanking(schoolId: string): Promise<ProviderRankingResponse> {
+    return api<ProviderRankingResponse>(`${endpoints.public.providerRanking}/${schoolId}/provider-ranking`, {
         method: "GET",
     });
 }
