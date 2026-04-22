@@ -1,92 +1,79 @@
 import {
+    ClipboardList,
     FileText,
     LayoutDashboard,
     School,
     Settings,
     Shirt,
-    ShoppingBag,
     Users,
-    Wallet,
 } from "lucide-react";
 import type { DashboardSidebarProps } from "../components/layout";
 
 /**
  * Sidebar config for School Dashboard screens.
  *
- * Hidden legacy routes still exist via direct URL:
- * - /school/campaigns
- * - /school/production-orders
- * - /school/complaints
+ * Legacy campaign/production-order/complaint management routes are intentionally
+ * omitted from the active school navigation during the marketplace migration.
  */
 export const DASHBOARD_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, "isCollapsed" | "onToggle"> = {
     iconType: "school" as const,
-    greeting: "Xin chao!",
+    greeting: "Xin chào!",
     name: "",
     topNavItems: [
         {
             icon: LayoutDashboard,
-            label: "Tong quan",
+            label: "Tổng quan",
             href: "/school/dashboard",
         },
     ],
     navSections: [
         {
-            title: "QUAN LY",
+            title: "THEO DÕI",
             items: [
                 {
                     icon: Users,
-                    label: "Hoc sinh",
+                    label: "Học sinh",
                     href: "/school/students",
                 },
                 {
-                    icon: Shirt,
-                    label: "Dong phuc",
-                    href: "/school/uniforms",
-                },
-                {
-                    icon: School,
-                    label: "Ho so truong",
-                    href: "/school/profile",
-                },
-                {
-                    icon: Settings,
-                    label: "Tai khoan",
-                    href: "/school/account-settings",
+                    icon: ClipboardList,
+                    label: "Báo cáo GVCN",
+                    href: "/school/teacher-reports",
                 },
             ],
         },
         {
-            title: "KINH DOANH",
+            title: "KẾ HOẠCH HỌC KỲ",
             items: [
                 {
+                    icon: Shirt,
+                    label: "Đồng phục",
+                    href: "/school/uniforms",
+                },
+                {
                     icon: FileText,
-                    label: "Cong bo hoc ky",
+                    label: "Công bố học kỳ",
                     href: "/school/semester-publications",
                 },
                 {
                     icon: FileText,
-                    label: "Hop dong",
+                    label: "Hợp đồng",
                     href: "/school/contracts",
                 },
             ],
         },
         {
-            title: "VAN HANH",
+            title: "THIẾT LẬP",
             items: [
                 {
-                    icon: ShoppingBag,
-                    label: "Don hang",
-                    href: "/school/orders",
+                    icon: School,
+                    label: "Hồ sơ trường",
+                    href: "/school/profile",
                 },
-            ],
-        },
-        {
-            title: "TAI CHINH",
-            items: [
                 {
-                    icon: Wallet,
-                    label: "Vi truong hoc",
-                    href: "/school/wallet",
+                    icon: Settings,
+                    label: "Tài khoản",
+                    href: "/school/account-settings",
                 },
             ],
         },
