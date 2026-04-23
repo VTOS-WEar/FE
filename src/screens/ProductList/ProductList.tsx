@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { GuestLayout } from "@/components/layout/GuestLayout";
 import { PublicPageBreadcrumb } from "@/components/PublicPageBreadcrumb";
 import { getUniformWarehouse, getPublicSchools, type UniformWarehouseResponse, type CampaignSummaryDto, type FeaturedOutfitDto, type UniformSearchResult } from "../../lib/api/schools";
-import { formatCurrency } from "@/lib/utils/format";
+import { formatCurrency, formatRating } from "@/lib/utils/format";
 
 // ── Components ──────────────────────────────────────────────────────────────
 
@@ -261,7 +261,7 @@ const ProductCard = ({ product }: { product: FeaturedOutfitDto | UniformSearchRe
         {'averageRating' in product && product.averageRating > 0 && (
           <div className="absolute top-2 left-2 flex items-center gap-1 rounded-full border border-gray-200 bg-white px-1.5 py-0.5 text-[8px] font-black shadow-sm">
             <StarFilledIcon className="h-2.5 w-2.5 text-[#FFD700]" />
-            {product.averageRating}
+            {formatRating(product.averageRating)}
           </div>
         )}
       </div>

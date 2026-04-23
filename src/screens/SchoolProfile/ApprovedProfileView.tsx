@@ -9,6 +9,7 @@ import {
     uploadSchoolLogo,
 } from "../../lib/api/schools";
 import { ApiError } from "../../lib/api/clients";
+import { formatPercent } from "../../lib/utils/format";
 
 interface ApprovedProfileViewProps {
     profile: SchoolProfileDto;
@@ -215,8 +216,8 @@ export const ApprovedProfileView = ({
                                     <h1 className="text-[28px] font-extrabold leading-tight text-gray-900 lg:text-[32px]">
                                         {form.schoolName.trim() || "Hồ sơ trường học"}
                                     </h1>
-                                    <p className="mt-2 max-w-3xl text-sm font-medium text-[#4c5769] lg:text-base">
-                                        Quản lý nhận diện và thông tin công khai của trường trong cùng một workspace, với trạng thái hồ sơ và mức độ hoàn thiện hiển thị ngay ở đầu trang.
+                                    <p className="mt-2 max-w-3xl text-sm font-medium leading-7 text-[#4c5769] sm:text-base">
+                                        Cập nhật thông tin công khai của trường và theo dõi mức độ hoàn thiện hồ sơ ngay trên đầu trang.
                                     </p>
                                 </div>
 
@@ -270,7 +271,7 @@ export const ApprovedProfileView = ({
                             <div className="flex items-center justify-between gap-3">
                                 <div>
                                     <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-gray-500">Mức độ hoàn thiện</p>
-                                    <p className="mt-1 text-2xl font-extrabold text-gray-900">{completionPercent}%</p>
+                                    <p className="mt-1 text-2xl font-extrabold text-gray-900">{formatPercent(completionPercent, { maximumFractionDigits: 0 })}</p>
                                 </div>
                                 <div className="rounded-full bg-violet-50 px-3 py-1 text-xs font-extrabold text-violet-700">
                                     {completedCount}/{completenessItems.length} mục

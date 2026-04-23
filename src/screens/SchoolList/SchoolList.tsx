@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { GuestLayout } from "@/components/layout/GuestLayout";
 import { PublicPageBreadcrumb } from "@/components/PublicPageBreadcrumb";
 import { getPublicSchools, PublicSchoolDto, parseContactInfo } from "@/lib/api/schools";
+import { formatRating } from "@/lib/utils/format";
 import { fetchProvinces, type Province, type District } from "@/lib/utils/vietnamProvinces";
 
 /* ═══════════════════════════════════════════════════════
@@ -509,7 +510,7 @@ const SchoolList = () => {
                         <div className="absolute top-3 right-3">
                           <span className="inline-flex items-center gap-1 rounded-full border border-gray-200 bg-white/95 px-2.5 py-1 text-[11px] font-extrabold text-gray-900 shadow-sm backdrop-blur-[1px]">
                             <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
-                            {school.rating || "—"}
+                            {formatRating(school.rating, { fallback: "—" })}
                           </span>
                         </div>
                       </div>

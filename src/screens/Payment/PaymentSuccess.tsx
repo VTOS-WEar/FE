@@ -78,7 +78,7 @@ export const PaymentSuccess = (): JSX.Element => {
             {/* Action buttons */}
             <div className="space-y-3">
               <button
-                onClick={() => navigate("/parentprofile/orders")}
+                onClick={() => navigate("/my-orders")}
                 className="nb-btn nb-btn-purple w-full text-sm flex items-center justify-center gap-2"
               >
                 <ShoppingBag className="w-4 h-4" />

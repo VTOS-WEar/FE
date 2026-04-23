@@ -43,7 +43,7 @@ export const PaymentCancel = (): JSX.Element => {
   const handleRetryPayment = async () => {
     if (pendingOrderIds.length === 0) {
       // No order IDs available — redirect to orders page
-      navigate("/parentprofile/orders");
+      navigate("/my-orders");
       return;
     }
 
@@ -163,7 +163,7 @@ export const PaymentCancel = (): JSX.Element => {
                 )}
               </button>
               <button
-                onClick={() => navigate("/parentprofile/orders")}
+                onClick={() => navigate("/my-orders")}
                 className="nb-btn nb-btn-outline w-full text-sm flex items-center justify-center gap-2"
               >
                 <ShoppingCart className="w-4 h-4" />

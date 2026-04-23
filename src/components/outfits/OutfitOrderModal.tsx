@@ -13,6 +13,7 @@ import {
   type BodygramScanDetail,
 } from "../../lib/api/bodygram";
 import { getBestCompatibility, recommendSize, recommendSizeFromBodygram, type SizeRecommendation } from "../../lib/utils/sizeRecommendation";
+import { formatRating } from "../../lib/utils/format";
 import { useCart } from "../../contexts/CartContext";
 import { useToast } from "../../contexts/ToastContext";
 import { getAllSchoolSemesterCatalogs, getProviderPublicProfile, getProvidersForPublicationOutfit, type SemesterCatalogProviderDto, type PublicProviderProfileDto, type SchoolSemesterCatalogResponse } from "../../lib/api/public";
@@ -547,7 +548,7 @@ export function OutfitOrderModal({
                             <div className="mt-1.5 flex flex-wrap gap-2 text-xs font-medium text-gray-500">
                               <span className="inline-flex items-center gap-1">
                                 <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
-                                {provider.averageRating.toFixed(1)}
+                                {formatRating(provider.averageRating)}
                               </span>
                               <span>{provider.totalRatings} đánh giá</span>
                               <span className="inline-flex items-center gap-1">
@@ -588,7 +589,7 @@ export function OutfitOrderModal({
                     {providerProfile.contactPersonName && <p>Phụ trách: <span className="font-bold text-gray-900">{providerProfile.contactPersonName}</span></p>}
                     {providerProfile.phone && <p>Điện thoại: <span className="font-bold text-gray-900">{providerProfile.phone}</span></p>}
                     {providerProfile.address && <p>Địa chỉ: <span className="font-bold text-gray-900 truncate" title={providerProfile.address}>{providerProfile.address.length > 40 ? providerProfile.address.substring(0, 40) + "..." : providerProfile.address}</span></p>}
-                    <p className="pt-1 text-[11px] font-bold text-gray-500">Điểm trung bình: <span className="text-gray-900">{providerProfile.averageRating.toFixed(1)}</span> · {providerProfile.totalRatings} đánh giá</p>
+                    <p className="pt-1 text-[11px] font-bold text-gray-500">Điểm trung bình: <span className="text-gray-900">{formatRating(providerProfile.averageRating)}</span> · {providerProfile.totalRatings} đánh giá</p>
                     <Link to={`/providers/${providerProfile.providerId}/ratings${outfit ? `?schoolId=${outfit.school.schoolId}` : ""}`} className="inline-flex pt-2 text-[11px] font-extrabold text-violet-600 hover:text-violet-700">
                       Xem toàn bộ đánh giá
                     </Link>

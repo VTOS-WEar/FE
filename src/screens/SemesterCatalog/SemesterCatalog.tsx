@@ -7,6 +7,7 @@ import { useToast } from "../../contexts/ToastContext";
 import { getAllSchoolSemesterCatalogs, getProviderRanking, getSchoolSemesterCatalog, type ProviderRankingItemDto, type SchoolSemesterCatalogResponse, type SemesterCatalogOutfitDto } from "../../lib/api/public";
 import { getPublicSchoolDetail, type PublicSchoolDetailDto } from "../../lib/api/schools";
 import { OutfitOrderModal } from "../../components/outfits/OutfitOrderModal";
+import { formatRating } from "../../lib/utils/format";
 
 const formatCurrency = (value: number) => `${value.toLocaleString("vi-VN")} ₫`;
 
@@ -44,13 +45,21 @@ export function SemesterCatalog(): JSX.Element {
                     targetCatalog = await getSchoolSemesterCatalog(id);
                 }
 
-                const rankingResponse = await getProviderRanking(id);
-                if (disposed) return;
-
                 setCatalog(targetCatalog);
-                setProviderRanking(rankingResponse.items);
+
+                try {
+                    const rankingResponse = await getProviderRanking(id);
+                    if (!disposed) {
+                        setProviderRanking(rankingResponse.items);
+                    }
+                } catch {
+                    if (!disposed) {
+                        setProviderRanking([]);
+                    }
+                }
             } catch (error: any) {
                 if (disposed) return;
+                setCatalog(null);
                 setProviderRanking([]);
                 showToast({
                     title: "Không thể tải catalog",
@@ -169,7 +178,7 @@ export function SemesterCatalog(): JSX.Element {
                                     <p className="text-[10px] font-black uppercase tracking-[0.14em] text-violet-500">Top {index + 1}</p>
                                     <h4 className="mt-2 text-base font-extrabold text-gray-900">{provider.providerName}</h4>
                                     <div className="mt-3 flex items-center gap-3 text-sm font-bold text-gray-600">
-                                        <span className="inline-flex items-center gap-1"><Star className="h-4 w-4 fill-amber-400 text-amber-400" />{provider.averageRating.toFixed(1)}</span>
+                                        <span className="inline-flex items-center gap-1"><Star className="h-4 w-4 fill-amber-400 text-amber-400" />{formatRating(provider.averageRating)}</span>
                                         <span>{provider.totalRatings} đánh giá</span>
                                     </div>
                                     <p className="mt-2 text-xs font-medium text-gray-500">{provider.totalCompletedOrders} đơn hoàn tất</p>
@@ -206,7 +215,7 @@ export function SemesterCatalog(): JSX.Element {
                                                         <div className="min-w-0 flex-1 pr-2">
                                                             <p className="break-words text-sm font-extrabold text-gray-900">{provider.providerName}</p>
                                                             <div className="mt-1 flex flex-wrap items-center gap-2 text-[11px] font-medium text-gray-500">
-                                                                <span className="inline-flex items-center gap-1"><Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />{provider.averageRating.toFixed(1)}</span>
+                                                                <span className="inline-flex items-center gap-1"><Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />{formatRating(provider.averageRating)}</span>
                                                                 <span>{provider.totalRatings} đánh giá</span>
                                                                 <span>{provider.totalCompletedOrders} đơn hoàn tất</span>
                                                             </div>

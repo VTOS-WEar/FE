@@ -116,7 +116,7 @@ export function ProviderOrderDetail(): JSX.Element {
                             </button>
                             <div>
                                 <h1 className="text-xl font-extrabold text-gray-900 leading-none">Chi tiết đơn hàng</h1>
-                                <p className="mt-1 text-[12px] font-semibold text-gray-400">Quản lý & xử lý yêu cầu sản xuất mã #{id?.slice(0, 8).toUpperCase()}</p>
+                                <p className="mt-1 text-[12px] font-semibold text-gray-400">Theo dõi và xử lý đơn sản xuất mã #{id?.slice(0, 8).toUpperCase()}</p>
                             </div>
                         </div>
                     </TopNavBar>

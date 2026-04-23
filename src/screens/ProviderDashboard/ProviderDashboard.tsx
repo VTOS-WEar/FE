@@ -57,7 +57,7 @@ function MetricCard({
     tone: string;
 }) {
     return (
-        <div className="group relative overflow-hidden rounded-[26px] border border-gray-200 bg-white p-5 shadow-soft-sm transition-all hover:-translate-y-1">
+        <div className="rounded-[22px] border border-gray-200 bg-white p-5 shadow-soft-sm">
             <div className="flex items-start justify-between gap-4">
                 <div>
                     <p className="text-[11px] font-black uppercase tracking-[0.18em] text-gray-400">{label}</p>
@@ -90,7 +90,7 @@ function ActionCard({
     return (
         <Link
             to={href}
-            className="group flex h-full flex-col justify-between rounded-[24px] border border-gray-200 bg-white p-5 shadow-soft-sm transition-all hover:-translate-y-1 hover:border-violet-200"
+            className="group flex h-full flex-col justify-between rounded-[22px] border border-gray-200 bg-white p-5 shadow-soft-sm transition-colors hover:border-gray-300"
         >
             <div>
                 <div className="flex items-start justify-between gap-3">
@@ -108,7 +108,7 @@ function ActionCard({
             </div>
             <div className="mt-6 inline-flex items-center gap-2 text-sm font-black text-violet-700">
                 Mở khu vực này
-                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                <ArrowRight className="h-4 w-4" />
             </div>
         </Link>
     );
@@ -295,17 +295,17 @@ export const ProviderDashboard = (): JSX.Element => {
                     </TopNavBar>
 
                     <main className="flex-1 space-y-6 px-4 py-6 sm:px-6 lg:px-10 lg:py-8">
-                        <section className="overflow-hidden rounded-[32px] border border-slate-900/70 bg-slate-950 bg-gradient-to-br from-slate-950 via-slate-800 to-violet-900 px-6 py-7 text-white shadow-soft-lg lg:px-8">
+                        <section className="overflow-hidden rounded-[24px] border border-slate-900/70 bg-slate-950 px-6 py-6 text-white shadow-soft-sm lg:px-8">
                             <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
                                 <div className="max-w-3xl">
                                     <span className="inline-flex items-center rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-white">
-                                        Workspace nhà cung cấp
+                                        Vận hành nhà cung cấp
                                     </span>
                                     <h1 className="mt-4 text-3xl font-black leading-tight text-white sm:text-4xl">
                                         {providerName || "Nhà cung cấp"} đang vận hành {data.stats?.totalOrders ?? 0} đơn hàng trong hệ thống.
                                     </h1>
                                     <p className="mt-3 max-w-2xl text-sm font-medium leading-7 text-slate-100 sm:text-base">
-                                        Tập trung vào ba việc chính: xử lý hợp đồng với trường, đẩy đơn hàng qua dây chuyền sản xuất, và theo dõi dòng tiền để không bỏ lỡ điểm nghẽn nào.
+                                        Ưu tiên ba việc chính: chốt hợp đồng với trường, đưa đơn hàng qua các bước sản xuất và theo dõi dòng tiền để không chậm xử lý.
                                     </p>
                                 </div>
                                 <div className="grid gap-3 sm:grid-cols-3 lg:w-[440px]">
@@ -342,7 +342,7 @@ export const ProviderDashboard = (): JSX.Element => {
                         )}
 
                         <section className="grid gap-6 xl:grid-cols-[1.6fr_1fr]">
-                            <div className="rounded-[28px] border border-gray-200 bg-white p-6 shadow-soft-sm">
+                            <div className="rounded-[24px] border border-gray-200 bg-white p-6 shadow-soft-sm">
                                 <div className="flex items-center justify-between gap-4">
                                     <div>
                                         <p className="text-[11px] font-black uppercase tracking-[0.18em] text-gray-400">Việc ưu tiên</p>
@@ -364,7 +364,7 @@ export const ProviderDashboard = (): JSX.Element => {
                                 </div>
                             </div>
 
-                            <div className="rounded-[28px] border border-gray-200 bg-white p-6 shadow-soft-sm">
+                            <div className="rounded-[24px] border border-gray-200 bg-white p-6 shadow-soft-sm">
                                 <p className="text-[11px] font-black uppercase tracking-[0.18em] text-gray-400">Trạng thái vận hành</p>
                                 <h2 className="mt-2 text-2xl font-black text-gray-900">Sẵn sàng giao dịch</h2>
 
