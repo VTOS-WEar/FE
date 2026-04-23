@@ -422,19 +422,19 @@ export const SemesterPublicationWorkspace = (): JSX.Element => {
                     </TopNavBar>
 
                     <main className="flex-1 space-y-6 px-4 py-6 sm:px-6 lg:px-10 lg:py-8">
-                        <section className="rounded-[30px] border border-violet-200 bg-[radial-gradient(circle_at_top_left,_rgba(139,92,246,0.18),_transparent_35%),linear-gradient(135deg,_#ffffff_10%,_#f8f4ff_55%,_#eef6ff_100%)] p-6 shadow-soft-lg lg:p-7">
+                        <section className="rounded-[24px] border border-gray-200 bg-white p-6 shadow-soft-sm lg:p-7">
                             <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
                                 <div className="max-w-3xl">
                                     <div className="flex flex-wrap items-center gap-2">
                                         <span className={statusMeta.badgeClass}>{statusMeta.label}</span>
-                                        <span className="rounded-full border border-violet-200 bg-white px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.16em] text-violet-700 shadow-soft-sm">
+                                        <span className="rounded-full border border-gray-200 bg-violet-50 px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.16em] text-violet-700">
                                             Publication Workspace
                                         </span>
                                     </div>
                                     <h1 className="mt-4 text-[28px] font-extrabold leading-tight text-gray-900 lg:text-[34px]">
                                         {publication ? `${publication.semester} / ${publication.academicYear}` : "Khởi tạo đợt công bố học kỳ"}
                                     </h1>
-                                    <p className="mt-3 max-w-3xl text-sm font-medium leading-6 text-[#4c5769] lg:text-base">
+                                    <p className="mt-3 max-w-3xl text-sm font-medium leading-7 text-[#4c5769] sm:text-base">
                                         {statusMeta.helper}
                                     </p>
                                 </div>
@@ -736,10 +736,10 @@ export const SemesterPublicationWorkspace = (): JSX.Element => {
                                                                                     key={outfit.outfitID}
                                                                                     type="button"
                                                                                     onClick={() => handleToggleOutfit(outfit.outfitID)}
-                                                                                    className={`rounded-[18px] border p-4 text-left transition-all ${
+                                                                                    className={`rounded-[18px] border p-4 text-left transition-colors ${
                                                                                         isSelected
-                                                                                            ? "border-violet-300 bg-violet-50 shadow-soft-md"
-                                                                                            : "border-gray-200 bg-white shadow-soft-sm hover:-translate-y-0.5"
+                                                                                            ? "border-violet-300 bg-violet-50 shadow-soft-sm"
+                                                                                            : "border-gray-200 bg-white shadow-soft-sm hover:border-gray-300"
                                                                                     }`}
                                                                                 >
                                                                                     <div className="flex items-start gap-3">
