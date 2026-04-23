@@ -208,6 +208,16 @@ export const Cart = (): JSX.Element => {
         }
       }
 
+      const payableGroupCount = campaignGroups.size + marketplaceGroups.size;
+      if (payableGroupCount > 1) {
+        showToast({
+          title: "Chưa thể thanh toán nhiều nhóm đơn",
+          message: "Giỏ hàng hiện có nhiều nhóm đơn khác nhau. Vui lòng thanh toán từng nhóm để tránh tạo đơn chờ thanh toán.",
+          variant: "error",
+        });
+        return;
+      }
+
       let lastPaymentLink = "";
       const createdOrderIds: string[] = [];
 
