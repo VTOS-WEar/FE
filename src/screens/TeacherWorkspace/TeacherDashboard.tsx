@@ -32,7 +32,7 @@ export const TeacherDashboard = (): JSX.Element => {
             showBackButton={false}
             showIdentityHeader={false}
         >
-            <section className="rounded-[28px] border border-emerald-200 bg-[radial-gradient(circle_at_top_left,_rgba(16,185,129,0.15),_transparent_36%),linear-gradient(135deg,_#ffffff_10%,_#f4fffb_55%,_#eef6ff_100%)] p-6 shadow-soft-lg">
+            <section className="rounded-[24px] border border-gray-200 bg-white p-6 shadow-soft-sm">
                 <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
                     <div>
                         <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-white/80 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-emerald-700">
@@ -47,19 +47,19 @@ export const TeacherDashboard = (): JSX.Element => {
                         </p>
                     </div>
                     <div className="flex flex-wrap gap-3">
-                        <button type="button" onClick={() => navigate("/teacher/classes")} className="inline-flex items-center gap-2 rounded-2xl border border-emerald-200 bg-white px-4 py-3 text-sm font-bold text-gray-900 shadow-soft-sm transition-all hover:-translate-y-0.5 hover:shadow-soft-md">
+                        <button type="button" onClick={() => navigate("/teacher/classes")} className="inline-flex items-center gap-2 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm font-bold text-gray-900 shadow-soft-sm hover:border-emerald-200">
                             <Users className="h-4 w-4 text-emerald-700" />
                             Xem lớp chủ nhiệm
                         </button>
-                        <button type="button" onClick={() => navigate("/teacher/reminders")} className="inline-flex items-center gap-2 rounded-2xl border border-amber-200 bg-white px-4 py-3 text-sm font-bold text-gray-900 shadow-soft-sm transition-all hover:-translate-y-0.5 hover:shadow-soft-md">
+                        <button type="button" onClick={() => navigate("/teacher/reminders")} className="inline-flex items-center gap-2 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm font-bold text-gray-900 shadow-soft-sm hover:border-amber-200">
                             <BellRing className="h-4 w-4 text-amber-700" />
                             Nhắc phụ huynh
                         </button>
-                        <button type="button" onClick={() => navigate("/teacher/messages")} className="inline-flex items-center gap-2 rounded-2xl border border-sky-200 bg-white px-4 py-3 text-sm font-bold text-gray-900 shadow-soft-sm transition-all hover:-translate-y-0.5 hover:shadow-soft-md">
+                        <button type="button" onClick={() => navigate("/teacher/messages")} className="inline-flex items-center gap-2 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm font-bold text-gray-900 shadow-soft-sm hover:border-sky-200">
                             <MessageSquare className="h-4 w-4 text-sky-700" />
                             Mở tin nhắn
                         </button>
-                        <button type="button" onClick={() => navigate("/teacher/account")} className="inline-flex items-center gap-2 rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm font-bold text-gray-900 shadow-soft-sm transition-all hover:-translate-y-0.5 hover:shadow-soft-md">
+                        <button type="button" onClick={() => navigate("/teacher/account")} className="inline-flex items-center gap-2 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm font-bold text-gray-900 shadow-soft-sm hover:border-violet-200">
                             <Settings className="h-4 w-4 text-violet-700" />
                             Cài đặt tài khoản
                         </button>
@@ -83,26 +83,26 @@ export const TeacherDashboard = (): JSX.Element => {
             {!loading && !error && dashboard && (
                 <>
                     <section className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-                        <div className="rounded-[24px] border border-emerald-200 bg-white p-5 shadow-soft-md">
+                        <div className="rounded-[20px] border border-gray-200 bg-white p-5 shadow-soft-sm">
                             <p className="text-sm font-semibold text-[#6b7280]">Lớp</p>
                             <p className="mt-2 text-3xl font-extrabold text-gray-900">{classDisplay}</p>
                         </div>
-                        <div className="rounded-[24px] border border-sky-200 bg-white p-5 shadow-soft-md">
+                        <div className="rounded-[20px] border border-gray-200 bg-white p-5 shadow-soft-sm">
                             <p className="text-sm font-semibold text-[#6b7280]">Sĩ số</p>
                             <p className="mt-2 text-3xl font-extrabold text-gray-900">{dashboard.totalStudents}</p>
                         </div>
-                        <div className="rounded-[24px] border border-amber-200 bg-white p-5 shadow-soft-md">
+                        <div className="rounded-[20px] border border-gray-200 bg-white p-5 shadow-soft-sm">
                             <p className="text-sm font-semibold text-[#6b7280]">Đã đo size</p>
                             <p className="mt-2 text-3xl font-extrabold text-gray-900">{measuredStudents}</p>
                         </div>
-                        <div className="rounded-[24px] border border-rose-200 bg-white p-5 shadow-soft-md">
+                        <div className="rounded-[20px] border border-gray-200 bg-white p-5 shadow-soft-sm">
                             <p className="text-sm font-semibold text-[#6b7280]">Đã đặt đồng phục</p>
                             <p className="mt-2 text-3xl font-extrabold text-gray-900">{orderedStudents}</p>
                         </div>
                     </section>
 
                     <section className="mt-6 grid gap-4 xl:grid-cols-[1.35fr_1fr]">
-                        <div className="flex h-full flex-col overflow-hidden rounded-[24px] border border-gray-200 bg-white shadow-soft-md">
+                        <div className="flex h-full flex-col overflow-hidden rounded-[20px] border border-gray-200 bg-white shadow-soft-sm">
                             <div className="border-b border-gray-200 px-5 py-4">
                                 <div>
                                     <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-700">Theo dõi lớp</p>
@@ -180,7 +180,7 @@ export const TeacherDashboard = (): JSX.Element => {
                         </div>
 
                         <div className="space-y-4">
-                            <div className="rounded-[24px] border border-gray-200 bg-white p-5 shadow-soft-md">
+                            <div className="rounded-[20px] border border-gray-200 bg-white p-5 shadow-soft-sm">
                                 <div className="flex items-center gap-3">
                                     <div className="rounded-2xl bg-[#fef6d8] p-3 text-amber-700"><AlertCircle className="h-5 w-5" /></div>
                                     <div>
@@ -189,7 +189,7 @@ export const TeacherDashboard = (): JSX.Element => {
                                     </div>
                                 </div>
                             </div>
-                            <div className="rounded-[24px] border border-gray-200 bg-white p-5 shadow-soft-md">
+                            <div className="rounded-[20px] border border-gray-200 bg-white p-5 shadow-soft-sm">
                                 <div className="flex items-center gap-3">
                                     <div className="rounded-2xl bg-[#eef7ff] p-3 text-sky-700"><Link2 className="h-5 w-5" /></div>
                                     <div>
@@ -206,7 +206,7 @@ export const TeacherDashboard = (): JSX.Element => {
                         </div>
                     </section>
 
-                    <section className="mt-6 rounded-[24px] border border-gray-200 bg-white shadow-soft-md">
+                    <section className="mt-6 rounded-[20px] border border-gray-200 bg-white shadow-soft-sm">
                         <div className="flex items-center justify-between border-b border-gray-200 px-5 py-4">
                             <div>
                                 <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-700">Báo cáo gần đây</p>
