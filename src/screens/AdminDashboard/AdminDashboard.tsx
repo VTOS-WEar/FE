@@ -41,6 +41,7 @@ import {
     getAccountRequests,
     type AccountRequestListItem,
 } from "../../lib/api/accountRequests";
+import { formatPercent } from "../../lib/utils/format";
 
 type TimeRange = "Week" | "Month" | "Quarter" | "Year";
 
@@ -77,10 +78,6 @@ function fmtNumber(value?: number) {
 
 function fmtCurrency(value?: number) {
     return `${fmtNumber(value)} ₫`;
-}
-
-function fmtPercent(value?: number) {
-    return value === undefined || value === null ? "—" : `${value}%`;
 }
 
 function fmtDate(value?: string) {
@@ -391,13 +388,13 @@ export const AdminDashboard = (): JSX.Element => {
                             <div className="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
                                 <div className="max-w-3xl">
                                     <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[12px] font-black uppercase tracking-[0.12em] text-white">
-                                        Admin workspace
+                                        Điều hành hệ thống
                                     </div>
                                     <h1 className="mt-4 text-[34px] font-black leading-tight md:text-[46px]">
-                                        Điều phối hệ thống theo hàng chờ ưu tiên, không theo từng trang rời rạc.
+                                        Theo dõi việc cần xử lý trong toàn hệ thống.
                                     </h1>
-                                    <p className="mt-4 max-w-2xl text-[16px] font-semibold leading-8 text-white/85">
-                                        Trang này gom các tín hiệu cần quyết định ngay: cấp tài khoản, rút tiền, hỗ trợ và sức khỏe thanh toán. Mỗi khu vực bên dưới dẫn thẳng đến màn hình xử lý tương ứng.
+                                    <p className="mt-4 max-w-2xl text-sm font-medium leading-7 text-white/85 sm:text-base">
+                                        Từ đây, Admin xem nhanh yêu cầu cấp tài khoản, rút tiền, hỗ trợ và giao dịch cần chú ý, rồi mở thẳng từng khu vực để xử lý.
                                     </p>
                                 </div>
 
@@ -455,7 +452,7 @@ export const AdminDashboard = (): JSX.Element => {
                             <DashboardStatCard
                                 icon={<CreditCard className="h-5 w-5" />}
                                 label="Tỷ lệ hoàn tất thanh toán"
-                                value={loading ? "…" : fmtPercent(paymentRate ?? undefined)}
+                                value={loading ? "…" : formatPercent(paymentRate, { maximumFractionDigits: 2 })}
                                 detail="Chỉ số này hỗ trợ phát hiện sớm rủi ro checkout, giao dịch treo hoặc lỗi cổng thanh toán."
                             />
                         </section>

@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "../../components/ui/breadcrumb";
 import { DashboardSidebar } from "../../components/layout";
 import { TopNavBar } from "../../components/layout/TopNavBar";
+import { usePreservedResultsHeight } from "../../hooks/usePreservedResultsHeight";
 import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
 import { useSidebarConfig } from "../../hooks/useSidebarConfig";
 import { getSchoolClassesOverview } from "../../lib/api/schools";
@@ -43,6 +44,9 @@ export const SchoolTeacherReports = (): JSX.Element => {
     const [selectedReport, setSelectedReport] = useState<TeacherReportListItemDto | null>(null);
     const [reviewNote, setReviewNote] = useState("");
     const [submitting, setSubmitting] = useState(false);
+    const hasActiveFilters = !!(status || classGroupId);
+    const isFilteredEmptyState = !loading && !error && hasActiveFilters && reports.length === 0;
+    const { preserveResultsHeight, preservedHeightStyle, resultsRegionRef } = usePreservedResultsHeight(isFilteredEmptyState);
 
     useEffect(() => {
         getSchoolClassesOverview()
@@ -121,10 +125,10 @@ export const SchoolTeacherReports = (): JSX.Element => {
                         <section className="rounded-[28px] border border-amber-200 bg-[linear-gradient(135deg,_#fffef8_0%,_#ffffff_45%,_#f4fbff_100%)] p-6 shadow-soft-lg">
                             <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
                                 <div>
-                                    <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-amber-700">Homeroom teacher workflow</p>
+                                    <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-amber-700">Báo cáo giáo viên</p>
                                     <h1 className="mt-2 text-[30px] font-extrabold leading-tight text-gray-900 lg:text-[38px]">Báo cáo từ giáo viên chủ nhiệm</h1>
-                                    <p className="mt-3 max-w-2xl text-sm font-medium leading-6 text-[#4c5769] lg:text-base">
-                                        Xem các báo cáo giáo viên gửi lên, phản hồi lại theo từng lớp, và đóng các mục cần nhà trường đã tiếp nhận.
+                                    <p className="mt-3 max-w-2xl text-sm font-medium leading-7 text-[#4c5769] sm:text-base">
+                                        Xem báo cáo giáo viên gửi lên, phản hồi theo từng lớp và đánh dấu các mục nhà trường đã tiếp nhận.
                                     </p>
                                 </div>
                                 <div className="grid gap-3 sm:grid-cols-2">
@@ -144,7 +148,10 @@ export const SchoolTeacherReports = (): JSX.Element => {
                             <div className="grid gap-3 md:grid-cols-2">
                                 <label className="text-sm font-semibold text-[#4c5769]">
                                     Lớp
-                                    <select value={classGroupId} onChange={(e) => setClassGroupId(e.target.value)} className="mt-2 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 font-semibold text-gray-900 outline-none focus:border-amber-300">
+                                    <select value={classGroupId} onChange={(e) => {
+                                        preserveResultsHeight();
+                                        setClassGroupId(e.target.value);
+                                    }} className="mt-2 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 font-semibold text-gray-900 outline-none focus:border-amber-300">
                                         <option value="">Tất cả lớp</option>
                                         {classOptions.map((item) => (
                                             <option key={item.id} value={item.id}>Lớp {item.className}</option>
@@ -153,7 +160,10 @@ export const SchoolTeacherReports = (): JSX.Element => {
                                 </label>
                                 <label className="text-sm font-semibold text-[#4c5769]">
                                     Trạng thái
-                                    <select value={status} onChange={(e) => setStatus(e.target.value)} className="mt-2 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 font-semibold text-gray-900 outline-none focus:border-amber-300">
+                                    <select value={status} onChange={(e) => {
+                                        preserveResultsHeight();
+                                        setStatus(e.target.value);
+                                    }} className="mt-2 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 font-semibold text-gray-900 outline-none focus:border-amber-300">
                                         <option value="">Tất cả</option>
                                         <option value="Submitted">Đang chờ xem</option>
                                         <option value="Reviewed">Đã xem</option>
@@ -176,7 +186,7 @@ export const SchoolTeacherReports = (): JSX.Element => {
                         )}
 
                         {!loading && !error && (
-                            <section className="mt-6 grid gap-6 xl:grid-cols-[1.15fr_0.95fr]">
+                            <section ref={resultsRegionRef} style={preservedHeightStyle} className="mt-6 grid gap-6 xl:grid-cols-[1.15fr_0.95fr]">
                                 <div className="rounded-[24px] border border-gray-200 bg-white shadow-soft-md">
                                     <div className="border-b border-gray-100 px-5 py-4">
                                         <p className="text-xs font-bold uppercase tracking-[0.16em] text-amber-700">Danh sách báo cáo</p>

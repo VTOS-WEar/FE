@@ -161,13 +161,13 @@ export default function ProviderRevenue() {
                             <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
                                 <div className="max-w-3xl">
                                     <span className="inline-flex items-center rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-white">
-                                        Revenue reporting
+                                        Báo cáo doanh thu
                                     </span>
                                     <h2 className="mt-4 text-3xl font-black leading-tight text-white sm:text-4xl">
                                         Doanh thu hiện ghi nhận là {fmt(revenue?.totalRevenue ?? 0)}.
                                     </h2>
                                     <p className="mt-3 text-sm font-medium leading-7 text-slate-100 sm:text-base">
-                                        Khu vực này khác ví: đây là nơi đọc tín hiệu kinh doanh. Dùng nó để biết đơn nào đã chuyển thành doanh thu, đơn nào còn chờ, và các khoản thanh toán gần đây đang phản ánh tình hình ra sao.
+                                        Từ đây, bạn xem đơn nào đã ghi nhận doanh thu, khoản nào còn chờ và các thanh toán gần đây đang phản ánh tình hình kinh doanh ra sao.
                                     </p>
                                 </div>
                                 <div className="grid gap-3 sm:grid-cols-3 lg:w-[430px]">

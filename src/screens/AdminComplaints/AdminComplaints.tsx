@@ -11,6 +11,7 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator,
 } from "../../components/ui/breadcrumb";
+import { usePreservedResultsHeight } from "../../hooks/usePreservedResultsHeight";
 import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
 import {
     adminInterveneComplaint,
@@ -45,6 +46,8 @@ export default function AdminComplaints() {
     const [note, setNote] = useState("");
     const [action, setAction] = useState("");
     const [submitting, setSubmitting] = useState(false);
+    const isFilteredEmptyState = !loading && !!statusFilter && (!data || data.items.length === 0);
+    const { preserveResultsHeight, preservedHeightStyle, resultsRegionRef } = usePreservedResultsHeight(isFilteredEmptyState);
 
     const fetchData = useCallback(async () => {
         setLoading(true);
@@ -112,8 +115,8 @@ export default function AdminComplaints() {
                     <main className="flex-1 px-4 py-6 sm:px-6 lg:px-10 lg:py-8 space-y-6 nb-fade-in">
                         <AdminHero
                             eyebrow="Van hanh"
-                            title="Can thiệp hỗ trợ theo mức độ mở, tiến trình xử lý và điểm nghẽn giữa các bên."
-                            description="Màn hình này giúp Admin đọc nhanh yêu cầu hỗ trợ nào đang mở, hồ sơ nào đã escalated và mục nào cần ghi chú hoặc quyết định trạng thái tiếp theo."
+                            title="Theo dõi yêu cầu hỗ trợ và các vụ việc đang xử lý."
+                            description="Từ đây, Admin xem yêu cầu nào mới mở, mục nào đang bị dồn lại và hồ sơ nào cần ghi chú hoặc cập nhật trạng thái."
                             stats={[
                                 { label: "Đang mở", value: loading ? "…" : String(data?.openCount ?? 0) },
                                 { label: "Đang xử lý", value: loading ? "…" : String(data?.inProgressCount ?? 0) },
@@ -153,6 +156,7 @@ export default function AdminComplaints() {
                                     <button
                                         key={tab.value}
                                         onClick={() => {
+                                            preserveResultsHeight();
                                             setStatusFilter(tab.value);
                                             setPage(1);
                                         }}
@@ -185,6 +189,7 @@ export default function AdminComplaints() {
                                 ))}
                             </div>
 
+                            <div ref={resultsRegionRef} style={preservedHeightStyle}>
                             {loading && (
                                 <div className="space-y-3 px-5 py-5">
                                     {Array.from({ length: 5 }).map((_, index) => (
@@ -310,6 +315,7 @@ export default function AdminComplaints() {
                                     </div>
                                 </div>
                             )}
+                            </div>
                         </section>
                     </main>
                 </div>

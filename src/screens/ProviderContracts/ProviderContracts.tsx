@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { DashboardSidebar } from "../../components/layout";
 import { TopNavBar } from "../../components/layout/TopNavBar";
+import { usePreservedResultsHeight } from "../../hooks/usePreservedResultsHeight";
 import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
 import { useProviderSidebarConfig } from "../../hooks/useProviderSidebarConfig";
 import { ChatWidget, type ChatContextInfo } from "../../components/ChatWidget/ChatWidget";
@@ -250,6 +251,8 @@ export function ProviderContracts() {
 
     const totalPages = Math.max(1, Math.ceil(contracts.length / pageSize));
     const pagedContracts = contracts.slice((page - 1) * pageSize, page * pageSize);
+    const isFilteredEmptyState = !loading && !!statusFilter && pagedContracts.length === 0;
+    const { preserveResultsHeight, preservedHeightStyle, resultsRegionRef } = usePreservedResultsHeight(isFilteredEmptyState);
 
     useEffect(() => {
         setPage(1);
@@ -277,13 +280,13 @@ export function ProviderContracts() {
                             <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
                                 <div className="max-w-3xl">
                                     <span className="inline-flex items-center rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-white">
-                                        Contract inbox
+                                        Hợp đồng với trường
                                     </span>
                                     <h2 className="mt-4 text-3xl font-black leading-tight text-white sm:text-4xl">
                                         {counts.review} hợp đồng đang chờ bạn phản hồi hoặc ký xác nhận.
                                     </h2>
                                     <p className="mt-3 text-sm font-medium leading-7 text-slate-100 sm:text-base">
-                                        Ưu tiên các hợp đồng chờ duyệt giá và chờ ký số từ phía bạn. Giữ phần vận hành này rõ ràng để không chặn công bố học kỳ hoặc luồng đơn hàng phía sau.
+                                        Ưu tiên các hợp đồng đang chờ duyệt giá hoặc chờ ký từ phía bạn để không làm chậm công bố học kỳ và các đơn hàng phía sau.
                                     </p>
                                 </div>
                                 <div className="grid gap-3 sm:grid-cols-3 lg:w-[420px]">
@@ -356,7 +359,10 @@ export function ProviderContracts() {
                                     return (
                                         <button
                                             key={tab.value || "all"}
-                                            onClick={() => setStatusFilter(tab.value)}
+                                            onClick={() => {
+                                                preserveResultsHeight();
+                                                setStatusFilter(tab.value);
+                                            }}
                                             className={`inline-flex min-w-max items-center gap-3 rounded-[18px] border px-4 py-3 transition-all ${
                                                 active
                                                     ? "border-violet-200 bg-violet-50 text-violet-700"
@@ -375,6 +381,7 @@ export function ProviderContracts() {
                             </div>
                         </section>
 
+                        <div ref={resultsRegionRef} style={preservedHeightStyle}>
                         {loading ? (
                             <div className="flex min-h-[320px] flex-col items-center justify-center gap-4 rounded-[32px] border border-gray-200 bg-white shadow-soft-sm">
                                 <Loader2 className="h-10 w-10 animate-spin text-violet-600" />
@@ -490,6 +497,7 @@ export function ProviderContracts() {
                                 </button>
                             </div>
                         ) : null}
+                        </div>
 
                         {showDetail && selected ? (
                             <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/50 p-4">
