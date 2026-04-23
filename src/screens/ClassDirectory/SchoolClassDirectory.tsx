@@ -31,6 +31,7 @@ export const SchoolClassDirectory = (): JSX.Element => {
     const [overview, setOverview] = useState<SchoolClassesOverviewDto | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [selectedGrade, setSelectedGrade] = useState<string>("all");
 
     useEffect(() => {
         getSchoolProfile().then((profile) => setSchoolName(profile.schoolName || "")).catch(() => {});
@@ -78,8 +79,8 @@ export const SchoolClassDirectory = (): JSX.Element => {
                                     <h1 className="mt-3 text-[26px] font-extrabold leading-tight text-gray-900 lg:text-[34px]">
                                         Quản lý học sinh theo khối và lớp
                                     </h1>
-                                    <p className="mt-2 max-w-2xl text-sm font-medium leading-6 text-[#4c5769]">
-                                        Chuyển từ danh sách phẳng sang cấu trúc khối - lớp để trường theo dõi giáo viên chủ nhiệm, đo áo và tình trạng liên kết phụ huynh rõ ràng hơn.
+                                    <p className="mt-2 max-w-2xl text-sm font-medium leading-7 text-[#4c5769] sm:text-base">
+                                        Theo dõi từng khối, từng lớp để nắm giáo viên chủ nhiệm, tình trạng đo áo và mức độ liên kết phụ huynh.
                                     </p>
                                 </div>
                                 <div className="flex flex-wrap gap-3">
@@ -98,6 +99,39 @@ export const SchoolClassDirectory = (): JSX.Element => {
                                 </div>
                             )}
                         </section>
+
+                        {overview && overview.grades.length > 0 && (
+                            <section className="mt-4 rounded-[20px] border border-gray-200 bg-white p-4 shadow-soft-sm">
+                                <div className="flex flex-wrap items-center gap-2">
+                                    <span className="text-sm font-semibold text-[#4c5769]">Khối:</span>
+                                    <button
+                                        type="button"
+                                        onClick={() => setSelectedGrade("all")}
+                                        className={`rounded-full border px-3 py-2 text-sm font-semibold transition-colors ${
+                                            selectedGrade === "all"
+                                                ? "border-violet-200 bg-violet-50 text-violet-700"
+                                                : "border-gray-200 bg-white text-[#4c5769] hover:border-violet-200 hover:text-violet-700"
+                                        }`}
+                                    >
+                                        Tất cả
+                                    </button>
+                                    {overview.grades.map((grade) => (
+                                        <button
+                                            key={grade.grade}
+                                            type="button"
+                                            onClick={() => setSelectedGrade(grade.grade)}
+                                            className={`rounded-full border px-3 py-2 text-sm font-semibold transition-colors ${
+                                                selectedGrade === grade.grade
+                                                    ? "border-violet-200 bg-violet-50 text-violet-700"
+                                                    : "border-gray-200 bg-white text-[#4c5769] hover:border-violet-200 hover:text-violet-700"
+                                            }`}
+                                        >
+                                            Khối {grade.grade}
+                                        </button>
+                                    ))}
+                                </div>
+                            </section>
+                        )}
 
                         {overview && overview.unassignedStudentCount > 0 && (
                             <section className="mt-6 rounded-2xl border border-amber-200 bg-amber-50/80 p-4 text-sm font-medium text-amber-800 shadow-soft-sm">
@@ -130,7 +164,7 @@ export const SchoolClassDirectory = (): JSX.Element => {
 
                         {!loading && !error && overview && overview.grades.length > 0 && (
                             <section className="mt-6 space-y-5">
-                                {overview.grades.map((grade) => (
+                                {overview.grades.filter((grade) => selectedGrade === "all" || grade.grade === selectedGrade).map((grade) => (
                                     <div key={grade.grade} className="rounded-[26px] border border-gray-200 bg-white p-5 shadow-soft-md">
                                         <div className="flex flex-col gap-2">
                                             <div>

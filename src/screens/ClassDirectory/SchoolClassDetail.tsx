@@ -80,8 +80,8 @@ export const SchoolClassDetail = (): JSX.Element => {
                                         <div>
                                             <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-sky-700">{detail.academicYear}</p>
                                             <h1 className="mt-2 text-[30px] font-extrabold leading-tight text-gray-900 lg:text-[38px]">Lớp {detail.className}</h1>
-                                            <p className="mt-3 max-w-2xl text-sm font-medium leading-6 text-[#4c5769] lg:text-base">
-                                                Theo dõi học sinh, giáo viên chủ nhiệm, tình trạng đo áo và liên kết phụ huynh trong cùng một workspace.
+                                            <p className="mt-3 max-w-2xl text-sm font-medium leading-7 text-[#4c5769] sm:text-base">
+                                                Theo dõi học sinh, giáo viên chủ nhiệm, tình trạng đo áo và liên kết phụ huynh của lớp này tại một nơi.
                                             </p>
                                         </div>
                                         <div className="flex flex-wrap gap-3">
