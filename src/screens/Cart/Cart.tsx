@@ -534,7 +534,7 @@ export const Cart = (): JSX.Element => {
                   <div className="space-y-3">
                     <button
                       type="button"
-                      onClick={() => navigate("/parentprofile/account", { state: { returnTo: "/cart" } })}
+                      onClick={() => navigate("/parentprofile/address-book", { state: { returnTo: "/cart" } })}
                       className="inline-flex items-center gap-2 rounded-[16px] border border-gray-200 bg-violet-500 px-4 py-3 text-sm font-extrabold text-white shadow-soft-sm transition-all hover:-translate-y-0.5"
                     >
                       Thêm địa chỉ giao hàng

@@ -49,7 +49,8 @@ function getCurrentUserId(): string | null {
     const userStr = localStorage.getItem("user") || sessionStorage.getItem("user");
     if (userStr) {
       const user = JSON.parse(userStr);
-      if (user.userId) return user.userId;
+      if (typeof user.userId === "string" && user.userId) return user.userId;
+      if (typeof user.id === "string" && user.id) return user.id;
     }
   } catch { /* ignore */ }
   return null;
