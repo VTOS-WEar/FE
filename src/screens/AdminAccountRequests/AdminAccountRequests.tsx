@@ -11,6 +11,7 @@ import {
 import { DashboardSidebar } from "../../components/layout";
 import { TopNavBar } from "../../components/layout/TopNavBar";
 import { useAdminSidebarConfig } from "../../hooks/useAdminSidebarConfig";
+import { usePreservedResultsHeight } from "../../hooks/usePreservedResultsHeight";
 import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
 import {
     createAccountForRequest,
@@ -59,6 +60,8 @@ export const AdminAccountRequests = (): JSX.Element => {
     const [createPhone, setCreatePhone] = useState("");
     const [rejectReason, setRejectReason] = useState("");
     const pageSize = 15;
+    const isFilteredEmptyState = !loading && (filterStatus !== undefined || filterType !== undefined) && items.length === 0;
+    const { preserveResultsHeight, preservedHeightStyle, resultsRegionRef } = usePreservedResultsHeight(isFilteredEmptyState);
 
     const fetchList = useCallback(async () => {
         setLoading(true);
@@ -186,8 +189,8 @@ export const AdminAccountRequests = (): JSX.Element => {
                     <main className="flex-1 px-4 py-6 sm:px-6 lg:px-10 lg:py-8 space-y-6 nb-fade-in">
                         <AdminHero
                             eyebrow="Cap tai khoan"
-                            title="Điều phối intake tài khoản theo mức chờ xử lý và loại tổ chức."
-                            description="Màn hình này gom toàn bộ yêu cầu mở tài khoản từ trường học và nhà cung cấp. Admin có thể triage nhanh, mở chi tiết và tạo tài khoản hoặc từ chối mà không đổi luồng backend."
+                            title="Xử lý yêu cầu cấp tài khoản từ trường học và nhà cung cấp."
+                            description="Bạn có thể xem nhanh hồ sơ đang chờ, mở chi tiết và tạo tài khoản hoặc từ chối ngay tại đây."
                             stats={[
                                 { label: "Đang hiển thị", value: loading ? "…" : String(items.length) },
                                 { label: "Chờ xử lý", value: loading ? "…" : String(pendingCount) },
@@ -220,6 +223,7 @@ export const AdminAccountRequests = (): JSX.Element => {
                                 <select
                                     value={filterStatus ?? ""}
                                     onChange={(event) => {
+                                        preserveResultsHeight();
                                         setFilterStatus(event.target.value ? Number(event.target.value) : undefined);
                                         setPage(1);
                                     }}
@@ -235,6 +239,7 @@ export const AdminAccountRequests = (): JSX.Element => {
                                 <select
                                     value={filterType ?? ""}
                                     onChange={(event) => {
+                                        preserveResultsHeight();
                                         setFilterType(event.target.value ? Number(event.target.value) : undefined);
                                         setPage(1);
                                     }}
@@ -270,6 +275,7 @@ export const AdminAccountRequests = (): JSX.Element => {
                                 ))}
                             </div>
 
+                            <div ref={resultsRegionRef} style={preservedHeightStyle}>
                             {loading && (
                                 <div className="space-y-3 px-5 py-5">
                                     {Array.from({ length: 5 }).map((_, index) => (
@@ -406,6 +412,7 @@ export const AdminAccountRequests = (): JSX.Element => {
                                     </div>
                                 </div>
                             )}
+                            </div>
                         </section>
                     </main>
                 </div>

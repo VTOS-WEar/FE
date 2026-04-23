@@ -35,7 +35,7 @@ export const TeacherReports = (): JSX.Element => {
 
     return (
         <TeacherWorkspaceShell breadcrumbs={[{ label: "Teacher workspace", href: "/teacher/dashboard" }, { label: "Báo cáo" }]}>
-            <section className="rounded-[28px] border border-emerald-200 bg-[linear-gradient(135deg,_#ffffff_0%,_#f4fffb_48%,_#eef6ff_100%)] p-6 shadow-soft-lg">
+            <section className="rounded-[24px] border border-gray-200 bg-white p-6 shadow-soft-sm">
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                     <div>
                         <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-emerald-700">Teacher reports</p>
@@ -44,13 +44,13 @@ export const TeacherReports = (): JSX.Element => {
                             Theo dõi các báo cáo đã gửi cho nhà trường, trạng thái xử lý, và ghi chú phản hồi để không bỏ sót việc cần theo.
                         </p>
                     </div>
-                    <button type="button" onClick={() => navigate("/teacher/reports/new")} className="inline-flex items-center gap-2 rounded-2xl border border-sky-200 bg-white px-4 py-3 text-sm font-bold text-gray-900 shadow-soft-sm transition-all hover:-translate-y-0.5 hover:shadow-soft-md">
+                    <button type="button" onClick={() => navigate("/teacher/reports/new")} className="inline-flex items-center gap-2 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm font-bold text-gray-900 shadow-soft-sm hover:border-sky-200">
                         Tạo báo cáo mới
                     </button>
                 </div>
             </section>
 
-            <section className="mt-6 rounded-[24px] border border-gray-200 bg-white p-5 shadow-soft-md">
+            <section className="mt-6 rounded-[20px] border border-gray-200 bg-white p-5 shadow-soft-sm">
                 <div className="grid gap-3 md:grid-cols-3">
                     <label className="text-sm font-semibold text-[#4c5769]">
                         Lớp
@@ -82,20 +82,20 @@ export const TeacherReports = (): JSX.Element => {
             </section>
 
             {loading && (
-                <section className="mt-6 rounded-2xl border border-gray-200 bg-white p-10 text-center shadow-soft-md">
+                <section className="mt-6 rounded-2xl border border-gray-200 bg-white p-10 text-center shadow-soft-sm">
                     <div className="mx-auto mb-3 h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-emerald-600" />
                     <p className="text-sm font-semibold text-[#4c5769]">Đang tải báo cáo...</p>
                 </section>
             )}
 
             {!loading && error && (
-                <section className="mt-6 rounded-2xl border border-red-200 bg-white p-8 text-center shadow-soft-md">
+                <section className="mt-6 rounded-2xl border border-red-200 bg-white p-8 text-center shadow-soft-sm">
                     <p className="text-base font-bold text-red-600">{error}</p>
                 </section>
             )}
 
             {!loading && !error && (
-                <section className="mt-6 rounded-[24px] border border-gray-200 bg-white shadow-soft-md">
+                <section className="mt-6 rounded-[20px] border border-gray-200 bg-white shadow-soft-sm">
                     <div className="divide-y divide-gray-100">
                         {reports.length === 0 && (
                             <div className="px-5 py-10 text-center text-sm font-semibold text-[#4c5769]">

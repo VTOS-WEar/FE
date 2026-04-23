@@ -128,7 +128,7 @@ function StatsCard({
 }) {
  return (
  <div
- className={`nb-stat-card border-2 border-gray-200 shadow-soft-md hover:-translate-y-px hover:shadow-soft-md ${cardTone ?? ""}`}
+ className={`nb-stat-card border border-gray-200 shadow-soft-sm ${cardTone ?? ""}`}
  style={{ cursor: onClick ? "pointer" : undefined }}
  onClick={onClick}
  >
@@ -223,8 +223,8 @@ export const SchoolDashboard = (): JSX.Element => {
  <h1 className="font-extrabold text-gray-900 text-[28px] lg:text-[32px] leading-[1.22]">
  Xin chào, Ban Giám Hiệu
  </h1>
- <p className="mt-1 font-medium text-[#4c5769] text-sm lg:text-base">
- Bảng điều khiển này theo dõi các công bố học kỳ đang mở cho phụ huynh và nhà cung cấp.
+ <p className="mt-2 text-sm font-medium leading-7 text-[#4c5769] sm:text-base">
+ Theo dõi các đợt công bố đang mở và những việc cần chuẩn bị trước khi phát hành đợt mới.
  </p>
  </div>
 
@@ -307,15 +307,15 @@ export const SchoolDashboard = (): JSX.Element => {
  Tổng quan công bố
  </h2>
  <div className="space-y-4">
- <div className="flex items-center justify-between rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3">
+ <div className="flex items-center justify-between rounded-2xl border border-gray-200 bg-white px-4 py-3">
  <span className="font-semibold text-gray-600 text-sm">Đang hoạt động</span>
  <span className="font-extrabold text-gray-900 text-sm">{activePublications.length}</span>
  </div>
- <div className="flex items-center justify-between rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3">
+ <div className="flex items-center justify-between rounded-2xl border border-gray-200 bg-white px-4 py-3">
  <span className="font-semibold text-gray-600 text-sm">Bản nháp</span>
  <span className="font-extrabold text-gray-900 text-sm">{draftCount}</span>
  </div>
- <div className="flex items-center justify-between rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3">
+ <div className="flex items-center justify-between rounded-2xl border border-gray-200 bg-white px-4 py-3">
  <span className="font-semibold text-gray-600 text-sm">Đã khép lại</span>
  <span className="font-extrabold text-gray-900 text-sm">{closedCount}</span>
  </div>

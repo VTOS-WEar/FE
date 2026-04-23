@@ -245,19 +245,19 @@ export const SemesterPublicationDetail = (): JSX.Element => {
                             </div>
                         ) : (
                             <>
-                                <section className="rounded-[30px] border border-violet-200 bg-[radial-gradient(circle_at_top_left,_rgba(14,165,233,0.16),_transparent_34%),linear-gradient(135deg,_#ffffff_8%,_#f6f4ff_52%,_#eef8ff_100%)] p-6 shadow-soft-lg lg:p-7">
+                                <section className="rounded-[24px] border border-gray-200 bg-white p-6 shadow-soft-sm lg:p-7">
                                     <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
                                         <div className="max-w-3xl">
                                             <div className="flex flex-wrap items-center gap-2">
                                                 <span className={statusMeta.badgeClass}>{statusMeta.label}</span>
-                                                <span className="rounded-full border border-gray-200 bg-white px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.16em] text-violet-700 shadow-soft-sm">
+                                                <span className="rounded-full border border-gray-200 bg-violet-50 px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.16em] text-violet-700">
                                                     Publication Overview
                                                 </span>
                                             </div>
                                             <h1 className="mt-4 text-[28px] font-extrabold leading-tight text-gray-900 lg:text-[34px]">
                                                 {publication.semester} / {publication.academicYear}
                                             </h1>
-                                            <p className="mt-3 max-w-3xl text-sm font-medium leading-6 text-[#4c5769] lg:text-base">
+                                            <p className="mt-3 max-w-3xl text-sm font-medium leading-7 text-[#4c5769] sm:text-base">
                                                 {publication.description || "Chưa có mô tả cho đợt công bố này. Nên bổ sung mục tiêu áp dụng và lưu ý vận hành để đội quản trị dễ theo dõi hơn."}
                                             </p>
                                         </div>
@@ -326,7 +326,7 @@ export const SemesterPublicationDetail = (): JSX.Element => {
                                 </section>
 
                                 {publication.status === "Draft" && (publication.outfits.length === 0 || activeProviders === 0) && (
-                                    <section className="rounded-[24px] border border-amber-200 bg-amber-50 p-5 shadow-soft-sm">
+                                    <section className="rounded-[20px] border border-amber-200 bg-amber-50/70 p-5 shadow-soft-sm">
                                         <div className="flex items-start gap-3">
                                             <div className="rounded-2xl bg-white p-3 text-amber-700 shadow-soft-sm">
                                                 <AlertTriangle className="h-5 w-5" />

@@ -14,6 +14,7 @@ import { DashboardSidebar } from "../../components/layout";
 import { TopNavBar } from "../../components/layout/TopNavBar";
 import { useAdminSidebarConfig } from "../../hooks/useAdminSidebarConfig";
 import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
+import { usePreservedResultsHeight } from "../../hooks/usePreservedResultsHeight";
 import {
     approveUser,
     getUserDetail,
@@ -193,6 +194,12 @@ export const AdminUsers = (): JSX.Element => {
         () => filtered.slice((page - 1) * pageSize, page * pageSize),
         [filtered, page],
     );
+    const isSearchEmptyState = !loading && !error && users.length > 0 && filtered.length === 0;
+    const {
+        resultsRegionRef,
+        preserveResultsHeight,
+        preservedHeightStyle,
+    } = usePreservedResultsHeight(isSearchEmptyState);
     const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
     const suspendedCount = users.filter((user) => user.status === "Suspended").length;
     const activeCount = users.filter((user) => user.status === "Active").length;
@@ -299,8 +306,8 @@ export const AdminUsers = (): JSX.Element => {
                     <main className="flex-1 px-4 py-6 sm:px-6 lg:px-10 lg:py-8 space-y-6 nb-fade-in">
                         <AdminHero
                             eyebrow="Tai khoan"
-                            title="Quản lý người dùng bằng hàng đợi lọc, không bằng danh sách phẳng."
-                            description="Màn hình này ưu tiên tìm kiếm, phân loại và xử lý nhanh các tài khoản bất thường. Tài khoản cần tạo mới vẫn được giữ ở khu vực yêu cầu cấp tài khoản riêng."
+                            title="Theo dõi tài khoản và xử lý các trường hợp cần chú ý."
+                            description="Ưu tiên tìm kiếm, lọc theo vai trò và kiểm tra các tài khoản bất thường. Các yêu cầu tạo tài khoản mới vẫn được xử lý ở mục cấp tài khoản."
                             stats={[
                                 { label: "Tổng tài khoản", value: loading ? "…" : String(filtered.length) },
                                 { label: "Đang hoạt động", value: loading ? "…" : String(activeCount) },
@@ -339,6 +346,7 @@ export const AdminUsers = (): JSX.Element => {
                                         <input
                                             value={search}
                                             onChange={(event) => {
+                                                preserveResultsHeight();
                                                 setSearch(event.target.value);
                                                 setPage(1);
                                             }}
@@ -351,6 +359,7 @@ export const AdminUsers = (): JSX.Element => {
                                     <select
                                         value={filterRole}
                                         onChange={(event) => {
+                                            preserveResultsHeight();
                                             setFilterRole(event.target.value);
                                             setPage(1);
                                         }}
@@ -367,6 +376,7 @@ export const AdminUsers = (): JSX.Element => {
                                     <select
                                         value={filterStatus}
                                         onChange={(event) => {
+                                            preserveResultsHeight();
                                             setFilterStatus(event.target.value);
                                             setPage(1);
                                         }}
@@ -415,6 +425,7 @@ export const AdminUsers = (): JSX.Element => {
                                 </div>
                             </div>
 
+                            <div ref={resultsRegionRef} style={preservedHeightStyle}>
                             {loading && (
                                 <div className="space-y-3 px-5 py-5">
                                     {Array.from({ length: 5 }).map((_, index) => (
@@ -561,6 +572,7 @@ export const AdminUsers = (): JSX.Element => {
                                     </div>
                                 </div>
                             )}
+                            </div>
                         </section>
                     </main>
                 </div>

@@ -26,6 +26,7 @@ import {
     updateProviderProfile,
     type ProviderProfileDto,
 } from "../../lib/api/providers";
+import { formatPercent } from "../../lib/utils/format";
 
 const statusConfig: Record<string, { label: string; badge: string; tone: string }> = {
     Approved: { label: "Đã duyệt", badge: "nb-badge nb-badge-green", tone: "bg-emerald-50 text-emerald-700" },
@@ -169,13 +170,13 @@ export const ProviderProfile = (): JSX.Element => {
                                     <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
                                         <div className="max-w-3xl">
                                             <span className="inline-flex items-center rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-white">
-                                                Business identity
+                                                Hồ sơ doanh nghiệp
                                             </span>
                                             <h1 className="mt-4 text-3xl font-black leading-tight text-white sm:text-4xl">
-                                                {providerName || "Nhà cung cấp"} đang ở mức hoàn thiện hồ sơ {completeness}%.
+                                                {providerName || "Nhà cung cấp"} đang ở mức hoàn thiện hồ sơ {formatPercent(completeness, { maximumFractionDigits: 0 })}.
                                             </h1>
                                             <p className="mt-3 text-sm font-medium leading-7 text-slate-100 sm:text-base">
-                                                Hồ sơ này là lớp tin cậy vận hành của doanh nghiệp: tên đơn vị, người liên hệ, thông tin liên lạc, và địa chỉ cần rõ để việc ký hợp đồng, nhận thông báo, và xử lý đối soát không bị tắc.
+                                                Cập nhật đầy đủ tên đơn vị, người liên hệ, thông tin liên lạc và địa chỉ để việc ký hợp đồng, nhận thông báo và đối soát diễn ra thuận lợi.
                                             </p>
                                         </div>
                                         <div className="grid gap-3 sm:grid-cols-3 lg:w-[430px]">
@@ -185,7 +186,7 @@ export const ProviderProfile = (): JSX.Element => {
                                             </div>
                                             <div className="rounded-[22px] border border-white/10 bg-white/8 p-4">
                                                 <p className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-300">Hoàn thiện</p>
-                                                <p className="mt-2 text-2xl font-black text-white">{completeness}%</p>
+                                                <p className="mt-2 text-2xl font-black text-white">{formatPercent(completeness, { maximumFractionDigits: 0 })}</p>
                                             </div>
                                             <div className="rounded-[22px] border border-white/10 bg-white/8 p-4">
                                                 <p className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-300">Liên hệ</p>

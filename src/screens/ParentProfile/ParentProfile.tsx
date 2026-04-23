@@ -1,29 +1,37 @@
-import { useEffect, useLayoutEffect, useState, useRef } from "react";
-import { useNavigate, NavLink, Outlet, useLocation } from "react-router-dom";
-import {
-  User,
-  LogOut,
-  ShoppingBag,
-  History,
-  Star,
-  Settings,
-  GraduationCap,
-  ChevronRight,
-  ScanLine,
-} from "lucide-react";
-import { GuestLayout } from "../../components/layout/GuestLayout";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { ChevronRight, GraduationCap, History, LogOut, MapPinHouse, ScanLine, Settings, ShoppingBag, Star, User } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
+import { GuestLayout } from "../../components/layout/GuestLayout";
 import { getParentProfile } from "../../lib/api/users";
 
-const SIDEBAR_ITEMS = [
-  { label: "Thông tin tài khoản", icon: User, to: "/parentprofile/account" },
-  { label: "Quản lý học sinh", icon: GraduationCap, to: "/parentprofile/students" },
-  { label: "Đơn hàng", icon: ShoppingBag, to: "/parentprofile/orders" },
-  { label: "Lịch sử thử đồ", icon: History, to: "/parentprofile/history" },
-  { label: "Lịch sử Bodygram", icon: ScanLine, to: "/parentprofile/bodygram-history" },
-  { label: "Đánh giá", icon: Star, to: "/parentprofile/reviews" },
-  { label: "Cài đặt tài khoản", icon: Settings, to: "/parentprofile/settings" },
+const SECTION_ITEMS = [
+  { label: "Tài khoản", description: "Thông tin cá nhân", icon: User, to: "/parentprofile/account" },
+  { label: "Sổ địa chỉ", description: "Địa chỉ giao hàng", icon: MapPinHouse, to: "/parentprofile/address-book" },
+  { label: "Học sinh", description: "Liên kết hồ sơ", icon: GraduationCap, to: "/parentprofile/students" },
+  { label: "Đơn hàng", description: "Đơn theo trường", icon: ShoppingBag, to: "/parentprofile/orders" },
+  { label: "Thử đồ", description: "Lịch sử fitting", icon: History, to: "/parentprofile/history" },
+  { label: "Bodygram", description: "Theo dõi số đo", icon: ScanLine, to: "/parentprofile/bodygram-history" },
+  { label: "Đánh giá", description: "Phản hồi đơn hàng", icon: Star, to: "/parentprofile/reviews" },
+  { label: "Cài đặt", description: "Bảo mật tài khoản", icon: Settings, to: "/parentprofile/settings" },
 ];
+
+const SECTION_MATCHERS: Record<string, string[]> = {
+  "/parentprofile/account": ["/parentprofile/account"],
+  "/parentprofile/address-book": ["/parentprofile/address-book"],
+  "/parentprofile/students": ["/parentprofile/students"],
+  "/parentprofile/orders": ["/parentprofile/orders", "/parentprofile/feedback"],
+  "/parentprofile/history": ["/parentprofile/history"],
+  "/parentprofile/bodygram-history": ["/parentprofile/bodygram-history"],
+  "/parentprofile/reviews": ["/parentprofile/reviews"],
+  "/parentprofile/settings": ["/parentprofile/settings"],
+};
+
+type ParentUser = {
+  fullName?: string;
+  email?: string;
+  avatar?: string | null;
+};
 
 export const ParentProfile = (): JSX.Element => {
   const navigate = useNavigate();
@@ -31,13 +39,13 @@ export const ParentProfile = (): JSX.Element => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const prevPathRef = useRef(location.pathname);
   const [showLoader, setShowLoader] = useState(false);
-
-  /* ── User state (reactive: re-renders on avatar/name update) ── */
-  const [user, setUser] = useState<{ fullName?: string; avatar?: string | null } | null>(() => {
+  const [user, setUser] = useState<ParentUser | null>(() => {
     try {
       const raw = localStorage.getItem("user") ?? sessionStorage.getItem("user");
       return raw ? JSON.parse(raw) : null;
-    } catch { return null; }
+    } catch {
+      return null;
+    }
   });
 
   useEffect(() => {
@@ -49,13 +57,15 @@ export const ParentProfile = (): JSX.Element => {
       try {
         const raw = localStorage.getItem("user") ?? sessionStorage.getItem("user");
         if (raw) setUser(JSON.parse(raw));
-      } catch { }
+      } catch {
+        // Ignore malformed storage payloads.
+      }
     };
+
     window.addEventListener("vtos:user-updated", refresh);
     return () => window.removeEventListener("vtos:user-updated", refresh);
   }, []);
 
-  // Fetch avatar + fullName from API on mount so sidebar shows immediately after login
   useEffect(() => {
     const syncFromApi = async () => {
       try {
@@ -63,17 +73,24 @@ export const ParentProfile = (): JSX.Element => {
         const storage = localStorage.getItem("access_token") ? localStorage : sessionStorage;
         const raw = storage.getItem("user");
         if (!raw) return;
+
         const stored = JSON.parse(raw);
-        const updated = { ...stored, avatar: data.avatar ?? stored.avatar, fullName: data.fullName || stored.fullName };
+        const updated = {
+          ...stored,
+          avatar: data.avatar ?? stored.avatar,
+          fullName: data.fullName || stored.fullName,
+          email: data.email || stored.email,
+        };
         storage.setItem("user", JSON.stringify(updated));
         setUser(updated);
-      } catch { /* non-critical */ }
+      } catch {
+        // Non-critical sync.
+      }
     };
-    syncFromApi();
+
+    void syncFromApi();
   }, []);
 
-  // useLayoutEffect fires after DOM commit but BEFORE browser paint
-  // — guarantees the loader is visible before the user sees anything
   useLayoutEffect(() => {
     if (location.pathname !== prevPathRef.current) {
       prevPathRef.current = location.pathname;
@@ -81,11 +98,10 @@ export const ParentProfile = (): JSX.Element => {
     }
   }, [location.pathname]);
 
-  // Timer: dismiss loader after overlay has been visible
   useEffect(() => {
     if (!showLoader) return;
-    const t = setTimeout(() => setShowLoader(false), 400);
-    return () => clearTimeout(t);
+    const timeoutId = setTimeout(() => setShowLoader(false), 300);
+    return () => clearTimeout(timeoutId);
   }, [showLoader]);
 
   const handleLogout = () => {
@@ -96,116 +112,138 @@ export const ParentProfile = (): JSX.Element => {
         sessionStorage.removeItem(key);
       });
       navigate("/signin", { replace: true });
-    }, 400);
+    }, 350);
   };
+
+  const initials = useMemo(() => {
+    const value = user?.fullName?.trim();
+    if (!value) return "PH";
+    return value
+      .split(" ")
+      .map((part) => part[0])
+      .join("")
+      .slice(-2)
+      .toUpperCase();
+  }, [user?.fullName]);
 
   if (!user) {
     return <div />;
   }
 
   return (
-    <GuestLayout bgColor="#f9fafb" mainClassName="flex-1">
-      <div className="relative z-10 mx-auto max-w-[1200px] px-4 py-8 md:py-12 lg:px-8 nb-fade-in">
-        <nav className="mb-6 flex items-center gap-2 text-sm font-bold">
+    <GuestLayout bgColor="#f8fafc" mainClassName="flex-1">
+      <div className="relative z-10 mx-auto max-w-[1320px] px-4 py-6 md:py-8 lg:px-8">
+        <nav className="mb-5 flex items-center gap-2 text-sm font-bold">
           <a href="/" className="text-gray-500 transition-colors hover:text-gray-800">
             Trang chủ
           </a>
-          <span className="text-gray-500">/</span>
-          <span className="text-gray-900">Hồ sơ phụ huynh</span>
+          <span className="text-gray-400">/</span>
+          <span className="text-gray-900">Khu vực phụ huynh</span>
         </nav>
 
-        <div className="nb-card-static flex min-h-[500px] flex-col overflow-hidden rounded-2xl lg:flex-row">
-          <div className="flex flex-shrink-0 flex-col border-b border-gray-200 bg-gray-50 p-5 lg:w-[280px] lg:border-b-0 lg:border-r-2 xl:p-6">
-            <div className="mb-8 flex items-center gap-3.5">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-gray-200 bg-violet-50 shadow-soft-sm">
-                {user.avatar ? (
-                  <img src={user.avatar} alt="" className="h-full w-full rounded-xl object-cover" />
-                ) : (
-                  <User className="h-5 w-5 text-gray-900" />
-                )}
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="mb-0.5 text-[10px] font-bold uppercase tracking-widest text-gray-500">
-                  Tài khoản
-                </p>
-                <p className="truncate text-[16px] font-extrabold leading-tight text-gray-900" title={user.fullName}>
-                  {user.fullName}
-                </p>
-              </div>
-            </div>
-
-            <nav className="flex flex-1 flex-col gap-1.5">
-              {SIDEBAR_ITEMS.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <NavLink key={item.to} to={item.to}>
-                    {({ isActive }) => (
-                      <div
-                        className={`group relative flex items-center gap-3 rounded-xl border-2 px-3.5 py-3 text-left text-[13px] font-bold transition-all ${isActive
-                          ? "border-gray-200 bg-purple-400 text-gray-900 shadow-soft-sm"
-                          : "border-transparent text-gray-600 hover:border-gray-300/20 hover:bg-violet-50"
-                          }`}
-                      >
-                        <Icon
-                          className={`h-[18px] w-[18px] transition-colors ${isActive ? "text-gray-900" : "text-gray-600 group-hover:text-gray-800"
-                            }`}
-                        />
-                        <span className="flex-1">{item.label}</span>
-                        {isActive && <ChevronRight className="h-3.5 w-3.5 opacity-70" />}
-                      </div>
+        <div className="grid gap-6 xl:grid-cols-[320px_minmax(0,1fr)] xl:items-start">
+          <aside className="xl:sticky xl:top-20">
+            <div className="overflow-hidden rounded-[30px] border border-slate-200 bg-white shadow-soft-md">
+              <div className="border-b border-slate-100 bg-[linear-gradient(180deg,#ffffff_0%,#f8fafc_100%)] px-5 py-5 sm:px-6">
+                <div className="flex items-center gap-4">
+                  <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-[22px] border border-gray-200 bg-violet-50 shadow-soft-sm">
+                    {user.avatar ? (
+                      <img src={user.avatar} alt="" className="h-full w-full object-cover" />
+                    ) : (
+                      <span className="text-xl font-black text-violet-700">{initials}</span>
                     )}
-                  </NavLink>
-                );
-              })}
-            </nav>
+                  </div>
 
-            <div className="mt-6 border-t border-gray-200/10 pt-5">
-              <button
-                onClick={handleLogout}
-                className="flex w-full items-center gap-3 rounded-xl border-2 border-transparent px-3.5 py-3 text-left text-[13px] font-bold text-red-800 transition-all hover:border-[#991B1B]/30 hover:bg-red-50"
-              >
-                <LogOut className={`h-[18px] w-[18px] ${isLoggingOut ? "animate-spin" : ""}`} />
-                {isLoggingOut ? "Đang xuất..." : "Đăng xuất"}
-              </button>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[11px] font-black uppercase tracking-[0.16em] text-slate-400">Tài khoản phụ huynh</p>
+                    <p className="mt-1 truncate text-lg font-black text-slate-950">{user.fullName || "Phụ huynh"}</p>
+                    <p className="truncate text-sm font-medium text-slate-500">{user.email || "Chưa có email"}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-3 px-4 py-4 sm:px-5">
+                <div className="space-y-2">
+                  {SECTION_ITEMS.map((item) => {
+                    const Icon = item.icon;
+                    const isActive = (SECTION_MATCHERS[item.to] ?? [item.to]).some((path) => location.pathname.startsWith(path));
+                    return (
+                      <NavLink key={item.to} to={item.to}>
+                        {() => (
+                          <div
+                            className={`flex items-center gap-3 rounded-[20px] border px-4 py-3 transition-all ${
+                              isActive
+                                ? "border-violet-200 bg-violet-50 text-slate-950 shadow-soft-sm"
+                                : "border-transparent bg-slate-50 text-slate-600 hover:border-slate-200 hover:bg-white"
+                            }`}
+                          >
+                            <div
+                              className={`flex h-11 w-11 items-center justify-center rounded-[16px] border ${
+                                isActive
+                                  ? "border-violet-100 bg-white text-violet-700"
+                                  : "border-slate-200 bg-white text-slate-500"
+                              }`}
+                            >
+                              <Icon className="h-4.5 w-4.5" />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <p className="truncate text-sm font-extrabold">{item.label}</p>
+                              <p className="truncate text-xs font-medium text-slate-500">{item.description}</p>
+                            </div>
+                            {isActive ? <ChevronRight className="h-4 w-4 text-violet-600" /> : null}
+                          </div>
+                        )}
+                      </NavLink>
+                    );
+                  })}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="inline-flex w-full items-center justify-center gap-3 rounded-[18px] border border-red-200 bg-white px-4 py-3 text-sm font-extrabold text-red-700 shadow-soft-sm transition-all hover:-translate-y-0.5 hover:bg-red-50"
+                >
+                  <LogOut className={`h-4.5 w-4.5 ${isLoggingOut ? "animate-spin" : ""}`} />
+                  {isLoggingOut ? "Đang đăng xuất..." : "Đăng xuất"}
+                </button>
+              </div>
             </div>
-          </div>
+          </aside>
 
-          {/* ── Right Content ── */}
-          <div className="flex-1 min-w-0 bg-white relative overflow-hidden">
-            {/* Loading overlay — shown briefly on tab change before new content mounts */}
+          <section className="relative min-h-[420px] overflow-hidden rounded-[30px] border border-gray-200 bg-white shadow-soft-md">
             <AnimatePresence>
-              {showLoader && (
+              {showLoader ? (
                 <motion.div
-                  key="tab-loader"
+                  key="parent-tab-loader"
                   initial={{ opacity: 1 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.15 }}
-                  className="absolute inset-0 z-10 flex items-center justify-center bg-white"
+                  className="absolute inset-0 z-10 flex items-center justify-center bg-white/95"
                 >
                   <div className="flex flex-col items-center gap-3">
-                    <div className="w-10 h-10 rounded-full border-2 border-violet-100 border-t-gray-900 animate-spin" />
-                    <p className="text-xs font-bold text-gray-500 tracking-wide">Đang tải...</p>
+                    <div className="h-10 w-10 animate-spin rounded-full border-2 border-violet-100 border-t-violet-600" />
+                    <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">Đang tải khu vực</p>
                   </div>
                 </motion.div>
-              )}
+              ) : null}
             </AnimatePresence>
-            {/* Content — only mounts after loader clears */}
+
             <AnimatePresence mode="wait">
-              {!showLoader && (
+              {!showLoader ? (
                 <motion.div
                   key={location.pathname}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
                   transition={{ duration: 0.2, ease: "easeInOut" }}
-                  className="h-full p-5 lg:p-8"
+                  className="space-y-6 p-5 lg:p-8"
                 >
                   <Outlet />
                 </motion.div>
-              )}
+              ) : null}
             </AnimatePresence>
-          </div>
+          </section>
         </div>
       </div>
     </GuestLayout>

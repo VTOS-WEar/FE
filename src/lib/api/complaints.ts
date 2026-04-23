@@ -5,7 +5,6 @@ export type ComplaintDto = {
     complaintId: string;
     campaignId: string;
     campaignName?: string | null;
-    batchId?: string | null;
     providerId?: string | null;
     providerName?: string | null;
     title: string;
@@ -16,10 +15,7 @@ export type ComplaintDto = {
     respondedAt?: string | null;
     resolvedAt?: string | null;
 };
-
-export type ComplaintDetailDto = ComplaintDto & {
-    batchName?: string | null;
-};
+export type ComplaintDetailDto = ComplaintDto;
 
 export type ComplaintsResponse = {
     items: ComplaintDto[];

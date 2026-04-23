@@ -91,10 +91,10 @@ export const TeacherReminders = (): JSX.Element => {
 
     return (
         <TeacherWorkspaceShell breadcrumbs={[{ label: "Teacher workspace", href: "/teacher/dashboard" }, { label: "Nhắc phụ huynh" }]}>
-            <section className="rounded-[28px] border border-amber-200 bg-[linear-gradient(135deg,_#fffef8_0%,_#ffffff_48%,_#fff8eb_100%)] p-6 shadow-soft-lg">
+            <section className="rounded-[24px] border border-gray-200 bg-white p-6 shadow-soft-sm">
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                     <div>
-                        <div className="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-white/80 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-amber-700">
+                        <div className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-amber-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-amber-700">
                             <BellRing className="h-4 w-4" />
                             Reminder workspace
                         </div>
@@ -115,7 +115,7 @@ export const TeacherReminders = (): JSX.Element => {
                 </div>
             </section>
 
-            <section className="mt-6 rounded-[24px] border border-gray-200 bg-white p-5 shadow-soft-md">
+            <section className="mt-6 rounded-[20px] border border-gray-200 bg-white p-5 shadow-soft-sm">
                 <label className="text-sm font-semibold text-[#4c5769]">
                     Ghi chú thêm
                     <textarea
@@ -128,7 +128,7 @@ export const TeacherReminders = (): JSX.Element => {
                 </label>
 
                 <div className="mt-4 flex flex-wrap gap-3">
-                    <button type="button" onClick={() => void handleSend(pendingParentIds)} disabled={sendingAll || pendingParentIds.length === 0 || !classGroupId} className="inline-flex items-center gap-2 rounded-2xl border border-amber-200 bg-amber-500 px-4 py-3 text-sm font-bold text-white shadow-soft-sm transition-all hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60">
+                    <button type="button" onClick={() => void handleSend(pendingParentIds)} disabled={sendingAll || pendingParentIds.length === 0 || !classGroupId} className="inline-flex items-center gap-2 rounded-2xl border border-amber-200 bg-amber-500 px-4 py-3 text-sm font-bold text-white shadow-soft-sm disabled:cursor-not-allowed disabled:opacity-60">
                         <Send className="h-4 w-4" />
                         {sendingAll ? "Đang gửi..." : "Gửi nhắc hàng loạt"}
                     </button>
@@ -153,14 +153,14 @@ export const TeacherReminders = (): JSX.Element => {
             </section>
 
             {loading && (
-                <section className="mt-6 rounded-2xl border border-gray-200 bg-white p-10 text-center shadow-soft-md">
+                <section className="mt-6 rounded-2xl border border-gray-200 bg-white p-10 text-center shadow-soft-sm">
                     <div className="mx-auto mb-3 h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-amber-600" />
                     <p className="text-sm font-semibold text-[#4c5769]">Đang tải danh sách phụ huynh cần nhắc...</p>
                 </section>
             )}
 
             {!loading && data && (
-                <section className="mt-6 rounded-[24px] border border-gray-200 bg-white shadow-soft-md">
+                <section className="mt-6 rounded-[20px] border border-gray-200 bg-white shadow-soft-sm">
                     <div className="divide-y divide-gray-100">
                         {data.items.length === 0 && (
                             <div className="px-5 py-10 text-center text-sm font-semibold text-[#4c5769]">
@@ -186,7 +186,7 @@ export const TeacherReminders = (): JSX.Element => {
                                             ))}
                                         </div>
                                     </div>
-                                    <button type="button" onClick={() => void handleSend([item.parentUserId])} disabled={sendingParentId === item.parentUserId} className="inline-flex items-center gap-2 rounded-2xl border border-amber-200 bg-white px-4 py-3 text-sm font-bold text-gray-900 shadow-soft-sm transition-all hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60">
+                                    <button type="button" onClick={() => void handleSend([item.parentUserId])} disabled={sendingParentId === item.parentUserId} className="inline-flex items-center gap-2 rounded-2xl border border-amber-200 bg-white px-4 py-3 text-sm font-bold text-gray-900 shadow-soft-sm hover:border-amber-300 disabled:cursor-not-allowed disabled:opacity-60">
                                         <Send className="h-4 w-4 text-amber-700" />
                                         {sendingParentId === item.parentUserId ? "Đang gửi..." : "Gửi riêng"}
                                     </button>

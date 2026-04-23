@@ -5,6 +5,7 @@ import { GuestLayout } from "../../components/layout/GuestLayout";
 import { PublicPageBreadcrumb } from "../../components/PublicPageBreadcrumb";
 import { useToast } from "../../contexts/ToastContext";
 import { getProviderRanking, getProviderRatings, type ProviderRankingItemDto, type ProviderRatingsResponse } from "../../lib/api/public";
+import { formatRating } from "../../lib/utils/format";
 
 function renderStars(value: number) {
     return Array.from({ length: 5 }, (_, index) => (
@@ -110,13 +111,13 @@ export function ProviderRatings(): JSX.Element {
                             </div>
                             <div className="flex items-center gap-2">
                                 {renderStars(ratings.averageRating)}
-                                <span className="text-lg font-extrabold text-gray-900">{ratings.averageRating.toFixed(1)}</span>
+                                <span className="text-lg font-extrabold text-gray-900">{formatRating(ratings.averageRating)}</span>
                             </div>
                         </div>
                         <div className="grid gap-4 bg-slate-50 p-6 sm:grid-cols-3 lg:p-8">
                             <div className="rounded-[20px] border border-gray-200 bg-white p-4 shadow-soft-sm"><p className="text-[11px] font-black uppercase tracking-[0.14em] text-gray-400">Đánh giá</p><p className="mt-2 text-xl font-extrabold text-gray-900">{ratings.totalRatings}</p></div>
                             <div className="rounded-[20px] border border-gray-200 bg-white p-4 shadow-soft-sm"><p className="text-[11px] font-black uppercase tracking-[0.14em] text-gray-400">Đơn hoàn tất</p><p className="mt-2 text-xl font-extrabold text-gray-900">{ratings.totalCompletedOrders}</p></div>
-                            <div className="rounded-[20px] border border-gray-200 bg-white p-4 shadow-soft-sm"><p className="text-[11px] font-black uppercase tracking-[0.14em] text-gray-400">Điểm trung bình</p><p className="mt-2 text-xl font-extrabold text-violet-600">{ratings.averageRating.toFixed(1)}</p></div>
+                            <div className="rounded-[20px] border border-gray-200 bg-white p-4 shadow-soft-sm"><p className="text-[11px] font-black uppercase tracking-[0.14em] text-gray-400">Điểm trung bình</p><p className="mt-2 text-xl font-extrabold text-violet-600">{formatRating(ratings.averageRating)}</p></div>
                         </div>
                     </div>
                 </div>
@@ -130,7 +131,7 @@ export function ProviderRatings(): JSX.Element {
                                     <p className="text-[10px] font-black uppercase tracking-[0.14em] text-violet-500">Top {index + 1}</p>
                                     <h3 className="mt-2 text-base font-extrabold text-gray-900">{provider.providerName}</h3>
                                     <div className="mt-2 flex items-center gap-2 text-sm font-bold text-gray-600">
-                                        <span className="inline-flex items-center gap-1"><Star className="h-4 w-4 fill-amber-400 text-amber-400" />{provider.averageRating.toFixed(1)}</span>
+                                        <span className="inline-flex items-center gap-1"><Star className="h-4 w-4 fill-amber-400 text-amber-400" />{formatRating(provider.averageRating)}</span>
                                         <span>{provider.totalRatings} đánh giá</span>
                                     </div>
                                 </Link>

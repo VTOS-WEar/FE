@@ -694,13 +694,13 @@ export const UniformManagement = (): JSX.Element => {
                                 <div className="max-w-3xl">
                                     <div className="inline-flex items-center gap-2 rounded-full border border-violet-200 bg-white/80 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.16em] text-violet-700">
                                         <Shirt className="h-4 w-4" />
-                                        Uniform Design Library
+                                        Thiết kế đồng phục
                                     </div>
                                     <h1 className="mt-3 text-[26px] font-extrabold leading-tight text-gray-900 lg:text-[34px]">
                                         Quản lý thiết kế mẫu đồng phục
                                     </h1>
-                                    <p className="mt-2 max-w-2xl text-sm font-medium leading-6 text-[#4c5769]">
-                                        Nhà trường chỉ cần tải lên và quản lý bộ thiết kế mẫu. Provider sẽ phụ trách size, chất liệu và thông tin bán hàng chi tiết cho từng mẫu.
+                                    <p className="mt-2 max-w-2xl text-sm font-medium leading-7 text-[#4c5769] sm:text-base">
+                                        Nhà trường tải lên và quản lý mẫu thiết kế. Size, chất liệu và thông tin bán hàng chi tiết sẽ do nhà cung cấp phụ trách.
                                     </p>
                                 </div>
                                 <button onClick={openCreate} className="nb-btn nb-btn-purple text-sm whitespace-nowrap">

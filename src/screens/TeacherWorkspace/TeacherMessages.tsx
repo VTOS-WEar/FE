@@ -61,10 +61,10 @@ export const TeacherMessages = (): JSX.Element => {
 
     return (
         <TeacherWorkspaceShell breadcrumbs={[{ label: "Teacher workspace", href: "/teacher/dashboard" }, { label: "Tin nhắn" }]}>
-            <section className="rounded-[28px] border border-sky-200 bg-[linear-gradient(135deg,_#ffffff_0%,_#f6fbff_48%,_#eef8ff_100%)] p-6 shadow-soft-lg">
+            <section className="rounded-[24px] border border-gray-200 bg-white p-6 shadow-soft-sm">
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                     <div>
-                        <div className="inline-flex items-center gap-2 rounded-full border border-sky-200 bg-white/80 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-sky-700">
+                        <div className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-sky-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-sky-700">
                             <MessageSquare className="h-4 w-4" />
                             Class group chat
                         </div>
@@ -86,20 +86,20 @@ export const TeacherMessages = (): JSX.Element => {
             </section>
 
             {loading && (
-                <section className="mt-6 rounded-2xl border border-gray-200 bg-white p-10 text-center shadow-soft-md">
+                <section className="mt-6 rounded-2xl border border-gray-200 bg-white p-10 text-center shadow-soft-sm">
                     <div className="mx-auto mb-3 h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-sky-600" />
                     <p className="text-sm font-semibold text-[#4c5769]">Đang tải phòng chat lớp...</p>
                 </section>
             )}
 
             {!loading && error && (
-                <section className="mt-6 rounded-2xl border border-red-200 bg-white p-8 text-center shadow-soft-md">
+                <section className="mt-6 rounded-2xl border border-red-200 bg-white p-8 text-center shadow-soft-sm">
                     <p className="text-base font-bold text-red-600">{error}</p>
                 </section>
             )}
 
             {!loading && !error && (
-                <section className="mt-6 rounded-[24px] border border-gray-200 bg-white shadow-soft-md">
+                <section className="mt-6 rounded-[20px] border border-gray-200 bg-white shadow-soft-sm">
                     <div className="border-b border-gray-200 px-5 py-4">
                         <p className="text-xs font-bold uppercase tracking-[0.16em] text-sky-700">Phòng chat lớp</p>
                         <h2 className="text-xl font-extrabold text-gray-900">
@@ -133,7 +133,7 @@ export const TeacherMessages = (): JSX.Element => {
                                 placeholder="Gửi thông báo cho phụ huynh trong lớp này..."
                                 className="min-h-[88px] flex-1 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-900 outline-none focus:border-sky-300"
                             />
-                            <button type="button" onClick={handleSend} disabled={sending || !classGroupId || !message.trim()} className="inline-flex items-center justify-center gap-2 rounded-2xl border border-sky-200 bg-sky-600 px-5 py-3 text-sm font-bold text-white shadow-soft-sm transition-all hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60">
+                            <button type="button" onClick={handleSend} disabled={sending || !classGroupId || !message.trim()} className="inline-flex items-center justify-center gap-2 rounded-2xl border border-sky-200 bg-sky-600 px-5 py-3 text-sm font-bold text-white shadow-soft-sm disabled:cursor-not-allowed disabled:opacity-60">
                                 <Send className="h-4 w-4" />
                                 {sending ? "Đang gửi..." : "Gửi tin nhắn"}
                             </button>

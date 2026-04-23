@@ -12,6 +12,7 @@ import {
 import { DashboardSidebar } from "../../components/layout";
 import { TopNavBar } from "../../components/layout/TopNavBar";
 import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
+import { usePreservedResultsHeight } from "../../hooks/usePreservedResultsHeight";
 import { useSidebarConfig } from "../../hooks/useSidebarConfig";
 import {
     deleteSemesterPublication,
@@ -126,7 +127,7 @@ function PublicationCard({
     return (
         <div
             onClick={onOpen}
-            className={`group cursor-pointer rounded-[26px] border p-5 shadow-soft-md transition-all hover:-translate-y-0.5 hover:shadow-soft-lg ${meta.surfaceClass}`}
+            className={`group cursor-pointer rounded-[22px] border p-5 shadow-soft-sm transition-colors hover:border-gray-300 ${meta.surfaceClass}`}
         >
             <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0 flex-1">
@@ -286,6 +287,13 @@ export const SemesterPublicationList = (): JSX.Element => {
     const draftCount = statusCounts.Draft ?? 0;
     const activeCount = statusCounts.Active ?? 0;
     const closedCount = statusCounts.Closed ?? 0;
+    const isSearchEmptyState = !loading && publications.length > 0 && filteredPublications.length === 0;
+    const {
+        resultsRegionRef,
+        preserveResultsHeight,
+        clearPreservedHeight,
+        preservedHeightStyle,
+    } = usePreservedResultsHeight(isSearchEmptyState);
     const nearEndingActive = useMemo(
         () =>
             publications.filter(
@@ -377,18 +385,18 @@ export const SemesterPublicationList = (): JSX.Element => {
                     </TopNavBar>
 
                     <main className="flex-1 space-y-6 px-4 py-6 sm:px-6 lg:px-10 lg:py-8">
-                        <section className="overflow-hidden rounded-[30px] border border-violet-200 bg-[radial-gradient(circle_at_top_left,_rgba(139,92,246,0.18),_transparent_35%),linear-gradient(135deg,_#ffffff_5%,_#f8f4ff_50%,_#eef6ff_100%)] p-6 shadow-soft-lg lg:p-7">
+                        <section className="rounded-[24px] border border-gray-200 bg-white p-6 shadow-soft-sm lg:p-7">
                             <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
                                 <div className="max-w-3xl">
                                     <div className="inline-flex items-center gap-2 rounded-full border border-violet-200 bg-white/80 px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.16em] text-violet-700">
                                         <Layers3 className="h-4 w-4" />
-                                        Publication Command Center
+                                        Công bố học kỳ
                                     </div>
                                     <h1 className="mt-4 text-[28px] font-extrabold leading-tight text-gray-900 lg:text-[34px]">
-                                        Quản lý đợt công bố học kỳ theo vòng đời vận hành
+                                        Theo dõi các đợt công bố học kỳ của nhà trường
                                     </h1>
-                                    <p className="mt-3 max-w-2xl text-sm font-medium leading-6 text-[#4c5769] lg:text-base">
-                                        Theo dõi toàn bộ bản nháp, đợt đang mở và đợt đã đóng trong một bề mặt quản trị chung. Mỗi công bố nên có đủ khung thời gian, danh mục đồng phục và nhà cung cấp trước khi phát hành.
+                                    <p className="mt-3 max-w-2xl text-sm font-medium leading-7 text-[#4c5769] sm:text-base">
+                                        Xem nhanh bản nháp, đợt đang mở và đợt đã đóng. Trước khi phát hành, hãy kiểm tra thời gian áp dụng, danh mục đồng phục và nhà cung cấp tham gia.
                                     </p>
                                 </div>
 
@@ -400,7 +408,7 @@ export const SemesterPublicationList = (): JSX.Element => {
                                         <Plus className="h-4 w-4" />
                                         Tạo công bố mới
                                     </button>
-                                    <div className="rounded-[20px] border border-white/80 bg-white/85 p-4 shadow-soft-sm">
+                                    <div className="rounded-[18px] border border-gray-200 bg-slate-50 p-4">
                                         <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-gray-500">Trọng tâm hôm nay</p>
                                         <p className="mt-2 text-sm font-bold text-gray-900">
                                             {draftCount > 0
@@ -422,7 +430,7 @@ export const SemesterPublicationList = (): JSX.Element => {
                         </section>
 
                         {(draftCount > 0 || nearEndingActive.length > 0) && (
-                            <section className="rounded-[24px] border border-amber-200 bg-amber-50 p-5 shadow-soft-sm">
+                            <section className="rounded-[20px] border border-amber-200 bg-amber-50/70 p-5 shadow-soft-sm">
                                 <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
                                     <div className="flex items-start gap-3">
                                         <div className="rounded-2xl bg-white p-3 text-amber-700 shadow-soft-sm">
@@ -440,7 +448,10 @@ export const SemesterPublicationList = (): JSX.Element => {
                                         </div>
                                     </div>
                                     <button
-                                        onClick={() => setActiveTab(draftCount > 0 ? "Draft" : "Active")}
+                                        onClick={() => {
+                                            preserveResultsHeight();
+                                            setActiveTab(draftCount > 0 ? "Draft" : "Active");
+                                        }}
                                         className="nb-btn nb-btn-outline text-sm"
                                     >
                                         Xem ngay
@@ -449,13 +460,16 @@ export const SemesterPublicationList = (): JSX.Element => {
                             </section>
                         )}
 
-                        <section className="nb-card-static sticky top-0 z-20 space-y-4 rounded-[24px] bg-white/85 p-4 backdrop-blur-sm">
+                        <section className="nb-card-static sticky top-0 z-20 space-y-4 rounded-[20px] bg-white p-4">
                             <div className="flex items-center gap-2 nb-input py-2.5">
                                 <Search className="h-5 w-5 flex-shrink-0 text-[#97A3B6]" />
                                 <input
                                     type="text"
                                     value={search}
-                                    onChange={(event) => setSearch(event.target.value)}
+                                    onChange={(event) => {
+                                        preserveResultsHeight();
+                                        setSearch(event.target.value);
+                                    }}
                                     placeholder="Tìm theo học kỳ, năm học hoặc mô tả..."
                                     className="flex-1 bg-transparent text-sm font-medium text-[#1a1a2e] outline-none placeholder:text-[#97A3B6]"
                                 />
@@ -471,7 +485,10 @@ export const SemesterPublicationList = (): JSX.Element => {
                                                 : statusCounts[tab.key] ?? 0;
 
                                         return (
-                                            <button key={tab.key} onClick={() => setActiveTab(tab.key)} className={`nb-tab ${isActive ? "nb-tab-active" : ""}`}>
+                                            <button key={tab.key} onClick={() => {
+                                                preserveResultsHeight();
+                                                setActiveTab(tab.key);
+                                            }} className={`nb-tab ${isActive ? "nb-tab-active" : ""}`}>
                                                 {tab.label}
                                                 <span
                                                     className={`ml-1.5 flex h-5 min-w-[20px] items-center justify-center rounded-full px-1.5 text-xs font-bold ${
@@ -500,6 +517,7 @@ export const SemesterPublicationList = (): JSX.Element => {
                             </div>
                         )}
 
+                        <div ref={resultsRegionRef} style={preservedHeightStyle}>
                         {!loading && filteredPublications.length > 0 && (
                             <section className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
                                 {filteredPublications.map((publication) => (
@@ -538,6 +556,7 @@ export const SemesterPublicationList = (): JSX.Element => {
                                             onClick={() => {
                                                 setSearch("");
                                                 setActiveTab("all");
+                                                clearPreservedHeight();
                                             }}
                                             className="nb-btn nb-btn-outline text-sm"
                                         >
@@ -547,6 +566,7 @@ export const SemesterPublicationList = (): JSX.Element => {
                                 </div>
                             </section>
                         )}
+                        </div>
                     </main>
                 </div>
             </div>

@@ -28,6 +28,7 @@ import {
 } from "../../components/ui/breadcrumb";
 import { DashboardSidebar } from "../../components/layout";
 import { TopNavBar } from "../../components/layout/TopNavBar";
+import { usePreservedResultsHeight } from "../../hooks/usePreservedResultsHeight";
 import { useSidebarConfig } from "../../hooks/useSidebarConfig";
 import { ChatWidget, type ChatContextInfo } from "../../components/ChatWidget/ChatWidget";
 import {
@@ -545,6 +546,13 @@ export function SchoolContracts() {
 
     const totalPages = Math.max(1, Math.ceil(filteredContracts.length / pageSize));
     const pagedContracts = filteredContracts.slice((page - 1) * pageSize, page * pageSize);
+    const isSearchEmptyState = !loading && contracts.length > 0 && filteredContracts.length === 0;
+    const {
+        resultsRegionRef,
+        preserveResultsHeight,
+        clearPreservedHeight,
+        preservedHeightStyle,
+    } = usePreservedResultsHeight(isSearchEmptyState);
 
     useEffect(() => {
         setPage(1);
@@ -630,14 +638,13 @@ export function SchoolContracts() {
                                 <div className="max-w-3xl">
                                     <div className="inline-flex items-center gap-2 rounded-full border border-violet-200 bg-white/80 px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.16em] text-violet-700">
                                         <Layers3 className="h-4 w-4" />
-                                        Contract Command Center
+                                        Hợp đồng cung ứng
                                     </div>
                                     <h1 className="mt-4 text-[28px] font-extrabold leading-tight text-gray-900 lg:text-[34px]">
-                                        Quản lý vòng đời hợp đồng cung ứng của nhà trường
+                                        Theo dõi hợp đồng cung ứng của nhà trường
                                     </h1>
-                                    <p className="mt-3 max-w-2xl text-sm font-medium leading-6 text-[#4c5769] lg:text-base">
-                                        Theo dõi toàn bộ hợp đồng chờ duyệt, chờ ký, đang hiệu lực và đã đóng trong cùng một bề mặt quản trị.
-                                        Mỗi hợp đồng nên có phạm vi mẫu rõ ràng, thời hạn hợp lệ và trạng thái ký số minh bạch trước khi đi vào vận hành.
+                                    <p className="mt-3 max-w-2xl text-sm font-medium leading-7 text-[#4c5769] sm:text-base">
+                                        Xem nhanh hợp đồng đang chờ duyệt, chờ ký, còn hiệu lực hoặc đã đóng. Trước khi sử dụng, hãy kiểm tra phạm vi mẫu, thời hạn và trạng thái ký số của từng hợp đồng.
                                     </p>
                                 </div>
 
@@ -674,7 +681,10 @@ export function SchoolContracts() {
                                         </div>
                                     </div>
                                     <button
-                                        onClick={() => setStatusFilter(summary.waitingSchool > 0 ? "Pending" : summary.rejected > 0 ? "Rejected" : "Active")}
+                                        onClick={() => {
+                                            preserveResultsHeight();
+                                            setStatusFilter(summary.waitingSchool > 0 ? "Pending" : summary.rejected > 0 ? "Rejected" : "Active");
+                                        }}
                                         className="nb-btn nb-btn-outline text-sm"
                                     >
                                         Xem ngay
@@ -689,7 +699,10 @@ export function SchoolContracts() {
                                 <input
                                     type="text"
                                     value={search}
-                                    onChange={(event) => setSearch(event.target.value)}
+                                    onChange={(event) => {
+                                        preserveResultsHeight();
+                                        setSearch(event.target.value);
+                                    }}
                                     placeholder="Tìm theo tên hợp đồng, số hợp đồng hoặc nhà cung cấp..."
                                     className="flex-1 bg-transparent text-sm font-medium text-[#1a1a2e] outline-none placeholder:text-[#97A3B6]"
                                 />
@@ -705,7 +718,10 @@ export function SchoolContracts() {
                                                 : contracts.filter((contract) => contract.status === tab.key).length;
 
                                         return (
-                                            <button key={tab.key} onClick={() => setStatusFilter(tab.key)} className={`nb-tab ${isActive ? "nb-tab-active" : ""}`}>
+                                            <button key={tab.key} onClick={() => {
+                                                preserveResultsHeight();
+                                                setStatusFilter(tab.key);
+                                            }} className={`nb-tab ${isActive ? "nb-tab-active" : ""}`}>
                                                 {tab.label}
                                                 <span
                                                     className={`ml-1.5 flex h-5 min-w-[20px] items-center justify-center rounded-full px-1.5 text-xs font-bold ${
@@ -734,6 +750,7 @@ export function SchoolContracts() {
                             </div>
                         )}
 
+                        <div ref={resultsRegionRef} style={preservedHeightStyle}>
                         {!loading && filteredContracts.length > 0 && (
                             <>
                                 <section className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
@@ -797,6 +814,7 @@ export function SchoolContracts() {
                                             onClick={() => {
                                                 setSearch("");
                                                 setStatusFilter("");
+                                                clearPreservedHeight();
                                             }}
                                             className="nb-btn nb-btn-outline text-sm"
                                         >
@@ -806,6 +824,7 @@ export function SchoolContracts() {
                                 </div>
                             </section>
                         )}
+                        </div>
                     </main>
                 </div>
             </div>

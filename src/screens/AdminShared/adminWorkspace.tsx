@@ -49,24 +49,21 @@ export function AdminHero({
     stats: Array<{ label: string; value: string }>;
 }) {
     return (
-        <section
-            className="overflow-hidden rounded-[32px] border px-6 py-6 text-white shadow-soft-lg lg:px-8 lg:py-8"
-            style={{ borderColor: "#2446A6", background: "linear-gradient(135deg, #172554 0%, #1D4ED8 52%, #38BDF8 100%)" }}
-        >
+        <section className="rounded-[24px] border border-gray-200 bg-white px-5 py-5 shadow-soft-sm lg:px-6 lg:py-6">
             <div className="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
                 <div className="max-w-3xl">
-                    <div className="inline-flex items-center rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[12px] font-black uppercase tracking-[0.12em] text-white">
+                    <div className="inline-flex items-center rounded-full border border-gray-200 bg-slate-50 px-3 py-1 text-[12px] font-black uppercase tracking-[0.12em] text-slate-600">
                         {eyebrow}
                     </div>
-                    <h1 className="mt-4 text-[34px] font-black leading-tight md:text-[46px]">{title}</h1>
-                    <p className="mt-4 max-w-2xl text-[16px] font-semibold leading-8 text-white/85">{description}</p>
+                    <h1 className="mt-4 text-[28px] font-black leading-tight text-slate-950 md:text-[34px]">{title}</h1>
+                    <p className="mt-3 max-w-2xl text-sm font-medium leading-7 text-slate-600 sm:text-base">{description}</p>
                 </div>
 
                 <div className="grid gap-3 sm:grid-cols-2 xl:w-[380px]">
                     {stats.map((item) => (
-                        <div key={item.label} className="rounded-[24px] border border-white/15 bg-white/10 px-4 py-4 backdrop-blur-sm">
-                            <p className="text-[12px] font-black uppercase tracking-[0.1em] text-white/70">{item.label}</p>
-                            <p className="mt-3 text-[32px] font-black leading-none text-white">{item.value}</p>
+                        <div key={item.label} className="rounded-[18px] border border-gray-200 bg-slate-50 px-4 py-4">
+                            <p className="text-[12px] font-black uppercase tracking-[0.1em] text-slate-500">{item.label}</p>
+                            <p className="mt-2 text-[28px] font-black leading-none text-slate-950">{item.value}</p>
                         </div>
                     ))}
                 </div>

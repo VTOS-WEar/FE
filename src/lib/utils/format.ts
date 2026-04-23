@@ -104,3 +104,66 @@ export const formatDateTime = (
 
   return `${timeStr}, ${dateStr}`;
 };
+
+type DecimalFormatOptions = {
+  fallback?: string;
+  maximumFractionDigits?: number;
+  minimumFractionDigits?: number;
+};
+
+const normalizeDecimal = (
+  value: number | string | null | undefined
+): number | null => {
+  if (value === null || value === undefined) {
+    return null;
+  }
+
+  if (typeof value === "number") {
+    return Number.isFinite(value) ? value : null;
+  }
+
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return null;
+  }
+
+  const normalized = Number(trimmed.replace(/,/g, "."));
+  return Number.isFinite(normalized) ? normalized : null;
+};
+
+const formatDecimal = (
+  value: number | string | null | undefined,
+  {
+    fallback = "—",
+    maximumFractionDigits = 1,
+    minimumFractionDigits = 0,
+  }: DecimalFormatOptions = {}
+): string => {
+  const normalizedValue = normalizeDecimal(value);
+  if (normalizedValue === null) {
+    return fallback;
+  }
+
+  return normalizedValue.toLocaleString("vi-VN", {
+    minimumFractionDigits,
+    maximumFractionDigits,
+  });
+};
+
+export const formatPercent = (
+  value: number | string | null | undefined,
+  options: DecimalFormatOptions = {}
+): string => {
+  const formatted = formatDecimal(value, options);
+  return formatted === (options.fallback ?? "—") ? formatted : `${formatted}%`;
+};
+
+export const formatRating = (
+  value: number | string | null | undefined,
+  options: DecimalFormatOptions = {}
+): string =>
+  formatDecimal(value, {
+    fallback: options.fallback ?? "0.0",
+    minimumFractionDigits: options.minimumFractionDigits ?? 1,
+    maximumFractionDigits: options.maximumFractionDigits ?? 1,
+  });

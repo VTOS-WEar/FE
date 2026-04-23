@@ -81,6 +81,7 @@ export type ProviderDirectOrderDetailDto = {
     orderId: string;
     orderDate: string;
     orderStatus: string;
+    pricingMode: string;
     totalAmount: number;
     parentName: string;
     parentPhone?: string | null;

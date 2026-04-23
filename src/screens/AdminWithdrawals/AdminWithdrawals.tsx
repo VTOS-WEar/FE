@@ -11,6 +11,7 @@ import {
 import { DashboardSidebar } from "../../components/layout";
 import { TopNavBar } from "../../components/layout/TopNavBar";
 import { useAdminSidebarConfig } from "../../hooks/useAdminSidebarConfig";
+import { usePreservedResultsHeight } from "../../hooks/usePreservedResultsHeight";
 import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
 import {
     approveWithdrawal,
@@ -60,6 +61,8 @@ export function AdminWithdrawals() {
     const [adminNote, setAdminNote] = useState("");
     const [processing, setProcessing] = useState(false);
     const pageSize = 10;
+    const isFilteredEmptyState = !loading && !!filter && items.length === 0;
+    const { preserveResultsHeight, preservedHeightStyle, resultsRegionRef } = usePreservedResultsHeight(isFilteredEmptyState);
 
     const fetchData = useCallback(async () => {
         setLoading(true);
@@ -130,8 +133,8 @@ export function AdminWithdrawals() {
                     <main className="flex-1 px-4 py-6 sm:px-6 lg:px-10 lg:py-8 space-y-6 nb-fade-in">
                         <AdminHero
                             eyebrow="Payout"
-                            title="Duyệt payout theo độ sẵn sàng và độ tồn đọng, không theo modal rời rạc."
-                            description="Màn hình này tập trung vào quyết định payout: hồ sơ nào đang chờ, số tiền nào cần ưu tiên và tài khoản ngân hàng nào sẽ nhận chuyển khoản."
+                            title="Duyệt yêu cầu rút tiền theo mức ưu tiên."
+                            description="Xem nhanh hồ sơ đang chờ, số tiền cần xử lý và tài khoản nhận tiền trước khi phê duyệt hoặc từ chối."
                             stats={[
                                 { label: "Đang hiển thị", value: loading ? "…" : String(items.length) },
                                 { label: "Chờ duyệt", value: loading ? "…" : String(pendingCount) },
@@ -170,6 +173,7 @@ export function AdminWithdrawals() {
                                     <button
                                         key={tab.value}
                                         onClick={() => {
+                                            preserveResultsHeight();
                                             setFilter(tab.value);
                                             setPage(1);
                                         }}
@@ -202,6 +206,7 @@ export function AdminWithdrawals() {
                                 ))}
                             </div>
 
+                            <div ref={resultsRegionRef} style={preservedHeightStyle}>
                             {loading && (
                                 <div className="space-y-3 px-5 py-5">
                                     {Array.from({ length: 5 }).map((_, index) => (
@@ -363,6 +368,7 @@ export function AdminWithdrawals() {
                                     </div>
                                 </div>
                             )}
+                            </div>
                         </section>
                     </main>
                 </div>

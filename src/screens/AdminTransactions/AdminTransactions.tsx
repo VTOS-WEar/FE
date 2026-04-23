@@ -11,6 +11,7 @@ import {
 import { DashboardSidebar } from "../../components/layout";
 import { TopNavBar } from "../../components/layout/TopNavBar";
 import { useAdminSidebarConfig } from "../../hooks/useAdminSidebarConfig";
+import { usePreservedResultsHeight } from "../../hooks/usePreservedResultsHeight";
 import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
 import { getAdminTransactions, type AdminTransactionDto, type AdminTransactionListResult } from "../../lib/api/admin";
 import {
@@ -49,6 +50,8 @@ export default function AdminTransactions() {
     const [filterType, setFilterType] = useState("");
     const [filterStatus, setFilterStatus] = useState("");
     const [loading, setLoading] = useState(true);
+    const isFilteredEmptyState = !loading && !!(filterType || filterStatus) && (!data || data.items.length === 0);
+    const { preserveResultsHeight, preservedHeightStyle, resultsRegionRef } = usePreservedResultsHeight(isFilteredEmptyState);
 
     const fetchData = useCallback(async () => {
         setLoading(true);
@@ -108,8 +111,8 @@ export default function AdminTransactions() {
                     <main className="flex-1 px-4 py-6 sm:px-6 lg:px-10 lg:py-8 space-y-6 nb-fade-in">
                         <AdminHero
                             eyebrow="Tai chinh"
-                            title="Giám sát dòng tiền theo tín hiệu xử lý, không chỉ theo bảng giao dịch."
-                            description="Màn hình này gom các khoản thanh toán, chi nhà cung cấp và hoàn tiền vào cùng một khu vực theo dõi, giúp Admin đọc nhanh giao dịch nào cần can thiệp."
+                            title="Theo dõi giao dịch cần kiểm tra trong hệ thống."
+                            description="Tập trung vào các khoản thanh toán, chi trả và hoàn tiền để phát hiện giao dịch cần theo dõi hoặc can thiệp sớm."
                             stats={[
                                 { label: "Tổng giao dịch", value: loading ? "…" : String(data?.totalCount ?? 0) },
                                 { label: "Cần theo dõi", value: loading ? "…" : String(watchCount) },
@@ -142,6 +145,7 @@ export default function AdminTransactions() {
                                 <select
                                     value={filterType}
                                     onChange={(event) => {
+                                        preserveResultsHeight();
                                         setFilterType(event.target.value);
                                         setPage(1);
                                     }}
@@ -157,6 +161,7 @@ export default function AdminTransactions() {
                                 <select
                                     value={filterStatus}
                                     onChange={(event) => {
+                                        preserveResultsHeight();
                                         setFilterStatus(event.target.value);
                                         setPage(1);
                                     }}
@@ -191,6 +196,7 @@ export default function AdminTransactions() {
                                 ))}
                             </div>
 
+                            <div ref={resultsRegionRef} style={preservedHeightStyle}>
                             {loading && (
                                 <div className="space-y-3 px-5 py-5">
                                     {Array.from({ length: 5 }).map((_, index) => (
@@ -311,6 +317,7 @@ export default function AdminTransactions() {
                                     </div>
                                 </div>
                             )}
+                            </div>
                         </section>
                     </main>
                 </div>

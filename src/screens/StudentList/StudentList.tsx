@@ -217,7 +217,6 @@ export const StudentListV2 = (): JSX.Element => {
     const [gradeFilter, setGradeFilter] = useState("all");
     const [measurementFilter, setMeasurementFilter] = useState("all");
     const [parentFilter, setParentFilter] = useState("all");
-    const [showGradeDropdown, setShowGradeDropdown] = useState(false);
     const [showMeasurementDropdown, setShowMeasurementDropdown] = useState(false);
     const [showParentDropdown, setShowParentDropdown] = useState(false);
 
@@ -291,7 +290,7 @@ export const StudentListV2 = (): JSX.Element => {
     const [searchInput, setSearchInput] = useState("");
     useEffect(() => { const t = setTimeout(() => { setSearch(searchInput); setPage(1); }, 400); return () => clearTimeout(t); }, [searchInput]);
 
-    const grades = useMemo(() => [...new Set(students.map((s) => s.grade).filter(Boolean))], [students]);
+    const gradeOptions = useMemo(() => ["all", ...availableGrades.filter(Boolean)], [availableGrades]);
 
     const handleLogout = () => {
         localStorage.removeItem("access_token"); localStorage.removeItem("user"); localStorage.removeItem("expires_in");
@@ -394,9 +393,32 @@ export const StudentListV2 = (): JSX.Element => {
                                 <input type="text" value={searchInput} onChange={(e) => setSearchInput(e.target.value)} placeholder="Tìm kiếm theo tên, mã học sinh hoặc lớp..." className="flex-1 bg-transparent outline-none font-medium text-sm text-[#4c5769] placeholder:text-[#97a3b6]" />
                             </div>
                             <div className="flex flex-wrap items-center gap-3">
-                                <FilterDropdown label="Lớp" value={gradeFilter} isOpen={showGradeDropdown} onToggle={() => { setShowGradeDropdown(!showGradeDropdown); setShowMeasurementDropdown(false); setShowParentDropdown(false); }} onSelect={(v) => { setGradeFilter(v); setShowGradeDropdown(false); setPage(1); }} options={[{ value: "all", label: "Tất cả" }, ...grades.map(g => ({ value: g, label: g }))]} />
-                                <FilterDropdown label="Đo ảo" value={measurementFilter} isOpen={showMeasurementDropdown} onToggle={() => { setShowMeasurementDropdown(!showMeasurementDropdown); setShowGradeDropdown(false); setShowParentDropdown(false); }} onSelect={(v) => { setMeasurementFilter(v); setShowMeasurementDropdown(false); setPage(1); }} options={[{ value: "all", label: "Tất cả" }, { value: "updated", label: "Đã cập nhật" }, { value: "missing", label: "Thiếu số đo" }]} />
-                                <FilterDropdown label="Liên kết PH" value={parentFilter} isOpen={showParentDropdown} onToggle={() => { setShowParentDropdown(!showParentDropdown); setShowGradeDropdown(false); setShowMeasurementDropdown(false); }} onSelect={(v) => { setParentFilter(v); setShowParentDropdown(false); setPage(1); }} options={[{ value: "all", label: "Tất cả" }, { value: "linked", label: "Đã liên kết" }, { value: "unlinked", label: "Chưa liên kết" }]} />
+                                <div className="flex flex-wrap items-center gap-2">
+                                    <span className="text-sm font-semibold text-[#4c5769]">Khối:</span>
+                                    {gradeOptions.map((grade) => {
+                                        const isActive = gradeFilter === grade;
+
+                                        return (
+                                            <button
+                                                key={grade}
+                                                type="button"
+                                                onClick={() => {
+                                                    setGradeFilter(grade);
+                                                    setPage(1);
+                                                }}
+                                                className={`rounded-full border px-3 py-2 text-sm font-semibold transition-colors ${
+                                                    isActive
+                                                        ? "border-violet-200 bg-violet-50 text-violet-700"
+                                                        : "border-gray-200 bg-white text-[#4c5769] hover:border-violet-200 hover:text-violet-700"
+                                                }`}
+                                            >
+                                                {grade === "all" ? "Tất cả" : grade}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                                <FilterDropdown label="Đo ảo" value={measurementFilter} isOpen={showMeasurementDropdown} onToggle={() => { setShowMeasurementDropdown(!showMeasurementDropdown); setShowParentDropdown(false); }} onSelect={(v) => { setMeasurementFilter(v); setShowMeasurementDropdown(false); setPage(1); }} options={[{ value: "all", label: "Tất cả" }, { value: "updated", label: "Đã cập nhật" }, { value: "missing", label: "Thiếu số đo" }]} />
+                                <FilterDropdown label="Liên kết PH" value={parentFilter} isOpen={showParentDropdown} onToggle={() => { setShowParentDropdown(!showParentDropdown); setShowMeasurementDropdown(false); }} onSelect={(v) => { setParentFilter(v); setShowParentDropdown(false); setPage(1); }} options={[{ value: "all", label: "Tất cả" }, { value: "linked", label: "Đã liên kết" }, { value: "unlinked", label: "Chưa liên kết" }]} />
                             </div>
                         </div>
 

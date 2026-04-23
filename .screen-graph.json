@@ -51,6 +51,7 @@
         "/admin/account-requests",
         "/admin/transactions",
         "/admin/complaints",
+        "/admin/account-settings",
         "/school/profile",
         "/school/uniforms",
         "/school/semester-publications",

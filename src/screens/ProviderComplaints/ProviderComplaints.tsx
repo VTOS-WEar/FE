@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { DashboardSidebar } from "../../components/layout";
 import { TopNavBar } from "../../components/layout/TopNavBar";
+import { usePreservedResultsHeight } from "../../hooks/usePreservedResultsHeight";
 import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
 import { useProviderSidebarConfig } from "../../hooks/useProviderSidebarConfig";
 import { ChatWidget, type ChatContextInfo } from "../../components/ChatWidget/ChatWidget";
@@ -134,6 +135,8 @@ export function ProviderComplaints() {
     };
 
     const totalPages = Math.max(1, Math.ceil(total / pageSize));
+    const isFilteredEmptyState = !loading && !!statusFilter && complaints.length === 0;
+    const { preserveResultsHeight, preservedHeightStyle, resultsRegionRef } = usePreservedResultsHeight(isFilteredEmptyState);
 
     const filterTabs = [
         { value: "", label: "Tất cả" },
@@ -175,13 +178,13 @@ export function ProviderComplaints() {
                             <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
                                 <div className="max-w-3xl">
                                     <span className="inline-flex items-center rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-white">
-                                        Issue resolution
+                                        Xử lý khiếu nại
                                     </span>
                                     <h2 className="mt-4 text-3xl font-black leading-tight text-white sm:text-4xl">
                                         {counts.open + counts.inProgress} khiếu nại đang cần theo dõi hoặc phản hồi thêm.
                                     </h2>
                                     <p className="mt-3 text-sm font-medium leading-7 text-slate-100 sm:text-base">
-                                        Mục tiêu của khu vực này là tránh để vấn đề treo quá lâu: xác nhận bối cảnh, phản hồi bằng thông tin rõ ràng, rồi đánh dấu đã giải quyết khi đủ điều kiện.
+                                        Xác nhận bối cảnh, phản hồi rõ ràng và chốt trạng thái đúng lúc để khiếu nại không bị kéo dài.
                                     </p>
                                 </div>
                                 <div className="grid gap-3 sm:grid-cols-3 lg:w-[420px]">
@@ -254,7 +257,11 @@ export function ProviderComplaints() {
                                     return (
                                         <button
                                             key={tab.value || "all"}
-                                            onClick={() => { setStatusFilter(tab.value); setPage(1); }}
+                                            onClick={() => {
+                                                preserveResultsHeight();
+                                                setStatusFilter(tab.value);
+                                                setPage(1);
+                                            }}
                                             className={`inline-flex min-w-max items-center gap-3 rounded-[18px] border px-4 py-3 transition-all ${
                                                 active
                                                     ? "border-violet-200 bg-violet-50 text-violet-700"
@@ -273,6 +280,7 @@ export function ProviderComplaints() {
                             </div>
                         </section>
 
+                        <div ref={resultsRegionRef} style={preservedHeightStyle}>
                         {loading ? (
                             <div className="flex min-h-[320px] flex-col items-center justify-center gap-4 rounded-[32px] border border-gray-200 bg-white shadow-soft-sm">
                                 <Loader2 className="h-10 w-10 animate-spin text-violet-600" />
@@ -353,10 +361,7 @@ export function ProviderComplaints() {
                                                     </button>
                                                     <button
                                                         onClick={() =>
-                                                            openChat({
-                                                                ...complaint,
-                                                                batchName: complaint.batchId || null,
-                                                            })
+                                                            openChat(complaint)
                                                         }
                                                         className="inline-flex h-11 items-center justify-center rounded-[16px] bg-slate-50 px-4 text-sm font-black text-slate-700 transition-all hover:bg-slate-100"
                                                     >
@@ -381,6 +386,7 @@ export function ProviderComplaints() {
                                 </button>
                             </div>
                         ) : null}
+                        </div>
 
                         {(detail || detailLoading) ? (
                             <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/50 p-4">
@@ -402,8 +408,7 @@ export function ProviderComplaints() {
                                                 <span className={STATUS_MAP[detail.status]?.badge || "nb-badge"}>{STATUS_MAP[detail.status]?.label || detail.status}</span>
                                             </div>
 
-                                            <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-                                                <DetailBox label="Lô sản xuất" value={detail.batchName || "Chưa có"} />
+                                            <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                                                 <DetailBox label="Phản hồi gần nhất" value={detail.respondedAt ? formatDateTime(detail.respondedAt) : "Chưa phản hồi"} />
                                                 <DetailBox label="Đã giải quyết lúc" value={detail.resolvedAt ? formatDateTime(detail.resolvedAt) : "Chưa chốt"} />
                                                 <DetailBox label="Danh mục" value={detail.campaignName || "Chưa có"} />

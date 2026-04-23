@@ -102,6 +102,7 @@ export type MyDirectOrderListItemDto = {
   totalAmount: number;
   childName: string;
   providerName: string;
+  pricingMode: string;
   firstItemImageUrl?: string | null;
   paymentStatusName?: string | null;
   trackingCode?: string | null;
@@ -126,6 +127,13 @@ export type MyDirectOrderDetailItemDto = {
   unitPrice: number;
 };
 
+export type ExistingProviderRatingDto = {
+  providerRatingId: string;
+  rating: number;
+  comment?: string | null;
+  createdAt: string;
+};
+
 export type MyDirectOrderDetailDto = {
   orderId: string;
   childProfileId: string;
@@ -135,6 +143,7 @@ export type MyDirectOrderDetailDto = {
   semesterPublicationId: string;
   semester: string;
   academicYear: string;
+  pricingMode: string;
   orderDate: string;
   orderStatus: string;
   totalAmount: number;
@@ -145,6 +154,8 @@ export type MyDirectOrderDetailDto = {
   trackingCode?: string | null;
   shippingCompany?: string | null;
   paymentStatusName?: string | null;
+  canRateProvider: boolean;
+  existingProviderRating?: ExistingProviderRatingDto | null;
   items: MyDirectOrderDetailItemDto[];
 };
 

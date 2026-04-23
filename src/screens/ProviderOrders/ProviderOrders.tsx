@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { DashboardSidebar } from "../../components/layout";
 import { TopNavBar } from "../../components/layout/TopNavBar";
+import { usePreservedResultsHeight } from "../../hooks/usePreservedResultsHeight";
 import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
 import { useProviderSidebarConfig } from "../../hooks/useProviderSidebarConfig";
 import {
@@ -226,6 +227,8 @@ export function ProviderOrders(): JSX.Element {
     );
 
     const actionRequiredCount = (stats?.paidOrders ?? 0) + (stats?.inProgressOrders ?? 0);
+    const isFilteredEmptyState = !loading && !!status && orders.length === 0;
+    const { preserveResultsHeight, preservedHeightStyle, resultsRegionRef } = usePreservedResultsHeight(isFilteredEmptyState);
 
     return (
         <div className="nb-page flex flex-col">
@@ -254,13 +257,13 @@ export function ProviderOrders(): JSX.Element {
                             <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
                                 <div className="max-w-3xl">
                                     <span className="inline-flex items-center rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-white">
-                                        Production queue
+                                        Đơn hàng sản xuất
                                     </span>
                                     <h2 className="mt-4 text-3xl font-black leading-tight text-white sm:text-4xl">
                                         {stats?.totalOrders ?? 0} đơn đang thuộc phạm vi vận hành của bạn.
                                     </h2>
                                     <p className="mt-3 text-sm font-medium leading-7 text-slate-100 sm:text-base">
-                                        Tập trung trước vào các đơn đã thanh toán, sau đó giữ luồng sản xuất và giao hàng chuyển tiếp mượt để không bị nghẽn cuối ngày.
+                                        Ưu tiên các đơn đã thanh toán, rồi tiếp tục theo dõi sản xuất và giao hàng để không bị dồn việc ở các bước sau.
                                     </p>
                                 </div>
 
@@ -312,7 +315,10 @@ export function ProviderOrders(): JSX.Element {
                                     return (
                                         <button
                                             key={item.value || "all"}
-                                            onClick={() => setStatus(item.value)}
+                                            onClick={() => {
+                                                preserveResultsHeight();
+                                                setStatus(item.value);
+                                            }}
                                             className={`inline-flex min-w-max items-center gap-3 rounded-[18px] border px-4 py-3 text-left transition-all ${
                                                 active
                                                     ? "border-violet-200 bg-violet-50 text-violet-700"
@@ -333,6 +339,7 @@ export function ProviderOrders(): JSX.Element {
                             </div>
                         </section>
 
+                        <div ref={resultsRegionRef} style={preservedHeightStyle}>
                         {loading ? (
                             <div className="flex min-h-[320px] flex-col items-center justify-center gap-4 rounded-[32px] border border-gray-200 bg-white shadow-soft-sm">
                                 <Loader2 className="h-10 w-10 animate-spin text-violet-600" />
@@ -443,6 +450,7 @@ export function ProviderOrders(): JSX.Element {
                                 })}
                             </section>
                         )}
+                        </div>
                     </main>
                 </div>
             </div>

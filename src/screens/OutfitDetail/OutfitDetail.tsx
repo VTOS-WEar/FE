@@ -48,6 +48,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Badge } from "@/components/ui/badge";
 import { OutfitOrderModal } from "../../components/outfits/OutfitOrderModal";
+import { formatRating } from "../../lib/utils/format";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
@@ -702,7 +703,7 @@ export const OutfitDetail = (): JSX.Element => {
                         );
                       })}
                     </div>
-                    <span className="font-black text-gray-900 text-[11px]">{outfit.averageRating?.toFixed(1) || "5.0"}</span>
+                    <span className="font-black text-gray-900 text-[11px]">{formatRating(outfit.averageRating)}</span>
                   </div>
                   <span className="text-gray-400 font-bold text-[10px] uppercase tracking-tighter">({outfit.feedbackCount} Phản hồi)</span>
                 </div>
@@ -1001,7 +1002,7 @@ export const OutfitDetail = (): JSX.Element => {
                 {/* Rating Summary Card */}
                 <div className="flex items-center gap-4 p-4 bg-white border-2 border-gray-200 rounded-xl shadow-soft-sm max-w-max mb-6">
                   <span className="font-baloo font-black text-4xl leading-none text-gray-900">
-                    {outfit.averageRating?.toFixed(1) || "0.0"}
+                    {formatRating(outfit.averageRating)}
                   </span>
                   <div>
                     <div className="flex items-center gap-0.5 mb-0.5">
