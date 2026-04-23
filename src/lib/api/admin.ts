@@ -411,7 +411,6 @@ export type AdminComplaintDto = {
     schoolName: string;
     providerName?: string;
     campaignName?: string;
-    batchName?: string;
     response?: string;
     createdAt: string;
     respondedAt?: string;

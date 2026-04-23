@@ -26,6 +26,23 @@ export interface ParentProfileResponse {
   twoFactorEnabled?: boolean;
 }
 
+export interface ParentAddressDto {
+  addressId: string;
+  label: string;
+  recipientName: string;
+  recipientPhone: string;
+  addressLine: string;
+  isDefault: boolean;
+}
+
+export interface UpsertParentAddressDto {
+  label: string;
+  recipientName: string;
+  recipientPhone: string;
+  addressLine: string;
+  isDefault: boolean;
+}
+
 /* ── GET /api/users/me ── */
 export async function getParentProfile(): Promise<ParentProfileResponse> {
   const res = await api(endpoints.users.me, { auth: true }) as { value: ParentProfileResponse };
@@ -57,6 +74,40 @@ export async function updateParentAvatar(
     auth: true,
   }) as { value: { id: string; avatarUrl: string } };
   return { avatarUrl: res.value.avatarUrl };
+}
+
+export async function getParentAddresses(): Promise<ParentAddressDto[]> {
+  return api<ParentAddressDto[]>(endpoints.users.addresses, { auth: true });
+}
+
+export async function createParentAddress(dto: UpsertParentAddressDto): Promise<ParentAddressDto> {
+  return api<ParentAddressDto>(endpoints.users.addresses, {
+    method: "POST",
+    body: JSON.stringify(dto),
+    auth: true,
+  });
+}
+
+export async function updateParentAddress(addressId: string, dto: UpsertParentAddressDto): Promise<ParentAddressDto> {
+  return api<ParentAddressDto>(`${endpoints.users.addresses}/${addressId}`, {
+    method: "PUT",
+    body: JSON.stringify(dto),
+    auth: true,
+  });
+}
+
+export async function deleteParentAddress(addressId: string): Promise<void> {
+  await api(`${endpoints.users.addresses}/${addressId}`, {
+    method: "DELETE",
+    auth: true,
+  });
+}
+
+export async function setDefaultParentAddress(addressId: string): Promise<void> {
+  await api(`${endpoints.users.addresses}/${addressId}/default`, {
+    method: "PUT",
+    auth: true,
+  });
 }
 
 /* ── Children Management Types ── */

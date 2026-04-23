@@ -59,6 +59,7 @@ export const endpoints = {
         me: "/api/users/me",
         profile: "/api/users/me/profile",
         avatar: "/api/users/me/avatar",
+        addresses: "/api/users/me/addresses",
         children: "/api/users/me/children",
         findChildren: "/api/users/me/find-children",
     },
@@ -96,7 +97,7 @@ export const endpoints = {
         reminders: "/api/teacher/reminders",
     },
     schoolManager: {
-        teacherReports: "/api/school-manager/teacher-reports",
+        teacherReports: "/api/schools/me/teacher-reports",
     },
     payments: {
         payOrder: "/api/payments/orders", // append /{orderId}/pay

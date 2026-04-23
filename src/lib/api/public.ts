@@ -28,8 +28,15 @@ export type PublicSearchResponse = {
 export type SemesterCatalogProviderDto = {
     providerId: string;
     providerName: string;
+    displayName: string;
+    shortDescription?: string | null;
+    materialDetails?: string | null;
+    mainImageUrl?: string | null;
     contactEmail?: string | null;
     price: number;
+    publicationPrice: number;
+    postDeadlinePrice: number;
+    pricingMode: string;
     averageRating: number;
     totalRatings: number;
     totalCompletedOrders: number;
@@ -41,6 +48,8 @@ export type SemesterCatalogOutfitDto = {
     description?: string | null;
     mainImageUrl?: string | null;
     price: number;
+    lowestPublicationPrice?: number | null;
+    lowestPostDeadlinePrice?: number | null;
     outfitType: string;
     sizes: string[];
     providers: SemesterCatalogProviderDto[];
@@ -53,6 +62,7 @@ export type SchoolSemesterCatalogResponse = {
     academicYear: string;
     startDate: string;
     endDate: string;
+    isAfterDeadline: boolean;
     status: string;
     outfits: SemesterCatalogOutfitDto[];
 };
