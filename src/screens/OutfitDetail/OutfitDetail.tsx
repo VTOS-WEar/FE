@@ -407,6 +407,7 @@ export const OutfitDetail = (): JSX.Element => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const publicationId = searchParams.get("publicationId");
+  const requestedTab = searchParams.get("tab");
 
   const [outfit, setOutfit] = useState<OutfitDetailDto | null>(null);
   const [loading, setLoading] = useState(true);
@@ -422,7 +423,9 @@ export const OutfitDetail = (): JSX.Element => {
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [selectedVariant, setSelectedVariant] = useState<OutfitVariantDto | null>(null);
   const [liked, setLiked] = useState(false);
-  const [activeTab, setActiveTab] = useState<"desc" | "size" | "reviews">("desc");
+  const [activeTab, setActiveTab] = useState<"desc" | "size" | "reviews">(
+    requestedTab === "size" || requestedTab === "reviews" ? requestedTab : "desc"
+  );
   const [related, setRelated] = useState<RelatedOutfit[]>([]);
   const [relatedScroll, setRelatedScroll] = useState(0);
   const [selectedRatingFilter, setSelectedRatingFilter] = useState<number | "all">("all");
@@ -445,6 +448,13 @@ export const OutfitDetail = (): JSX.Element => {
       tabsRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   };
+
+  useEffect(() => {
+    if (requestedTab === "size" || requestedTab === "reviews" || requestedTab === "desc") {
+      setActiveTab(requestedTab);
+      setTimeout(scrollToTabs, 0);
+    }
+  }, [requestedTab]);
 
   /* ── Fetch outfit ── */
   useEffect(() => {
@@ -595,7 +605,7 @@ export const OutfitDetail = (): JSX.Element => {
     );
 
   const displayPrice = selectedVariant ? selectedVariant.price : outfit.price;
-  const mainImage = (selectedVariant?.variantImageURL || outfit.mainImageURL) ?? "https://placehold.co/500x600?text=No+Image";
+  const mainImage = outfit.mainImageURL ?? "https://placehold.co/500x600?text=No+Image";
 
   return (
     <GuestLayout bgColor="#FAFAF9">
@@ -635,6 +645,10 @@ export const OutfitDetail = (): JSX.Element => {
                   src={mainImage}
                   alt={outfit.outfitName}
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  onError={(event) => {
+                    const target = event.currentTarget;
+                    target.src = "https://placehold.co/500x600?text=No+Image";
+                  }}
                 />
 
                 {/* Float Action: Like */}
@@ -651,24 +665,22 @@ export const OutfitDetail = (): JSX.Element => {
                 </div>
               </motion.div>
 
-              {/* Thumbnail gallery - Nano */}
-              {outfit.variants.filter((v) => v.variantImageURL).length > 0 && (
+              {/* Thumbnail gallery - only show the uploaded uniform image */}
+              {outfit.mainImageURL && (
                 <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
                   <button
-                    onClick={() => { setSelectedVariant(null); setSelectedSize(null); }}
-                    className={`w-10 h-10 rounded-md overflow-hidden border flex-shrink-0 transition-all ${!selectedVariant ? "border-sky-400 shadow-soft-sm" : "border-gray-200 bg-white"}`}
+                    type="button"
+                    className="w-10 h-10 rounded-md overflow-hidden border flex-shrink-0 border-sky-400 shadow-soft-sm"
                   >
-                    <img src={outfit.mainImageURL ?? ""} alt="main" className="w-full h-full object-cover" />
+                      <img
+                        src={outfit.mainImageURL}
+                        alt={outfit.outfitName}
+                        className="w-full h-full object-cover"
+                        onError={(event) => {
+                          event.currentTarget.src = "https://placehold.co/80x80?text=No+Image";
+                        }}
+                      />
                   </button>
-                  {outfit.variants.filter((v) => v.variantImageURL).map((v) => (
-                    <button
-                      key={v.productVariantId}
-                      onClick={() => { setSelectedVariant(v); setSelectedSize(v.size); }}
-                      className={`w-10 h-10 rounded-md overflow-hidden border flex-shrink-0 transition-all ${selectedVariant?.productVariantId === v.productVariantId ? "border-sky-400 shadow-soft-sm" : "border-gray-200 bg-white"}`}
-                    >
-                      <img src={v.variantImageURL!} alt={v.size} className="w-full h-full object-cover" />
-                    </button>
-                  ))}
                 </div>
               )}
             </div>
@@ -685,7 +697,9 @@ export const OutfitDetail = (): JSX.Element => {
                   <Badge className="bg-gray-900 text-white border-none px-2.5 py-0.5 font-black text-[9px] uppercase rounded-md shadow-sm">Verified</Badge>
                   <span className="text-[11px] font-bold text-gray-400 tracking-widest uppercase">SKU: {selectedVariant?.skuCode || 'OFF-DEF'}</span>
                 </div>
-                <h1 className="font-baloo font-black text-2xl lg:text-3xl text-gray-900 leading-[1.2]">
+                <h1
+                  className="nb-font-vietnam font-black text-2xl lg:text-3xl text-gray-900 leading-[1.2]"
+                >
                   {outfit.outfitName}
                 </h1>
                 <div className="flex items-center gap-2">
@@ -713,7 +727,9 @@ export const OutfitDetail = (): JSX.Element => {
               <div className="grid grid-cols-2 gap-3 xl:gap-4">
                 <div className="p-3.5 bg-white rounded-xl border-2 border-gray-200 shadow-soft-md">
                   <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Giá bán</p>
-                  <p className="font-baloo font-black text-[22px] text-[#0ea5e9]">
+                  <p
+                    className="nb-font-vietnam font-black text-[22px] text-[#0ea5e9]"
+                  >
                     {fmt(displayPrice)}
                   </p>
                 </div>
@@ -895,7 +911,7 @@ export const OutfitDetail = (): JSX.Element => {
           <div className="py-6 min-h-[300px]">
             {activeTab === "desc" && (
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
-                <h3 className="font-baloo tracking-tight font-black text-xl text-gray-900 mb-4 uppercase">
+                <h3 className="nb-font-vietnam tracking-tight font-black text-xl text-gray-900 mb-4 uppercase">
                   Chi tiết sản phẩm
                 </h3>
                 {outfit.description ? (
@@ -939,7 +955,7 @@ export const OutfitDetail = (): JSX.Element => {
 
             {activeTab === "size" && (
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
-                <h3 className="font-baloo tracking-tight font-black text-lg text-gray-900 mb-3 uppercase">
+                <h3 className="nb-font-vietnam tracking-tight font-black text-lg text-gray-900 mb-3 uppercase">
                   Bảng kích thước chuẩn
                 </h3>
                 {(() => {
@@ -1001,7 +1017,7 @@ export const OutfitDetail = (): JSX.Element => {
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
                 {/* Rating Summary Card */}
                 <div className="flex items-center gap-4 p-4 bg-white border-2 border-gray-200 rounded-xl shadow-soft-sm max-w-max mb-6">
-                  <span className="font-baloo font-black text-4xl leading-none text-gray-900">
+                  <span className="nb-font-vietnam font-black text-4xl leading-none text-gray-900">
                     {formatRating(outfit.averageRating)}
                   </span>
                   <div>
@@ -1183,7 +1199,7 @@ export const OutfitDetail = (): JSX.Element => {
         {related.length > 0 && (
           <motion.div custom={4} variants={fadeUp} initial="hidden" animate="visible" className="mt-10 pt-6 border-t-[2.5px] border-gray-200">
             <div className="flex items-end justify-between mb-6">
-              <h2 className="font-baloo font-black text-xl text-gray-900 tracking-tight uppercase">
+              <h2 className="nb-font-vietnam font-black text-xl text-gray-900 tracking-tight uppercase">
                 Gợi ý cho bạn
               </h2>
               <Link to={`/schools/${outfit.school.schoolId}`} className="font-black text-[11px] text-[#0ea5e9] hover:underline flex items-center gap-1 uppercase tracking-widest">
@@ -1220,7 +1236,7 @@ export const OutfitDetail = (): JSX.Element => {
                       </div>
 
                       <div className="px-0.5 pt-2 pb-0 flex flex-col gap-0.5">
-                        <h4 className="font-baloo tracking-tight font-black text-[11px] text-gray-900 line-clamp-1 uppercase leading-snug">
+                        <h4 className="nb-font-vietnam tracking-tight font-black text-[11px] text-gray-900 line-clamp-1 uppercase leading-snug">
                           {item.outfitName}
                         </h4>
                         <div className="flex items-center justify-between">
@@ -1251,7 +1267,6 @@ export const OutfitDetail = (): JSX.Element => {
       </div>
 
       <style>{`
-        .font-baloo { font-family: 'Baloo 2', cursive; }
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
       `}</style>

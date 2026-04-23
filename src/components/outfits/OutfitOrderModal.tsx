@@ -243,6 +243,8 @@ export function OutfitOrderModal({
     [outfit?.variants, selectedVariantId]
   );
 
+  const selectedImageUrl = outfit?.mainImageURL || null;
+
   const selectedCompatibility = useMemo(
     () => getBestCompatibility(recommendation, selectedVariantId),
     [recommendation, selectedVariantId]
@@ -264,7 +266,7 @@ export function OutfitOrderModal({
         size: selectedVariant.size,
         quantity: orderQty,
         price: selectedProvider.price,
-        imageURL: outfit.mainImageURL,
+        imageURL: selectedImageUrl,
         studentName: selectedChild.fullName,
         studentClass: selectedChild.grade,
         childProfileId: selectedChild.childId,
@@ -322,7 +324,21 @@ export function OutfitOrderModal({
               {/* Product Info Summary */}
               <div className="flex gap-4 rounded-[16px] border border-gray-200 bg-gradient-to-br from-violet-50 via-white to-slate-50 p-3 shadow-sm">
                 <div className="h-20 w-20 overflow-hidden rounded-[12px] border border-gray-200 bg-white">
-                  {outfit.mainImageURL ? <img src={outfit.mainImageURL} alt={outfit.outfitName} className="h-full w-full object-cover" /> : <div className="flex h-full w-full items-center justify-center text-gray-400"><Package className="h-6 w-6" /></div>}
+                  {selectedImageUrl ? (
+                    <img
+                      src={selectedImageUrl}
+                      alt={outfit.outfitName}
+                      className="h-full w-full object-cover"
+                      onError={(event) => {
+                        const target = event.currentTarget;
+                        if (outfit.mainImageURL && target.src !== outfit.mainImageURL) {
+                          target.src = outfit.mainImageURL;
+                          return;
+                        }
+                        target.src = "https://placehold.co/160x160?text=No+Image";
+                      }}
+                    />
+                  ) : <div className="flex h-full w-full items-center justify-center text-gray-400"><Package className="h-6 w-6" /></div>}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="mb-1.5 inline-flex items-center gap-1.5 rounded-full border border-gray-200 bg-violet-50 px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.1em] text-violet-600">
@@ -430,9 +446,20 @@ export function OutfitOrderModal({
 
               {/* Size Grid */}
               <div className="space-y-3">
-                <div className="flex items-center justify-between ml-1 text-[10px] font-black uppercase tracking-wider text-gray-500">
+                <div className="ml-1 flex items-center justify-between gap-3 text-[10px] font-black uppercase tracking-wider text-gray-500">
                   <span>Kích cỡ đồng phục</span>
-                  <span className="text-violet-500 italic">Recommended: {recommendation.recommendedSize || "—"}</span>
+                  <div className="flex items-center gap-3">
+                    {outfitId && (
+                      <Link
+                        to={`/outfits/${outfitId}${activeSemesterId ? `?publicationId=${activeSemesterId}&tab=size` : "?tab=size"}#outfit-tabs`}
+                        className="text-[9px] font-black uppercase tracking-[0.14em] text-sky-600 hover:text-sky-700 hover:underline"
+                        onClick={onClose}
+                      >
+                        Xem bảng số đo
+                      </Link>
+                    )}
+                    <span className="text-violet-500 italic">Recommended: {recommendation.recommendedSize || "—"}</span>
+                  </div>
                 </div>
                 {selectedCompatibility && (
                   <div className="rounded-[10px] border border-sky-200 bg-sky-50 px-3 py-2.5">
@@ -465,32 +492,21 @@ export function OutfitOrderModal({
                     </p>
                   </div>
                 )}
-                <div className="grid grid-cols-4 gap-2 sm:grid-cols-6 lg:grid-cols-5">
+                <div className="flex flex-wrap gap-1.5">
                   {outfit.variants.map((v) => {
                     const isRec = v.productVariantId === recommendation.recommendedVariantId;
                     const isSel = v.productVariantId === selectedVariantId;
-                    const compatibility = recommendation.sizeCompatibilities?.find((item) => item.variantId === v.productVariantId) ?? null;
                     return (
                       <button
                         key={v.productVariantId}
                         onClick={() => setSelectedVariantId(v.productVariantId)}
-                        className={`relative flex min-h-[64px] flex-col items-center justify-center rounded-[10px] border-[2px] px-2 py-2 text-center transition-all ${isSel ? "border-violet-600 bg-violet-600 text-white shadow-sm" :
+                        className={`relative flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-[8px] border text-center transition-all ${isSel ? "border-violet-600 bg-violet-600 text-white shadow-sm" :
                             isRec ? "border-violet-200 bg-violet-50 text-violet-700" :
                               "border-gray-100 bg-gray-50 text-gray-600 hover:border-gray-300"
                           }`}
                       >
                         {isRec && <div className="absolute -top-1.5 -right-1.5 w-3 h-3 bg-amber-400 border border-white rounded-full flex items-center justify-center text-[6px]">⭐</div>}
-                        <span className="text-[12px] font-extrabold">{v.size}</span>
-                        {compatibility && (
-                          <span className={`mt-1 text-[10px] font-black ${isSel ? "text-white/90" : compatibility.fitPercentage >= 85 ? "text-emerald-600" : compatibility.fitPercentage >= 70 ? "text-sky-600" : compatibility.fitPercentage >= 55 ? "text-amber-600" : "text-rose-500"}`}>
-                            {compatibility.fitPercentage}%
-                          </span>
-                        )}
-                        {compatibility?.stretchProfile.isStretchy && (
-                          <span className={`mt-0.5 text-[8px] font-black uppercase ${isSel ? "text-white/80" : "text-violet-500"}`}>
-                            Co giãn {compatibility.stretchProfile.stretchPercent}%
-                          </span>
-                        )}
+                        <span className="text-[11px] font-extrabold leading-none">{v.size}</span>
                       </button>
                     );
                   })}
