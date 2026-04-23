@@ -57,6 +57,7 @@ module.exports = {
       },
       fontFamily: {
         sans: [
+          '"Be Vietnam Pro"',
           "ui-sans-serif",
           "system-ui",
           "sans-serif",

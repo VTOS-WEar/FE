@@ -9,6 +9,7 @@ const CURRENT_YEAR = new Date().getFullYear();
 const YEARS = Array.from({ length: 80 }, (_, index) => CURRENT_YEAR - index);
 
 interface UserInfo {
+  userId: string;
   id: string;
   fullName: string;
   email: string;
@@ -46,7 +47,12 @@ export const AccountTab = (): JSX.Element => {
 
   const syncUserStorage = (updates: Partial<UserInfo>) => {
     if (!user) return;
-    const updated = { ...user, ...updates };
+    const updated = {
+      ...user,
+      ...updates,
+      userId: updates.userId ?? user.userId ?? user.id,
+      id: updates.id ?? user.id ?? user.userId,
+    };
     getStorage().setItem("user", JSON.stringify(updated));
     setUser(updated);
   };
@@ -73,6 +79,7 @@ export const AccountTab = (): JSX.Element => {
       try {
         const data = await getParentProfile();
         const profile: UserInfo = {
+          userId: data.id,
           id: data.id,
           fullName: data.fullName || "",
           email: data.email || "",

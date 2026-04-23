@@ -1,5 +1,6 @@
 import { api } from "./clients";
 import { endpoints } from "./endpoints";
+import type { Province } from "../utils/vietnamProvinces";
 
 /* ── Types ── */
 export interface UpdateParentProfileDto {
@@ -41,6 +42,91 @@ export interface UpsertParentAddressDto {
   recipientPhone: string;
   addressLine: string;
   isDefault: boolean;
+}
+
+export interface ParentAddressFormValues {
+  label: string;
+  recipientName: string;
+  recipientPhone: string;
+  provinceCode: string;
+  provinceName: string;
+  wardCode: string;
+  wardName: string;
+  houseNumber: string;
+  isDefault: boolean;
+}
+
+export const DEFAULT_PARENT_ADDRESS_FORM: ParentAddressFormValues = {
+  label: "Nhà riêng",
+  recipientName: "",
+  recipientPhone: "",
+  provinceCode: "",
+  provinceName: "",
+  wardCode: "",
+  wardName: "",
+  houseNumber: "",
+  isDefault: false,
+};
+
+const normalizeAddressToken = (value: string): string =>
+  value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .trim();
+
+const findProvinceMatch = (candidate: string, provinces: Province[]): Province | undefined => {
+  const normalizedCandidate = normalizeAddressToken(candidate);
+  return provinces.find((province) => {
+    const normalizedProvinceName = normalizeAddressToken(province.name);
+    return (
+      normalizedProvinceName === normalizedCandidate ||
+      normalizedProvinceName.includes(normalizedCandidate) ||
+      normalizedCandidate.includes(normalizedProvinceName)
+    );
+  });
+};
+
+export function formatParentAddressLine(
+  form: Pick<ParentAddressFormValues, "houseNumber" | "wardName" | "provinceName">
+): string {
+  return [form.houseNumber.trim(), form.wardName.trim(), form.provinceName.trim()]
+    .filter(Boolean)
+    .join(", ");
+}
+
+export function parseParentAddressLine(
+  addressLine: string,
+  provinces: Province[]
+): Pick<ParentAddressFormValues, "provinceCode" | "provinceName" | "wardCode" | "wardName" | "houseNumber"> {
+  const segments = addressLine
+    .split(",")
+    .map((segment) => segment.trim())
+    .filter(Boolean);
+
+  const provinceSegment = segments.at(-1) ?? "";
+  const wardSegment = segments.length > 1 ? segments.at(-2) ?? "" : "";
+  const houseNumber = segments.length > 2 ? segments.slice(0, -2).join(", ") : segments[0] ?? "";
+
+  const province = findProvinceMatch(provinceSegment, provinces);
+  const ward = province?.districts.find((district) => {
+    const normalizedWardName = normalizeAddressToken(district.name);
+    const normalizedWardSegment = normalizeAddressToken(wardSegment);
+    return (
+      normalizedWardName === normalizedWardSegment ||
+      normalizedWardName.includes(normalizedWardSegment) ||
+      normalizedWardSegment.includes(normalizedWardName)
+    );
+  });
+
+  return {
+    provinceCode: province?.codename ?? "",
+    provinceName: province?.name ?? provinceSegment,
+    wardCode: ward?.codename ?? "",
+    wardName: ward?.name ?? wardSegment,
+    houseNumber,
+  };
 }
 
 /* ── GET /api/users/me ── */
