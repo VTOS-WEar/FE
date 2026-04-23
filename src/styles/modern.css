@@ -19,17 +19,17 @@
   --nb-border-color: #e5e7eb;
 
   /* Radius — generous for modern feel */
-  --nb-radius: 12px;
+  --nb-radius: 10px;
   --nb-radius-sm: 8px;
-  --nb-radius-lg: 16px;
+  --nb-radius-lg: 14px;
 
   /* Shadows — soft blur, no hard offset */
-  --nb-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-  --nb-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
-  --nb-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --nb-shadow: 0 2px 10px rgba(15, 23, 42, 0.05);
+  --nb-shadow-sm: 0 1px 4px rgba(15, 23, 42, 0.04);
+  --nb-shadow-hover: 0 4px 14px rgba(15, 23, 42, 0.07);
 
   /* Page colors */
-  --nb-bg-page: #f9fafb;
+  --nb-bg-page: #f6f7fb;
   --nb-bg-card: #ffffff;
 
   /* Text */
@@ -94,15 +94,16 @@
 }
 
 .nb-card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--nb-shadow-hover);
+  transform: none;
+  box-shadow: var(--nb-shadow);
+  border-color: #d8dce5;
 }
 
 .nb-card-static {
   background: var(--nb-bg-card);
   border: var(--nb-border);
   border-radius: var(--nb-radius);
-  box-shadow: var(--nb-shadow);
+  box-shadow: var(--nb-shadow-sm);
 }
 
 /* Tinted Card Variants */
@@ -138,13 +139,13 @@
 }
 
 .nb-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: var(--nb-shadow);
+  transform: none;
+  box-shadow: var(--nb-shadow-sm);
 }
 
 .nb-btn:active {
   transform: translateY(0);
-  box-shadow: var(--nb-shadow-sm);
+  box-shadow: none;
 }
 
 /* Button color variants */
@@ -199,8 +200,8 @@
 }
 .nb-btn-outline:hover {
   background: #f9fafb;
-  box-shadow: var(--nb-shadow-sm);
-  transform: translateY(-1px);
+  box-shadow: none;
+  transform: none;
 }
 .nb-btn-outline:active {
   box-shadow: none;
@@ -223,8 +224,8 @@
   box-shadow: var(--nb-shadow);
 }
 .nb-btn-lg:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--nb-shadow-hover);
+  transform: none;
+  box-shadow: var(--nb-shadow);
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -264,7 +265,7 @@
 }
 
 .nb-stat-card:hover {
-  box-shadow: var(--nb-shadow-sm);
+  box-shadow: none;
 }
 
 /* Primary KPI stat card */
@@ -275,8 +276,8 @@
 }
 
 .nb-stat-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--nb-shadow-hover);
+  transform: none;
+  box-shadow: var(--nb-shadow);
 }
 
 .nb-stat-value {
@@ -566,8 +567,8 @@
 }
 
 .nb-action-card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--nb-shadow-hover);
+  transform: none;
+  box-shadow: var(--nb-shadow-sm);
 }
 
 .nb-action-card:active {
