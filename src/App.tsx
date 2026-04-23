@@ -49,6 +49,7 @@ import { ContractPreview } from "./screens/ContractPreview/ContractPreview";
 import { ProviderComplaints } from "./screens/ProviderComplaints/ProviderComplaints";
 import { ParentProfile } from "./screens/ParentProfile/ParentProfile";
 import { AccountTab } from "./screens/ParentProfile/tabs/AccountTab";
+import { AddressBookTab } from "./screens/ParentProfile/tabs/AddressBookTab";
 import { StudentsTab } from "./screens/ParentProfile/tabs/StudentsTab";
 import { OrdersTab } from "./screens/ParentProfile/tabs/OrdersTab";
 import { HistoryTab } from "./screens/ParentProfile/tabs/HistoryTab";
@@ -160,6 +161,7 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <Navigate to="account" replace /> },
       { path: "account", element: <AccountTab /> },
+      { path: "address-book", element: <AddressBookTab /> },
       { path: "students", element: <StudentsTab /> },
       { path: "orders", element: <OrdersTab /> },
       { path: "history", element: <HistoryTab /> },
