@@ -196,7 +196,6 @@ export const WalletTab = (): JSX.Element => {
             </div>
             <div>
               <h2 className="text-base font-black text-slate-950">Tài khoản nhận tiền</h2>
-              <p className="text-sm font-medium text-slate-500">Tài khoản mặc định được gửi kèm yêu cầu rút tiền.</p>
             </div>
           </div>
 
@@ -265,7 +264,6 @@ export const WalletTab = (): JSX.Element => {
       <div className="grid gap-4 lg:grid-cols-[380px_minmax(0,1fr)]">
         <div className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-soft-sm">
           <h2 className="text-base font-black text-slate-950">Rút tiền</h2>
-          <p className="mt-1 text-sm font-medium text-slate-500">Tạo yêu cầu để admin duyệt và chuyển khoản thủ công.</p>
           <input
             className="mt-5 w-full rounded-[14px] border border-slate-200 px-4 py-3 text-sm font-bold outline-none focus:border-emerald-400"
             type="number"

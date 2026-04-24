@@ -234,6 +234,9 @@ export interface ChildProfileDto {
   fullName: string;
   age: number;
   grade: string;
+  classGroupId?: string | null;
+  className?: string | null;
+  academicYear?: string | null;
   gender: string;
   avatarUrl:string;
   school: ChildSchoolDto;

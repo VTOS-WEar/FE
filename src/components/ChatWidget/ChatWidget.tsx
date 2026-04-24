@@ -54,6 +54,12 @@ export function ChatWidget({ channelType, channelId, isOpen, onClose, contextInf
     const isProvider = userRole === "Provider";
     const isSchool = userRole === "School";
     const isContractChat = channelType === "contract";
+    const channelLabel = channelType === "classgroup"
+        ? "Nhóm lớp"
+        : channelType === "complaint"
+            ? "Khiếu nại"
+            : "Hợp đồng";
+    const widgetTitle = channelType === "classgroup" && contextInfo?.title ? contextInfo.title : "Chat";
 
     function buildConnection() {
         return new HubConnectionBuilder()
@@ -238,9 +244,9 @@ export function ChatWidget({ channelType, channelId, isOpen, onClose, contextInf
             {/* Header — NB purple with border */}
             <div className="px-5 py-4 bg-[#6938EF] border-b border-gray-200 flex justify-between items-center">
                 <div>
-                    <h3 className="text-white font-extrabold text-base m-0">💬 Chat</h3>
+                    <h3 className="text-white font-extrabold text-base m-0">{widgetTitle}</h3>
                     <p className="text-white/80 text-xs mt-0.5 flex items-center gap-1.5">
-                        {channelType === "complaint" ? "Khiếu nại" : "Hợp đồng"}
+                        {channelLabel}
                         <span className={`inline-block w-2 h-2 rounded-full ${connected ? "bg-[#4ADE80]" : "bg-[#FACC15]"}`}
                             title={connected ? "Real-time" : "Polling"} />
                     </p>

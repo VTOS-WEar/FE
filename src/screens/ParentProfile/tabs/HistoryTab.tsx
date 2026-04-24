@@ -68,9 +68,6 @@ export const HistoryTab = (): JSX.Element => {
         </div>
         <div className="text-center">
           <p className="font-bold text-gray-900 text-lg mb-1">Chưa có lịch sử thử đồ</p>
-          <p className="font-medium text-gray-500 text-sm max-w-xs mx-auto">
-            Hãy thử chức năng thử đồ ảo AI khi xem chi tiết đồng phục để lịch sử hiển thị ở đây.
-          </p>
         </div>
       </div>
     );

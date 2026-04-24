@@ -1,21 +1,20 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { ChevronRight, GraduationCap, History, LifeBuoy, LogOut, MapPinHouse, ScanLine, Settings, ShoppingBag, Star, User, WalletCards } from "lucide-react";
-import { AnimatePresence, motion } from "framer-motion";
 import { GuestLayout } from "../../components/layout/GuestLayout";
 import { getParentProfile } from "../../lib/api/users";
 
 const SECTION_ITEMS = [
-  { label: "Tài khoản", description: "Thông tin cá nhân", icon: User, to: "/parentprofile/account" },
-  { label: "Sổ địa chỉ", description: "Địa chỉ giao hàng", icon: MapPinHouse, to: "/parentprofile/address-book" },
-  { label: "Học sinh", description: "Liên kết hồ sơ", icon: GraduationCap, to: "/parentprofile/students" },
-  { label: "Đơn hàng", description: "Đơn theo trường", icon: ShoppingBag, to: "/parentprofile/orders" },
-  { label: "Ví hoàn tiền", description: "Rút tiền hoàn", icon: WalletCards, to: "/parentprofile/wallet" },
-  { label: "Thử đồ", description: "Lịch sử fitting", icon: History, to: "/parentprofile/history" },
-  { label: "Bodygram", description: "Theo dõi số đo", icon: ScanLine, to: "/parentprofile/bodygram-history" },
-  { label: "Đánh giá", description: "Phản hồi đơn hàng", icon: Star, to: "/parentprofile/reviews" },
-  { label: "Hỗ trợ", description: "Yêu cầu Admin", icon: LifeBuoy, to: "/parentprofile/support" },
-  { label: "Cài đặt", description: "Bảo mật tài khoản", icon: Settings, to: "/parentprofile/settings" },
+  { label: "Tài khoản", icon: User, to: "/parentprofile/account" },
+  { label: "Sổ địa chỉ", icon: MapPinHouse, to: "/parentprofile/address-book" },
+  { label: "Học sinh", icon: GraduationCap, to: "/parentprofile/students" },
+  { label: "Đơn hàng", icon: ShoppingBag, to: "/parentprofile/orders" },
+  { label: "Ví hoàn tiền", icon: WalletCards, to: "/parentprofile/wallet" },
+  { label: "Thử đồ", icon: History, to: "/parentprofile/history" },
+  { label: "Bodygram", icon: ScanLine, to: "/parentprofile/bodygram-history" },
+  { label: "Đánh giá", icon: Star, to: "/parentprofile/reviews" },
+  { label: "Hỗ trợ", icon: LifeBuoy, to: "/parentprofile/support" },
+  { label: "Cài đặt", icon: Settings, to: "/parentprofile/settings" },
 ];
 
 const SECTION_MATCHERS: Record<string, string[]> = {
@@ -41,8 +40,6 @@ export const ParentProfile = (): JSX.Element => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-  const prevPathRef = useRef(location.pathname);
-  const [showLoader, setShowLoader] = useState(false);
   const [user, setUser] = useState<ParentUser | null>(() => {
     try {
       const raw = localStorage.getItem("user") ?? sessionStorage.getItem("user");
@@ -94,19 +91,6 @@ export const ParentProfile = (): JSX.Element => {
 
     void syncFromApi();
   }, []);
-
-  useLayoutEffect(() => {
-    if (location.pathname !== prevPathRef.current) {
-      prevPathRef.current = location.pathname;
-      setShowLoader(true);
-    }
-  }, [location.pathname]);
-
-  useEffect(() => {
-    if (!showLoader) return;
-    const timeoutId = setTimeout(() => setShowLoader(false), 300);
-    return () => clearTimeout(timeoutId);
-  }, [showLoader]);
 
   const handleLogout = () => {
     setIsLoggingOut(true);
@@ -192,7 +176,6 @@ export const ParentProfile = (): JSX.Element => {
                             </div>
                             <div className="min-w-0 flex-1">
                               <p className="truncate text-sm font-extrabold">{item.label}</p>
-                              <p className="truncate text-xs font-medium text-slate-500">{item.description}</p>
                             </div>
                             {isActive ? <ChevronRight className="h-4 w-4 text-violet-600" /> : null}
                           </div>
@@ -215,38 +198,9 @@ export const ParentProfile = (): JSX.Element => {
           </aside>
 
           <section className="relative min-h-[420px] overflow-hidden rounded-[30px] border border-gray-200 bg-white shadow-soft-md">
-            <AnimatePresence>
-              {showLoader ? (
-                <motion.div
-                  key="parent-tab-loader"
-                  initial={{ opacity: 1 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.15 }}
-                  className="absolute inset-0 z-10 flex items-center justify-center bg-white/95"
-                >
-                  <div className="flex flex-col items-center gap-3">
-                    <div className="h-10 w-10 animate-spin rounded-full border-2 border-violet-100 border-t-violet-600" />
-                    <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">Đang tải khu vực</p>
-                  </div>
-                </motion.div>
-              ) : null}
-            </AnimatePresence>
-
-            <AnimatePresence mode="wait">
-              {!showLoader ? (
-                <motion.div
-                  key={location.pathname}
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  transition={{ duration: 0.2, ease: "easeInOut" }}
-                  className="space-y-6 p-5 lg:p-8"
-                >
-                  <Outlet />
-                </motion.div>
-              ) : null}
-            </AnimatePresence>
+            <div className="space-y-6 p-5 lg:p-8">
+              <Outlet />
+            </div>
           </section>
         </div>
       </div>

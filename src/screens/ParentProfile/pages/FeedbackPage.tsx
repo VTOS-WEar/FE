@@ -200,14 +200,10 @@ function EditableFeedbackCard({
           <textarea
             value={formState.comment}
             onChange={(e) => onCommentChange(e.target.value)}
-            placeholder="Chia sẻ trải nghiệm của bạn về sản phẩm này..."
             maxLength={500}
             className="w-full p-3 border border-gray-200 rounded-lg text-sm font-medium text-gray-900 placeholder-[#9CA3AF] focus:outline-none focus:bg-gray-100 resize-none"
             rows={4}
           />
-          <p className="text-xs text-gray-400 mt-1">
-            {formState.comment.length}/500
-          </p>
         </div>
 
         {/* Buttons */}
@@ -504,14 +500,10 @@ export function FeedbackPage(): JSX.Element {
                     <textarea
                       value={formState?.comment ?? ""}
                       onChange={(e) => handleCommentChange(item.orderItemId, e.target.value)}
-                      placeholder="Chia sẻ trải nghiệm của bạn về sản phẩm này..."
                       maxLength={500}
                       className="w-full p-3 border border-gray-200 rounded-lg text-sm font-medium text-gray-900 placeholder-[#9CA3AF] focus:outline-none focus:bg-gray-100 resize-none"
                       rows={4}
                     />
-                    <p className="text-xs text-gray-400 mt-1">
-                      {(formState?.comment ?? "").length}/500
-                    </p>
                   </div>
 
                   {/* Submit/Update Button */}
@@ -529,12 +521,6 @@ export function FeedbackPage(): JSX.Element {
           })}
         </div>
 
-        {/* Info Box */}
-        <div className="mt-6 p-4 bg-violet-50 border border-gray-200 rounded-lg">
-          <p className="font-bold text-gray-900 text-xs">
-            💡 Mẹo: Đánh giá của bạn sẽ giúp các phụ huynh khác chọn sản phẩm phù hợp!
-          </p>
-        </div>
       </div>
     </div>
   );

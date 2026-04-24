@@ -17,10 +17,9 @@ const statusMeta: Record<string, { label: string; className: string; icon: typeo
     Closed: { label: "Đã đóng", className: "bg-slate-100 text-slate-600 border-slate-200", icon: XCircle },
 };
 
-const roleCopy: Record<RoleMode, { title: string; subtitle: string; empty: string }> = {
+const roleCopy: Record<RoleMode, { title: string; subtitle?: string; empty: string }> = {
     Parent: {
         title: "Hỗ trợ Admin",
-        subtitle: "Gửi yêu cầu khi cần Admin kiểm tra tài khoản, đơn hàng, thanh toán hoặc thông tin học sinh.",
         empty: "Bạn chưa có yêu cầu hỗ trợ nào.",
     },
     Provider: {
@@ -164,7 +163,7 @@ function SupportTicketsPanel({ role }: { role: RoleMode }): JSX.Element {
                             Support desk
                         </div>
                         <h1 className="mt-4 text-2xl font-black text-slate-950 sm:text-3xl">{copy.title}</h1>
-                        <p className="mt-2 text-sm font-semibold leading-6 text-slate-600">{copy.subtitle}</p>
+                        {copy.subtitle ? <p className="mt-2 text-sm font-semibold leading-6 text-slate-600">{copy.subtitle}</p> : null}
                     </div>
                     <div className="grid gap-3 sm:grid-cols-3 lg:min-w-[420px]">
                         {stats.map((item) => {
@@ -315,7 +314,7 @@ function SupportTicketsPanel({ role }: { role: RoleMode }): JSX.Element {
                                 </div>
                             </div>
                         ) : (
-                            <p className="mt-4 text-sm font-semibold leading-6 text-slate-500">Chọn một ticket trong danh sách để xem phản hồi và lịch sử xử lý.</p>
+                            <p className="mt-4 text-sm font-semibold leading-6 text-slate-500">Chưa chọn ticket.</p>
                         )}
                     </section>
                 </aside>

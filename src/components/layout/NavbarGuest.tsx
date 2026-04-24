@@ -11,6 +11,7 @@ import { useNavigate, Link, useLocation } from "react-router-dom"
 import { useCart } from "../../contexts/CartContext"
 import { getParentProfile } from "../../lib/api/users"
 import { searchPublic, type PublicSearchResponse } from "../../lib/api/public"
+import { ClassGroupChatLauncher } from "../ChatWidget/ClassGroupChatLauncher"
 
 function getSessionUser(): { fullName: string; role: string; avatar?: string | null } | null {
   const raw = localStorage.getItem("user") || sessionStorage.getItem("user")
@@ -455,6 +456,8 @@ export function NavbarGuest() {
             <button type="button" className={nbIconBtn}>
               <Bell size={18} className="text-gray-900" />
             </button>
+
+            {loggedIn && <ClassGroupChatLauncher />}
 
             {loggedIn ? (
               <DropdownMenu>
