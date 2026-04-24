@@ -5,7 +5,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
-import { Bell, ChevronDown, Clock, GraduationCap, History, LogIn, LogOut, Menu, Package, ScanLine, Search, Settings, ShoppingCart, Star, User, Users, X } from "lucide-react"
+import { Bell, ChevronDown, Clock, GraduationCap, History, LifeBuoy, LogIn, LogOut, Menu, Package, ScanLine, Search, Settings, ShoppingCart, Star, User, Users, X } from "lucide-react"
 import { useState, useEffect, useRef } from "react"
 import { useNavigate, Link, useLocation } from "react-router-dom"
 import { useCart } from "../../contexts/CartContext"
@@ -165,6 +165,7 @@ export function NavbarGuest() {
     { label: "Lịch sử thử đồ", to: "/parentprofile/history", icon: History },
     { label: "Lịch sử Bodygram", to: "/parentprofile/bodygram-history", icon: ScanLine },
     { label: "Đánh giá", to: "/parentprofile/reviews", icon: Star },
+    { label: "Hỗ trợ", to: "/parentprofile/support", icon: LifeBuoy },
     { label: "Cài đặt", to: "/parentprofile/settings", icon: Settings },
   ] as const
 

@@ -77,9 +77,6 @@ export const ConfirmSave = (): JSX.Element => {
                     <h1 className="font-bold text-black text-2xl">
                         Xác nhận nhập dữ liệu
                     </h1>
-                    <p className="font-medium text-[#4c5769] text-sm">
-                        Vui lòng xác nhận thông tin các tệp sẽ được nhập vào hệ thống.
-                    </p>
                 </div>
 
                 {/* Info box */}

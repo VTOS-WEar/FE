@@ -3,7 +3,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import {
     ArrowLeft,
     Calendar,
+    CheckCircle2,
     DollarSign,
+    Loader2,
     MapPin,
     Package,
     ShieldCheck,
@@ -13,6 +15,7 @@ import {
 } from "lucide-react";
 import { ApiError } from "../../../lib/api/clients";
 import {
+    confirmDirectOrderDelivery,
     getMyDirectOrderDetail,
     getOrderDetail,
     type MyDirectOrderDetailDto,
@@ -247,6 +250,7 @@ export function OrderDetailPage(): JSX.Element {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const [state, setState] = useState<OrderPageState>({ type: "missing" });
+    const [confirmingDelivery, setConfirmingDelivery] = useState(false);
 
     useEffect(() => {
         let disposed = false;
@@ -297,6 +301,28 @@ export function OrderDetailPage(): JSX.Element {
             disposed = true;
         };
     }, [orderId]);
+
+    const handleConfirmDelivery = async (order: MyDirectOrderDetailDto) => {
+        if (order.orderStatus !== "Shipped" || !window.confirm("Xác nhận bạn đã nhận được đơn hàng này?")) return;
+
+        setConfirmingDelivery(true);
+        try {
+            await confirmDirectOrderDelivery(order.orderId);
+            setState({
+                type: "direct",
+                order: {
+                    ...order,
+                    orderStatus: "Delivered",
+                    canRateProvider: order.existingProviderRating ? false : true,
+                },
+            });
+            window.alert("Đã xác nhận nhận hàng. Bạn có thể đánh giá nhà cung cấp.");
+        } catch (error) {
+            window.alert(error instanceof Error ? error.message : "Không thể xác nhận nhận hàng.");
+        } finally {
+            setConfirmingDelivery(false);
+        }
+    };
 
     if (loading) {
         return (
@@ -409,6 +435,17 @@ export function OrderDetailPage(): JSX.Element {
                                     {order.shippingCompany && <p>Đơn vị vận chuyển: <span className="font-bold text-gray-900">{order.shippingCompany}</span></p>}
                                     {order.trackingCode && <p>Mã vận đơn: <span className="font-bold text-gray-900">{order.trackingCode}</span></p>}
                                 </div>
+                                {order.orderStatus === "Shipped" && (
+                                    <button
+                                        type="button"
+                                        onClick={() => void handleConfirmDelivery(order)}
+                                        disabled={confirmingDelivery}
+                                        className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-[16px] border border-emerald-200 bg-emerald-600 px-4 py-3 text-sm font-extrabold text-white shadow-soft-sm transition hover:bg-emerald-700 disabled:opacity-60"
+                                    >
+                                        {confirmingDelivery ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
+                                        {confirmingDelivery ? "Đang xác nhận..." : "Đã nhận hàng"}
+                                    </button>
+                                )}
                             </div>
 
                             <div className="rounded-[24px] border border-gray-200 bg-white p-6 shadow-soft-sm">

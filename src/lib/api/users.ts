@@ -44,6 +44,24 @@ export interface UpsertParentAddressDto {
   isDefault: boolean;
 }
 
+export interface AddParentBankAccountDto {
+  bankName: string;
+  bankCode: string;
+  accountNumber: string;
+  accountHolderName: string;
+  isDefault: boolean;
+}
+
+export interface ParentBankAccountDto {
+  bankAccountId: string;
+  bankName: string;
+  bankCode?: string | null;
+  accountNumber: string;
+  accountHolderName: string;
+  isDefault: boolean;
+  isVerified: boolean;
+}
+
 export interface ParentAddressFormValues {
   label: string;
   recipientName: string;
@@ -192,6 +210,14 @@ export async function deleteParentAddress(addressId: string): Promise<void> {
 export async function setDefaultParentAddress(addressId: string): Promise<void> {
   await api(`${endpoints.users.addresses}/${addressId}/default`, {
     method: "PUT",
+    auth: true,
+  });
+}
+
+export async function addParentBankAccount(dto: AddParentBankAccountDto): Promise<ParentBankAccountDto> {
+  return api<ParentBankAccountDto>(endpoints.users.bankAccounts, {
+    method: "POST",
+    body: JSON.stringify(dto),
     auth: true,
   });
 }

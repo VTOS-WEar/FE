@@ -15,8 +15,8 @@ export const ImportantNotesSection = (): JSX.Element => {
 
                 <p className="mx-4 sm:mx-[25px] mt-3 font-medium text-[#677489] text-sm sm:text-base tracking-[0] leading-normal">
                     Vui lòng sử dụng file mẫu mới nhất để tránh lỗi định dạng khi tải lên.
-                    File mẫu bao gồm các cột: Mã học sinh (nếu có), Họ và tên, Lớp, Giới
-                    tính, Ngày sinh, Số điện thoại của phụ huynh.
+                    File mẫu bao gồm các cột: Họ và tên, Lớp, Giới tính, Ngày sinh,
+                    Số điện thoại của phụ huynh. Mã học sinh sẽ được hệ thống tự động tạo.
                 </p>
 
                 <Button className="flex items-center justify-center gap-2.5 mx-4 sm:mx-[25px] mt-6 sm:mt-[27px] mb-6 sm:mb-[33px] h-10 sm:h-11 bg-[#dce2e8] hover:bg-[#ccd6dd] rounded-[10px] text-black font-bold text-sm sm:text-base">

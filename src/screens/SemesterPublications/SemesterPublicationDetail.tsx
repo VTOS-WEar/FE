@@ -45,10 +45,8 @@ function formatDateTime(value: string | null | undefined) {
     });
 }
 
-function getDaysRemaining(value: string) {
-    const diff = new Date(value).getTime() - Date.now();
-    return Math.ceil(diff / (1000 * 60 * 60 * 24));
-}
+const richTextDisplayClass =
+    "prose-editor-content max-w-none text-sm font-medium leading-7 text-[#4c5769] sm:text-base [&_a]:font-bold [&_a]:text-violet-700 [&_blockquote]:border-l-4 [&_blockquote]:border-violet-200 [&_blockquote]:pl-4 [&_h2]:text-xl [&_h2]:font-extrabold [&_h3]:text-lg [&_h3]:font-extrabold [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-2 [&_ul]:list-disc [&_ul]:pl-6";
 
 function getStatusMeta(status: string) {
     switch (status) {
@@ -57,21 +55,18 @@ function getStatusMeta(status: string) {
                 label: "Đang mở",
                 badgeClass: "nb-badge nb-badge-green",
                 heroClass: "border-emerald-200 bg-emerald-50",
-                helper: "Đợt công bố đang hiển thị cho phụ huynh. Nên theo dõi sát mốc kết thúc và danh sách nhà cung cấp đang hoạt động.",
             };
         case "Closed":
             return {
                 label: "Đã đóng",
                 badgeClass: "nb-badge nb-badge-blue",
                 heroClass: "border-slate-200 bg-slate-50",
-                helper: "Đợt công bố đã khép lại và hiện đóng vai trò hồ sơ tham chiếu cho các cấu hình đã dùng.",
             };
         default:
             return {
                 label: "Bản nháp",
                 badgeClass: "nb-badge text-amber-700 bg-amber-50 border border-amber-200",
                 heroClass: "border-amber-200 bg-amber-50",
-                helper: "Bản nháp này chưa phát hành. Cần hoàn thiện metadata, đồng phục và nhà cung cấp trước khi công khai.",
             };
     }
 }
@@ -79,17 +74,14 @@ function getStatusMeta(status: string) {
 function OverviewCard({
     label,
     value,
-    helper,
 }: {
     label: string;
     value: string;
-    helper: string;
 }) {
     return (
         <div className="rounded-[20px] border border-gray-200 bg-white p-4 shadow-soft-sm">
             <p className="text-[11px] font-extrabold uppercase tracking-[0.18em] text-gray-500">{label}</p>
             <p className="mt-3 text-lg font-extrabold text-gray-900">{value}</p>
-            <p className="mt-2 text-sm font-medium leading-6 text-[#5b6475]">{helper}</p>
         </div>
     );
 }
@@ -183,8 +175,6 @@ export const SemesterPublicationDetail = (): JSX.Element => {
         () => publication?.providers.filter((provider) => provider.status === "Active").length ?? 0,
         [publication]
     );
-    const daysRemaining = publication ? getDaysRemaining(publication.endDate) : null;
-
     return (
         <div className="nb-page flex flex-col">
             {toast && (
@@ -257,9 +247,12 @@ export const SemesterPublicationDetail = (): JSX.Element => {
                                             <h1 className="mt-4 text-[28px] font-extrabold leading-tight text-gray-900 lg:text-[34px]">
                                                 {publication.semester} / {publication.academicYear}
                                             </h1>
-                                            <p className="mt-3 max-w-3xl text-sm font-medium leading-7 text-[#4c5769] sm:text-base">
-                                                {publication.description || "Chưa có mô tả cho đợt công bố này. Nên bổ sung mục tiêu áp dụng và lưu ý vận hành để đội quản trị dễ theo dõi hơn."}
-                                            </p>
+                                            {publication.description && (
+                                                <div
+                                                    className={`mt-3 max-w-3xl ${richTextDisplayClass}`}
+                                                    dangerouslySetInnerHTML={{ __html: publication.description }}
+                                                />
+                                            )}
                                         </div>
 
                                         <div className="flex flex-wrap gap-3 xl:justify-end">
@@ -287,7 +280,6 @@ export const SemesterPublicationDetail = (): JSX.Element => {
                                                 </div>
                                                 <div>
                                                     <p className="text-sm font-extrabold text-gray-900">Trạng thái vận hành</p>
-                                                    <p className="mt-1 text-sm font-medium leading-6 text-[#5b6475]">{statusMeta.helper}</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -295,9 +287,6 @@ export const SemesterPublicationDetail = (): JSX.Element => {
                                         <div className="rounded-[22px] border border-gray-200 bg-white p-4 shadow-soft-sm">
                                             <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-gray-500">Lần cập nhật gần nhất</p>
                                             <p className="mt-2 text-sm font-bold text-gray-900">{formatDateTime(publication.updatedAt || publication.createdAt)}</p>
-                                            <p className="mt-2 text-sm font-medium leading-6 text-[#5b6475]">
-                                                Dùng mốc này để biết đợt công bố đã được rà soát gần đây hay chưa.
-                                            </p>
                                         </div>
                                     </div>
                                 </section>
@@ -306,22 +295,18 @@ export const SemesterPublicationDetail = (): JSX.Element => {
                                     <OverviewCard
                                         label="Khung thời gian"
                                         value={`${formatDate(publication.startDate)} - ${formatDate(publication.endDate)}`}
-                                        helper={daysRemaining !== null && daysRemaining >= 0 ? `Còn khoảng ${daysRemaining} ngày đến khi kết thúc.` : "Đợt này đã qua mốc kết thúc dự kiến."}
                                     />
                                     <OverviewCard
                                         label="Đồng phục"
                                         value={String(publication.outfits.length)}
-                                        helper={publication.outfits.length > 0 ? "Danh mục đã được gắn vào đợt công bố." : "Chưa có đồng phục nào được thêm."}
                                     />
                                     <OverviewCard
                                         label="Nhà cung cấp hoạt động"
                                         value={String(activeProviders)}
-                                        helper={activeProviders > 0 ? "Đang có nhà cung cấp sẵn sàng tham gia." : "Chưa có nhà cung cấp nào ở trạng thái hoạt động."}
                                     />
                                     <OverviewCard
                                         label="Quy tắc vận hành"
                                         value={publication.rules ? "Đã khai báo" : "Chưa có"}
-                                        helper={publication.rules || "Nên ghi rõ ghi chú vận hành, đổi size hoặc phạm vi áp dụng nếu có."}
                                     />
                                 </section>
 
@@ -333,15 +318,18 @@ export const SemesterPublicationDetail = (): JSX.Element => {
                                             </div>
                                             <div>
                                                 <h2 className="text-lg font-extrabold text-gray-900">Bản nháp chưa đủ điều kiện phát hành</h2>
-                                                <p className="mt-1 text-sm font-medium leading-6 text-[#6b5b2a]">
-                                                    {publication.outfits.length === 0 && activeProviders === 0
-                                                        ? "Cần thêm ít nhất một đồng phục và một nhà cung cấp hoạt động trước khi công khai."
-                                                        : publication.outfits.length === 0
-                                                          ? "Cần thêm ít nhất một đồng phục vào công bố."
-                                                          : "Cần kích hoạt ít nhất một nhà cung cấp trước khi công khai."}
-                                                </p>
                                             </div>
                                         </div>
+                                    </section>
+                                )}
+
+                                {publication.rules && (
+                                    <section className="rounded-[20px] border border-violet-200 bg-violet-50/70 p-5 shadow-soft-sm">
+                                        <h2 className="text-lg font-extrabold text-gray-900">Quy tắc / ghi chú</h2>
+                                        <div
+                                            className={`mt-3 ${richTextDisplayClass}`}
+                                            dangerouslySetInnerHTML={{ __html: publication.rules }}
+                                        />
                                     </section>
                                 )}
 
@@ -351,9 +339,6 @@ export const SemesterPublicationDetail = (): JSX.Element => {
                                             <div className="flex items-start justify-between gap-3">
                                                 <div>
                                                     <h2 className="text-lg font-extrabold text-gray-900">Danh mục đồng phục đang áp dụng</h2>
-                                                    <p className="mt-1 text-sm font-medium leading-6 text-[#6F6A7D]">
-                                                        Phần này cho biết những mẫu nào đã được ghép vào đợt công bố hiện tại.
-                                                    </p>
                                                 </div>
                                                 <button
                                                     onClick={() => navigate(`/school/semester-publications/${publication.id}/edit`)}
@@ -397,9 +382,6 @@ export const SemesterPublicationDetail = (): JSX.Element => {
                                         <div className="nb-card-static p-0">
                                             <div className="border-b border-gray-200 px-6 py-5">
                                                 <h2 className="text-lg font-extrabold text-gray-900">Nhà cung cấp đang tham gia</h2>
-                                                <p className="mt-1 text-sm font-medium leading-6 text-[#6F6A7D]">
-                                                    Theo dõi các nhà cung cấp đã được kích hoạt và trạng thái tham gia của họ.
-                                                </p>
                                             </div>
                                             <div className="space-y-3 px-6 py-6">
                                                 {publication.providers.length === 0 ? (
@@ -470,11 +452,6 @@ export const SemesterPublicationDetail = (): JSX.Element => {
                                                     )}
                                                     <div>
                                                         <p className="text-sm font-extrabold text-gray-900">Mức độ sẵn sàng nhà cung cấp</p>
-                                                        <p className="mt-1 text-sm font-medium leading-6 text-[#5b6475]">
-                                                            {activeProviders > 0
-                                                                ? `${activeProviders} nhà cung cấp đang ở trạng thái hoạt động.`
-                                                                : "Chưa có nhà cung cấp hoạt động, cần xử lý trước khi công khai."}
-                                                        </p>
                                                     </div>
                                                 </div>
                                                 <button

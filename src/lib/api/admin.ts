@@ -70,10 +70,79 @@ export type PaymentTransactionDto = {
     createdAt: string;
 };
 
+export type AdminSemesterPublicationOptionDto = {
+    id: string;
+    semester: string;
+    academicYear: string;
+    schoolId: string;
+    schoolName: string;
+    status: string;
+    startDate: string;
+    endDate: string;
+    orderCount: number;
+};
+
+export type AdminSemesterPublicationListDto = {
+    items: AdminSemesterPublicationOptionDto[];
+    totalCount: number;
+};
+
+export type SemesterMonitorStatusMetricDto = {
+    status: string;
+    count: number;
+    rate: number;
+    totalAmount: number;
+};
+
+export type SemesterMonitorOrderDetailDto = {
+    orderId: string;
+    orderNumber: string;
+    studentName: string;
+    schoolName: string;
+    providerName?: string;
+    orderStatus: string;
+    paymentStatus: string;
+    totalAmount: number;
+    createdAt: string;
+    paidAt?: string;
+};
+
+export type SemesterMonitorReportDto = {
+    publication: {
+        id: string;
+        semester: string;
+        academicYear: string;
+        schoolId: string;
+        schoolName: string;
+        status: string;
+        startDate: string;
+        endDate: string;
+    };
+    summary: {
+        totalOrders: number;
+        completedOrders: number;
+        refundedOrders: number;
+        cancelledOrders: number;
+        openOrders: number;
+        completedOrderRate: number;
+        refundedOrderRate: number;
+        cancelledOrderRate: number;
+        totalRevenue: number;
+        refundedAmount: number;
+        paymentAttempts: number;
+        completedPayments: number;
+        paymentCompletionRate: number;
+    };
+    orderStatusBreakdown: SemesterMonitorStatusMetricDto[];
+    paymentStatusBreakdown: SemesterMonitorStatusMetricDto[];
+    orders: SemesterMonitorOrderDetailDto[];
+};
+
 export type CategoryDto = {
     id: string;
     categoryName: string;
     createdAt: string;
+    outfitCount: number;
 };
 
 export type ReportDto = {
@@ -191,6 +260,21 @@ export async function getPaymentCompletionRate(dateFrom?: string, dateTo?: strin
     if (dateFrom) query.set("dateFrom", dateFrom);
     if (dateTo) query.set("dateTo", dateTo);
     return api(`/api/admin/analytics/payment-completion-rate?${query}`, { method: "GET", auth: true });
+}
+
+export async function getAdminSemesterPublications(params: {
+    page?: number; pageSize?: number; status?: string;
+} = {}): Promise<AdminSemesterPublicationListDto> {
+    const query = new URLSearchParams();
+    if (params.page) query.set("page", String(params.page));
+    if (params.pageSize) query.set("pageSize", String(params.pageSize));
+    if (params.status) query.set("status", params.status);
+    return api<AdminSemesterPublicationListDto>(`/api/admin/semester-publications?${query}`, { method: "GET", auth: true });
+}
+
+export async function getSemesterMonitorReport(semesterPublicationId: string): Promise<SemesterMonitorReportDto> {
+    const query = new URLSearchParams({ semesterPublicationId });
+    return api<SemesterMonitorReportDto>(`/api/admin/reports/semester-monitor?${query}`, { method: "GET", auth: true });
 }
 
 // ── Withdrawal Requests ──
@@ -407,8 +491,12 @@ export type AdminComplaintDto = {
     id: string;
     title: string;
     description: string;
+    category: string;
     status: string;
-    schoolName: string;
+    requesterRole: string;
+    requesterName: string;
+    requesterEmail: string;
+    schoolName?: string;
     providerName?: string;
     campaignName?: string;
     response?: string;

@@ -276,6 +276,13 @@ export async function cancelDirectOrder(orderId: string, reason?: string): Promi
   });
 }
 
+export async function confirmDirectOrderDelivery(orderId: string): Promise<void> {
+  await api(`${endpoints.orders.cancel}/${orderId}/confirm-delivery`, {
+    method: "PUT",
+    auth: true,
+  });
+}
+
 export async function submitProviderRating(
   orderId: string,
   payload: SubmitProviderRatingRequest,

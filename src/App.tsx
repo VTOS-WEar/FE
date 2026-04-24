@@ -52,6 +52,7 @@ import { AccountTab } from "./screens/ParentProfile/tabs/AccountTab";
 import { AddressBookTab } from "./screens/ParentProfile/tabs/AddressBookTab";
 import { StudentsTab } from "./screens/ParentProfile/tabs/StudentsTab";
 import { OrdersTab } from "./screens/ParentProfile/tabs/OrdersTab";
+import { WalletTab } from "./screens/ParentProfile/tabs/WalletTab";
 import { HistoryTab } from "./screens/ParentProfile/tabs/HistoryTab";
 import { ReviewsTab } from "./screens/ParentProfile/tabs/ReviewsTab";
 import { SettingsTab } from "./screens/ParentProfile/tabs/SettingsTab";
@@ -68,6 +69,8 @@ import { ContactPartnership } from "./screens/ContactPartnership";
 import { AdminAccountRequests } from "./screens/AdminAccountRequests";
 import AdminTransactions from "./screens/AdminTransactions/AdminTransactions";
 import AdminComplaints from "./screens/AdminComplaints/AdminComplaints";
+import { AdminSemesterMonitor } from "./screens/AdminSemesterMonitor";
+import { AdminCategories } from "./screens/AdminCategories";
 import { AdminAccountSettings } from "./screens/AdminProfile/AdminAccountSettings";
 import { ProviderProfile } from "./screens/ProviderProfile/ProviderProfile";
 import { ProviderAccountSettings } from "./screens/ProviderProfile/ProviderAccountSettings";
@@ -85,6 +88,7 @@ import { ProviderOrderDetail } from "./screens/ProviderOrders/ProviderOrderDetai
 import { ProviderRatings } from "./screens/ProviderRatings/ProviderRatings";
 import { SchoolTeacherReports } from "./screens/SchoolTeacherReports";
 import { SubmitTeacherReportPage, TeacherAccount, TeacherDashboard, TeacherMessages, TeacherReminders, TeacherReports } from "./screens/TeacherWorkspace";
+import { SupportTicketsPage } from "./screens/SupportTickets";
 
 /** Smart root redirect: School→dashboard, others→homepage */
 function RootRedirect() {
@@ -164,9 +168,11 @@ const router = createBrowserRouter([
       { path: "address-book", element: <AddressBookTab /> },
       { path: "students", element: <StudentsTab /> },
       { path: "orders", element: <OrdersTab /> },
+      { path: "wallet", element: <WalletTab /> },
       { path: "history", element: <HistoryTab /> },
       { path: "bodygram-history", element: <BodygramHistoryTab /> },
       { path: "reviews", element: <ReviewsTab /> },
+      { path: "support", element: <SupportTicketsPage /> },
       { path: "settings", element: <SettingsTab /> },
       { path: "feedback", element: <FeedbackPage /> },
       { path: "orders/:orderId", element: <OrderDetailPage /> },
@@ -241,6 +247,10 @@ const router = createBrowserRouter([
     element: <RoleGuard allowedRoles={["HomeroomTeacher"]}><SubmitTeacherReportPage /></RoleGuard>,
   },
   {
+    path: "/teacher/support",
+    element: <RoleGuard allowedRoles={["HomeroomTeacher"]}><SupportTicketsPage /></RoleGuard>,
+  },
+  {
     path: "/teacher/messages",
     element: <RoleGuard allowedRoles={["HomeroomTeacher"]}><TeacherMessages /></RoleGuard>,
   },
@@ -263,6 +273,14 @@ const router = createBrowserRouter([
   {
     path: "/provider/complaints",
     element: <RoleGuard allowedRoles={["Provider"]}><ProviderComplaints /></RoleGuard>,
+  },
+  {
+    path: "/provider/support",
+    element: <RoleGuard allowedRoles={["Provider"]}><SupportTicketsPage /></RoleGuard>,
+  },
+  {
+    path: "/school/support",
+    element: <RoleGuard allowedRoles={["School"]}><SupportTicketsPage /></RoleGuard>,
   },
   {
     path: "/school/teacher-reports",
@@ -312,6 +330,14 @@ const router = createBrowserRouter([
   {
     path: "/admin/complaints",
     element: <RoleGuard allowedRoles={["Admin"]}><AdminComplaints /></RoleGuard>,
+  },
+  {
+    path: "/admin/semester-monitor",
+    element: <RoleGuard allowedRoles={["Admin"]}><AdminSemesterMonitor /></RoleGuard>,
+  },
+  {
+    path: "/admin/categories",
+    element: <RoleGuard allowedRoles={["Admin"]}><AdminCategories /></RoleGuard>,
   },
   {
     path: "/admin/account-settings",

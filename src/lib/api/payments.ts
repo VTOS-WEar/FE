@@ -101,6 +101,25 @@ export async function getParentPaymentHistory(page = 1, pageSize = 20, startDate
     
     return api<ParentPaymentHistoryResponse>(url, { auth: true });
 }
+
+export async function getParentWallet(): Promise<WalletDto> {
+    return api<WalletDto>(endpoints.payments.parentWallet, { auth: true });
+}
+
+export async function getParentWalletTransactions(page = 1, pageSize = 20): Promise<WalletTransactionsResponse> {
+    return api<WalletTransactionsResponse>(
+        `${endpoints.payments.parentWalletTransactions}?page=${page}&pageSize=${pageSize}`,
+        { auth: true }
+    );
+}
+
+export async function requestParentWithdrawal(amount: number): Promise<{ withdrawalRequestId: string }> {
+    return api<{ withdrawalRequestId: string }>(endpoints.payments.parentWalletWithdrawals, {
+        method: "POST",
+        body: JSON.stringify({ amount }),
+        auth: true,
+    });
+}
 //#endregion
 
 //#region Provider

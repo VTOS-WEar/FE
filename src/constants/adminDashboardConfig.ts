@@ -1,8 +1,10 @@
 import {
     AlertTriangle,
+    BarChart3,
     CreditCard,
     LayoutDashboard,
     Settings,
+    Tags,
     UserPlus,
     Users,
     Wallet,
@@ -63,6 +65,16 @@ export const ADMIN_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, "isCollapsed" | "
                     icon: AlertTriangle,
                     label: "Hỗ trợ",
                     href: "/admin/complaints",
+                },
+                {
+                    icon: BarChart3,
+                    label: "Báo cáo học kỳ",
+                    href: "/admin/semester-monitor",
+                },
+                {
+                    icon: Tags,
+                    label: "Danh mục đồng phục",
+                    href: "/admin/categories",
                 },
             ],
         },

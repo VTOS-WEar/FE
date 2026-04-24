@@ -7,7 +7,6 @@ import {
     ChevronLeftIcon,
     ChevronRightIcon,
     DownloadIcon,
-    InfoIcon,
     UploadIcon,
 } from "lucide-react";
 import {
@@ -157,15 +156,6 @@ export const CheckAndPreview = (): JSX.Element => {
                             <h1 className="font-bold text-black text-2xl">
                                 Xem trước lỗi dữ liệu
                             </h1>
-                            <p className="font-medium text-[#4c5769] text-sm">
-                                Hệ thống phát hiện lỗi trong{" "}
-                                <span className="font-bold text-black">{ERROR_COUNT} dòng</span>{" "}
-                                trên tổng số{" "}
-                                <span className="font-bold text-black">{TOTAL_ROWS} dòng</span>{" "}
-                                đã tải lên từ tệp{" "}
-                                <span className="font-bold text-black italic">{FILE_NAME}</span>.{" "}
-                                Vui lòng sửa lỗi trực tiếp bên dưới hoặc tải lại tại đây.
-                            </p>
                         </div>
 
                         {/* Stat cards */}
@@ -205,13 +195,7 @@ export const CheckAndPreview = (): JSX.Element => {
                         </div>
 
                         {/* Info bar */}
-                        <div className="flex flex-wrap items-center justify-between gap-3 bg-[#ebf3fd] rounded-[10px] border border-[#c8def9] px-4 py-3">
-                            <div className="flex items-center gap-2">
-                                <InfoIcon className="w-4 h-4 text-[#3c6efd] flex-shrink-0" />
-                                <span className="font-medium text-[#4c5769] text-sm">
-                                    Bạn có thể chỉnh sửa trực tiếp vào các ô màu đỏ bên dưới.
-                                </span>
-                            </div>
+                        <div className="flex flex-wrap items-center justify-end gap-3 bg-[#ebf3fd] rounded-[10px] border border-[#c8def9] px-4 py-3">
                             <div className="flex items-center gap-2 flex-shrink-0">
                                 <Button variant="outline" className="h-9 gap-1.5 border-[#cac9d6] font-semibold text-[#4c5769] text-sm rounded-[8px]">
                                     <DownloadIcon className="w-4 h-4" />

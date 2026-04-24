@@ -76,13 +76,10 @@ export const SchoolClassDirectory = (): JSX.Element => {
                                         <FolderTree className="h-4 w-4" />
                                         Sơ đồ lớp học
                                     </div>
-                                    <h1 className="mt-3 text-[26px] font-extrabold leading-tight text-gray-900 lg:text-[34px]">
-                                        Quản lý học sinh theo khối và lớp
-                                    </h1>
-                                    <p className="mt-2 max-w-2xl text-sm font-medium leading-7 text-[#4c5769] sm:text-base">
-                                        Theo dõi từng khối, từng lớp để nắm giáo viên chủ nhiệm, tình trạng đo áo và mức độ liên kết phụ huynh.
-                                    </p>
-                                </div>
+                                     <h1 className="mt-3 text-[26px] font-extrabold leading-tight text-gray-900 lg:text-[34px]">
+                                         Quản lý học sinh theo khối và lớp
+                                     </h1>
+                                 </div>
                                 <div className="flex flex-wrap gap-3">
                                     <button onClick={() => navigate("/school/students/import")} className="nb-btn nb-btn-outline text-sm">
                                         <Upload className="h-4 w-4" />
@@ -133,13 +130,7 @@ export const SchoolClassDirectory = (): JSX.Element => {
                             </section>
                         )}
 
-                        {overview && overview.unassignedStudentCount > 0 && (
-                            <section className="mt-6 rounded-2xl border border-amber-200 bg-amber-50/80 p-4 text-sm font-medium text-amber-800 shadow-soft-sm">
-                                Có <span className="font-extrabold">{overview.unassignedStudentCount}</span> học sinh chưa được gán vào lớp. Bạn có thể kiểm tra trong trang danh sách cũ để xử lý bổ sung.
-                            </section>
-                        )}
-
-                        {loading && (
+                         {loading && (
                             <section className="mt-6 rounded-2xl border border-gray-200 bg-white p-10 text-center shadow-soft-md">
                                 <div className="mx-auto mb-3 h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-violet-600" />
                                 <p className="text-sm font-semibold text-[#4c5769]">Đang tải cấu trúc lớp học...</p>
@@ -154,13 +145,10 @@ export const SchoolClassDirectory = (): JSX.Element => {
 
                         {!loading && !error && overview && overview.grades.length === 0 && (
                             <section className="mt-6 rounded-2xl border border-gray-200 bg-white p-10 text-center shadow-soft-md">
-                                <GraduationCap className="mx-auto h-10 w-10 text-violet-600" />
-                                <h2 className="mt-4 text-xl font-extrabold text-gray-900">Chưa có lớp học nào</h2>
-                                <p className="mt-2 text-sm font-medium text-[#4c5769]">
-                                    Hệ thống đã sẵn sàng cho import giáo viên chủ nhiệm. Bạn hãy tải file mẫu và nhập dữ liệu để hệ thống tạo lớp học.
-                                </p>
-                            </section>
-                        )}
+                                 <GraduationCap className="mx-auto h-10 w-10 text-violet-600" />
+                                 <h2 className="mt-4 text-xl font-extrabold text-gray-900">Chưa có lớp học nào</h2>
+                             </section>
+                         )}
 
                         {!loading && !error && overview && overview.grades.length > 0 && (
                             <section className="mt-6 space-y-5">

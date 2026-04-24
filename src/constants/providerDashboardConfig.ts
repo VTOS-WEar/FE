@@ -5,6 +5,7 @@ import {
     ClipboardList,
     FileText,
     LayoutDashboard,
+    LifeBuoy,
     Settings,
     Wallet,
 } from "lucide-react";
@@ -39,6 +40,11 @@ export const PROVIDER_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, "isCollapsed" 
                     icon: AlertTriangle,
                     label: "Khiếu nại",
                     href: "/provider/complaints",
+                },
+                {
+                    icon: LifeBuoy,
+                    label: "Ho tro Admin",
+                    href: "/provider/support",
                 },
             ],
         },

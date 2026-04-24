@@ -117,39 +117,27 @@ function getContractTone(status: string) {
         case "Pending":
             return {
                 surface: "border-amber-200 bg-amber-50/70",
-                label: "Cần nhà trường xem lại nội dung và quyết định có tiếp tục hay không.",
-                actionLabel: "Rà soát để duyệt hoặc hủy",
             };
         case "PendingSchoolSign":
             return {
                 surface: "border-orange-200 bg-orange-50/70",
-                label: "Hợp đồng đã qua bước duyệt, đang chờ trường xác thực OTP để ký.",
-                actionLabel: "Mở văn bản để ký",
             };
         case "PendingProviderSign":
             return {
                 surface: "border-indigo-200 bg-indigo-50/70",
-                label: "Trường đã hoàn tất phần việc, đang chờ nhà cung cấp xác nhận ký.",
-                actionLabel: "Theo dõi phản hồi từ NCC",
             };
         case "Active":
         case "InUse":
             return {
                 surface: "border-emerald-200 bg-emerald-50/70",
-                label: "Thỏa thuận đang có hiệu lực và có thể được dùng cho các kỳ bán liên quan.",
-                actionLabel: "Theo dõi hợp đồng đang vận hành",
             };
         case "Rejected":
             return {
                 surface: "border-rose-200 bg-rose-50/70",
-                label: "Nhà cung cấp đã phản hồi từ chối, cần đọc lý do để điều chỉnh.",
-                actionLabel: "Xem lý do từ chối",
             };
         default:
             return {
                 surface: "border-slate-200 bg-slate-50",
-                label: "Hợp đồng này đã đóng vòng đời hoặc không còn chờ thao tác tiếp theo.",
-                actionLabel: "Mở hồ sơ để tra cứu",
             };
     }
 }
@@ -157,12 +145,10 @@ function getContractTone(status: string) {
 function SummaryCard({
     label,
     value,
-    hint,
     tone,
 }: {
     label: string;
     value: number;
-    hint: string;
     tone: "violet" | "amber" | "indigo" | "green";
 }) {
     const toneClass =
@@ -178,7 +164,6 @@ function SummaryCard({
         <div className={`rounded-[22px] border p-4 shadow-soft-sm ${toneClass}`}>
             <p className="text-[11px] font-extrabold uppercase tracking-[0.18em] text-gray-500">{label}</p>
             <p className="mt-3 text-3xl font-extrabold text-gray-900">{value}</p>
-            <p className="mt-2 text-sm font-medium leading-6 text-[#5b6475]">{hint}</p>
         </div>
     );
 }
@@ -227,7 +212,6 @@ function ContractCard({
                     <p className="mt-2 text-sm font-semibold text-[#4c5769]">
                         Nhà cung cấp: <span className="text-gray-900">{contract.providerName || "Chưa xác định"}</span>
                     </p>
-                    <p className="mt-2 text-sm font-medium leading-6 text-[#5b6475]">{tone.label}</p>
                 </div>
 
                 <button
@@ -253,7 +237,6 @@ function ContractCard({
                 <div className="rounded-[18px] border border-white/70 bg-white/90 p-4 shadow-soft-sm">
                     <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-gray-500">Phạm vi thỏa thuận</p>
                     <p className="mt-2 text-sm font-bold text-gray-900">{contract.items.length} mẫu đính kèm</p>
-                    <p className="mt-2 text-xs font-semibold text-[#5b6475]">{tone.actionLabel}</p>
                 </div>
             </div>
 
@@ -263,12 +246,7 @@ function ContractCard({
                 </div>
             )}
 
-            <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-white/70 pt-4">
-                <div className="inline-flex items-center gap-2 text-sm font-semibold text-[#4c5769]">
-                    <ClipboardCheck className="h-4 w-4 text-violet-600" />
-                    {tone.actionLabel}
-                </div>
-
+            <div className="mt-5 flex flex-wrap items-center justify-end gap-3 border-t border-white/70 pt-4">
                 <div className="flex flex-wrap gap-2" onClick={(event) => event.stopPropagation()}>
                     <button onClick={onViewDocument} className="nb-btn nb-btn-outline nb-btn-sm text-xs">
                         Xem hợp đồng
@@ -572,24 +550,6 @@ export function SchoolContracts() {
         return { total, waitingSchool, waitingProvider, active, rejected, expiringSoon };
     }, [contracts]);
 
-    const focusText =
-        summary.waitingSchool > 0
-            ? `${summary.waitingSchool} hợp đồng đang chờ nhà trường rà soát hoặc ký xác nhận.`
-            : summary.active > 0
-              ? `${summary.active} hợp đồng đang hiệu lực hoặc đang dùng cần theo dõi thời hạn.`
-              : "Hiện chưa có hợp đồng nào cần thao tác ngay từ phía nhà trường.";
-
-    const attentionText =
-        summary.waitingSchool > 0 || summary.expiringSoon > 0 || summary.rejected > 0
-            ? [
-                  summary.waitingSchool > 0 ? `${summary.waitingSchool} hợp đồng chờ thao tác từ trường` : null,
-                  summary.expiringSoon > 0 ? `${summary.expiringSoon} hợp đồng sắp hết hạn` : null,
-                  summary.rejected > 0 ? `${summary.rejected} hợp đồng bị từ chối` : null,
-              ]
-                  .filter(Boolean)
-                  .join(" · ")
-            : "";
-
     return (
         <div className="nb-page flex flex-col">
             {feedback && (
@@ -643,9 +603,6 @@ export function SchoolContracts() {
                                     <h1 className="mt-4 text-[28px] font-extrabold leading-tight text-gray-900 lg:text-[34px]">
                                         Theo dõi hợp đồng cung ứng của nhà trường
                                     </h1>
-                                    <p className="mt-3 max-w-2xl text-sm font-medium leading-7 text-[#4c5769] sm:text-base">
-                                        Xem nhanh hợp đồng đang chờ duyệt, chờ ký, còn hiệu lực hoặc đã đóng. Trước khi sử dụng, hãy kiểm tra phạm vi mẫu, thời hạn và trạng thái ký số của từng hợp đồng.
-                                    </p>
                                 </div>
 
                                 <div className="flex w-full max-w-[420px] flex-col gap-3 xl:items-end">
@@ -653,18 +610,14 @@ export function SchoolContracts() {
                                         <Plus className="h-4 w-4" />
                                         Tạo hợp đồng mới
                                     </button>
-                                    <div className="rounded-[20px] border border-white/80 bg-white/85 p-4 shadow-soft-sm">
-                                        <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-gray-500">Trọng tâm hôm nay</p>
-                                        <p className="mt-2 text-sm font-bold leading-6 text-gray-900">{focusText}</p>
-                                    </div>
                                 </div>
                             </div>
 
                             <div className="mt-6 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-                                <SummaryCard label="Tổng hợp đồng" value={summary.total} hint="Toàn bộ thỏa thuận đã tạo trên vai trò School." tone="violet" />
-                                <SummaryCard label="Chờ trường xử lý" value={summary.waitingSchool} hint="Bao gồm hợp đồng chờ duyệt hoặc chờ ký số." tone="amber" />
-                                <SummaryCard label="Chờ NCC" value={summary.waitingProvider} hint="Trường đã hoàn tất phần việc, đang đợi nhà cung cấp." tone="indigo" />
-                                <SummaryCard label="Đang hiệu lực" value={summary.active} hint="Các hợp đồng còn hiệu lực hoặc đang được sử dụng." tone="green" />
+                                <SummaryCard label="Tổng hợp đồng" value={summary.total} tone="violet" />
+                                <SummaryCard label="Chờ trường xử lý" value={summary.waitingSchool} tone="amber" />
+                                <SummaryCard label="Chờ NCC" value={summary.waitingProvider} tone="indigo" />
+                                <SummaryCard label="Đang hiệu lực" value={summary.active} tone="green" />
                             </div>
                         </section>
 
@@ -677,7 +630,6 @@ export function SchoolContracts() {
                                         </div>
                                         <div>
                                             <h2 className="text-lg font-extrabold text-gray-900">Hạng mục cần lưu ý</h2>
-                                            <p className="mt-1 text-sm font-medium leading-6 text-[#6b5b2a]">{attentionText}</p>
                                         </div>
                                     </div>
                                     <button
@@ -799,11 +751,6 @@ export function SchoolContracts() {
                                 <h2 className="mt-5 text-xl font-extrabold text-gray-900">
                                     {contracts.length === 0 ? "Chưa có hợp đồng nào" : "Không tìm thấy hợp đồng phù hợp"}
                                 </h2>
-                                <p className="mx-auto mt-2 max-w-xl text-sm font-medium leading-6 text-[#4c5769]">
-                                    {contracts.length === 0
-                                        ? "Tạo hợp đồng đầu tiên để xác lập phạm vi hợp tác với nhà cung cấp và chuẩn bị cho các kỳ bán tiếp theo."
-                                        : "Không có hợp đồng nào khớp với bộ lọc hiện tại. Hãy đổi trạng thái hoặc xóa từ khóa tìm kiếm."}
-                                </p>
                                 <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
                                     {contracts.length === 0 ? (
                                         <button onClick={() => setShowCreate(true)} className="nb-btn nb-btn-purple text-sm">
@@ -860,9 +807,6 @@ export function SchoolContracts() {
                                             <h2 className="mt-4 text-[26px] font-extrabold leading-tight text-gray-900 lg:text-[32px]">
                                                 {selected.contractName}
                                             </h2>
-                                            <p className="mt-2 text-sm font-medium leading-6 text-[#4c5769] lg:text-base">
-                                                Rà soát phạm vi mẫu đính kèm, trạng thái ký số và mốc hết hạn trước khi tiếp tục vận hành hợp đồng này.
-                                            </p>
                                         </div>
 
                                         <div className="flex flex-wrap gap-2 xl:justify-end">
@@ -910,11 +854,6 @@ export function SchoolContracts() {
                                                 </div>
                                                 <div>
                                                     <h3 className="text-lg font-extrabold text-gray-900">Thao tác của nhà trường</h3>
-                                                    <p className="mt-1 text-sm font-medium leading-6 text-[#6b5b2a]">
-                                                        {selected.status === "PendingSchoolSign"
-                                                            ? "Hợp đồng đã sẵn sàng cho bước ký số. Mở văn bản hợp đồng để yêu cầu OTP và hoàn tất xác nhận."
-                                                            : "Hợp đồng đang chờ nhà trường rà soát nội dung trước khi đi tiếp tới bước ký."}
-                                                    </p>
                                                 </div>
                                             </div>
                                         </section>
@@ -937,9 +876,6 @@ export function SchoolContracts() {
                                     <section className="nb-card-static p-0">
                                         <div className="border-b border-gray-200 px-6 py-5">
                                             <h3 className="text-lg font-extrabold text-gray-900">Mẫu đồng phục đính kèm</h3>
-                                            <p className="mt-1 text-sm font-medium text-[#6F6A7D]">
-                                                Đây là phạm vi mẫu được đưa vào thỏa thuận hợp tác hiện tại giữa nhà trường và nhà cung cấp.
-                                            </p>
                                         </div>
                                         <div className="grid gap-3 px-6 py-6 md:grid-cols-2">
                                             {selected.items.map((item) => (
@@ -950,9 +886,6 @@ export function SchoolContracts() {
                                                         </div>
                                                         <div>
                                                             <p className="text-sm font-extrabold text-gray-900">{item.outfitName}</p>
-                                                            <p className="mt-1 text-sm font-medium leading-6 text-[#5b6475]">
-                                                                Mẫu tham chiếu cho thỏa thuận cung ứng ở giai đoạn này.
-                                                            </p>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1000,10 +933,6 @@ export function SchoolContracts() {
                                     <h2 className="mt-4 text-[26px] font-extrabold leading-tight text-gray-900 lg:text-[32px]">
                                         Tạo hợp đồng cung ứng mới
                                     </h2>
-                                    <p className="mt-2 text-sm font-medium leading-6 text-[#4c5769] lg:text-base">
-                                        Xác lập phạm vi hợp tác với nhà cung cấp bằng cách chọn đối tác, thời hạn và các mẫu đồng phục tham chiếu.
-                                        Bước ký số sẽ diễn ra sau khi hợp đồng được duyệt theo đúng trạng thái nghiệp vụ hiện tại.
-                                    </p>
                                 </div>
                                 <button onClick={resetCreateForm} className="nb-btn nb-btn-outline text-sm">
                                     Đóng
@@ -1024,9 +953,6 @@ export function SchoolContracts() {
                                     <div className="nb-card-static p-0">
                                         <div className="border-b border-gray-200 px-6 py-5">
                                             <h3 className="text-lg font-extrabold text-gray-900">Nhận diện hợp đồng</h3>
-                                            <p className="mt-1 text-sm font-medium text-[#6F6A7D]">
-                                                Đặt tên rõ ràng để hợp đồng dễ tra cứu theo học kỳ hoặc đợt hợp tác.
-                                            </p>
                                         </div>
                                         <div className="space-y-5 px-6 py-6">
                                             <div>
@@ -1072,9 +998,6 @@ export function SchoolContracts() {
                                             <div className="flex items-center justify-between gap-3">
                                                 <div>
                                                     <h3 className="text-lg font-extrabold text-gray-900">Mẫu đính kèm</h3>
-                                                    <p className="mt-1 text-sm font-medium text-[#6F6A7D]">
-                                                        Chọn các mẫu đồng phục được đưa vào phạm vi thỏa thuận với nhà cung cấp.
-                                                    </p>
                                                 </div>
                                                 <button onClick={addItem} className="nb-btn nb-btn-outline nb-btn-sm text-xs">
                                                     Thêm mẫu
@@ -1099,9 +1022,6 @@ export function SchoolContracts() {
                                                                     </option>
                                                                 ))}
                                                             </select>
-                                                            <p className="mt-2 text-xs font-medium leading-5 text-[#5b6475]">
-                                                                Đây là mẫu sẽ được dùng làm phạm vi tham chiếu cho thỏa thuận cung ứng.
-                                                            </p>
                                                         </div>
 
                                                         {items.length > 1 && (
@@ -1120,9 +1040,6 @@ export function SchoolContracts() {
                                     <div className="nb-card-static p-0">
                                         <div className="border-b border-gray-200 px-6 py-5">
                                             <h3 className="text-lg font-extrabold text-gray-900">Checklist trước khi tạo</h3>
-                                            <p className="mt-1 text-sm font-medium text-[#6F6A7D]">
-                                                Rà soát nhanh các điều kiện cơ bản trước khi gửi hợp đồng vào quy trình xử lý.
-                                            </p>
                                         </div>
                                         <div className="space-y-3 px-6 py-6">
                                             {[
@@ -1151,12 +1068,6 @@ export function SchoolContracts() {
                                         </div>
                                     </div>
 
-                                    <div className="rounded-[24px] border border-violet-200 bg-violet-50 p-5 shadow-soft-sm">
-                                        <h3 className="text-lg font-extrabold text-gray-900">Luồng tiếp theo</h3>
-                                        <p className="mt-2 text-sm font-medium leading-6 text-[#5b6475]">
-                                            Sau khi tạo, hợp đồng sẽ đi theo các bước trạng thái sẵn có của hệ thống: duyệt nội dung, ký số bằng OTP và theo dõi hiệu lực.
-                                        </p>
-                                    </div>
                                 </aside>
                             </div>
 

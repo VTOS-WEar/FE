@@ -79,7 +79,7 @@ export const SchoolAccountSettings = (): JSX.Element => {
           </TopNavBar>
 
           <main className="nb-fade-in flex-1 px-4 py-6 sm:px-6 lg:px-10 lg:py-8">
-            <AccountSecuritySettings />
+            <AccountSecuritySettings suppressHelperText />
           </main>
         </div>
       </div>

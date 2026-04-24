@@ -219,6 +219,9 @@ export type StudentListItem = {
     id: string;
     fullName: string;
     studentCode: string | null;
+    classGroupId?: string | null;
+    className?: string | null;
+    academicYear?: string | null;
     grade: string;
     gender: string;
     dateOfBirth: string | null;
@@ -359,6 +362,9 @@ export type StudentDetailDto = {
     id: string;
     fullName: string;
     studentCode: string | null;
+    classGroupId?: string | null;
+    className?: string | null;
+    academicYear?: string | null;
     grade: string;
     gender: string;
     dateOfBirth: string | null;
@@ -370,18 +376,22 @@ export type StudentDetailDto = {
     isParentLinked: boolean;
 };
 
-export type CreateOrUpdateStudentRequest = {
+export type CreateStudentRequest = {
     fullName: string;
     dateOfBirth?: string | null;
+    classGroupId?: string | null;
     grade?: string;
     gender?: string;
     parentPhone?: string;
+};
+
+export type CreateOrUpdateStudentRequest = CreateStudentRequest & {
     heightCm?: number;
     weightKg?: number;
 };
 
 /** Create a student */
-export async function createStudent(data: CreateOrUpdateStudentRequest): Promise<StudentDetailDto> {
+export async function createStudent(data: CreateStudentRequest): Promise<StudentDetailDto> {
     return api<StudentDetailDto>(endpoints.schools.students, {
         method: "POST",
         body: JSON.stringify(data),
@@ -424,6 +434,8 @@ export type OutfitDto = {
     materialType: string | null;
     price: number;
     outfitType: number; // 1=Uniform, 2=Sportswear, 3=Accessory, 4=Other
+    categoryId?: string | null;
+    categoryName?: string | null;
     mainImageURL: string | null;
     sizeChartID: string | null;
     isAvailable: boolean;
@@ -452,6 +464,7 @@ export type CreateOutfitRequest = {
     description?: string | null;
     materialType?: string | null;
     outfitType: number; // 1=Uniform, 2=Sportswear, 3=Accessory, 4=Other
+    categoryId?: string | null;
     mainImageURL?: string | null;
     sizeChartID?: string | null;
     isCustomizable: boolean;
@@ -489,6 +502,7 @@ export type UpdateOutfitRequest = {
     description?: string | null;
     materialType?: string | null;
     outfitType?: number;
+    categoryId?: string | null;
     mainImageURL?: string | null;
     isAvailable?: boolean;
 };
@@ -500,6 +514,23 @@ export async function updateOutfit(id: string, data: UpdateOutfitRequest): Promi
         body: JSON.stringify(data),
         auth: true,
     });
+}
+
+export type UniformCategoryDto = {
+    categoryId: string;
+    categoryName: string;
+    outfitCount: number;
+};
+
+export type UniformCategoryListResponse = {
+    items: UniformCategoryDto[];
+};
+
+export async function getUniformCategories(): Promise<UniformCategoryDto[]> {
+    const response = await api<UniformCategoryListResponse>(endpoints.public.categories, {
+        method: "GET",
+    });
+    return response.items;
 }
 
 /** Delete an outfit by ID (soft delete) */

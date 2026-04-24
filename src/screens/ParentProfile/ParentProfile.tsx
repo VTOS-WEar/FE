@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
-import { ChevronRight, GraduationCap, History, LogOut, MapPinHouse, ScanLine, Settings, ShoppingBag, Star, User } from "lucide-react";
+import { ChevronRight, GraduationCap, History, LifeBuoy, LogOut, MapPinHouse, ScanLine, Settings, ShoppingBag, Star, User, WalletCards } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { GuestLayout } from "../../components/layout/GuestLayout";
 import { getParentProfile } from "../../lib/api/users";
@@ -10,9 +10,11 @@ const SECTION_ITEMS = [
   { label: "Sổ địa chỉ", description: "Địa chỉ giao hàng", icon: MapPinHouse, to: "/parentprofile/address-book" },
   { label: "Học sinh", description: "Liên kết hồ sơ", icon: GraduationCap, to: "/parentprofile/students" },
   { label: "Đơn hàng", description: "Đơn theo trường", icon: ShoppingBag, to: "/parentprofile/orders" },
+  { label: "Ví hoàn tiền", description: "Rút tiền hoàn", icon: WalletCards, to: "/parentprofile/wallet" },
   { label: "Thử đồ", description: "Lịch sử fitting", icon: History, to: "/parentprofile/history" },
   { label: "Bodygram", description: "Theo dõi số đo", icon: ScanLine, to: "/parentprofile/bodygram-history" },
   { label: "Đánh giá", description: "Phản hồi đơn hàng", icon: Star, to: "/parentprofile/reviews" },
+  { label: "Hỗ trợ", description: "Yêu cầu Admin", icon: LifeBuoy, to: "/parentprofile/support" },
   { label: "Cài đặt", description: "Bảo mật tài khoản", icon: Settings, to: "/parentprofile/settings" },
 ];
 
@@ -21,9 +23,11 @@ const SECTION_MATCHERS: Record<string, string[]> = {
   "/parentprofile/address-book": ["/parentprofile/address-book"],
   "/parentprofile/students": ["/parentprofile/students"],
   "/parentprofile/orders": ["/parentprofile/orders", "/parentprofile/feedback"],
+  "/parentprofile/wallet": ["/parentprofile/wallet"],
   "/parentprofile/history": ["/parentprofile/history"],
   "/parentprofile/bodygram-history": ["/parentprofile/bodygram-history"],
   "/parentprofile/reviews": ["/parentprofile/reviews"],
+  "/parentprofile/support": ["/parentprofile/support"],
   "/parentprofile/settings": ["/parentprofile/settings"],
 };
 

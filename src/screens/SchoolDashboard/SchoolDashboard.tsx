@@ -83,9 +83,6 @@ function PublicationWindowCard({
  </div>
  <div>
  <p className="font-bold text-amber-800 text-xs leading-tight">Sắp kết thúc</p>
- <p className="font-medium text-amber-800 text-[10px] mt-0.5 leading-snug">
- Rà soát nhà cung cấp và mẫu đồng phục trước khi đóng công bố học kỳ.
- </p>
  </div>
  </div>
  )}
@@ -223,9 +220,6 @@ export const SchoolDashboard = (): JSX.Element => {
  <h1 className="font-extrabold text-gray-900 text-[28px] lg:text-[32px] leading-[1.22]">
  Xin chào, Ban Giám Hiệu
  </h1>
- <p className="mt-2 text-sm font-medium leading-7 text-[#4c5769] sm:text-base">
- Theo dõi các đợt công bố đang mở và những việc cần chuẩn bị trước khi phát hành đợt mới.
- </p>
  </div>
 
  {loading ? (
@@ -250,7 +244,6 @@ export const SchoolDashboard = (): JSX.Element => {
  icon={<Users className="w-5 h-5 text-[#7C3AED]" strokeWidth={2.2} />}
  iconBg="bg-[#F3E8FF]"
  cardTone="bg-[#FAF7FE]"
- indicator={draftCount > 0 ? "Nên kiểm tra trước khi phát hành" : undefined}
  onClick={() => navigate("/school/semester-publications")}
  />
  <StatsCard
@@ -267,7 +260,6 @@ export const SchoolDashboard = (): JSX.Element => {
  icon={<ClipboardCheck className="w-5 h-5 text-[#EA580C]" strokeWidth={2.2} />}
  iconBg="bg-[#FFF7ED]"
  cardTone="bg-[#FFF9F4]"
- indicator={closedCount > 0 ? `${closedCount} công bố đã khép lại` : undefined}
  onClick={() => navigate("/school/semester-publications")}
  />
  </div>
@@ -290,7 +282,6 @@ export const SchoolDashboard = (): JSX.Element => {
  <svg className="w-7 h-7 text-gray-400" viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z" /></svg>
  </div>
  <p className="font-bold text-gray-500 text-base">Chưa có công bố học kỳ đang hoạt động</p>
- <p className="font-medium text-gray-400 text-sm mt-1">Tạo công bố mới để mở danh mục đặt hàng cho phụ huynh.</p>
  <button
  onClick={() => navigate("/school/semester-publications/new")}
  className="mt-4 nb-btn nb-btn-purple"

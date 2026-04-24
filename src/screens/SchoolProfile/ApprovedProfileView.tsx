@@ -216,9 +216,6 @@ export const ApprovedProfileView = ({
                                     <h1 className="text-[28px] font-extrabold leading-tight text-gray-900 lg:text-[32px]">
                                         {form.schoolName.trim() || "Hồ sơ trường học"}
                                     </h1>
-                                    <p className="mt-2 max-w-3xl text-sm font-medium leading-7 text-[#4c5769] sm:text-base">
-                                        Cập nhật thông tin công khai của trường và theo dõi mức độ hoàn thiện hồ sơ ngay trên đầu trang.
-                                    </p>
                                 </div>
 
                                 <div className="flex flex-wrap items-center gap-4 text-sm font-semibold text-[#5b6475]">
@@ -262,7 +259,6 @@ export const ApprovedProfileView = ({
                                 <ShieldCheck className="mt-0.5 h-5 w-5 flex-shrink-0" />
                                 <div>
                                     <p className="text-sm font-extrabold">{statusLabel}</p>
-                                    <p className="mt-1 text-sm font-medium leading-6">{statusMessage}</p>
                                 </div>
                             </div>
                         </div>
@@ -303,9 +299,6 @@ export const ApprovedProfileView = ({
                     <div className="nb-card-static p-0">
                         <div className="border-b border-gray-200 px-6 py-5 lg:px-8">
                             <h2 className="text-lg font-extrabold text-gray-900">Nhận diện trường</h2>
-                            <p className="mt-1 text-sm font-medium text-[#6F6A7D]">
-                                Cấu hình những thông tin xuất hiện xuyên suốt các bề mặt School trong hệ thống.
-                            </p>
                         </div>
                         <div className="space-y-5 px-6 py-6 lg:px-8">
                             <FieldGroup label="Tên trường">
@@ -340,9 +333,6 @@ export const ApprovedProfileView = ({
                     <div className="nb-card-static p-0">
                         <div className="border-b border-gray-200 px-6 py-5 lg:px-8">
                             <h2 className="text-lg font-extrabold text-gray-900">Thông tin liên hệ công khai</h2>
-                            <p className="mt-1 text-sm font-medium text-[#6F6A7D]">
-                                Đây là nhóm thông tin giúp phụ huynh, giáo viên và đối tác nhận diện đúng đầu mối liên hệ của trường.
-                            </p>
                         </div>
                         <div className="space-y-5 px-6 py-6 lg:px-8">
                             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -388,9 +378,6 @@ export const ApprovedProfileView = ({
                     <div className="nb-card-static p-0">
                         <div className="border-b border-gray-200 px-6 py-5 lg:px-8">
                             <h2 className="text-lg font-extrabold text-gray-900">Thông tin bổ sung</h2>
-                            <p className="mt-1 text-sm font-medium text-[#6F6A7D]">
-                                Bổ sung bối cảnh để hồ sơ trường dễ hiểu hơn khi hiển thị trong các quy trình quản trị và vận hành.
-                            </p>
                         </div>
                         <div className="space-y-5 px-6 py-6 lg:px-8">
                             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -433,9 +420,6 @@ export const ApprovedProfileView = ({
                     <div className="nb-card-static p-0">
                         <div className="border-b border-gray-200 px-6 py-5">
                             <h2 className="text-lg font-extrabold text-gray-900">Checklist hoàn thiện</h2>
-                            <p className="mt-1 text-sm font-medium text-[#6F6A7D]">
-                                Dùng phần này để rà soát nhanh những hạng mục còn thiếu trước khi rời trang.
-                            </p>
                         </div>
                         <div className="space-y-3 px-6 py-6">
                             {completenessItems.map((item) => (
@@ -467,11 +451,6 @@ export const ApprovedProfileView = ({
                             <InfoRow label="Mã định danh" value={schoolCode} />
                             <InfoRow label="Khởi tạo hồ sơ" value={formatDateTime(profile.createdAt)} />
                             <InfoRow label="Cập nhật gần nhất" value={formatDateTime(profile.updatedAt || profile.createdAt)} />
-                            <div className="rounded-[18px] border border-dashed border-gray-200 bg-gray-50 px-4 py-4">
-                                <p className="text-sm font-semibold leading-6 text-[#5b6475]">
-                                    Mã trường là thông tin hệ thống quản lý và không thể chỉnh sửa từ giao diện này. Những thay đổi về logo hoặc trường liên hệ sẽ có hiệu lực sau khi lưu.
-                                </p>
-                            </div>
                         </div>
                     </div>
                 </aside>

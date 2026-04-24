@@ -10,6 +10,7 @@ import {
     BreadcrumbSeparator,
 } from "../../components/ui/breadcrumb";
 import { DashboardSidebar } from "../../components/layout";
+import { RichTextEditor } from "../../components/RichTextEditor/RichTextEditor";
 import { TopNavBar } from "../../components/layout/TopNavBar";
 import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
 import { useSidebarConfig } from "../../hooks/useSidebarConfig";
@@ -33,6 +34,17 @@ import {
 
 const inputClass =
     "w-full rounded-[12px] border border-gray-200 bg-white px-4 py-3 text-[15px] font-medium text-gray-900 shadow-soft-sm outline-none transition-all placeholder:text-gray-400 focus:border-purple-400 focus:ring-2 focus:ring-purple-200/50";
+const selectClass = `${inputClass} h-[50px] cursor-pointer pr-10`;
+const semesterOptions = ["Học Kỳ I", "Học Kỳ II"];
+
+function formatAcademicYear(startYear: number) {
+    return `${startYear} - ${startYear + 1}`;
+}
+
+function getAcademicYearOptions() {
+    const currentYear = new Date().getFullYear();
+    return [formatAcademicYear(currentYear), formatAcademicYear(currentYear + 1)];
+}
 
 function formatDateTime(value: string | null | undefined) {
     if (!value) {
@@ -63,19 +75,16 @@ function getStatusMeta(status: string | undefined) {
             return {
                 label: "Đang mở",
                 badgeClass: "nb-badge nb-badge-green",
-                helper: "Đợt công bố đã phát hành. Chỉ nên dùng workspace này để theo dõi và điều chỉnh phần được phép.",
             };
         case "Closed":
             return {
                 label: "Đã đóng",
                 badgeClass: "nb-badge nb-badge-blue",
-                helper: "Đợt công bố đã khép lại. Workspace đóng vai trò hồ sơ vận hành để tra cứu lại cấu hình đã dùng.",
             };
         default:
             return {
                 label: "Bản nháp",
                 badgeClass: "nb-badge text-amber-700 bg-amber-50 border border-amber-200",
-                helper: "Hoàn thiện setup, danh mục và nhà cung cấp trước khi phát hành cho phụ huynh.",
             };
     }
 }
@@ -83,17 +92,14 @@ function getStatusMeta(status: string | undefined) {
 function InfoStat({
     label,
     value,
-    helper,
 }: {
     label: string;
     value: string;
-    helper: string;
 }) {
     return (
         <div className="rounded-[20px] border border-gray-200 bg-white p-4 shadow-soft-sm">
             <p className="text-[11px] font-extrabold uppercase tracking-[0.18em] text-gray-500">{label}</p>
             <p className="mt-3 text-2xl font-extrabold text-gray-900">{value}</p>
-            <p className="mt-2 text-sm font-medium leading-6 text-[#5b6475]">{helper}</p>
         </div>
     );
 }
@@ -121,6 +127,12 @@ export const SemesterPublicationWorkspace = (): JSX.Element => {
         description: "",
         rules: "",
     });
+    const academicYearOptions = useMemo(() => {
+        const options = getAcademicYearOptions();
+        const currentValue = form.academicYear.trim();
+
+        return currentValue && !options.includes(currentValue) ? [currentValue, ...options] : options;
+    }, [form.academicYear]);
 
     const showToast = useCallback((message: string, type: "success" | "error") => {
         setToast({ message, type });
@@ -434,9 +446,6 @@ export const SemesterPublicationWorkspace = (): JSX.Element => {
                                     <h1 className="mt-4 text-[28px] font-extrabold leading-tight text-gray-900 lg:text-[34px]">
                                         {publication ? `${publication.semester} / ${publication.academicYear}` : "Khởi tạo đợt công bố học kỳ"}
                                     </h1>
-                                    <p className="mt-3 max-w-3xl text-sm font-medium leading-7 text-[#4c5769] sm:text-base">
-                                        {statusMeta.helper}
-                                    </p>
                                 </div>
 
                                 <div className="flex flex-wrap gap-3 xl:justify-end">
@@ -465,22 +474,18 @@ export const SemesterPublicationWorkspace = (): JSX.Element => {
                                 <InfoStat
                                     label="Metadata"
                                     value={hasRequiredMetadata ? "Đã đủ" : "Thiếu"}
-                                    helper="Học kỳ, năm học và khoảng thời gian là khung bắt buộc của đợt công bố."
                                 />
                                 <InfoStat
                                     label="Đồng phục đã gắn"
                                     value={String(selectedOutfits.length)}
-                                    helper="Danh mục được chọn sẽ xuất hiện trong đợt công bố hiện tại."
                                 />
                                 <InfoStat
                                     label="Nhà cung cấp hoạt động"
                                     value={String(activeProviderCount)}
-                                    helper="Ít nhất một nhà cung cấp hoạt động là điều kiện tối thiểu để vận hành."
                                 />
                                 <InfoStat
                                     label="Cập nhật gần nhất"
                                     value={publication ? formatDateTime(publication.updatedAt || publication.createdAt) : "Chưa lưu"}
-                                    helper="Dùng mốc này để biết draft đã được rà soát gần đây hay chưa."
                                 />
                             </div>
                         </section>
@@ -493,29 +498,38 @@ export const SemesterPublicationWorkspace = (): JSX.Element => {
                                     <section className="nb-card-static p-0">
                                         <div className="border-b border-gray-200 px-6 py-5 lg:px-8">
                                             <h2 className="text-lg font-extrabold text-gray-900">Thiết lập đợt công bố</h2>
-                                            <p className="mt-1 text-sm font-medium leading-6 text-[#6F6A7D]">
-                                                Chốt metadata và ghi chú vận hành trước khi bước sang phần danh mục và nhà cung cấp.
-                                            </p>
                                         </div>
                                         <div className="space-y-5 px-6 py-6 lg:px-8">
                                             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                                                 <div>
                                                     <label className="mb-2 block text-sm font-extrabold text-gray-700">Học kỳ</label>
-                                                    <input
+                                                    <select
                                                         value={form.semester}
                                                         onChange={(event) => handleChange("semester", event.target.value)}
-                                                        className={inputClass}
-                                                        placeholder="VD: Học kỳ 1"
-                                                    />
+                                                        className={selectClass}
+                                                    >
+                                                        <option value="" disabled>Chọn học kỳ</option>
+                                                        {semesterOptions.map((semester) => (
+                                                            <option key={semester} value={semester}>
+                                                                {semester}
+                                                            </option>
+                                                        ))}
+                                                    </select>
                                                 </div>
                                                 <div>
                                                     <label className="mb-2 block text-sm font-extrabold text-gray-700">Năm học</label>
-                                                    <input
+                                                    <select
                                                         value={form.academicYear}
                                                         onChange={(event) => handleChange("academicYear", event.target.value)}
-                                                        className={inputClass}
-                                                        placeholder="VD: 2026 - 2027"
-                                                    />
+                                                        className={selectClass}
+                                                    >
+                                                        <option value="" disabled>Chọn năm học</option>
+                                                        {academicYearOptions.map((academicYear) => (
+                                                            <option key={academicYear} value={academicYear}>
+                                                                {academicYear}
+                                                            </option>
+                                                        ))}
+                                                    </select>
                                                 </div>
                                             </div>
 
@@ -542,20 +556,18 @@ export const SemesterPublicationWorkspace = (): JSX.Element => {
 
                                             <div>
                                                 <label className="mb-2 block text-sm font-extrabold text-gray-700">Mô tả</label>
-                                                <textarea
+                                                <RichTextEditor
                                                     value={form.description}
-                                                    onChange={(event) => handleChange("description", event.target.value)}
-                                                    className={`${inputClass} min-h-[120px] resize-y`}
-                                                    placeholder="Mô tả nhanh phạm vi áp dụng, đối tượng học sinh hoặc lưu ý quản trị..."
+                                                    onChange={(html) => handleChange("description", html)}
+                                                    placeholder="Mô tả nhanh phạm vi áp dụng, đối tượng học sinh..."
                                                 />
                                             </div>
 
                                             <div>
                                                 <label className="mb-2 block text-sm font-extrabold text-gray-700">Quy tắc / ghi chú</label>
-                                                <textarea
+                                                <RichTextEditor
                                                     value={form.rules}
-                                                    onChange={(event) => handleChange("rules", event.target.value)}
-                                                    className={`${inputClass} min-h-[120px] resize-y`}
+                                                    onChange={(html) => handleChange("rules", html)}
                                                     placeholder="VD: Đổi size trong 7 ngày, ưu tiên khối 1-3, giao theo đợt..."
                                                 />
                                             </div>
@@ -566,26 +578,20 @@ export const SemesterPublicationWorkspace = (): JSX.Element => {
                                         <div className="nb-card-static p-0">
                                             <div className="border-b border-gray-200 px-6 py-5">
                                                 <h2 className="text-lg font-extrabold text-gray-900">Checklist sẵn sàng</h2>
-                                                <p className="mt-1 text-sm font-medium leading-6 text-[#6F6A7D]">
-                                                    Dùng phần này để biết bản nháp đã đủ điều kiện phát hành hay chưa.
-                                                </p>
                                             </div>
                                             <div className="space-y-3 px-6 py-6">
                                                 {[
                                                     {
                                                         label: "Đủ học kỳ, năm học và thời gian",
                                                         done: hasRequiredMetadata,
-                                                        helper: "Không nên phát hành khi khung thời gian còn thiếu.",
                                                     },
                                                     {
                                                         label: "Đã thêm ít nhất một đồng phục",
                                                         done: hasOutfits,
-                                                        helper: "Danh mục trống khiến phụ huynh không có gì để chọn.",
                                                     },
                                                     {
                                                         label: "Có ít nhất một nhà cung cấp hoạt động",
                                                         done: hasActiveProvider,
-                                                        helper: "Cần ít nhất một đầu mối thực thi trước khi mở bán.",
                                                     },
                                                 ].map((item) => (
                                                     <div
@@ -602,7 +608,6 @@ export const SemesterPublicationWorkspace = (): JSX.Element => {
                                                             )}
                                                             <div>
                                                                 <p className="text-sm font-extrabold text-gray-900">{item.label}</p>
-                                                                <p className="mt-1 text-sm font-medium leading-6 text-[#5b6475]">{item.helper}</p>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -619,36 +624,12 @@ export const SemesterPublicationWorkspace = (): JSX.Element => {
                                                             <p className="text-sm font-extrabold text-gray-900">
                                                                 {publishReady ? "Bản nháp đã sẵn sàng để công khai" : "Chưa nên công khai ngay"}
                                                             </p>
-                                                            <p className="mt-1 text-sm font-medium leading-6 text-[#5b6475]">
-                                                                {publishReady
-                                                                    ? "Bạn có thể phát hành mà không cần bổ sung thêm điều kiện tối thiểu."
-                                                                    : "Tiếp tục hoàn thiện các mục còn thiếu trước khi nhấn Công khai."}
-                                                            </p>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <div className="nb-card-static p-0">
-                                            <div className="border-b border-gray-200 px-6 py-5">
-                                                <h2 className="text-lg font-extrabold text-gray-900">Ghi nhớ vận hành</h2>
-                                            </div>
-                                            <div className="space-y-4 px-6 py-6">
-                                                <div className="rounded-[18px] border border-gray-200 bg-white px-4 py-4 shadow-soft-sm">
-                                                    <p className="text-sm font-extrabold text-gray-900">Vai trò của trường</p>
-                                                    <p className="mt-1 text-sm font-medium leading-6 text-[#5b6475]">
-                                                        Trường chốt khung công bố, danh mục đồng phục và nhà cung cấp đủ điều kiện. Giá bán và xử lý chi tiết vẫn do provider vận hành.
-                                                    </p>
-                                                </div>
-                                                <div className="rounded-[18px] border border-gray-200 bg-white px-4 py-4 shadow-soft-sm">
-                                                    <p className="text-sm font-extrabold text-gray-900">Lưu trước khi curation</p>
-                                                    <p className="mt-1 text-sm font-medium leading-6 text-[#5b6475]">
-                                                        Nếu đang tạo mới, hãy lưu bản nháp trước rồi mới thêm đồng phục hoặc kích hoạt nhà cung cấp.
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
                                     </aside>
                                 </div>
 
@@ -658,9 +639,6 @@ export const SemesterPublicationWorkspace = (): JSX.Element => {
                                             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                                                 <div>
                                                     <h2 className="text-lg font-extrabold text-gray-900">Đồng phục trong công bố</h2>
-                                                    <p className="mt-1 text-sm font-medium leading-6 text-[#6F6A7D]">
-                                                        Danh sách bên dưới là phần đã được chọn cho đợt công bố hiện tại.
-                                                    </p>
                                                 </div>
                                                 {publication && publication.status === "Draft" && (
                                                     <button onClick={handleAddOutfits} className="nb-btn nb-btn-purple nb-btn-sm text-xs">
@@ -781,9 +759,6 @@ export const SemesterPublicationWorkspace = (): JSX.Element => {
                                     <section className="nb-card-static p-0">
                                         <div className="border-b border-gray-200 px-6 py-5">
                                             <h2 className="text-lg font-extrabold text-gray-900">Nhà cung cấp tham gia</h2>
-                                            <p className="mt-1 text-sm font-medium leading-6 text-[#6F6A7D]">
-                                                Kích hoạt các nhà cung cấp đủ điều kiện và tách rõ phần đang hoạt động khỏi phần gợi ý.
-                                            </p>
                                         </div>
                                         <div className="space-y-5 px-6 py-6">
                                             {!publication ? (

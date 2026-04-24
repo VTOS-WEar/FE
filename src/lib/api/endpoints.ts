@@ -60,6 +60,7 @@ export const endpoints = {
         profile: "/api/users/me/profile",
         avatar: "/api/users/me/avatar",
         addresses: "/api/users/me/addresses",
+        bankAccounts: "/api/users/me/bank-accounts",
         children: "/api/users/me/children",
         findChildren: "/api/users/me/find-children",
     },
@@ -102,6 +103,9 @@ export const endpoints = {
     payments: {
         payOrder: "/api/payments/orders", // append /{orderId}/pay
         parentHistory: "/api/payments/parent/history",
+        parentWallet: "/api/payments/parent/wallet",
+        parentWalletTransactions: "/api/payments/parent/wallet/transactions",
+        parentWalletWithdrawals: "/api/payments/parent/wallet/withdrawals",
         providerRevenue: "/api/payments/provider/revenue",
         providerPayments: "/api/payments/provider/payments",
         providerInvoice: "/api/payments/provider/orders", // append /{orderId}/invoice

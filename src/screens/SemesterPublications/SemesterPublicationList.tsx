@@ -44,6 +44,11 @@ function getDaysRemaining(value: string) {
     return Math.ceil(diff / (1000 * 60 * 60 * 24));
 }
 
+function stripHtml(html: string) {
+    const doc = new DOMParser().parseFromString(html, "text/html");
+    return doc.body.textContent || "";
+}
+
 function getPublicationStatusMeta(status: string) {
     switch (status) {
         case "Active":
@@ -73,12 +78,10 @@ function getPublicationStatusMeta(status: string) {
 function SummaryCard({
     label,
     value,
-    hint,
     tone,
 }: {
     label: string;
     value: number;
-    hint: string;
     tone: "violet" | "green" | "amber" | "slate";
 }) {
     const toneClass =
@@ -94,7 +97,6 @@ function SummaryCard({
         <div className={`rounded-[22px] border p-4 shadow-soft-sm ${toneClass}`}>
             <p className="text-[11px] font-extrabold uppercase tracking-[0.18em] text-gray-500">{label}</p>
             <p className="mt-3 text-3xl font-extrabold text-gray-900">{value}</p>
-            <p className="mt-2 text-sm font-medium leading-6 text-[#5b6475]">{hint}</p>
         </div>
     );
 }
@@ -142,9 +144,11 @@ function PublicationCard({
                     <h3 className="mt-4 text-xl font-extrabold leading-tight text-gray-900 transition-colors group-hover:text-violet-700">
                         {publication.semester} / {publication.academicYear}
                     </h3>
-                    <p className="mt-2 line-clamp-2 text-sm font-medium leading-6 text-[#5b6475]">
-                        {publication.description || "Chưa có mô tả. Nên bổ sung phạm vi áp dụng và lưu ý vận hành cho đợt công bố này."}
-                    </p>
+                    {publication.description && (
+                        <p className="mt-2 line-clamp-2 text-sm font-medium leading-6 text-[#5b6475]">
+                            {stripHtml(publication.description)}
+                        </p>
+                    )}
                 </div>
 
                 <button
@@ -278,7 +282,7 @@ export const SemesterPublicationList = (): JSX.Element => {
                 return true;
             }
 
-            return `${publication.semester} ${publication.academicYear} ${publication.description || ""}`
+            return `${publication.semester} ${publication.academicYear} ${publication.description ? stripHtml(publication.description) : ""}`
                 .toLowerCase()
                 .includes(query);
         });
@@ -395,9 +399,6 @@ export const SemesterPublicationList = (): JSX.Element => {
                                     <h1 className="mt-4 text-[28px] font-extrabold leading-tight text-gray-900 lg:text-[34px]">
                                         Theo dõi các đợt công bố học kỳ của nhà trường
                                     </h1>
-                                    <p className="mt-3 max-w-2xl text-sm font-medium leading-7 text-[#4c5769] sm:text-base">
-                                        Xem nhanh bản nháp, đợt đang mở và đợt đã đóng. Trước khi phát hành, hãy kiểm tra thời gian áp dụng, danh mục đồng phục và nhà cung cấp tham gia.
-                                    </p>
                                 </div>
 
                                 <div className="flex w-full max-w-[420px] flex-col gap-3 xl:items-end">
@@ -422,10 +423,10 @@ export const SemesterPublicationList = (): JSX.Element => {
                             </div>
 
                             <div className="mt-6 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-                                <SummaryCard label="Tổng công bố" value={publications.length} hint="Toàn bộ kỳ bán đã tạo cho trường." tone="violet" />
-                                <SummaryCard label="Đang mở" value={activeCount} hint="Các đợt đang hiển thị cho phụ huynh." tone="green" />
-                                <SummaryCard label="Bản nháp" value={draftCount} hint="Cần rà soát trước khi phát hành." tone="amber" />
-                                <SummaryCard label="Đã đóng" value={closedCount} hint="Các đợt đã khép lại để tra cứu sau này." tone="slate" />
+                                <SummaryCard label="Tổng công bố" value={publications.length} tone="violet" />
+                                <SummaryCard label="Đang mở" value={activeCount} tone="green" />
+                                <SummaryCard label="Bản nháp" value={draftCount} tone="amber" />
+                                <SummaryCard label="Đã đóng" value={closedCount} tone="slate" />
                             </div>
                         </section>
 
@@ -438,13 +439,6 @@ export const SemesterPublicationList = (): JSX.Element => {
                                         </div>
                                         <div>
                                             <h2 className="text-lg font-extrabold text-gray-900">Hạng mục cần lưu ý</h2>
-                                            <p className="mt-1 text-sm font-medium leading-6 text-[#6b5b2a]">
-                                                {draftCount > 0 && nearEndingActive.length > 0
-                                                    ? `${draftCount} bản nháp cần hoàn thiện và ${nearEndingActive.length} đợt đang mở sắp chạm mốc kết thúc.`
-                                                    : draftCount > 0
-                                                      ? `${draftCount} bản nháp vẫn chưa được phát hành.`
-                                                      : `${nearEndingActive.length} đợt đang mở sắp đến hạn đóng.`}
-                                            </p>
                                         </div>
                                     </div>
                                     <button
@@ -541,11 +535,6 @@ export const SemesterPublicationList = (): JSX.Element => {
                                 <h2 className="mt-5 text-xl font-extrabold text-gray-900">
                                     {publications.length === 0 ? "Chưa có công bố học kỳ nào" : "Không tìm thấy công bố phù hợp"}
                                 </h2>
-                                <p className="mx-auto mt-2 max-w-xl text-sm font-medium leading-6 text-[#4c5769]">
-                                    {publications.length === 0
-                                        ? "Tạo bản nháp đầu tiên để chuẩn bị kỳ bán mới cho phụ huynh và nhà cung cấp."
-                                        : "Không có công bố nào khớp với bộ lọc hiện tại. Thử đổi trạng thái hoặc xóa từ khóa tìm kiếm."}
-                                </p>
                                 <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
                                     {publications.length === 0 ? (
                                         <button onClick={() => navigate("/school/semester-publications/new")} className="nb-btn nb-btn-purple text-sm">
