@@ -3,7 +3,7 @@ import { Card, CardContent } from "../../../components/ui/card";
 
 const noticeItems = [
     {
-        text: "Mã học sinh phải là duy nhất trong toàn trường.",
+        text: "Mã học sinh sẽ được hệ thống tự động tạo sau khi nhập dữ liệu.",
         className: "font-medium",
     },
     {

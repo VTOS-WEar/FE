@@ -349,9 +349,6 @@ export const BodygramHistoryTab = (): JSX.Element => {
       ) : allItems.length === 0 ? (
         <div className="rounded-[24px] border-2 border-dashed border-gray-200 bg-gray-50 p-10 text-center">
           <p className="text-lg font-extrabold text-gray-900">Chưa có lần scan Bodygram nào</p>
-          <p className="mx-auto mt-2 max-w-xl text-sm font-medium text-gray-600">
-            Hãy bắt đầu một phiên quét Bodygram. Mỗi lần quét thành công sẽ hiển thị ở đây để theo dõi sự phát triển.
-          </p>
         </div>
       ) : (
         <>
@@ -594,9 +591,6 @@ export const BodygramHistoryTab = (): JSX.Element => {
                 <div>
                   <p className="text-sm font-extrabold text-gray-900">
                     {selectedCompareIds.length === 1 ? "Đã chọn 1 lần quét. Chọn thêm 1 lần nữa để so sánh." : "Đã chọn đủ 2 lần quét. Đang mở màn so sánh..."}
-                  </p>
-                  <p className="mt-1 text-xs font-bold text-gray-600">
-                    Màn so sánh sẽ hiển thị 2 cột dữ liệu và phần chênh lệch giữa hai lần quét.
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2">

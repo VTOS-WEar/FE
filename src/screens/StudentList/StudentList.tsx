@@ -20,31 +20,63 @@ import {
     deleteStudent,
     getStudentById,
     getSchoolGrades,
+    getSchoolClassesOverview,
 } from "../../lib/api/schools";
-import type { StudentListItem, CreateOrUpdateStudentRequest, StudentDetailDto } from "../../lib/api/schools";
+import type { StudentListItem, CreateOrUpdateStudentRequest, CreateStudentRequest, StudentDetailDto } from "../../lib/api/schools";
 
 /* ── Types ── */
 type StudentFormData = {
     fullName: string;
     dateOfBirth: string;
+    classGroupId: string;
     grade: string;
     gender: string;
     parentPhone: string;
-    heightCm: string;
-    weightKg: string;
 };
 
 const EMPTY_FORM: StudentFormData = {
-    fullName: "", dateOfBirth: "", grade: "", gender: "Nam",
-    parentPhone: "", heightCm: "", weightKg: "",
+    fullName: "", dateOfBirth: "", classGroupId: "", grade: "", gender: "Nam",
+    parentPhone: "",
 };
+
+type ClassOption = {
+    id: string;
+    className: string;
+    grade: string;
+    academicYear: string;
+};
+
+function getAllowedGradeRange(level: string | null | undefined): [number, number] | null {
+    const normalized = (level || "")
+        .trim()
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[\s_-]/g, "");
+
+    if (["tieuhoc", "primary", "elementary"].includes(normalized)) return [1, 5];
+    if (["thcs", "trunghoccoso", "middle", "middleschool"].includes(normalized)) return [6, 9];
+    if (["thpt", "trunghocphothong", "high", "highschool"].includes(normalized)) return [10, 12];
+    return null;
+}
+
+function extractGradeNumber(className: string): number | null {
+    const match = className.match(/\d+/);
+    return match ? Number(match[0]) : null;
+}
+
+function isClassAllowedForLevel(className: string, level: string | null | undefined): boolean {
+    const range = getAllowedGradeRange(level);
+    const gradeNumber = extractGradeNumber(className);
+    return !!range && gradeNumber !== null && gradeNumber >= range[0] && gradeNumber <= range[1];
+}
 
 /* ── Student Form Modal ── */
 function StudentFormModal({
-    isOpen, onClose, onSave, initialData, isEditing, isLoading, availableGrades, isParentLinked,
+    isOpen, onClose, onSave, initialData, isEditing, isLoading, classOptions, isParentLinked, schoolLevel,
 }: {
-    isOpen: boolean; onClose: () => void; onSave: (data: CreateOrUpdateStudentRequest) => void;
-    initialData: StudentFormData; isEditing: boolean; isLoading: boolean; availableGrades: string[]; isParentLinked?: boolean;
+    isOpen: boolean; onClose: () => void; onSave: (data: CreateStudentRequest | CreateOrUpdateStudentRequest) => void;
+    initialData: StudentFormData; isEditing: boolean; isLoading: boolean; classOptions: ClassOption[]; isParentLinked?: boolean; schoolLevel?: string | null;
 }) {
     const [form, setForm] = useState<StudentFormData>(EMPTY_FORM);
     const [formErrors, setFormErrors] = useState<Record<string, string>>({});
@@ -53,16 +85,17 @@ function StudentFormModal({
 
     const validate = (): boolean => {
         const errs: Record<string, string> = {};
+        const selectedClass = classOptions.find((item) => item.id === form.classGroupId);
+        const className = selectedClass?.className || form.grade;
+        const allowedRange = getAllowedGradeRange(schoolLevel);
         if (!form.fullName.trim()) errs.fullName = "Vui lòng nhập họ và tên";
-        if (form.grade && form.grade.length > 5) errs.grade = "Lớp tối đa 5 ký tự";
+        if (classOptions.length > 0 && !form.classGroupId) errs.classGroupId = "Vui lòng chọn lớp";
+        if (classOptions.length === 0 && form.grade && form.grade.length > 20) errs.grade = "Lớp tối đa 20 ký tự";
         if (form.parentPhone && !/^0\d{9}$/.test(form.parentPhone)) errs.parentPhone = "SĐT phải bắt đầu bằng 0 và có đúng 10 số";
-        if (form.heightCm) {
-            const h = parseInt(form.heightCm);
-            if (isNaN(h) || h < 30 || h > 250) errs.heightCm = "Chiều cao từ 30 - 250 cm";
-        }
-        if (form.weightKg) {
-            const w = parseFloat(form.weightKg);
-            if (isNaN(w) || w < 3 || w > 200) errs.weightKg = "Cân nặng từ 3 - 200 kg";
+        if (className && allowedRange && !isClassAllowedForLevel(className, schoolLevel)) {
+            const gradeNumber = extractGradeNumber(className);
+            errs.grade = `Lớp ${gradeNumber ?? className} không hợp lệ với cấp ${schoolLevel}. Chỉ được nhập lớp ${allowedRange[0]}-${allowedRange[1]}.`;
+            if (classOptions.length > 0) errs.classGroupId = errs.grade;
         }
         setFormErrors(errs);
         return Object.keys(errs).length === 0;
@@ -71,14 +104,14 @@ function StudentFormModal({
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (!validate()) return;
+        const selectedClass = classOptions.find((item) => item.id === form.classGroupId);
         onSave({
             fullName: form.fullName.trim(),
             dateOfBirth: form.dateOfBirth || undefined,
-            grade: form.grade || undefined,
+            classGroupId: selectedClass?.id || undefined,
+            grade: selectedClass?.className || form.grade || undefined,
             gender: form.gender || undefined,
             parentPhone: form.parentPhone || undefined,
-            heightCm: form.heightCm ? parseInt(form.heightCm) : undefined,
-            weightKg: form.weightKg ? parseFloat(form.weightKg) : undefined,
         });
     };
 
@@ -120,14 +153,22 @@ function StudentFormModal({
                     <div className="grid grid-cols-2 gap-4">
                         <div>
                             <label className={labelClass}>Lớp</label>
-                            {availableGrades.length > 0 ? (
-                                <select value={form.grade} onChange={(e) => setForm({ ...form, grade: e.target.value })} className="w-full nb-select text-sm">
+                            {classOptions.length > 0 ? (
+                                <select value={form.classGroupId} onChange={(e) => {
+                                    const selectedClass = classOptions.find((item) => item.id === e.target.value);
+                                    setForm({ ...form, classGroupId: e.target.value, grade: selectedClass?.className || "" });
+                                }} className="w-full nb-select text-sm">
                                     <option value="">-- Chọn lớp --</option>
-                                    {availableGrades.map((g) => <option key={g} value={g}>{g}</option>)}
+                                    {classOptions.map((item) => (
+                                        <option key={item.id} value={item.id}>
+                                            {item.className}{item.academicYear ? ` - ${item.academicYear}` : ""}
+                                        </option>
+                                    ))}
                                 </select>
                             ) : (
-                                <input type="text" maxLength={5} value={form.grade} onChange={(e) => setForm({ ...form, grade: e.target.value })} placeholder="VD: 3A" className={inputClass} autoComplete="off" />
+                                <input type="text" maxLength={20} value={form.grade} onChange={(e) => setForm({ ...form, grade: e.target.value })} placeholder="VD: 3A" className={inputClass} autoComplete="off" />
                             )}
+                            {formErrors.classGroupId && <p className="mt-1 text-xs text-red-500 font-medium">{formErrors.classGroupId}</p>}
                             {formErrors.grade && <p className="mt-1 text-xs text-red-500 font-medium">{formErrors.grade}</p>}
                         </div>
                         <div>
@@ -144,24 +185,6 @@ function StudentFormModal({
                             {formErrors.parentPhone && <p className="mt-1 text-xs text-red-500 font-medium">{formErrors.parentPhone}</p>}
                             {isEditing && isParentLinked && <p className="mt-1 text-xs text-amber-600 font-medium">🔒 Đã liên kết phụ huynh — không thể thay đổi SĐT</p>}
                             {!formErrors.parentPhone && form.parentPhone && form.parentPhone.length > 0 && form.parentPhone.length < 10 && <p className="mt-1 text-xs text-amber-500 font-medium">Cần nhập đủ 10 số (hiện {form.parentPhone.length}/10)</p>}
-                        </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className={labelClass}>Chiều cao (cm)</label>
-                            <input type="number" min={30} max={250} step={1} value={form.heightCm}
-                                onChange={(e) => { const v = e.target.value.replace(/[^0-9]/g, "").slice(0, 3); setForm({ ...form, heightCm: v }); }}
-                                onBlur={() => { if (form.heightCm) { const n = parseInt(form.heightCm); if (n < 30) setForm(f => ({ ...f, heightCm: "30" })); else if (n > 250) setForm(f => ({ ...f, heightCm: "250" })); } }}
-                                placeholder="30 - 250" className={inputClass} />
-                            {formErrors.heightCm && <p className="mt-1 text-xs text-red-500 font-medium">{formErrors.heightCm}</p>}
-                        </div>
-                        <div>
-                            <label className={labelClass}>Cân nặng (kg)</label>
-                            <input type="number" min={3} max={200} step={0.1} value={form.weightKg}
-                                onChange={(e) => { const v = e.target.value.match(/^\d{0,3}(\.\d{0,1})?$/)?.[0] || form.weightKg; setForm({ ...form, weightKg: v }); }}
-                                onBlur={() => { if (form.weightKg) { const n = parseFloat(form.weightKg); if (n < 3) setForm(f => ({ ...f, weightKg: "3" })); else if (n > 200) setForm(f => ({ ...f, weightKg: "200" })); } }}
-                                placeholder="3 - 200" className={inputClass} />
-                            {formErrors.weightKg && <p className="mt-1 text-xs text-red-500 font-medium">{formErrors.weightKg}</p>}
                         </div>
                     </div>
                     <div className="flex items-center justify-end gap-3 pt-2">
@@ -207,6 +230,7 @@ export const StudentListV2 = (): JSX.Element => {
     const sidebarConfig = useSidebarConfig();
     const [isCollapsed, toggle] = useSidebarCollapsed();
     const [schoolName, setSchoolName] = useState("");
+    const [schoolLevel, setSchoolLevel] = useState<string | null>(null);
 
     const [students, setStudents] = useState<StudentListItem[]>([]);
     const [totalCount, setTotalCount] = useState(0);
@@ -234,6 +258,7 @@ export const StudentListV2 = (): JSX.Element => {
     const [deleteLoading, setDeleteLoading] = useState(false);
     const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
     const [availableGrades, setAvailableGrades] = useState<string[]>([]);
+    const [classOptions, setClassOptions] = useState<ClassOption[]>([]);
 
     // Sorting state
     const [sortField, setSortField] = useState<string>("fullName");
@@ -272,8 +297,24 @@ export const StudentListV2 = (): JSX.Element => {
     const showToast = (message: string, type: "success" | "error") => { setToast({ message, type }); setTimeout(() => setToast(null), 3500); };
 
     useEffect(() => {
-        getSchoolProfile().then((p) => setSchoolName(p.schoolName || "")).catch(() => {});
+        getSchoolProfile().then((p) => {
+            setSchoolName(p.schoolName || "");
+            setSchoolLevel(p.level || null);
+        }).catch(() => {});
         getSchoolGrades().then(setAvailableGrades).catch(() => {});
+        getSchoolClassesOverview()
+            .then((overview) => {
+                const options = overview.grades
+                    .flatMap((grade) => grade.classes)
+                    .map((item) => ({
+                        id: item.id,
+                        className: item.className,
+                        grade: item.grade,
+                        academicYear: item.academicYear,
+                    }));
+                setClassOptions(options);
+            })
+            .catch(() => setClassOptions([]));
     }, []);
 
     const fetchStudents = useCallback(async () => {
@@ -291,6 +332,12 @@ export const StudentListV2 = (): JSX.Element => {
     useEffect(() => { const t = setTimeout(() => { setSearch(searchInput); setPage(1); }, 400); return () => clearTimeout(t); }, [searchInput]);
 
     const gradeOptions = useMemo(() => ["all", ...availableGrades.filter(Boolean)], [availableGrades]);
+    const allowedClassOptions = useMemo(
+        () => getAllowedGradeRange(schoolLevel)
+            ? classOptions.filter((item) => isClassAllowedForLevel(item.className || item.grade, schoolLevel))
+            : classOptions,
+        [classOptions, schoolLevel]
+    );
 
     const handleLogout = () => {
         localStorage.removeItem("access_token"); localStorage.removeItem("user"); localStorage.removeItem("expires_in");
@@ -305,7 +352,7 @@ export const StudentListV2 = (): JSX.Element => {
             setFormLoading(true); setShowFormModal(true);
             const detail = await getStudentById(studentId);
             setEditingStudent(detail); setEditingIsParentLinked(detail.isParentLinked);
-            setFormInitialData({ fullName: detail.fullName, dateOfBirth: detail.dateOfBirth ? detail.dateOfBirth.split("T")[0] : "", grade: detail.grade, gender: detail.gender === "Male" ? "Nam" : detail.gender === "Female" ? "Nữ" : detail.gender, parentPhone: detail.parentPhone || "", heightCm: detail.heightCm > 0 ? String(detail.heightCm) : "", weightKg: detail.weightKg > 0 ? String(detail.weightKg) : "" });
+            setFormInitialData({ fullName: detail.fullName, dateOfBirth: detail.dateOfBirth ? detail.dateOfBirth.split("T")[0] : "", classGroupId: detail.classGroupId || "", grade: detail.className || detail.grade, gender: detail.gender === "Male" ? "Nam" : detail.gender === "Female" ? "Nữ" : detail.gender, parentPhone: detail.parentPhone || "" });
         } catch { showToast("Không thể tải thông tin học sinh", "error"); setShowFormModal(false); }
         finally { setFormLoading(false); }
     };
@@ -489,7 +536,7 @@ export const StudentListV2 = (): JSX.Element => {
                                                 </div>
                                             </div>
                                             {/* Grade */}
-                                            <div><span className="nb-badge nb-badge-blue text-xs">{student.grade || "—"}</span></div>
+                                            <div><span className="nb-badge nb-badge-blue text-xs">{student.className || student.grade || "—"}</span></div>
                                             {/* Gender */}
                                             <span className="font-medium text-gray-900 text-sm">{student.gender === "Male" ? "Nam" : student.gender === "Female" ? "Nữ" : student.gender}</span>
                                             {/* Measurement */}
@@ -554,7 +601,7 @@ export const StudentListV2 = (): JSX.Element => {
             </div>
 
             {/* Modals */}
-            <StudentFormModal isOpen={showFormModal} onClose={() => { setShowFormModal(false); setEditingStudent(null); }} onSave={handleSave} initialData={formInitialData} isEditing={!!editingStudent} isLoading={formLoading} availableGrades={availableGrades} isParentLinked={editingIsParentLinked} />
+            <StudentFormModal isOpen={showFormModal} onClose={() => { setShowFormModal(false); setEditingStudent(null); }} onSave={handleSave} initialData={formInitialData} isEditing={!!editingStudent} isLoading={formLoading} classOptions={allowedClassOptions} isParentLinked={editingIsParentLinked} schoolLevel={schoolLevel} />
             <DeleteConfirmDialog isOpen={showDeleteDialog} onClose={() => { setShowDeleteDialog(false); setDeletingStudent(null); }} onConfirm={handleConfirmDelete} studentName={deletingStudent?.name || ""} isLoading={deleteLoading} />
 
             {/* Toast */}

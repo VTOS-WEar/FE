@@ -106,7 +106,7 @@ export function ProviderContracts() {
         fetchContracts();
     }, [fetchContracts]);
 
-    const openDetail = async (id: string) => {
+    const openDetail = async (id: string, options?: { reject?: boolean }) => {
         try {
             const contract = await getProviderContractDetail(id);
             setSelected(contract);
@@ -119,7 +119,7 @@ export function ProviderContracts() {
                 ),
             );
             setShowDetail(true);
-            setShowReject(false);
+            setShowReject(Boolean(options?.reject));
             setRejectReason("");
             setError("");
         } catch (e) {
@@ -402,6 +402,7 @@ export function ProviderContracts() {
                                 {pagedContracts.map((contract) => {
                                     const statusMeta = STATUS_MAP[contract.status];
                                     const needsAction = contract.status === "Pending" || contract.status === "PendingProviderSign";
+                                    const canReject = contract.status === "Pending";
 
                                     return (
                                         <article
@@ -477,6 +478,18 @@ export function ProviderContracts() {
                                                         className="inline-flex h-11 items-center justify-center rounded-[16px] bg-slate-50 px-4 text-sm font-black text-slate-700 transition-all hover:bg-slate-100"
                                                     >
                                                         Chat với trường
+                                                    </button>
+                                                    <button
+                                                        onClick={() => canReject && openDetail(contract.contractId, { reject: true })}
+                                                        disabled={!canReject}
+                                                        title={canReject ? "Từ chối hợp đồng" : "Chỉ có thể từ chối khi hợp đồng ở trạng thái Chờ duyệt"}
+                                                        className={`inline-flex h-11 items-center justify-center rounded-[16px] border px-4 text-sm font-black transition-all ${
+                                                            canReject
+                                                                ? "border-rose-200 bg-rose-50 text-rose-700 hover:border-rose-300 hover:bg-rose-100"
+                                                                : "cursor-not-allowed border-gray-200 bg-gray-50 text-gray-400"
+                                                        }`}
+                                                    >
+                                                        Từ chối
                                                     </button>
                                                 </div>
                                             </div>

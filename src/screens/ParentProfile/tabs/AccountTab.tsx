@@ -285,7 +285,6 @@ export const AccountTab = (): JSX.Element => {
           <div className="min-w-0">
             <p className="text-[11px] font-black uppercase tracking-[0.16em] text-slate-400">Hồ sơ phụ huynh</p>
             <h1 className="mt-1 text-2xl font-black text-gray-900">{fullName || "Phụ huynh"}</h1>
-            <p className="mt-1 text-sm font-medium text-slate-600">Quản lý thông tin cá nhân và kênh liên hệ tài khoản.</p>
             {avatarMsg ? <p className="mt-3 text-sm font-bold text-slate-700">{avatarMsg}</p> : null}
           </div>
         </div>
@@ -297,9 +296,6 @@ export const AccountTab = (): JSX.Element => {
             <div>
               <p className="text-[11px] font-black uppercase tracking-[0.16em] text-gray-400">Personal profile</p>
               <h2 className="mt-2 text-2xl font-black text-gray-900">Thông tin cá nhân</h2>
-            </div>
-            <div className="rounded-[16px] border border-violet-200 bg-violet-50 px-3 py-2 text-xs font-extrabold text-violet-700">
-              Đồng bộ toàn bộ parent profile
             </div>
           </div>
 

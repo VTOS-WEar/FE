@@ -6,7 +6,11 @@ import { getSchoolProfile } from "../../lib/api/schools";
 import { getProviderProfile } from "../../lib/api/providers";
 import { changePassword, disable2FA, requestChangePasswordOtp } from "../../lib/api/auth";
 
-export const AccountSecuritySettings = (): JSX.Element => {
+export const AccountSecuritySettings = ({
+  suppressHelperText = false,
+}: {
+  suppressHelperText?: boolean;
+}): JSX.Element => {
   const navigate = useNavigate();
   const getToken = () => localStorage.getItem("access_token") || sessionStorage.getItem("access_token") || "";
 
@@ -160,7 +164,7 @@ export const AccountSecuritySettings = (): JSX.Element => {
             <div className="max-w-3xl">
               <p className="text-[11px] font-black uppercase tracking-[0.18em] text-gray-500">Bảo mật tài khoản</p>
               <h1 className="mt-2 text-2xl font-black text-gray-900">{protectionLabel}</h1>
-              <p className="mt-2 text-sm font-medium leading-7 text-[#4c5769]">{protectionCopy}</p>
+              {!suppressHelperText && <p className="mt-2 text-sm font-medium leading-7 text-[#4c5769]">{protectionCopy}</p>}
             </div>
           </div>
 
@@ -194,11 +198,13 @@ export const AccountSecuritySettings = (): JSX.Element => {
             title="1. Gửi mã OTP"
             description="Nhận mã qua email."
             active={!otpSent}
+            suppressHelperText={suppressHelperText}
           />
           <SimpleStep
             title="2. Xác nhận mật khẩu mới"
             description="Nhập OTP và mật khẩu mới."
             active={otpSent}
+            suppressHelperText={suppressHelperText}
           />
         </div>
 
@@ -317,7 +323,9 @@ export const AccountSecuritySettings = (): JSX.Element => {
             }`}
           >
             <p className="text-sm font-extrabold text-gray-900">{is2FAEnabled ? "2FA hiện đang bật" : "2FA hiện chưa bật"}</p>
-            <p className="mt-1 text-sm font-medium leading-6 text-[#5b6475]">{is2FAEnabled ? "Khuyến nghị giữ nguyên." : "Khuyến nghị bật 2FA."}</p>
+            {!suppressHelperText && (
+              <p className="mt-1 text-sm font-medium leading-6 text-[#5b6475]">{is2FAEnabled ? "Khuyến nghị giữ nguyên." : "Khuyến nghị bật 2FA."}</p>
+            )}
           </div>
 
           {is2FAEnabled === null ? (
@@ -381,7 +389,6 @@ export const AccountSecuritySettings = (): JSX.Element => {
             </div>
           ) : (
             <div className="flex flex-wrap items-center gap-3 border-t border-gray-100 pt-4">
-              <p className="text-sm font-extrabold text-violet-900">Bật 2FA để tăng mức bảo vệ</p>
               <button onClick={() => navigate("/2fa-setup")} className="nb-btn nb-btn-purple text-sm">
                 Bật 2FA
               </button>
@@ -400,10 +407,20 @@ const FieldGroup = ({ label, children }: { label: string; children: React.ReactN
   </div>
 );
 
-const SimpleStep = ({ title, description, active }: { title: string; description: string; active: boolean }) => (
+const SimpleStep = ({
+  title,
+  description,
+  active,
+  suppressHelperText = false,
+}: {
+  title: string;
+  description: string;
+  active: boolean;
+  suppressHelperText?: boolean;
+}) => (
   <div className={`rounded-[16px] border px-4 py-3 ${active ? "border-violet-200 bg-violet-50" : "border-gray-200 bg-slate-50"}`}>
     <p className="text-sm font-extrabold text-gray-900">{title}</p>
-    <p className="mt-1 text-sm font-medium text-[#5b6475]">{description}</p>
+    {!suppressHelperText && <p className="mt-1 text-sm font-medium text-[#5b6475]">{description}</p>}
   </div>
 );
 

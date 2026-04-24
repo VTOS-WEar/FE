@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, CalendarDays, Loader2, MapPin, MessageSquareText, Package, Phone, ShieldCheck, Star, Truck } from "lucide-react";
+import { ArrowLeft, CalendarDays, CheckCircle2, Loader2, MapPin, MessageSquareText, Package, Phone, ShieldCheck, Star, Truck } from "lucide-react";
 import { GuestLayout } from "../../components/layout/GuestLayout";
 import { useToast } from "../../contexts/ToastContext";
-import { cancelDirectOrder, getMyDirectOrderDetail, submitProviderRating, type MyDirectOrderDetailDto } from "../../lib/api/orders";
+import { cancelDirectOrder, confirmDirectOrderDelivery, getMyDirectOrderDetail, submitProviderRating, type MyDirectOrderDetailDto } from "../../lib/api/orders";
 
 function formatCurrency(value: number) {
     return `${value.toLocaleString("vi-VN")} ₫`;
@@ -18,6 +18,7 @@ export function MyOrderDetail(): JSX.Element {
     const [order, setOrder] = useState<MyDirectOrderDetailDto | null>(null);
     const [loading, setLoading] = useState(true);
     const [cancelling, setCancelling] = useState(false);
+    const [confirmingDelivery, setConfirmingDelivery] = useState(false);
     const [submittingRating, setSubmittingRating] = useState(false);
     const [ratingValue, setRatingValue] = useState(5);
     const [ratingComment, setRatingComment] = useState("");
@@ -68,6 +69,29 @@ export function MyOrderDetail(): JSX.Element {
             });
         } finally {
             setCancelling(false);
+        }
+    };
+
+    const handleConfirmDelivery = async () => {
+        if (!order || order.orderStatus !== "Shipped" || !window.confirm("Xác nhận bạn đã nhận được đơn hàng này?")) return;
+
+        setConfirmingDelivery(true);
+        try {
+            await confirmDirectOrderDelivery(order.orderId);
+            setOrder({ ...order, orderStatus: "Delivered", canRateProvider: order.existingProviderRating ? false : true });
+            showToast({
+                title: "Đã xác nhận nhận hàng",
+                message: "Đơn hàng đã chuyển sang trạng thái Delivered. Bạn có thể đánh giá nhà cung cấp.",
+                variant: "success",
+            });
+        } catch (error: unknown) {
+            showToast({
+                title: "Không thể xác nhận nhận hàng",
+                message: error instanceof Error ? error.message : "Đã có lỗi xảy ra.",
+                variant: "error",
+            });
+        } finally {
+            setConfirmingDelivery(false);
         }
     };
 
@@ -287,6 +311,12 @@ export function MyOrderDetail(): JSX.Element {
                                 <div className="rounded-[24px] border border-dashed border-violet-300 bg-violet-50 p-6">
                                     <p className="text-[11px] font-black uppercase tracking-[0.14em] text-violet-500">Hành động</p>
                                     <div className="mt-4 space-y-3">
+                                        {order.orderStatus === "Shipped" && (
+                                            <button onClick={handleConfirmDelivery} disabled={confirmingDelivery} className="inline-flex w-full items-center justify-center gap-2 rounded-[16px] border border-emerald-200 bg-emerald-600 px-4 py-3 text-sm font-extrabold text-white shadow-soft-sm transition hover:bg-emerald-700 disabled:opacity-60">
+                                                {confirmingDelivery ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
+                                                {confirmingDelivery ? "Đang xác nhận..." : "Đã nhận hàng"}
+                                            </button>
+                                        )}
                                         {!BLOCKED_CANCEL_STATUSES.has(order.orderStatus) && order.orderStatus !== "Cancelled" && (
                                             <button onClick={handleCancel} disabled={cancelling} className="w-full rounded-[16px] border border-gray-200 bg-white px-4 py-3 text-sm font-extrabold text-gray-900 shadow-soft-sm disabled:opacity-60">
                                                 {cancelling ? "Đang hủy đơn..." : "Hủy đơn hàng"}

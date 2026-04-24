@@ -40,12 +40,11 @@ export function AdminBadge({
 export function AdminHero({
     eyebrow,
     title,
-    description,
     stats,
 }: {
     eyebrow: string;
     title: string;
-    description: string;
+    description?: string;
     stats: Array<{ label: string; value: string }>;
 }) {
     return (
@@ -56,7 +55,6 @@ export function AdminHero({
                         {eyebrow}
                     </div>
                     <h1 className="mt-4 text-[28px] font-black leading-tight text-slate-950 md:text-[34px]">{title}</h1>
-                    <p className="mt-3 max-w-2xl text-sm font-medium leading-7 text-slate-600 sm:text-base">{description}</p>
                 </div>
 
                 <div className="grid gap-3 sm:grid-cols-2 xl:w-[380px]">
@@ -75,12 +73,11 @@ export function AdminHero({
 export function AdminSummaryCard({
     label,
     value,
-    detail,
     accent,
 }: {
     label: string;
     value: string;
-    detail: string;
+    detail?: string;
     accent: string;
 }) {
     return (
@@ -91,21 +88,17 @@ export function AdminSummaryCard({
             <p className="mt-3 text-[30px] font-black leading-none" style={{ color: accent }}>
                 {value}
             </p>
-            <p className="mt-3 text-[14px] font-semibold leading-6" style={{ color: ADMIN_TONE.muted }}>
-                {detail}
-            </p>
         </article>
     );
 }
 
 export function AdminEmptyState({
     title,
-    detail,
     icon,
     bg,
 }: {
     title: string;
-    detail: string;
+    detail?: string;
     icon: ReactNode;
     bg: string;
 }) {
@@ -120,9 +113,6 @@ export function AdminEmptyState({
             <div className="mt-5 text-[28px] font-black" style={{ color: ADMIN_TONE.pageInk }}>
                 {title}
             </div>
-            <p className="mt-3 max-w-lg text-[15px] font-semibold leading-7" style={{ color: ADMIN_TONE.muted }}>
-                {detail}
-            </p>
         </div>
     );
 }

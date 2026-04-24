@@ -265,7 +265,6 @@ export default function VariantManager({
                                 <div>
                                     <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-violet-700">Size workspace</p>
                                     <h3 className="mt-1 text-xl font-extrabold text-gray-900">{variants.length} kích cỡ đã cấu hình</h3>
-                                    <p className="mt-2 text-sm font-medium text-[#4c5769]">Giữ danh sách gọn, sau đó mở từng kích cỡ để chỉnh chất liệu và các chỉ số min/max.</p>
                                 </div>
                                 <button onClick={openCreate} className="nb-btn nb-btn-purple text-sm whitespace-nowrap">
                                     Thêm kích cỡ
@@ -384,15 +383,11 @@ export default function VariantManager({
                                     onChange={(e) => setForm((current) => ({ ...current, materialType: e.target.value }))}
                                     placeholder="Ví dụ: Cotton, Cotton Spandex, Kaki..."
                                 />
-                                <p className="mt-2 text-[12px] font-semibold text-gray-500">
-                                    Dùng cho hiển thị sản phẩm và phân tích độ co giãn khi gợi ý size.
-                                </p>
                             </div>
 
                             <div className="space-y-4 rounded-[18px] border border-gray-200 bg-white p-4 shadow-soft-sm">
                                 <div>
                                     <p className="text-[14px] font-extrabold text-gray-900">Số đo theo size</p>
-                                    <p className="mt-1 text-[12px] font-semibold text-gray-500">Chọn các preset cần dùng, sau đó cập nhật min/max ở từng thẻ chỉ số.</p>
                                 </div>
 
                                 <div className="flex flex-wrap gap-2">

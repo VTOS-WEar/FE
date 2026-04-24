@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import {
     AlertTriangle,
     ArrowRight,
-    CheckCircle2,
+    BarChart3,
     CreditCard,
     Download,
     FolderClock,
@@ -104,12 +104,10 @@ function DashboardStatCard({
     icon,
     label,
     value,
-    detail,
 }: {
     icon: ReactNode;
     label: string;
     value: string;
-    detail: string;
 }) {
     return (
         <article className="rounded-[24px] border px-5 py-5 shadow-soft-lg" style={{ borderColor: tone.line, background: tone.shell }}>
@@ -117,18 +115,12 @@ function DashboardStatCard({
                 <div className="flex h-11 w-11 items-center justify-center rounded-2xl" style={{ background: "#EEF4FF", color: tone.sky }}>
                     {icon}
                 </div>
-                <span className="text-[11px] font-black uppercase tracking-[0.12em]" style={{ color: tone.muted }}>
-                    Trực tiếp
-                </span>
             </div>
             <p className="mt-4 text-[12px] font-black uppercase tracking-[0.1em]" style={{ color: tone.muted }}>
                 {label}
             </p>
             <p className="mt-2 text-[30px] font-black leading-none" style={{ color: tone.pageInk }}>
                 {value}
-            </p>
-            <p className="mt-3 text-[14px] font-semibold leading-6" style={{ color: tone.muted }}>
-                {detail}
             </p>
         </article>
     );
@@ -138,14 +130,12 @@ function QueueCard({
     title,
     count,
     href,
-    detail,
     items,
     toneKey,
 }: {
     title: string;
     count: string;
     href: string;
-    detail: string;
     items: Array<{ title: string; meta: string }>;
     toneKey: keyof typeof queueTones;
 }) {
@@ -163,9 +153,6 @@ function QueueCard({
                     </div>
                     <p className="mt-4 text-[28px] font-black leading-none" style={{ color: tone.pageInk }}>
                         {count}
-                    </p>
-                    <p className="mt-3 max-w-[36ch] text-[14px] font-semibold leading-6" style={{ color: tone.muted }}>
-                        {detail}
                     </p>
                 </div>
                 <div
@@ -393,9 +380,6 @@ export const AdminDashboard = (): JSX.Element => {
                                     <h1 className="mt-4 text-[34px] font-black leading-tight md:text-[46px]">
                                         Theo dõi việc cần xử lý trong toàn hệ thống.
                                     </h1>
-                                    <p className="mt-4 max-w-2xl text-sm font-medium leading-7 text-white/85 sm:text-base">
-                                        Từ đây, Admin xem nhanh yêu cầu cấp tài khoản, rút tiền, hỗ trợ và giao dịch cần chú ý, rồi mở thẳng từng khu vực để xử lý.
-                                    </p>
                                 </div>
 
                                 <div className="grid gap-3 sm:grid-cols-2 xl:w-[380px]">
@@ -422,9 +406,6 @@ export const AdminDashboard = (): JSX.Element => {
                                                 queueSummary.financeWatch,
                                             )}
                                         </p>
-                                        <p className="mt-2 text-[14px] font-semibold leading-6 text-white/80">
-                                            Gộp từ các hàng chờ tài khoản, payout, hỗ trợ và giao dịch cần theo dõi.
-                                        </p>
                                     </div>
                                 </div>
                             </div>
@@ -435,25 +416,21 @@ export const AdminDashboard = (): JSX.Element => {
                                 icon={<Users className="h-5 w-5" />}
                                 label="Người dùng toàn hệ thống"
                                 value={loading ? "…" : fmtNumber(analytics?.totalUsers)}
-                                detail={`PH: ${fmtNumber(analytics?.totalParents)} · Trường: ${fmtNumber(analytics?.totalSchools)} · NCC: ${fmtNumber(analytics?.totalProviders)}`}
                             />
                             <DashboardStatCard
                                 icon={<FolderClock className="h-5 w-5" />}
                                 label="Đơn hàng cần theo dõi"
                                 value={loading ? "…" : fmtNumber(ordersCount ?? analytics?.totalOrders ?? 0)}
-                                detail="Theo dõi khối lượng đơn hiện có để cân đối hàng chờ vận hành và thanh toán."
                             />
                             <DashboardStatCard
                                 icon={<TrendingUp className="h-5 w-5" />}
                                 label="Doanh thu ghi nhận"
                                 value={loading ? "…" : fmtCurrency(revenueTotal ?? analytics?.totalRevenue ?? 0)}
-                                detail="Tổng doanh thu dùng để đọc nhanh sức khỏe hệ thống và đối chiếu payout."
                             />
                             <DashboardStatCard
                                 icon={<CreditCard className="h-5 w-5" />}
                                 label="Tỷ lệ hoàn tất thanh toán"
                                 value={loading ? "…" : formatPercent(paymentRate, { maximumFractionDigits: 2 })}
-                                detail="Chỉ số này hỗ trợ phát hiện sớm rủi ro checkout, giao dịch treo hoặc lỗi cổng thanh toán."
                             />
                         </section>
 
@@ -463,9 +440,6 @@ export const AdminDashboard = (): JSX.Element => {
                                     <h2 className="text-[24px] font-black" style={{ color: tone.pageInk }}>
                                         Hàng chờ ưu tiên
                                     </h2>
-                                    <p className="mt-1 text-[15px] font-semibold" style={{ color: tone.muted }}>
-                                        Mỗi thẻ là một vùng công việc cần Admin đưa ra quyết định nhanh.
-                                    </p>
                                 </div>
                             </div>
 
@@ -474,7 +448,6 @@ export const AdminDashboard = (): JSX.Element => {
                                     title="Cấp tài khoản"
                                     count={fmtNumber(queueSummary.approvalCount)}
                                     href="/admin/account-requests"
-                                    detail="Ưu tiên duyệt các yêu cầu chờ xử lý từ trường học và nhà cung cấp."
                                     toneKey="approvals"
                                     items={accountRequests.map((item) => ({
                                         title: item.organizationName,
@@ -485,7 +458,6 @@ export const AdminDashboard = (): JSX.Element => {
                                     title="Rút tiền"
                                     count={fmtNumber(queueSummary.withdrawalCount)}
                                     href="/admin/withdrawals"
-                                    detail="Kiểm tra các payout chờ duyệt để tránh tồn đọng và chậm thanh toán."
                                     toneKey="withdrawals"
                                     items={withdrawals.map((item) => ({
                                         title: item.schoolName || "Yêu cầu rút tiền",
@@ -496,7 +468,6 @@ export const AdminDashboard = (): JSX.Element => {
                                     title="Hỗ trợ"
                                     count={fmtNumber(queueSummary.supportCount)}
                                     href="/admin/complaints"
-                                    detail="Can thiệp các khiếu nại đang mở trước khi chúng trở thành điểm nghẽn vận hành."
                                     toneKey="support"
                                     items={complaints.map((item) => ({
                                         title: item.title,
@@ -507,7 +478,6 @@ export const AdminDashboard = (): JSX.Element => {
                                     title="Tài chính"
                                     count={fmtNumber(queueSummary.financeWatch)}
                                     href="/admin/transactions"
-                                    detail="Theo dõi giao dịch đang pending hoặc processing để khoanh vùng bất thường."
                                     toneKey="finance"
                                     items={transactions
                                         .filter((item) => item.status === "Pending" || item.status === "Processing")
@@ -530,9 +500,6 @@ export const AdminDashboard = (): JSX.Element => {
                                 <h2 className="text-[20px] font-black" style={{ color: tone.pageInk }}>
                                     Xuất báo cáo nhanh
                                 </h2>
-                                <p className="mt-2 text-[14px] font-semibold leading-6" style={{ color: tone.muted }}>
-                                    Giữ chức năng export, nhưng đặt sau vùng điều phối để Admin dùng khi cần đối soát hoặc báo cáo.
-                                </p>
 
                                 <div className="mt-5 space-y-3">
                                     {["orders", "revenue", "users", "payments"].map((reportType) => (
@@ -545,9 +512,6 @@ export const AdminDashboard = (): JSX.Element => {
                                                 <div>
                                                     <p className="text-[15px] font-black" style={{ color: tone.pageInk }}>
                                                         {exportLabel(reportType)}
-                                                    </p>
-                                                    <p className="mt-1 text-[13px] font-semibold" style={{ color: tone.muted }}>
-                                                        Xuất nhanh bản CSV, Excel hoặc PDF cho vùng dữ liệu này.
                                                     </p>
                                                 </div>
                                                 <div className="flex flex-wrap gap-2">
@@ -609,11 +573,8 @@ export const AdminDashboard = (): JSX.Element => {
                                     <h2 className="text-[20px] font-black" style={{ color: tone.pageInk }}>
                                         Lối tắt điều phối
                                     </h2>
-                                    <p className="mt-2 text-[14px] font-semibold leading-6" style={{ color: tone.muted }}>
-                                        Truy cập thẳng các khu vực Admin cần dùng nhiều nhất trong ca xử lý.
-                                    </p>
                                 </div>
-                                <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                                <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
                                     {[
                                         {
                                             href: "/admin/account-requests",
@@ -635,6 +596,11 @@ export const AdminDashboard = (): JSX.Element => {
                                             icon: <AlertTriangle className="h-4 w-4" />,
                                             label: "Can thiệp hỗ trợ",
                                         },
+                                        {
+                                            href: "/admin/semester-monitor",
+                                            icon: <BarChart3 className="h-4 w-4" />,
+                                            label: "Báo cáo học kỳ",
+                                        },
                                     ].map((item) => (
                                         <Link
                                             key={item.href}
@@ -650,23 +616,6 @@ export const AdminDashboard = (): JSX.Element => {
                             </div>
                         </section>
 
-                        {!loading && analytics && (
-                            <section className="rounded-[24px] border p-5 shadow-soft-lg" style={{ borderColor: tone.line, background: tone.shell }}>
-                                <div className="flex items-start gap-3">
-                                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl" style={{ background: "#E8FFF7", color: tone.emerald }}>
-                                        <CheckCircle2 className="h-5 w-5" />
-                                    </div>
-                                    <div>
-                                        <h2 className="text-[18px] font-black" style={{ color: tone.pageInk }}>
-                                            Tóm tắt điều hành
-                                        </h2>
-                                        <p className="mt-2 text-[14px] font-semibold leading-7" style={{ color: tone.muted }}>
-                                            Hệ thống hiện có {fmtNumber(analytics.totalUsers)} tài khoản, {fmtNumber(ordersCount ?? analytics.totalOrders)} đơn hàng và {fmtCurrency(revenueTotal ?? analytics.totalRevenue)} doanh thu ghi nhận. Trọng tâm xử lý hiện tại là {fmtNumber(queueSummary.approvalCount)} yêu cầu cấp tài khoản, {fmtNumber(queueSummary.withdrawalCount)} payout chờ duyệt và {fmtNumber(queueSummary.supportCount)} yêu cầu hỗ trợ mở.
-                                        </p>
-                                    </div>
-                                </div>
-                            </section>
-                        )}
                     </main>
                 </div>
             </div>

@@ -1,4 +1,4 @@
-import { RouterProvider, createBrowserRouter, Navigate } from "react-router-dom";
+import { RouterProvider, createBrowserRouter, Navigate, Outlet, useLocation } from "react-router-dom";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { ToastProvider } from "./contexts/ToastContext";
 import { CartProvider } from "./contexts/CartContext";
@@ -52,6 +52,7 @@ import { AccountTab } from "./screens/ParentProfile/tabs/AccountTab";
 import { AddressBookTab } from "./screens/ParentProfile/tabs/AddressBookTab";
 import { StudentsTab } from "./screens/ParentProfile/tabs/StudentsTab";
 import { OrdersTab } from "./screens/ParentProfile/tabs/OrdersTab";
+import { WalletTab } from "./screens/ParentProfile/tabs/WalletTab";
 import { HistoryTab } from "./screens/ParentProfile/tabs/HistoryTab";
 import { ReviewsTab } from "./screens/ParentProfile/tabs/ReviewsTab";
 import { SettingsTab } from "./screens/ParentProfile/tabs/SettingsTab";
@@ -68,13 +69,17 @@ import { ContactPartnership } from "./screens/ContactPartnership";
 import { AdminAccountRequests } from "./screens/AdminAccountRequests";
 import AdminTransactions from "./screens/AdminTransactions/AdminTransactions";
 import AdminComplaints from "./screens/AdminComplaints/AdminComplaints";
+import { AdminSemesterMonitor } from "./screens/AdminSemesterMonitor";
+import { AdminCategories } from "./screens/AdminCategories";
 import { AdminAccountSettings } from "./screens/AdminProfile/AdminAccountSettings";
 import { ProviderProfile } from "./screens/ProviderProfile/ProviderProfile";
 import { ProviderAccountSettings } from "./screens/ProviderProfile/ProviderAccountSettings";
 import { SchoolAccountSettings } from "./screens/SchoolProfile/SchoolAccountSettings";
 import { HowItWorks } from "./screens/HowItWorks/HowItWorks";
 import { SearchPage } from "./screens/Search/SearchPage";
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import vtosLogoUrl from "../public/imgs/vtoslogo.png";
 import { BodygramScannerPage } from "./screens/BodygramScanner/BodygramScannerPage";
 import { BodygramScanDetailPage } from "./screens/ParentProfile/pages/BodygramScanDetailPage";
 import { SemesterCatalog } from "./screens/SemesterCatalog/SemesterCatalog";
@@ -85,6 +90,8 @@ import { ProviderOrderDetail } from "./screens/ProviderOrders/ProviderOrderDetai
 import { ProviderRatings } from "./screens/ProviderRatings/ProviderRatings";
 import { SchoolTeacherReports } from "./screens/SchoolTeacherReports";
 import { SubmitTeacherReportPage, TeacherAccount, TeacherDashboard, TeacherMessages, TeacherReminders, TeacherReports } from "./screens/TeacherWorkspace";
+import { SupportTicketsPage } from "./screens/SupportTickets";
+import { ParentClassGroupChatPage } from "./screens/ClassGroupChat";
 
 /** Smart root redirect: School→dashboard, others→homepage */
 function RootRedirect() {
@@ -101,7 +108,70 @@ function RootRedirect() {
   return <Navigate to="/homepage" replace />;
 }
 
-const router = createBrowserRouter([
+function RouteTransitionLayout() {
+  const location = useLocation();
+  const currentLocationKey = `${location.pathname}${location.search}`;
+  const previousLocationRef = useRef(currentLocationKey);
+  const [showLoader, setShowLoader] = useState(false);
+
+  useLayoutEffect(() => {
+    if (currentLocationKey !== previousLocationRef.current) {
+      previousLocationRef.current = currentLocationKey;
+      setShowLoader(true);
+    }
+  }, [currentLocationKey]);
+
+  useEffect(() => {
+    if (!showLoader) return;
+    const timeoutId = window.setTimeout(() => setShowLoader(false), 300);
+    return () => window.clearTimeout(timeoutId);
+  }, [showLoader]);
+
+  return (
+    <div className="relative min-h-screen">
+      <Outlet />
+
+      <AnimatePresence>
+        {showLoader ? (
+          <motion.div
+            key="route-transition-loader"
+            initial={{ opacity: 1 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
+            className="fixed inset-0 z-[9999] flex items-center justify-center bg-white/95"
+            role="status"
+            aria-live="polite"
+            aria-label="loading"
+          >
+            <div className="flex flex-col items-center gap-4">
+              <div className="relative flex h-20 w-20 items-center justify-center">
+                <div className="absolute inset-0 rounded-full bg-violet-100/70 blur-md" />
+                <div className="absolute inset-1 animate-ping rounded-full border border-violet-200" />
+                <div className="absolute inset-0 animate-spin rounded-full border-[3px] border-violet-100 border-t-violet-600 border-r-amber-300" />
+                <div className="relative flex h-14 w-14 items-center justify-center rounded-full border border-slate-200 bg-white shadow-soft-md">
+                  <img src={vtosLogoUrl} alt="VTOS" className="h-8 w-8 object-contain" />
+                </div>
+              </div>
+              <div className="flex flex-col items-center gap-2">
+                <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">loading</p>
+                <div className="flex items-center gap-1" aria-hidden="true">
+                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-violet-500" />
+                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-amber-400 [animation-delay:120ms]" />
+                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400 [animation-delay:240ms]" />
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+const router = createBrowserRouter([{
+  element: <RouteTransitionLayout />,
+  children: [
   {
     path: "/",
     element: <RootRedirect />,
@@ -164,9 +234,11 @@ const router = createBrowserRouter([
       { path: "address-book", element: <AddressBookTab /> },
       { path: "students", element: <StudentsTab /> },
       { path: "orders", element: <OrdersTab /> },
+      { path: "wallet", element: <WalletTab /> },
       { path: "history", element: <HistoryTab /> },
       { path: "bodygram-history", element: <BodygramHistoryTab /> },
       { path: "reviews", element: <ReviewsTab /> },
+      { path: "support", element: <SupportTicketsPage /> },
       { path: "settings", element: <SettingsTab /> },
       { path: "feedback", element: <FeedbackPage /> },
       { path: "orders/:orderId", element: <OrderDetailPage /> },
@@ -177,6 +249,10 @@ const router = createBrowserRouter([
   {
     path: "/children/:childId/scan",
     element: <RoleGuard allowedRoles={["Parent"]}><BodygramScannerPage /></RoleGuard>,
+  },
+  {
+    path: "/class-chat",
+    element: <RoleGuard allowedRoles={["Parent"]}><ParentClassGroupChatPage /></RoleGuard>,
   },
   {
     path: "/verify-otp",
@@ -241,6 +317,10 @@ const router = createBrowserRouter([
     element: <RoleGuard allowedRoles={["HomeroomTeacher"]}><SubmitTeacherReportPage /></RoleGuard>,
   },
   {
+    path: "/teacher/support",
+    element: <RoleGuard allowedRoles={["HomeroomTeacher"]}><SupportTicketsPage /></RoleGuard>,
+  },
+  {
     path: "/teacher/messages",
     element: <RoleGuard allowedRoles={["HomeroomTeacher"]}><TeacherMessages /></RoleGuard>,
   },
@@ -263,6 +343,14 @@ const router = createBrowserRouter([
   {
     path: "/provider/complaints",
     element: <RoleGuard allowedRoles={["Provider"]}><ProviderComplaints /></RoleGuard>,
+  },
+  {
+    path: "/provider/support",
+    element: <RoleGuard allowedRoles={["Provider"]}><SupportTicketsPage /></RoleGuard>,
+  },
+  {
+    path: "/school/support",
+    element: <RoleGuard allowedRoles={["School"]}><SupportTicketsPage /></RoleGuard>,
   },
   {
     path: "/school/teacher-reports",
@@ -312,6 +400,14 @@ const router = createBrowserRouter([
   {
     path: "/admin/complaints",
     element: <RoleGuard allowedRoles={["Admin"]}><AdminComplaints /></RoleGuard>,
+  },
+  {
+    path: "/admin/semester-monitor",
+    element: <RoleGuard allowedRoles={["Admin"]}><AdminSemesterMonitor /></RoleGuard>,
+  },
+  {
+    path: "/admin/categories",
+    element: <RoleGuard allowedRoles={["Admin"]}><AdminCategories /></RoleGuard>,
   },
   {
     path: "/admin/account-settings",
@@ -364,7 +460,8 @@ const router = createBrowserRouter([
   { path: "/provider/orders/:id", element: <RoleGuard allowedRoles={["Provider"]}><ProviderOrderDetail /></RoleGuard> },
   // ── Catch-all: redirect unknown routes to homepage ──
   { path: "*", element: <RootRedirect /> },
-]);
+  ],
+}]);
 import { GoogleOAuthProvider } from "@react-oauth/google";
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "";

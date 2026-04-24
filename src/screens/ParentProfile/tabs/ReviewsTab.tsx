@@ -385,9 +385,6 @@ export const ReviewsTab = (): JSX.Element => {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
           <h2 className="font-black text-gray-900 text-2xl">Đánh giá sản phẩm sáng tạo</h2>
-          <p className="text-sm font-semibold text-gray-400 mt-1">
-            Gửi phản hồi về chất lượng trang phục từ các nhà cung cấp học kỳ
-          </p>
         </div>
 
         {/* Semester catalog filter */}

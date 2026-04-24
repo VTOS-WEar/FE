@@ -38,6 +38,9 @@ function fmtDate(iso: string) {
     });
 }
 
+const formatBankOption = (bankName: string, bankCode: string): string =>
+    bankCode ? `${bankName} (${bankCode})` : "";
+
 function txLabel(type: string) {
     switch (type) {
         case "OrderPayment":
@@ -127,6 +130,7 @@ export default function ProviderWallet() {
                 accountNumber: currentWallet.bankAccountNumber || "",
                 accountName: currentWallet.bankAccountName || "",
             });
+            setBankSearch(formatBankOption(currentWallet.bankName || "", currentWallet.bankCode || ""));
         } catch {
             // ignore
         } finally {
@@ -298,9 +302,13 @@ export default function ProviderWallet() {
                                                         <label className="block text-[10px] font-black uppercase tracking-[0.16em] text-gray-400">Ngân hàng</label>
                                                         <input
                                                             className="nb-input mt-2 w-full"
-                                                            value={bankSearch || (bankForm.bankCode ? `${bankForm.bankName} (${bankForm.bankCode})` : "")}
-                                                            onChange={(event) => { setBankSearch(event.target.value); setShowBankDropdown(true); }}
-                                                            onFocus={() => { setBankSearch(""); setShowBankDropdown(true); }}
+                                                            value={bankSearch}
+                                                            onChange={(event) => {
+                                                                setBankSearch(event.target.value);
+                                                                setBankForm((current) => ({ ...current, bankCode: "", bankName: "" }));
+                                                                setShowBankDropdown(true);
+                                                            }}
+                                                            onFocus={() => { setShowBankDropdown(true); }}
                                                             placeholder="Tìm ngân hàng..."
                                                             autoComplete="off"
                                                         />
@@ -319,7 +327,7 @@ export default function ProviderWallet() {
                                                                         className="flex w-full items-center justify-between px-3 py-2 text-left text-sm transition-colors hover:bg-violet-50"
                                                                         onClick={() => {
                                                                             setBankForm((current) => ({ ...current, bankCode: bank.code, bankName: bank.shortName }));
-                                                                            setBankSearch("");
+                                                                            setBankSearch(formatBankOption(bank.shortName, bank.code));
                                                                             setShowBankDropdown(false);
                                                                         }}
                                                                     >
@@ -353,6 +361,7 @@ export default function ProviderWallet() {
                                                                     accountNumber: wallet?.bankAccountNumber || "",
                                                                     accountName: wallet?.bankAccountName || "",
                                                                 });
+                                                                setBankSearch(formatBankOption(wallet?.bankName || "", wallet?.bankCode || ""));
                                                             }}
                                                         >
                                                             Hủy

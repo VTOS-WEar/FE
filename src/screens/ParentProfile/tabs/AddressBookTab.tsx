@@ -182,7 +182,7 @@ export const AddressBookTab = (): JSX.Element => {
 
     if (editingCustomLabel) {
       if (customLabelsInUse.has(editingCustomLabel)) {
-        setModalMessage("Nhãn đang được dùng trong sổ địa chỉ. Hãy đổi nhãn trên các địa chỉ đó trước.");
+        setModalMessage("Nhãn đang được dùng trong sổ địa chỉ.");
         return;
       }
 
@@ -205,7 +205,7 @@ export const AddressBookTab = (): JSX.Element => {
 
   const handleStartEditCustomLabel = (label: string) => {
     if (customLabelsInUse.has(label)) {
-      setModalMessage("Nhãn đang được dùng trong sổ địa chỉ. Hãy đổi nhãn trên các địa chỉ đó trước.");
+      setModalMessage("Nhãn đang được dùng trong sổ địa chỉ.");
       return;
     }
 
@@ -327,9 +327,6 @@ export const AddressBookTab = (): JSX.Element => {
           <div>
             <p className="text-[11px] font-black uppercase tracking-[0.16em] text-slate-400">Address book</p>
             <h1 className="mt-2 text-2xl font-black text-gray-900">Sổ địa chỉ giao hàng</h1>
-            <p className="mt-2 max-w-3xl text-sm font-medium leading-7 text-slate-600">
-              Lưu các địa chỉ nhận hàng thường dùng để checkout nhanh hơn ở giỏ hàng và direct order.
-            </p>
           </div>
 
           <div className="flex flex-wrap gap-3">
@@ -363,7 +360,7 @@ export const AddressBookTab = (): JSX.Element => {
               </div>
             ) : addresses.length === 0 ? (
               <div className="rounded-[22px] border border-dashed border-gray-200 bg-slate-50 p-6 text-sm font-bold text-slate-500">
-                Chưa có địa chỉ nào. Hãy tạo địa chỉ đầu tiên để checkout nhanh hơn.
+                Chưa có địa chỉ nào.
               </div>
             ) : (
               addresses.map((address) => (
@@ -530,7 +527,6 @@ export const AddressBookTab = (): JSX.Element => {
                 <input
                   value={addressForm.houseNumber}
                   onChange={(event) => setAddressForm((current) => ({ ...current, houseNumber: event.target.value }))}
-                  placeholder="Ví dụ: 25 Nguyễn Trãi, tổ 3"
                   className={inputClass}
                 />
               </div>
@@ -587,7 +583,6 @@ export const AddressBookTab = (): JSX.Element => {
                     handleSaveCustomLabel();
                   }
                 }}
-                placeholder="Ví dụ: Dorm, Grandma, Parents"
                 className={inputClass}
                 autoFocus
               />

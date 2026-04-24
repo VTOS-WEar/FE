@@ -224,9 +224,6 @@ export const BodygramScanComparePage = (): JSX.Element => {
             Quay lại lịch sử Bodygram
           </Link>
           <h1 className="mt-3 text-3xl font-extrabold text-gray-900">So sánh hai lần quét Bodygram</h1>
-          <p className="mt-2 max-w-3xl text-sm font-medium text-gray-600">
-            Cột trái là lần quét cũ hơn, cột phải là lần quét mới hơn. Phần tổng hợp phía dưới hiển thị chênh lệch giữa hai lần đo.
-          </p>
         </div>
 
         <Link

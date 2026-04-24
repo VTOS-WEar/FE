@@ -31,8 +31,10 @@ import {
     deleteOutfit,
     setOutfitAvailability,
     uploadOutfitImage,
+    getUniformCategories,
     type OutfitDto,
     type CreateOutfitRequest,
+    type UniformCategoryDto,
 } from "../../lib/api/schools";
 import { RichTextEditor } from "../../components/RichTextEditor/RichTextEditor";
 
@@ -55,10 +57,24 @@ const OUTFIT_TYPE_OPTIONS = [
     { value: 4, label: "Khác" },
 ];
 
+function inferOutfitTypeFromCategoryName(categoryName: string): number {
+    const normalized = categoryName
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/đ/g, "d")
+        .replace(/Đ/g, "D")
+        .toLowerCase();
+    if (normalized.includes("the thao")) return 2;
+    if (normalized.includes("phu kien")) return 3;
+    if (normalized.includes("khac")) return 4;
+    return 1;
+}
+
 type OutfitFormData = {
     outfitName: string;
     description: string;
     outfitType: number;
+    categoryId: string;
     mainImageURL: string;
 };
 
@@ -66,6 +82,7 @@ const EMPTY_FORM: OutfitFormData = {
     outfitName: "",
     description: "",
     outfitType: 1,
+    categoryId: "",
     mainImageURL: "",
 };
 
@@ -75,12 +92,14 @@ function OutfitFormModal({
     onSave,
     isLoading,
     editingOutfit,
+    categories,
 }: {
     isOpen: boolean;
     onClose: () => void;
     onSave: (data: CreateOutfitRequest, imageFile: File | null) => void;
     isLoading: boolean;
     editingOutfit: OutfitDto | null;
+    categories: UniformCategoryDto[];
 }) {
     const [form, setForm] = useState<OutfitFormData>(EMPTY_FORM);
     const [imageFile, setImageFile] = useState<File | null>(null);
@@ -98,6 +117,7 @@ function OutfitFormModal({
                     outfitName: editingOutfit.outfitName,
                     description: editingOutfit.description || "",
                     outfitType: editingOutfit.outfitType,
+                    categoryId: editingOutfit.categoryId || "",
                     mainImageURL: editingOutfit.mainImageURL || "",
                 });
                 setImagePreview(editingOutfit.mainImageURL || null);
@@ -155,6 +175,7 @@ function OutfitFormModal({
                 description: form.description.trim() || null,
                 materialType: null,
                 outfitType: form.outfitType,
+                categoryId: form.categoryId || null,
                 mainImageURL: form.mainImageURL.trim() || null,
                 isCustomizable: false,
             },
@@ -176,9 +197,6 @@ function OutfitFormModal({
                         <h2 className="text-[24px] font-black leading-none text-gray-900 md:text-[28px]">
                             {isEditing ? "Chỉnh sửa mẫu đồng phục" : "Thêm mẫu đồng phục mới"}
                         </h2>
-                        <p className="mt-2 text-[14px] font-semibold text-[#6F6A7D]">
-                            Tải thiết kế lên để nhà cung cấp tiếp nhận và bổ sung thông tin bán hàng sau này.
-                        </p>
                     </div>
                     <button onClick={onClose} className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-[10px] border border-gray-200 bg-white text-[22px] font-black shadow-soft-sm transition-all hover:scale-[0.99] hover:shadow-soft-sm active:scale-[0.98] active:shadow-none">×</button>
                 </div>
@@ -243,9 +261,26 @@ function OutfitFormModal({
 
                         <div>
                             <label className="mb-2 block text-[14px] font-extrabold text-gray-900">Loại đồng phục</label>
-                            <select value={form.outfitType} onChange={(e) => setForm((f) => ({ ...f, outfitType: parseInt(e.target.value, 10) }))} className={modernInputClass}>
-                                {OUTFIT_TYPE_OPTIONS.map((opt) => (<option key={opt.value} value={opt.value}>{opt.label}</option>))}
+                            <select
+                                value={form.categoryId}
+                                onChange={(e) => {
+                                    const category = categories.find((item) => item.categoryId === e.target.value);
+                                    setForm((f) => ({
+                                        ...f,
+                                        categoryId: e.target.value,
+                                        outfitType: category ? inferOutfitTypeFromCategoryName(category.categoryName) : 1,
+                                    }));
+                                }}
+                                className={modernInputClass}
+                            >
+                                <option value="">Chọn danh mục</option>
+                                {categories.map((category) => (
+                                    <option key={category.categoryId} value={category.categoryId}>{category.categoryName}</option>
+                                ))}
                             </select>
+                            {categories.length === 0 && (
+                                <p className="mt-2 text-[13px] font-bold text-amber-600">Admin cần tạo danh mục trước khi trường gắn danh mục cho đồng phục.</p>
+                            )}
                         </div>
                     </section>
                 </form>
@@ -364,7 +399,7 @@ function UniformCard({ item, onEdit, onDelete, onHide, onUnhide }: {
                 )}
                 <div className="absolute left-3 top-3 flex flex-wrap gap-2">
                     <span className="rounded-full border border-white/80 bg-white/90 px-3 py-1 text-[11px] font-black text-gray-700 shadow-soft-sm">
-                        {OUTFIT_TYPE_LABELS[item.outfitType] || "Khác"}
+                        {item.categoryName || OUTFIT_TYPE_LABELS[item.outfitType] || "Khác"}
                     </span>
                     <span className={`rounded-full border px-3 py-1 text-[11px] font-black shadow-soft-sm ${item.isAvailable ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-amber-200 bg-amber-50 text-amber-700"}`}>
                         {item.isAvailable ? "Đang hiển thị" : "Tạm ẩn"}
@@ -377,13 +412,6 @@ function UniformCard({ item, onEdit, onDelete, onHide, onUnhide }: {
                     <h3 className="text-lg font-extrabold leading-tight text-gray-900">{item.outfitName}</h3>
                     <p className="mt-2 line-clamp-3 text-sm font-medium leading-6 text-[#4c5769]">
                         {item.description ? stripHtml(item.description) : "Chưa có mô tả cho mẫu đồng phục này."}
-                    </p>
-                </div>
-
-                <div className="rounded-2xl bg-[#f8f5ff] p-4">
-                    <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-violet-700">Phạm vi của School</p>
-                    <p className="mt-2 text-sm font-medium leading-6 text-[#4c5769]">
-                        Nhà trường chỉ quản lý thiết kế mẫu. Size, chất liệu và thông tin bán hàng sẽ do Provider bổ sung.
                     </p>
                 </div>
 
@@ -428,9 +456,6 @@ function UploadPlaceholderCard({ onClick }: { onClick: () => void }) {
                 <Plus className="h-8 w-8" />
             </div>
             <p className="text-base font-extrabold text-gray-900">Thêm thiết kế mới</p>
-            <p className="mt-2 max-w-[16rem] text-sm font-medium leading-6 text-[#4c5769]">
-                Tải thiết kế đồng phục lên để Provider tiếp nhận và bổ sung thông tin bán hàng.
-            </p>
         </button>
     );
 }
@@ -442,9 +467,6 @@ function EmptyState({ onCreate }: { onCreate: () => void }) {
                 <Box className="h-8 w-8" />
             </div>
             <h2 className="mt-5 text-xl font-extrabold text-gray-900">Chưa có thiết kế đồng phục nào</h2>
-            <p className="mx-auto mt-2 max-w-xl text-sm font-medium leading-6 text-[#4c5769]">
-                Nhà trường chỉ cần quản lý bộ thiết kế mẫu. Provider sẽ phụ trách size, chất liệu và thông tin bán hàng chi tiết.
-            </p>
             <button onClick={onCreate} className="nb-btn nb-btn-purple mt-5 text-sm">
                 Tạo mẫu đầu tiên
             </button>
@@ -465,9 +487,6 @@ function SearchEmptyState({
                 <Search className="h-8 w-8" />
             </div>
             <h2 className="mt-5 text-xl font-extrabold text-gray-900">Không tìm thấy mẫu phù hợp</h2>
-            <p className="mx-auto mt-2 max-w-xl text-sm font-medium leading-6 text-[#4c5769]">
-                Không có thiết kế nào khớp với từ khóa <span className="font-bold text-gray-900">"{search}"</span>. Thử đổi từ khóa khác hoặc xóa bộ lọc hiện tại.
-            </p>
             <button onClick={onClear} className="nb-btn nb-btn-outline mt-5 text-sm">
                 Xóa tìm kiếm
             </button>
@@ -530,6 +549,7 @@ export const UniformManagement = (): JSX.Element => {
     const { showToast } = useToast();
 
     const [outfits, setOutfits] = useState<OutfitDto[]>([]);
+    const [categories, setCategories] = useState<UniformCategoryDto[]>([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("");
     const [activeTab, setActiveTab] = useState<"all" | "available" | "unavailable">("all");
@@ -550,6 +570,10 @@ export const UniformManagement = (): JSX.Element => {
 
     useEffect(() => {
         getSchoolProfile().then((p) => setSchoolName(p.schoolName || "")).catch(() => {});
+    }, []);
+
+    useEffect(() => {
+        getUniformCategories().then(setCategories).catch(() => setCategories([]));
     }, []);
 
     const fetchOutfits = useCallback(() => {
@@ -699,9 +723,6 @@ export const UniformManagement = (): JSX.Element => {
                                     <h1 className="mt-3 text-[26px] font-extrabold leading-tight text-gray-900 lg:text-[34px]">
                                         Quản lý thiết kế mẫu đồng phục
                                     </h1>
-                                    <p className="mt-2 max-w-2xl text-sm font-medium leading-7 text-[#4c5769] sm:text-base">
-                                        Nhà trường tải lên và quản lý mẫu thiết kế. Size, chất liệu và thông tin bán hàng chi tiết sẽ do nhà cung cấp phụ trách.
-                                    </p>
                                 </div>
                                 <button onClick={openCreate} className="nb-btn nb-btn-purple text-sm whitespace-nowrap">
                                     Thêm thiết kế mới
@@ -800,7 +821,7 @@ export const UniformManagement = (): JSX.Element => {
                 </div>
             </div>
 
-            <OutfitFormModal isOpen={showFormModal} onClose={() => { setShowFormModal(false); setEditingOutfit(null); }} onSave={handleSave} isLoading={formLoading} editingOutfit={editingOutfit} />
+            <OutfitFormModal isOpen={showFormModal} onClose={() => { setShowFormModal(false); setEditingOutfit(null); }} onSave={handleSave} isLoading={formLoading} editingOutfit={editingOutfit} categories={categories} />
             <DeleteConfirmDialog isOpen={!!deletingOutfit} onClose={() => setDeletingOutfit(null)} onConfirm={handleDelete} outfitName={deletingOutfit?.outfitName || ""} isLoading={deleteLoading} />
             <HideConfirmDialog isOpen={!!hidingOutfit} onClose={() => setHidingOutfit(null)} onConfirm={handleHide} outfitName={hidingOutfit?.outfitName || ""} isLoading={hideLoading} />
             <HideConfirmDialog isOpen={!!unhidingOutfit} onClose={() => setUnhidingOutfit(null)} onConfirm={handleUnhide} outfitName={unhidingOutfit?.outfitName || ""} isLoading={unhideLoading} />

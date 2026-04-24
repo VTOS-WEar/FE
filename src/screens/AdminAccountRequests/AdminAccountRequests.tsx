@@ -444,9 +444,6 @@ export const AdminAccountRequests = (): JSX.Element => {
                                             <h2 className="text-[24px] font-black" style={{ color: ADMIN_TONE.pageInk }}>
                                                 Chi tiết yêu cầu cấp tài khoản
                                             </h2>
-                                            <p className="mt-2 text-[14px] font-semibold leading-6" style={{ color: ADMIN_TONE.muted }}>
-                                                Xem xét thông tin tổ chức, người liên hệ và chọn một trong hai hành động: tạo tài khoản hoặc từ chối.
-                                            </p>
                                         </div>
                                         <button
                                             onClick={closeModal}
@@ -561,9 +558,6 @@ export const AdminAccountRequests = (): JSX.Element => {
                                                 className="w-full rounded-xl border px-4 py-3 text-[14px] font-semibold outline-none"
                                                 style={{ borderColor: ADMIN_TONE.line, background: ADMIN_TONE.shell }}
                                             />
-                                            <p className="text-[12px] font-semibold" style={{ color: ADMIN_TONE.muted }}>
-                                                Mật khẩu tạm thời sẽ được gửi qua email cho người dùng.
-                                            </p>
                                             {actionError && (
                                                 <p className="text-[13px] font-bold" style={{ color: "#B23148" }}>
                                                     {actionError}

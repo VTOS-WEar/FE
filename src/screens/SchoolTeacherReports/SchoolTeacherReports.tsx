@@ -125,12 +125,9 @@ export const SchoolTeacherReports = (): JSX.Element => {
                         <section className="rounded-[28px] border border-amber-200 bg-[linear-gradient(135deg,_#fffef8_0%,_#ffffff_45%,_#f4fbff_100%)] p-6 shadow-soft-lg">
                             <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
                                 <div>
-                                    <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-amber-700">Báo cáo giáo viên</p>
-                                    <h1 className="mt-2 text-[30px] font-extrabold leading-tight text-gray-900 lg:text-[38px]">Báo cáo từ giáo viên chủ nhiệm</h1>
-                                    <p className="mt-3 max-w-2xl text-sm font-medium leading-7 text-[#4c5769] sm:text-base">
-                                        Xem báo cáo giáo viên gửi lên, phản hồi theo từng lớp và đánh dấu các mục nhà trường đã tiếp nhận.
-                                    </p>
-                                </div>
+                                     <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-amber-700">Báo cáo giáo viên</p>
+                                     <h1 className="mt-2 text-[30px] font-extrabold leading-tight text-gray-900 lg:text-[38px]">Báo cáo từ giáo viên chủ nhiệm</h1>
+                                 </div>
                                 <div className="grid gap-3 sm:grid-cols-2">
                                     <div className="rounded-2xl border border-amber-200 bg-white/90 p-4">
                                         <p className="text-sm font-semibold text-[#6b7280]">Đang chờ xem</p>

@@ -1,4 +1,4 @@
-import { ClipboardList, GraduationCap, LayoutDashboard } from "lucide-react";
+import { ClipboardList, GraduationCap, LayoutDashboard, LifeBuoy } from "lucide-react";
 import type { DashboardSidebarProps } from "../components/layout";
 
 export const TEACHER_DASHBOARD_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, "isCollapsed" | "onToggle"> = {
@@ -25,6 +25,11 @@ export const TEACHER_DASHBOARD_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, "isCo
                     icon: ClipboardList,
                     label: "Báo cáo",
                     href: "/teacher/reports",
+                },
+                {
+                    icon: LifeBuoy,
+                    label: "Ho tro Admin",
+                    href: "/teacher/support",
                 },
             ],
         },

@@ -34,6 +34,64 @@ const statusTone: Record<string, { bg: string; text: string; label: string }> = 
     Closed: { bg: "#F1F3F8", text: "#667085", label: "Đã đóng" },
 };
 
+const roleLabels: Record<string, string> = {
+    Parent: "Phụ huynh",
+    Provider: "Nhà cung cấp",
+    School: "Trường",
+    HomeroomTeacher: "Giáo viên chủ nhiệm",
+    Admin: "Admin",
+};
+
+const categoryLabels: Record<string, string> = {
+    General: "Chung",
+    Account: "Tài khoản",
+    Order: "Đơn hàng",
+    Payment: "Thanh toán / ví",
+    Contract: "Hợp đồng",
+    Data: "Dữ liệu",
+    Technical: "Kỹ thuật",
+};
+
+function roleLabel(value?: string | null) {
+    if (!value) return "Chưa rõ";
+    return roleLabels[value] ?? value;
+}
+
+function categoryLabel(value?: string | null) {
+    if (!value) return "Chung";
+    return categoryLabels[value] ?? value;
+}
+
+function statusLabel(value?: string | null) {
+    if (!value) return "Chưa rõ";
+    return statusTone[value]?.label ?? value;
+}
+
+function senderName(item: AdminComplaintDto) {
+    return item.requesterName || "Chưa rõ người gửi";
+}
+
+function DetailPill({
+    label,
+    value,
+    accent,
+}: {
+    label: string;
+    value: string;
+    accent: string;
+}) {
+    return (
+        <div className="rounded-xl border px-4 py-3" style={{ borderColor: ADMIN_TONE.line, background: ADMIN_TONE.soft }}>
+            <p className="text-[11px] font-black uppercase tracking-[0.1em]" style={{ color: ADMIN_TONE.muted }}>
+                {label}
+            </p>
+            <p className="mt-2 break-words text-[16px] font-extrabold leading-snug" style={{ color: accent }}>
+                {value}
+            </p>
+        </div>
+    );
+}
+
 export default function AdminComplaints() {
     const navigate = useNavigate();
     const sidebarConfig = useAdminSidebarConfig();
@@ -178,7 +236,7 @@ export default function AdminComplaints() {
                                 className="sticky top-0 z-10 hidden lg:grid items-center border-b px-5 py-4"
                                 style={{ gridTemplateColumns: gridCols, borderColor: ADMIN_TONE.line, background: ADMIN_TONE.violetSoft }}
                             >
-                                {["Tiêu đề", "Trường", "Nhà cung cấp", "Danh mục", "Trạng thái", "Ngày tạo", "Hành động"].map((header, index, arr) => (
+                                {["Tiêu đề", "Người gửi", "Vai trò", "Danh mục", "Trạng thái", "Ngày tạo", "Hành động"].map((header, index, arr) => (
                                     <div
                                         key={header}
                                         className={`text-[12px] font-black uppercase tracking-[0.08em]${index === arr.length - 1 ? " text-right" : ""}`}
@@ -225,17 +283,17 @@ export default function AdminComplaints() {
                                         >
                                             <div className="truncate text-[15px] font-black text-gray-900">{item.title}</div>
                                             <div className="text-[14px] font-semibold" style={{ color: "#3D384A" }}>
-                                                {item.schoolName}
+                                                {senderName(item)}
                                             </div>
                                             <div className="text-[14px] font-semibold" style={{ color: "#3D384A" }}>
-                                                {item.providerName ?? "—"}
+                                                {roleLabel(item.requesterRole)}
                                             </div>
                                             <div className="truncate text-[14px] font-semibold" style={{ color: "#3D384A" }}>
-                                                {item.campaignName ?? "—"}
+                                                {categoryLabel(item.category)}
                                             </div>
                                             <div>
                                                 <AdminBadge bg={statusTone[item.status]?.bg} text={statusTone[item.status]?.text}>
-                                                    {statusTone[item.status]?.label || item.status}
+                                                    {statusLabel(item.status)}
                                                 </AdminBadge>
                                             </div>
                                             <div className="text-[14px] font-semibold" style={{ color: ADMIN_TONE.muted }}>
@@ -263,11 +321,11 @@ export default function AdminComplaints() {
                                                 <div className="min-w-0">
                                                     <div className="truncate text-[16px] font-black text-gray-900">{item.title}</div>
                                                     <div className="mt-1 text-[13px] font-semibold" style={{ color: "#3D384A" }}>
-                                                        {item.schoolName} · {item.providerName ?? "N/A"}
+                                                        {senderName(item)} · {roleLabel(item.requesterRole)}
                                                     </div>
                                                 </div>
                                                 <AdminBadge bg={statusTone[item.status]?.bg} text={statusTone[item.status]?.text}>
-                                                    {statusTone[item.status]?.label || item.status}
+                                                    {statusLabel(item.status)}
                                                 </AdminBadge>
                                             </div>
                                             <div className="flex items-center justify-between">
@@ -336,7 +394,7 @@ export default function AdminComplaints() {
                             <div>
                                 <h2 className="text-[24px] font-black text-gray-900">{selected.title}</h2>
                                 <p className="mt-2 text-[14px] font-semibold" style={{ color: ADMIN_TONE.muted }}>
-                                    {selected.schoolName} · {selected.providerName ?? "N/A"} · {new Date(selected.createdAt).toLocaleDateString("vi-VN")}
+                                    {senderName(selected)} · {roleLabel(selected.requesterRole)} · {new Date(selected.createdAt).toLocaleDateString("vi-VN")}
                                 </p>
                             </div>
                             <button
@@ -348,24 +406,16 @@ export default function AdminComplaints() {
                             </button>
                         </div>
 
-                        <div className="grid gap-4 md:grid-cols-3">
-                            <AdminSummaryCard
+                        <div className="grid gap-3 md:grid-cols-2">
+                            <DetailPill
                                 label="Trạng thái"
-                                value={statusTone[selected.status]?.label || selected.status}
-                                detail="Đây là trạng thái hiện tại của yêu cầu hỗ trợ trong luồng xử lý Admin."
+                                value={statusLabel(selected.status)}
                                 accent={statusTone[selected.status]?.text || ADMIN_TONE.rose}
                             />
-                            <AdminSummaryCard
-                                label="Trường"
-                                value={selected.schoolName}
-                                detail="Bên khởi tạo hoặc chịu ảnh hưởng chính trong tình huống hỗ trợ này."
+                            <DetailPill
+                                label="Người gửi"
+                                value={senderName(selected)}
                                 accent={ADMIN_TONE.sky}
-                            />
-                            <AdminSummaryCard
-                                label="Nhà cung cấp"
-                                value={selected.providerName ?? "N/A"}
-                                detail="Bên đối ứng cần được phối hợp hoặc theo dõi trong quá trình giải quyết."
-                                accent={ADMIN_TONE.amber}
                             />
                         </div>
 

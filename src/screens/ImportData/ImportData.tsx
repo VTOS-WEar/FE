@@ -150,9 +150,9 @@ export const ImportData = (): JSX.Element => {
 
     /* ── modern step data ── */
     const steps = [
-        { step: 1, title: "Tải mẫu chuẩn", desc: "Tải file mẫu Excel (.xlsx) chuẩn định dạng của hệ thống để tránh lỗi cột dữ liệu.", bg: "#ede9fe", borderColor: "border-gray-200" },
-        { step: 2, title: "Điền thông tin", desc: "Nhập dữ liệu học sinh vào file mẫu. Không thay đổi tiêu đề cột hoặc cấu trúc có sẵn.", bg: "#dbeafe", borderColor: "border-gray-200" },
-        { step: 3, title: "Tải lên hệ thống", desc: "Kéo thả file đã điền đầy đủ thông tin để bắt đầu nhập dữ liệu vào hệ thống.", bg: "#dcfce7", borderColor: "border-emerald-200" },
+        { step: 1, title: "Tải mẫu chuẩn", bg: "#ede9fe", borderColor: "border-gray-200" },
+        { step: 2, title: "Điền thông tin", bg: "#dbeafe", borderColor: "border-gray-200" },
+        { step: 3, title: "Tải lên hệ thống", bg: "#dcfce7", borderColor: "border-emerald-200" },
     ];
 
     /* ── Render ── */
@@ -210,9 +210,6 @@ export const ImportData = (): JSX.Element => {
                                 <h1 className="font-black text-gray-900 text-[28px] lg:text-[32px] leading-[1.22]">
                                     Nhập dữ liệu học sinh
                                 </h1>
-                                <p className="mt-1.5 font-semibold text-[#6F6A7D] text-sm lg:text-[15px]">
-                                    Cập nhật danh sách học sinh đầu kỳ để kích hoạt tính năng thử đồ ảo và đặt mua đồng phục.
-                                </p>
                             </div>
                             <button
                                 type="button"
@@ -243,10 +240,6 @@ export const ImportData = (): JSX.Element => {
                                             Chưa nhập liệu
                                         </span>
                                     </div>
-                                    <p className="font-semibold text-amber-800 text-sm leading-relaxed mb-2.5">
-                                        Hệ thống chưa ghi nhận danh sách học sinh cho học kỳ mới. Nhà trường vui lòng cập nhật sớm để
-                                        đảm bảo học sinh có thể truy cập Phòng thử ảo và đặt mua đồng phục đúng hạn.
-                                    </p>
                                     <span className="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-3 py-1 shadow-soft-sm">
                                         <svg className="w-4 h-4 text-amber-600" viewBox="0 0 24 24" fill="currentColor">
                                             <path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm4-7h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z" />
@@ -261,7 +254,7 @@ export const ImportData = (): JSX.Element => {
 
                         {/* ── 3-Step instructions ── */}
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            {steps.map(({ step, title, desc, bg, borderColor }) => (
+                            {steps.map(({ step, title, bg, borderColor }) => (
                                 <div
                                     key={step}
                                     className={`rounded-[14px] border ${borderColor} p-5 flex flex-col items-start gap-3 transition-all ${step === 3 ? "bg-emerald-50 border-emerald-200" : "bg-white"}`}
@@ -275,9 +268,6 @@ export const ImportData = (): JSX.Element => {
                                     <h3 className="font-black text-gray-900 text-base">
                                         {title}
                                     </h3>
-                                    <p className="font-semibold text-gray-500 text-sm leading-relaxed">
-                                        {desc}
-                                    </p>
                                 </div>
                             ))}
                         </div>
@@ -294,14 +284,10 @@ export const ImportData = (): JSX.Element => {
                                                 <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zM6 20V4h7v5h5v11H6z" />
                                             </svg>
                                         </div>
-                                        <h3 className="font-black text-gray-900 text-base">
-                                            File mẫu nhập liệu
-                                        </h3>
-                                    </div>
-                                    <p className="font-semibold text-gray-500 text-sm leading-relaxed">
-                                        Vui lòng sử dụng file mẫu mới nhất để tránh lỗi định dạng khi tải lên.
-                                        File mẫu bao gồm các cột: Họ và tên, Ngày sinh, Lớp, Giới tính, Số điện thoại phụ huynh.
-                                    </p>
+                                    <h3 className="font-black text-gray-900 text-base">
+                                        File mẫu nhập liệu
+                                    </h3>
+                                </div>
                                     <button
                                         type="button"
                                         onClick={handleDownloadTemplate}
@@ -315,78 +301,6 @@ export const ImportData = (): JSX.Element => {
                                     </button>
                                 </div>
 
-                                {/* Important notes card */}
-                                <div className="rounded-[14px] border border-gray-200 bg-sky-50 p-5 shadow-soft-sm space-y-3">
-                                    <div className="flex items-center gap-3">
-                                        <div className="flex h-9 w-9 items-center justify-center rounded-[10px] border border-gray-200 bg-emerald-50 shadow-soft-sm">
-                                            <svg className="w-5 h-5 text-emerald-500" viewBox="0 0 24 24" fill="currentColor">
-                                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
-                                            </svg>
-                                        </div>
-                                        <h3 className="font-black text-gray-900 text-base">
-                                            Lưu ý quan trọng
-                                        </h3>
-                                    </div>
-                                    <ul className="space-y-2.5">
-                                        {[
-                                            "Mã học sinh phải là duy nhất trong toàn trường.",
-                                            "Định dạng ngày sinh phải là dd/mm/yyyy, ví dụ: 15/05/2008.",
-                                            "Tên lớp phải trùng khớp với danh sách lớp đã tạo trên hệ thống.",
-                                        ].map((note, i) => (
-                                            <li key={i} className="flex items-start gap-2.5">
-                                                <svg
-                                                    className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5"
-                                                    viewBox="0 0 24 24"
-                                                    fill="currentColor"
-                                                >
-                                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
-                                                </svg>
-                                                <span className="font-semibold text-gray-700 text-sm leading-relaxed">
-                                                    {note}
-                                                </span>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-
-                                <div className="rounded-[14px] border border-violet-200 bg-[linear-gradient(180deg,_#ffffff_0%,_#faf7ff_100%)] p-5 shadow-soft-sm space-y-4">
-                                    <div className="flex items-center gap-3">
-                                        <div className="flex h-9 w-9 items-center justify-center rounded-[10px] border border-violet-200 bg-violet-50 shadow-soft-sm">
-                                            <svg className="w-5 h-5 text-violet-600" viewBox="0 0 24 24" fill="currentColor">
-                                                <path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" />
-                                            </svg>
-                                        </div>
-                                        <h3 className="font-black text-gray-900 text-base">
-                                            Hướng dẫn điền GVCN theo lớp
-                                        </h3>
-                                    </div>
-
-                                    <div className="space-y-2 text-sm font-semibold leading-relaxed text-gray-700">
-                                        <p>Bạn chỉ cần nhập <span className="font-black text-violet-700">Tên GVCN</span> và <span className="font-black text-violet-700">Email GVCN</span> một lần cho mỗi lớp.</p>
-                                        <p>Các dòng học sinh còn lại trong cùng lớp có thể để trống 2 cột này, hệ thống sẽ tự động gán giáo viên theo trường <span className="font-black text-violet-700">Class</span>.</p>
-                                        <p>Nếu cùng một giáo viên phụ trách nhiều lớp, hãy dùng cùng một email ở các lớp đó.</p>
-                                    </div>
-
-                                    <div className="rounded-[12px] border border-gray-200 bg-white p-4 shadow-soft-sm">
-                                        <p className="font-black text-gray-900 text-sm mb-3">
-                                            Ví dụ cho lớp 6A1
-                                        </p>
-                                        <div className="space-y-2 text-[12px] leading-relaxed">
-                                            <div className="rounded-[8px] bg-violet-50 px-3 py-2 font-extrabold text-violet-700">
-                                                Nguyễn Khôi | 6A1 | Nguyễn Văn Minh | minh1@school.edu.vn
-                                            </div>
-                                            <div className="rounded-[8px] bg-gray-50 px-3 py-2 font-semibold text-gray-700">
-                                                Nguyễn Cẩm | 6A1 | để trống | để trống
-                                            </div>
-                                            <div className="rounded-[8px] bg-gray-50 px-3 py-2 font-semibold text-gray-700">
-                                                Lê Anh | 6A1 | để trống | để trống
-                                            </div>
-                                        </div>
-                                        <p className="mt-3 text-xs font-semibold leading-relaxed text-gray-600">
-                                            Bạn không cần nhập lặp lại thông tin giáo viên 30 lần cho 30 học sinh trong cùng một lớp.
-                                        </p>
-                                    </div>
-                                </div>
                             </div>
 
                             {/* Right column: Upload zone */}
@@ -427,9 +341,6 @@ export const ImportData = (): JSX.Element => {
                                     </div>
                                     <p className="font-black text-gray-900 text-[17px]">
                                         Kéo thả file vào đây
-                                    </p>
-                                    <p className="font-semibold text-gray-500 text-[13px] text-center max-w-sm">
-                                        Hoặc nhấn nút bên dưới để chọn file từ máy tính
                                     </p>
                                     {/* CTA: purple primary */}
                                     <button
@@ -586,12 +497,6 @@ export const ImportData = (): JSX.Element => {
                                     <p className="font-black text-gray-900 text-base">
                                         Chưa có lịch sử nhập liệu
                                     </p>
-                                    <p className="font-semibold text-gray-500 text-sm text-center max-w-xs">
-                                        Sau khi tải file thành công, bản ghi gần nhất sẽ xuất hiện tại đây.
-                                    </p>
-                                    <span className="rounded-[8px] border border-gray-200 bg-gray-50 px-3 py-1 text-[11px] font-bold text-gray-500">
-                                        💡 Bắt đầu bằng cách tải lên file mẫu đã điền thông tin
-                                    </span>
                                 </div>
                             ) : (
                                 <div className="rounded-[14px] border border-gray-200 bg-white overflow-hidden shadow-soft-md">

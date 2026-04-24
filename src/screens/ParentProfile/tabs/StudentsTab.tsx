@@ -99,8 +99,7 @@ export const StudentsTab = (): JSX.Element => {
                 <GraduationCap className="w-8 h-8 text-gray-900" />
               </div>
               <p className="font-medium text-gray-500 text-sm text-center">
-                Chưa có học sinh nào liên kết.<br />
-                Nhấn <span className="font-bold text-gray-900">"Tìm trẻ"</span> để tự động liên kết theo số điện thoại.
+                Chưa có học sinh nào liên kết.
               </p>
             </div>
           ) : (

@@ -1,6 +1,7 @@
 import { type ReactNode, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, GraduationCap } from "lucide-react";
+import { ArrowLeft, GraduationCap, UserCircle } from "lucide-react";
+import { ClassGroupChatLauncher } from "../../components/ChatWidget/ClassGroupChatLauncher";
 
 type BreadcrumbItem = {
   label: string;
@@ -94,6 +95,20 @@ export function TeacherWorkspaceShell({
                   </span>
                 ))}
               </nav>
+            </div>
+
+            <div className="flex flex-shrink-0 items-center gap-2">
+              <ClassGroupChatLauncher />
+              <button
+                type="button"
+                onClick={() => navigate("/teacher/account")}
+                className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-3 text-sm font-bold text-gray-700 shadow-sm transition-all hover:-translate-y-[1px] hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-800"
+                aria-label="Hồ sơ giáo viên"
+                title="Hồ sơ giáo viên"
+              >
+                <UserCircle className="h-5 w-5" />
+                <span className="hidden sm:inline">Hồ sơ</span>
+              </button>
             </div>
           </div>
         )}

@@ -44,6 +44,24 @@ export interface UpsertParentAddressDto {
   isDefault: boolean;
 }
 
+export interface AddParentBankAccountDto {
+  bankName: string;
+  bankCode: string;
+  accountNumber: string;
+  accountHolderName: string;
+  isDefault: boolean;
+}
+
+export interface ParentBankAccountDto {
+  bankAccountId: string;
+  bankName: string;
+  bankCode?: string | null;
+  accountNumber: string;
+  accountHolderName: string;
+  isDefault: boolean;
+  isVerified: boolean;
+}
+
 export interface ParentAddressFormValues {
   label: string;
   recipientName: string;
@@ -196,6 +214,14 @@ export async function setDefaultParentAddress(addressId: string): Promise<void> 
   });
 }
 
+export async function addParentBankAccount(dto: AddParentBankAccountDto): Promise<ParentBankAccountDto> {
+  return api<ParentBankAccountDto>(endpoints.users.bankAccounts, {
+    method: "POST",
+    body: JSON.stringify(dto),
+    auth: true,
+  });
+}
+
 /* ── Children Management Types ── */
 export interface ChildSchoolDto {
   schoolId: string;
@@ -208,6 +234,9 @@ export interface ChildProfileDto {
   fullName: string;
   age: number;
   grade: string;
+  classGroupId?: string | null;
+  className?: string | null;
+  academicYear?: string | null;
   gender: string;
   avatarUrl:string;
   school: ChildSchoolDto;
