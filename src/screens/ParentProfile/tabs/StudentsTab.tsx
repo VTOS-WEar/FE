@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { GraduationCap, Search, CheckCircle2, AlertTriangle, X, Loader2 } from "lucide-react";
 import { useToast } from "../../../contexts/ToastContext";
 import { getMyChildren, findMyChildren } from "../../../lib/api/users";
@@ -13,24 +13,7 @@ export const StudentsTab = (): JSX.Element => {
   const [findLoading, setFindLoading] = useState(false);
   const [findResult, setFindResult] = useState<FindChildrenResponse | null>(null);
   const [showConflictModal, setShowConflictModal] = useState(false);
-  const [selectedChildId, setSelectedChildId] = useState<string | null>(() => {
-    // Initialize from localStorage
-    if (typeof window !== "undefined") {
-      return localStorage.getItem("selectedStudentId") || null;
-    }
-    return null;
-  });
-
-  // Persist selectedChildId to localStorage whenever it changes
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      if (selectedChildId) {
-        localStorage.setItem("selectedStudentId", selectedChildId);
-      } else {
-        localStorage.removeItem("selectedStudentId");
-      }
-    }
-  }, [selectedChildId]);
+  const [selectedChildId, setSelectedChildId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchChildren = async () => {
