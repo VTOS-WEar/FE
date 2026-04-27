@@ -244,6 +244,27 @@ export const AccountSecuritySettings = ({
               </div>
 
               <div className="grid gap-4 md:grid-cols-2">
+                <FieldGroup label="Mật khẩu mới">
+                  <input
+                    type="password"
+                    value={newPassword}
+                    onChange={(event) => setNewPassword(event.target.value)}
+                    placeholder="Nhập mật khẩu mới"
+                    className="nb-input h-11 w-full text-sm"
+                  />
+                </FieldGroup>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2">
+                <FieldGroup label="Xác nhận mật khẩu mới">
+                  <input
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(event) => setConfirmPassword(event.target.value)}
+                    placeholder="Nhập lại mật khẩu mới"
+                    className="nb-input h-11 w-full text-sm"
+                  />
+                </FieldGroup>
                 <FieldGroup label="Mã OTP">
                   <input
                     type="text"
@@ -257,27 +278,7 @@ export const AccountSecuritySettings = ({
                     className="nb-input h-11 w-full text-sm"
                   />
                 </FieldGroup>
-
-                <FieldGroup label="Mật khẩu mới">
-                  <input
-                    type="password"
-                    value={newPassword}
-                    onChange={(event) => setNewPassword(event.target.value)}
-                    placeholder="Nhập mật khẩu mới"
-                    className="nb-input h-11 w-full text-sm"
-                  />
-                </FieldGroup>
               </div>
-
-              <FieldGroup label="Xác nhận mật khẩu mới">
-                <input
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(event) => setConfirmPassword(event.target.value)}
-                  placeholder="Nhập lại mật khẩu mới"
-                  className="nb-input h-11 w-full text-sm"
-                />
-              </FieldGroup>
 
               <div className="grid w-full gap-3 sm:grid-cols-2">
                 <button
