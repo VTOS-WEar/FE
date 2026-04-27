@@ -228,9 +228,9 @@ export const StudentDetailView = ({ childId, onBack }: StudentDetailViewProps): 
             <input
               id="fullName"
               type="text"
+              disabled
               value={fullName}
-              onChange={e => setFullName(e.target.value)}
-              className={inputClass}
+              className={`${inputClass} !bg-gray-100 !cursor-not-allowed opacity-70 hover:shadow-none`}
             />
           </div>
 
