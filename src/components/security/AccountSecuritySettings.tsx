@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { KeyRound, Mail, Shield, ShieldAlert, ShieldCheck, ShieldOff } from "lucide-react";
+import { Eye, EyeOff, KeyRound, Mail, Shield, ShieldAlert, ShieldCheck, ShieldOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { getParentProfile } from "../../lib/api/users";
 import { getSchoolProfile } from "../../lib/api/schools";
@@ -26,6 +26,8 @@ export const AccountSecuritySettings = ({
   const [otp, setOtp] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [changingPassword, setChangingPassword] = useState(false);
   const [changePasswordMsg, setChangePasswordMsg] = useState("");
 
@@ -244,23 +246,43 @@ export const AccountSecuritySettings = ({
               </div>
 
               <FieldGroup label="Mật khẩu mới">
-                <input
-                  type="password"
-                  value={newPassword}
-                  onChange={(event) => setNewPassword(event.target.value)}
-                  placeholder="Nhập mật khẩu mới"
-                  className="nb-input h-11 w-full text-sm"
-                />
+                <div className="relative">
+                  <input
+                    type={showNewPassword ? "text" : "password"}
+                    value={newPassword}
+                    onChange={(event) => setNewPassword(event.target.value)}
+                    placeholder="Nhập mật khẩu mới"
+                    className="nb-input h-11 w-full pr-11 text-sm"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowNewPassword((current) => !current)}
+                    className="absolute inset-y-0 right-0 inline-flex w-11 items-center justify-center text-gray-500 transition hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300"
+                    aria-label={showNewPassword ? "Ẩn mật khẩu mới" : "Hiện mật khẩu mới"}
+                  >
+                    {showNewPassword ? <Eye className="h-4.5 w-4.5" /> : <EyeOff className="h-4.5 w-4.5" />}
+                  </button>
+                </div>
               </FieldGroup>
 
               <FieldGroup label="Xác nhận mật khẩu mới">
-                <input
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(event) => setConfirmPassword(event.target.value)}
-                  placeholder="Nhập lại mật khẩu mới"
-                  className="nb-input h-11 w-full text-sm"
-                />
+                <div className="relative">
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    value={confirmPassword}
+                    onChange={(event) => setConfirmPassword(event.target.value)}
+                    placeholder="Nhập lại mật khẩu mới"
+                    className="nb-input h-11 w-full pr-11 text-sm"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword((current) => !current)}
+                    className="absolute inset-y-0 right-0 inline-flex w-11 items-center justify-center text-gray-500 transition hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300"
+                    aria-label={showConfirmPassword ? "Ẩn xác nhận mật khẩu mới" : "Hiện xác nhận mật khẩu mới"}
+                  >
+                    {showConfirmPassword ? <Eye className="h-4.5 w-4.5" /> : <EyeOff className="h-4.5 w-4.5" />}
+                  </button>
+                </div>
               </FieldGroup>
 
               <FieldGroup label="Mã OTP">
