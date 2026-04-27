@@ -262,16 +262,16 @@ export const StudentDetailView = ({ childId, onBack }: StudentDetailViewProps): 
             </div>
           </div>
 
-          {/* Giới tính */}
-          <div className="flex flex-col gap-2 animate-in fade-in slide-in-from-top-4 duration-500">
-            <label className="font-bold text-gray-900 text-sm transition-colors duration-300">GIỚI TÍNH</label>
-            <div className="inline-flex h-11 min-w-[120px] items-center rounded-xl border border-gray-200 bg-gray-100 px-4 text-sm font-bold text-gray-900">
-              {gender || "—"}
-            </div>
-          </div>
-
           {/* Tuổi - Row */}
-          <div className="grid grid-cols-3 gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
+          <div className="grid grid-cols-4 gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
+            {/* Giới tính */}
+            <div className="flex flex-col gap-2">
+              <label className="font-bold text-gray-900 text-sm transition-colors duration-300">GIỚI TÍNH</label>
+              <div className="inline-flex h-11 items-center rounded-xl border border-gray-200 bg-gray-100 px-4 text-sm font-bold text-gray-900">
+                {gender || "—"}
+              </div>
+            </div>
+
             {/* Tuổi (calculated) */}
             <div className="flex flex-col gap-2">
               <label htmlFor="age" className="font-bold text-gray-900 text-sm transition-colors duration-300">TUỔI</label>
