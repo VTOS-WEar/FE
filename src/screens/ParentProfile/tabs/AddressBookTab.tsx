@@ -378,8 +378,10 @@ export const AddressBookTab = (): JSX.Element => {
             <button
               type="button"
               onClick={openCreateAddressModal}
-              className="rounded-[16px] border border-gray-200 bg-slate-50 px-4 py-3 text-sm font-extrabold text-gray-900 transition-all hover:bg-white"
+              className="group relative inline-flex h-12 items-center justify-center gap-2 overflow-hidden rounded-[16px] border border-gray-200 bg-gradient-to-r from-[#7C63E6] via-[#8F79EB] to-[#6F56E0] px-6 text-sm font-extrabold text-white shadow-[0_10px_22px_rgba(124,99,230,0.24)] transition-all duration-200 hover:-translate-y-[1px] hover:brightness-110 hover:shadow-[0_14px_28px_rgba(124,99,230,0.32)] active:translate-y-0 active:shadow-[0_8px_18px_rgba(124,99,230,0.22)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300 focus-visible:ring-offset-2"
             >
+              <span className="pointer-events-none absolute -left-10 top-0 h-full w-14 -skew-x-12 bg-white/25 blur-[1px] transition-all duration-300 group-hover:left-[110%]" />
+              <Plus className="h-4 w-4" />
               Tạo địa chỉ mới
             </button>
           </div>
