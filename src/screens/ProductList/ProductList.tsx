@@ -396,7 +396,7 @@ export default function ProductList() {
             </motion.h1>
 
             <motion.p custom={2} variants={fadeUp} initial="hidden" animate="visible"
-                className="text-base text-gray-600 max-w-2xl font-medium"
+                className="w-full text-base text-gray-600 font-medium"
             >
                 Tìm kiếm sản phẩm theo tên hoặc lọc theo trường học để bắt đầu trang bị cho năm học mới.
             </motion.p>
