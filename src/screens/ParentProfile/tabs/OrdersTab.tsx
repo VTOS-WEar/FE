@@ -25,23 +25,46 @@ function statusBadge(status: string) {
     const s = status.toLowerCase();
     switch (s) {
         case "paid":
-            return { label: "Đã thanh toán", bg: "bg-green-50", text: "text-green-600", border: "border-green-200", icon: <span className="text-[10px]">💳</span> };
+            return { label: "Đã thanh toán", bg: "bg-emerald-50", text: "text-emerald-700", border: "border-emerald-200", icon: <CreditCard className="w-3 h-3" /> };
         case "confirmed":
-            return { label: "Đã xác nhận", bg: "bg-blue-50", text: "text-blue-600", border: "border-blue-200", icon: <span className="text-[10px]">✅</span> };
+            return { label: "Đã xác nhận", bg: "bg-blue-50", text: "text-blue-700", border: "border-blue-200", icon: <CheckCircle className="w-3 h-3" /> };
         case "processed":
-            return { label: "Đang xử lý", bg: "bg-indigo-50", text: "text-indigo-600", border: "border-indigo-200", icon: <span className="text-[10px]">📦</span> };
+            return { label: "Đang xử lý", bg: "bg-indigo-50", text: "text-indigo-700", border: "border-indigo-200", icon: <Package className="w-3 h-3" /> };
         case "shipped":
-            return { label: "Đang giao", bg: "bg-sky-50", text: "text-sky-600", border: "border-sky-200", icon: <span className="text-[10px]">🚚</span> };
+            return { label: "Đang giao", bg: "bg-cyan-50", text: "text-cyan-700", border: "border-cyan-200", icon: <TruckIcon /> };
         case "delivered":
-            return { label: "Đã nhận", bg: "bg-emerald-50", text: "text-emerald-600", border: "border-emerald-200", icon: <span className="text-[10px]">🎉</span> };
+            return { label: "Đã nhận", bg: "bg-green-50", text: "text-green-700", border: "border-green-200", icon: <CheckCircle className="w-3 h-3" /> };
 
         case "pending":
-            return { label: "Chờ thanh toán", bg: "bg-orange-50", text: "text-orange-600", border: "border-orange-200", icon: <Clock className="w-3 h-3" /> };
-        case "cancelled": case "failed": case "refunded":
-            return { label: s === "refunded" ? "Đã hoàn tiền" : "Đã hủy", bg: "bg-red-50", text: "text-red-600", border: "border-red-200", icon: <XCircle className="w-3 h-3" /> };
+            return { label: "Chờ thanh toán", bg: "bg-amber-50", text: "text-amber-700", border: "border-amber-200", icon: <Clock className="w-3 h-3" /> };
+        case "refunded":
+            return { label: "Đã hoàn tiền", bg: "bg-rose-50", text: "text-rose-700", border: "border-rose-200", icon: <RefreshStatusIcon /> };
+        case "cancelled":
+        case "failed":
+            return { label: "Đã hủy", bg: "bg-red-50", text: "text-red-700", border: "border-red-200", icon: <XCircle className="w-3 h-3" /> };
         default:
             return { label: status, bg: "bg-gray-50", text: "text-gray-600", border: "border-gray-200", icon: null };
     }
+}
+
+function TruckIcon() {
+    return (
+        <svg viewBox="0 0 24 24" className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <rect x="1" y="3" width="15" height="13" rx="2" />
+            <path d="M16 8h3l4 4v4h-7z" />
+            <circle cx="5.5" cy="18.5" r="1.5" />
+            <circle cx="18.5" cy="18.5" r="1.5" />
+        </svg>
+    );
+}
+
+function RefreshStatusIcon() {
+    return (
+        <svg viewBox="0 0 24 24" className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M21 12a9 9 0 1 1-2.64-6.36" />
+            <path d="M21 3v6h-6" />
+        </svg>
+    );
 }
 
 /* ── Order Status Stepper — NB Style ── */
@@ -243,8 +266,21 @@ function OrderCard({
                             </div>
                             <div className="text-right">
                                 <p className="text-[8px] text-gray-400 font-black uppercase tracking-widest mb-1">Thanh toán</p>
-                                <div className={`text-[10px] font-black ${p.paymentStatus === 'Paid' || p.paymentStatus === 'Completed' ? 'text-green-600' : p.paymentStatus === 'Cancelled' ? 'text-red-500' : 'text-orange-500'}`}>
-                                    {p.paymentStatus === 'Paid' || p.paymentStatus === 'Completed' ? 'Đã xong' : p.paymentStatus === 'Pending' ? 'Chờ xử lý' : 'Đã hủy'}
+                                <div className={`text-[10px] font-black ${p.paymentStatus === 'Paid' || p.paymentStatus === 'Completed'
+                                    ? 'text-emerald-700'
+                                    : p.paymentStatus === 'Cancelled'
+                                        ? 'text-red-600'
+                                        : p.paymentStatus === 'Refunded'
+                                            ? 'text-rose-600'
+                                            : 'text-amber-600'
+                                    }`}>
+                                    {p.paymentStatus === 'Paid' || p.paymentStatus === 'Completed'
+                                        ? 'Đã xong'
+                                        : p.paymentStatus === 'Pending'
+                                            ? 'Chờ xử lý'
+                                            : p.paymentStatus === 'Refunded'
+                                                ? 'Hoàn tiền'
+                                                : 'Đã hủy'}
                                 </div>
                             </div>
                         </div>
