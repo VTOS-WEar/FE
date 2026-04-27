@@ -20,6 +20,7 @@ const presetAddressLabels = [
 ];
 
 const customLabelOption = { value: "__custom__", label: "Tùy chọn nhãn" };
+const VIETNAM_PHONE_REGEX = /^(03|05|07|08|09)\d{8}$/;
 
 const readCurrentUserId = (): string | null => {
   try {
@@ -256,15 +257,34 @@ export const AddressBookTab = (): JSX.Element => {
   };
 
   const handleSaveAddress = async () => {
+    const recipientName = addressForm.recipientName.trim();
+    const recipientPhone = addressForm.recipientPhone.trim();
+    const houseNumber = addressForm.houseNumber.trim();
+
     if (
       !addressForm.label.trim() ||
-      !addressForm.recipientName.trim() ||
-      !addressForm.recipientPhone.trim() ||
+      !recipientName ||
+      !recipientPhone ||
       !addressForm.provinceName.trim() ||
       !addressForm.wardName.trim() ||
-      !addressForm.houseNumber.trim()
+      !houseNumber
     ) {
       setAddressMsg("Điền đầy đủ nhãn, người nhận, số điện thoại, tỉnh, xã/phường và số nhà.");
+      return;
+    }
+
+    if (recipientName.length <= 2) {
+      setAddressMsg("Tên người nhận phải nhiều hơn 2 ký tự.");
+      return;
+    }
+
+    if (houseNumber.length <= 2) {
+      setAddressMsg("Địa chỉ chi tiết phải nhiều hơn 2 ký tự.");
+      return;
+    }
+
+    if (!VIETNAM_PHONE_REGEX.test(recipientPhone)) {
+      setAddressMsg("Số điện thoại phải là số di động Việt Nam gồm đúng 10 chữ số.");
       return;
     }
 
@@ -273,8 +293,8 @@ export const AddressBookTab = (): JSX.Element => {
 
     const payload = {
       label: addressForm.label.trim(),
-      recipientName: addressForm.recipientName.trim(),
-      recipientPhone: addressForm.recipientPhone.trim(),
+      recipientName,
+      recipientPhone,
       addressLine: formatParentAddressLine(addressForm),
       isDefault: addressForm.isDefault,
     };
@@ -485,14 +505,20 @@ export const AddressBookTab = (): JSX.Element => {
                     value={addressForm.recipientName}
                     onChange={(event) => setAddressForm((current) => ({ ...current, recipientName: event.target.value }))}
                     className={inputClass}
+                    placeholder="Tên người nhận (trên 2 ký tự)"
                   />
                 </div>
                 <div className="grid gap-2">
                   <label className="text-sm font-bold text-slate-600">Số điện thoại</label>
                   <input
                     value={addressForm.recipientPhone}
-                    onChange={(event) => setAddressForm((current) => ({ ...current, recipientPhone: event.target.value }))}
+                    onChange={(event) =>
+                      setAddressForm((current) => ({ ...current, recipientPhone: event.target.value.replace(/[^\d]/g, "").slice(0, 10) }))
+                    }
+                    inputMode="numeric"
+                    maxLength={10}
                     className={inputClass}
+                    placeholder="VD: 0912345678"
                   />
                 </div>
               </div>
@@ -556,6 +582,7 @@ export const AddressBookTab = (): JSX.Element => {
                   value={addressForm.houseNumber}
                   onChange={(event) => setAddressForm((current) => ({ ...current, houseNumber: event.target.value }))}
                   className={inputClass}
+                  placeholder="Địa chỉ chi tiết (trên 2 ký tự)"
                 />
               </div>
 
