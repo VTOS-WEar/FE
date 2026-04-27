@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { ShoppingBag, CreditCard, Clock, CheckCircle, XCircle, ChevronDown, Star, Package, Calendar, ChevronRight, User } from "lucide-react";
+import { ShoppingBag, CreditCard, Clock, CheckCircle, XCircle, ChevronDown, Star, Package, Calendar, ChevronRight, User, RotateCcw } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useToast } from "../../../contexts/ToastContext";
 import { cn } from "@/lib/utils";
@@ -86,11 +86,16 @@ function OrderStatusStepper({ orderStatus }: { orderStatus: string }) {
     const isCancelled = orderStatus === "Cancelled" || orderStatus === "Refunded";
 
     if (isCancelled) {
+        const isRefunded = orderStatus === "Refunded";
         return (
-            <div className="mt-4 nb-alert nb-alert-error">
-                <XCircle className="w-5 h-5 flex-shrink-0" />
+            <div className={`mt-4 nb-alert ${isRefunded ? "bg-rose-50 border-rose-200" : "nb-alert-error"}`}>
+                {isRefunded ? (
+                    <RotateCcw className="w-5 h-5 flex-shrink-0 text-rose-700" />
+                ) : (
+                    <XCircle className="w-5 h-5 flex-shrink-0" />
+                )}
                 <span className="font-bold text-sm">
-                    {orderStatus === "Cancelled" ? "Đơn hàng đã bị hủy" : "Đơn hàng đã hoàn tiền"}
+                    {isRefunded ? "Đơn hàng đã hoàn tiền" : "Đơn hàng đã bị hủy"}
                 </span>
             </div>
         );
