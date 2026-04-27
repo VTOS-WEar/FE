@@ -243,17 +243,15 @@ export const AccountSecuritySettings = ({
                 OTP đã được gửi.
               </div>
 
-              <div className="grid gap-4 md:grid-cols-2">
-                <FieldGroup label="Mật khẩu mới">
-                  <input
-                    type="password"
-                    value={newPassword}
-                    onChange={(event) => setNewPassword(event.target.value)}
-                    placeholder="Nhập mật khẩu mới"
-                    className="nb-input h-11 w-full text-sm"
-                  />
-                </FieldGroup>
-              </div>
+              <FieldGroup label="Mật khẩu mới">
+                <input
+                  type="password"
+                  value={newPassword}
+                  onChange={(event) => setNewPassword(event.target.value)}
+                  placeholder="Nhập mật khẩu mới"
+                  className="nb-input h-11 w-full text-sm"
+                />
+              </FieldGroup>
 
               <FieldGroup label="Xác nhận mật khẩu mới">
                 <input
