@@ -118,11 +118,11 @@ export function SemesterCatalog(): JSX.Element {
                 <div className="mt-5 overflow-hidden rounded-[24px] border border-gray-200 bg-white shadow-soft-md">
                     <div className="grid gap-0 lg:grid-cols-[1.2fr_0.8fr]">
                         <div className="space-y-4 border-b border-gray-200 p-5 lg:border-b-0 lg:p-6">
-                            <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
-                                <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-[18px] border border-gray-200 bg-slate-50 shadow-soft-sm">
+                            <div className="flex items-start gap-3">
+                                <div className="flex h-[72px] w-[72px] shrink-0 items-center justify-center overflow-hidden rounded-[18px] border border-gray-200 bg-slate-50 shadow-soft-sm">
                                     {school.logoURL ? <img src={school.logoURL} alt={school.schoolName} className="h-full w-full object-cover" /> : <School className="h-8 w-8 text-violet-500" />}
                                 </div>
-                                <div className="min-w-0 flex-1">
+                                <div className="min-w-0 flex-1 pt-0.5">
                                     <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-gray-200 bg-violet-50 px-3 py-1 text-[11px] font-black uppercase tracking-[0.14em] text-violet-600">
                                         <ShieldCheck className="h-3.5 w-3.5" />
                                         Parent-driven marketplace
