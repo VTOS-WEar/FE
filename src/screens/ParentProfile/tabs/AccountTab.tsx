@@ -260,7 +260,7 @@ export const AccountTab = (): JSX.Element => {
     "h-12 w-full rounded-[16px] border border-gray-200 bg-white px-4 text-sm font-semibold text-gray-900 outline-none transition-all focus:border-violet-300 focus:ring-4 focus:ring-violet-100";
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <section className="rounded-[28px] border border-gray-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fafc_100%)] p-6 shadow-soft-sm lg:p-7">
         <div className="flex items-center gap-4">
           <div className="relative">
@@ -290,8 +290,8 @@ export const AccountTab = (): JSX.Element => {
         </div>
       </section>
 
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
-        <section className="rounded-[28px] border border-gray-200 bg-white p-6 shadow-soft-sm lg:p-7">
+      <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
+        <section className="rounded-[28px] border border-gray-200 bg-white p-6 shadow-soft-sm lg:p-6">
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="text-[11px] font-black uppercase tracking-[0.16em] text-gray-400">Personal profile</p>
@@ -299,7 +299,7 @@ export const AccountTab = (): JSX.Element => {
             </div>
           </div>
 
-          <div className="mt-6 grid gap-5">
+          <div className="mt-5 grid gap-4">
             <div className="grid gap-2">
               <label className="text-sm font-bold text-slate-600">Họ và tên</label>
               <input type="text" value={fullName} onChange={(event) => setFullName(event.target.value)} className={inputClass} />
@@ -373,8 +373,8 @@ export const AccountTab = (): JSX.Element => {
             <h2 className="mt-2 text-2xl font-black text-gray-900">Thông tin liên hệ</h2>
           </div>
 
-          <div className="mt-6 space-y-5">
-            <div className="rounded-[22px] border border-gray-200 bg-slate-50 p-5">
+          <div className="mt-5 space-y-4">
+            <div className="rounded-[22px] border border-gray-200 bg-slate-50 p-4 sm:p-5">
               <div className="flex items-center gap-3">
                 <div className="rounded-[16px] border border-gray-200 bg-white p-3 text-violet-700">
                   <Mail className="h-5 w-5" />
@@ -385,7 +385,7 @@ export const AccountTab = (): JSX.Element => {
                 </div>
               </div>
 
-              <div className="mt-5 grid gap-3">
+              <div className="mt-4 grid gap-3">
                 <input type="email" value={email} onChange={(event) => setEmail(event.target.value)} className={inputClass} />
                 <div className="flex flex-wrap items-center gap-3">
                   <button
@@ -401,7 +401,7 @@ export const AccountTab = (): JSX.Element => {
               </div>
             </div>
 
-            <div className="rounded-[22px] border border-gray-200 bg-slate-50 p-5">
+            <div className="rounded-[22px] border border-gray-200 bg-slate-50 p-4 sm:p-5">
               <div className="flex items-center gap-3">
                 <div className="rounded-[16px] border border-gray-200 bg-white p-3 text-emerald-700">
                   <Phone className="h-5 w-5" />
@@ -412,7 +412,7 @@ export const AccountTab = (): JSX.Element => {
                 </div>
               </div>
 
-              <div className="mt-5 grid gap-3">
+              <div className="mt-4 grid gap-3">
                 <input
                   type="tel"
                   value={phone}
