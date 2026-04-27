@@ -364,15 +364,16 @@ export const StudentDetailView = ({ childId, onBack }: StudentDetailViewProps): 
             <button
               onClick={handleSave}
               disabled={saving}
-              className="nb-btn nb-btn-purple text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 hover:shadow-sm hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all duration-300 active:translate-x-0 active:translate-y-0 active:shadow-none"
+              className="group relative inline-flex h-12 items-center justify-center gap-2 overflow-hidden rounded-[14px] border border-gray-200 bg-gradient-to-r from-[#7C63E6] via-[#8F79EB] to-[#6F56E0] px-6 text-sm font-extrabold text-white shadow-[0_10px_22px_rgba(124,99,230,0.28)] transition-all duration-200 hover:-translate-y-[2px] hover:brightness-110 hover:shadow-[0_14px_28px_rgba(124,99,230,0.35)] active:translate-y-0 active:shadow-[0_8px_18px_rgba(124,99,230,0.25)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
             >
+              <span className="pointer-events-none absolute -left-10 top-0 h-full w-14 -skew-x-12 bg-white/25 blur-[1px] transition-all duration-300 group-hover:left-[110%]" />
               {saving ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
                   Đang lưu...
                 </>
               ) : (
-                "Lưu thay đổi ✦"
+                <span className="relative">Lưu thay đổi ✦</span>
               )}
             </button>
             {message && (
