@@ -341,7 +341,7 @@ function SupportTicketsPanel({ role }: { role: RoleMode }): JSX.Element {
             </div>
 
             {isCreateModalOpen ? (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 px-4">
+                <div className="fixed inset-0 z-[220] flex items-center justify-center bg-slate-950/55 px-4 backdrop-blur-[1px]">
                     <div className="w-full max-w-2xl rounded-2xl border border-slate-200 bg-white p-6 shadow-soft-lg">
                         <div className="flex items-start justify-between gap-3">
                             <div>
