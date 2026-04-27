@@ -149,7 +149,11 @@ export const StudentsTab = (): JSX.Element => {
                       
                       <div className="mt-2 space-y-1">
                         <div className="flex items-center gap-1.5 text-xs font-bold text-gray-500">
-                          <span className="bg-gray-100 px-2 py-0.5 rounded-full border border-gray-200">Lớp {child.grade || "—"}</span>
+                          <span className="bg-gray-100 px-2 py-0.5 rounded-full border border-gray-200">
+                            {child.grade
+                              ? (/^\s*lớp\b/i.test(child.grade) ? child.grade.trim() : `Lớp ${child.grade}`)
+                              : "Lớp —"}
+                          </span>
                           <span className="text-gray-900/10">•</span>
                           <span>{getVietnamseGender(child.gender)}</span>
                         </div>
