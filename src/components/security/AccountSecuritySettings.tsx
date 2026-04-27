@@ -255,30 +255,29 @@ export const AccountSecuritySettings = ({
                 </FieldGroup>
               </div>
 
-              <div className="grid gap-4 md:grid-cols-2">
-                <FieldGroup label="Xác nhận mật khẩu mới">
-                  <input
-                    type="password"
-                    value={confirmPassword}
-                    onChange={(event) => setConfirmPassword(event.target.value)}
-                    placeholder="Nhập lại mật khẩu mới"
-                    className="nb-input h-11 w-full text-sm"
-                  />
-                </FieldGroup>
-                <FieldGroup label="Mã OTP">
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    maxLength={6}
-                    value={otp}
-                    onChange={(event) => {
-                      if (/^\d*$/.test(event.target.value)) setOtp(event.target.value);
-                    }}
-                    placeholder="Nhập mã OTP 6 chữ số"
-                    className="nb-input h-11 w-full text-sm"
-                  />
-                </FieldGroup>
-              </div>
+              <FieldGroup label="Xác nhận mật khẩu mới">
+                <input
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(event) => setConfirmPassword(event.target.value)}
+                  placeholder="Nhập lại mật khẩu mới"
+                  className="nb-input h-11 w-full text-sm"
+                />
+              </FieldGroup>
+
+              <FieldGroup label="Mã OTP">
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={6}
+                  value={otp}
+                  onChange={(event) => {
+                    if (/^\d*$/.test(event.target.value)) setOtp(event.target.value);
+                  }}
+                  placeholder="Nhập mã OTP 6 chữ số"
+                  className="nb-input h-11 w-full text-sm"
+                />
+              </FieldGroup>
 
               <div className="grid w-full gap-3 sm:grid-cols-2">
                 <button
