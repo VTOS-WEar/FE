@@ -113,9 +113,12 @@ export const StudentsTab = (): JSX.Element => {
 
                     <div className="flex-1 min-w-0">
                       <div className="flex justify-between items-start gap-2">
-                        <h3 className="font-extrabold text-gray-900 text-lg leading-tight truncate group-hover:text-purple-900 transition-colors" title={child.fullName}>
-                          {child.fullName}
-                        </h3>
+                        <span
+                          className="inline-flex max-w-full items-center rounded-full border border-violet-200 bg-violet-50 px-2.5 py-1 text-[11px] font-extrabold text-violet-700 truncate"
+                          title={child.school?.schoolName}
+                        >
+                          {child.school?.schoolName || "Chưa cập nhật trường học"}
+                        </span>
                         {child.school?.logoURL && (
                           <img
                             src={child.school.logoURL}
@@ -124,20 +127,19 @@ export const StudentsTab = (): JSX.Element => {
                           />
                         )}
                       </div>
-                      
-                      <div className="mt-2 space-y-1">
-                        <div className="flex items-center gap-1.5 text-xs font-bold text-gray-500">
-                          <span className="bg-gray-100 px-2 py-0.5 rounded-full border border-gray-200">
-                            {child.grade
-                              ? (/^\s*lớp\b/i.test(child.grade) ? child.grade.trim() : `Lớp ${child.grade}`)
-                              : "Lớp —"}
-                          </span>
-                          <span className="text-gray-900/10">•</span>
-                          <span>{getVietnamseGender(child.gender)}</span>
-                        </div>
-                        <p className="text-[11px] font-bold text-gray-600 truncate" title={child.school?.schoolName}>
-                          {child.school?.schoolName || "Chưa cập nhật trường học"}
-                        </p>
+
+                      <h3 className="mt-2 font-extrabold text-gray-900 text-lg leading-tight truncate group-hover:text-purple-900 transition-colors" title={child.fullName}>
+                        {child.fullName}
+                      </h3>
+
+                      <div className="mt-2 flex items-center gap-1.5 text-xs font-bold text-gray-500">
+                        <span className="bg-gray-100 px-2 py-0.5 rounded-full border border-gray-200">
+                          {child.grade
+                            ? (/^\s*lớp\b/i.test(child.grade) ? child.grade.trim() : `Lớp ${child.grade}`)
+                            : "Lớp —"}
+                        </span>
+                        <span className="text-gray-900/10">•</span>
+                        <span>{getVietnamseGender(child.gender)}</span>
                       </div>
                     </div>
                   </div>
