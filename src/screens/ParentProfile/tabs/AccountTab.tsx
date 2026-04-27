@@ -1,5 +1,5 @@
 import { type ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
-import { Camera, Mail, Phone, UserRound } from "lucide-react";
+import { CalendarDays, Camera, Mail, Phone, UserRound } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { getParentProfile, updateParentAvatar, updateParentProfile } from "../../../lib/api/users";
 
@@ -42,6 +42,7 @@ export const AccountTab = (): JSX.Element => {
   const [avatarSaving, setAvatarSaving] = useState(false);
   const [avatarMsg, setAvatarMsg] = useState("");
   const avatarInputRef = useRef<HTMLInputElement>(null);
+  const dobPickerRef = useRef<HTMLInputElement>(null);
 
   const getStorage = () => (localStorage.getItem("access_token") ? localStorage : sessionStorage);
 
@@ -307,7 +308,7 @@ export const AccountTab = (): JSX.Element => {
 
             <div className="grid gap-2">
               <label className="text-sm font-bold text-slate-600">Ngày sinh</label>
-              <div className="grid gap-3 sm:grid-cols-3">
+              <div className="grid gap-3 sm:grid-cols-[1fr_1fr_1fr_auto]">
                 <input
                   type="text"
                   inputMode="numeric"
@@ -347,7 +348,39 @@ export const AccountTab = (): JSX.Element => {
                   className={inputClass}
                   placeholder="Năm"
                 />
+                <button
+                  type="button"
+                  onClick={() => {
+                    const picker = dobPickerRef.current as (HTMLInputElement & { showPicker?: () => void }) | null;
+                    if (!picker) return;
+                    if (picker.showPicker) picker.showPicker();
+                    else picker.click();
+                  }}
+                  className="inline-flex h-12 w-12 items-center justify-center rounded-[16px] border border-gray-200 bg-slate-50 text-slate-600 transition-all hover:bg-white"
+                  aria-label="Chọn ngày sinh"
+                  title="Chọn ngày sinh"
+                >
+                  <CalendarDays className="h-5 w-5" />
+                </button>
               </div>
+              <input
+                ref={dobPickerRef}
+                type="date"
+                value={`${dobYear}-${String(dobMonth).padStart(2, "0")}-${String(dobDay).padStart(2, "0")}`}
+                min={`${CURRENT_YEAR - 80}-01-01`}
+                max={`${CURRENT_YEAR}-12-31`}
+                onChange={(event) => {
+                  if (!event.target.value) return;
+                  const parsed = new Date(event.target.value);
+                  if (Number.isNaN(parsed.getTime())) return;
+                  setDobDay(parsed.getDate());
+                  setDobMonth(parsed.getMonth() + 1);
+                  setDobYear(parsed.getFullYear());
+                }}
+                className="sr-only"
+                tabIndex={-1}
+                aria-hidden="true"
+              />
               <datalist id="dob-day-options">
                 {DAYS.map((value) => (
                   <option key={value} value={value} />
