@@ -264,40 +264,37 @@ export const AccountTab = (): JSX.Element => {
     <div className="space-y-5">
       <div className="space-y-5">
         <section className="rounded-[28px] border border-gray-200 bg-white p-6 shadow-soft-sm lg:p-7">
-          <div className="grid items-start gap-5 lg:grid-cols-[128px_minmax(0,1fr)]">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <p className="text-[11px] font-black uppercase tracking-[0.16em] text-gray-400">Personal profile</p>
+              <h2 className="mt-2 text-2xl font-black text-gray-900">Thông tin cá nhân</h2>
+            </div>
+          </div>
+
+          <div className="mt-5 grid items-stretch gap-5 lg:grid-cols-[180px_minmax(0,1fr)]">
             <div className="rounded-[16px] border border-gray-200 bg-slate-50 p-3">
-              <div className="flex flex-col items-center text-center">
-              <div className="relative">
-                <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-[12px] border border-gray-200 bg-violet-50 shadow-soft-sm">
-                  {user.avatar ? (
-                    <img src={user.avatar} alt="" className="h-full w-full object-cover" />
-                  ) : (
-                    <span className="text-sm font-black text-violet-700">{initials}</span>
-                  )}
-                </div>
+              <div className="relative h-full min-h-[280px] overflow-hidden rounded-[12px] border border-gray-200 bg-violet-50 shadow-soft-sm">
+                {user.avatar ? (
+                  <img src={user.avatar} alt="" className="h-full w-full object-cover" />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center">
+                    <span className="text-4xl font-black text-violet-700">{initials}</span>
+                  </div>
+                )}
                 <button
                   type="button"
                   onClick={() => avatarInputRef.current?.click()}
                   disabled={avatarSaving}
-                  className="absolute -bottom-1.5 -right-1.5 flex h-6 w-6 items-center justify-center rounded-[8px] border border-gray-200 bg-emerald-300 text-gray-900 shadow-soft-sm transition-all hover:-translate-y-0.5 disabled:opacity-60"
+                  className="absolute bottom-2 right-2 flex h-8 w-8 items-center justify-center rounded-[10px] border border-gray-200 bg-emerald-300 text-gray-900 shadow-soft-sm transition-all hover:-translate-y-0.5 disabled:opacity-60"
                 >
-                  <Camera className="h-3 w-3" />
+                  <Camera className="h-3.5 w-3.5" />
                 </button>
                 <input ref={avatarInputRef} type="file" accept="image/*" onChange={handleAvatarChange} className="hidden" />
               </div>
               {avatarMsg ? <p className="mt-2 text-xs font-bold text-slate-700">{avatarMsg}</p> : null}
-              </div>
             </div>
 
-            <div>
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="text-[11px] font-black uppercase tracking-[0.16em] text-gray-400">Personal profile</p>
-                  <h2 className="mt-2 text-2xl font-black text-gray-900">Thông tin cá nhân</h2>
-                </div>
-              </div>
-
-              <div className="mt-5 grid gap-4 max-w-[780px]">
+            <div className="grid gap-4 max-w-[780px]">
             <div className="grid gap-2">
               <label className="text-sm font-bold text-slate-600">Họ và tên</label>
               <input type="text" value={fullName} onChange={(event) => setFullName(event.target.value)} className={inputClass} />
@@ -409,7 +406,6 @@ export const AccountTab = (): JSX.Element => {
               </button>
               {saveMsg ? <span className="text-sm font-bold text-slate-600">{saveMsg}</span> : null}
             </div>
-              </div>
             </div>
           </div>
         </section>
