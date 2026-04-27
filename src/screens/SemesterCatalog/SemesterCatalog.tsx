@@ -116,10 +116,10 @@ export function SemesterCatalog(): JSX.Element {
                 <PublicPageBreadcrumb items={[{ label: "Trang chủ", to: "/homepage" }, { label: "Danh sách trường", to: "/schools" }, { label: school.schoolName, to: `/schools/${school.schoolId}` }, { label: "Catalog học kỳ" }]} />
 
                 <div className="mt-6 overflow-hidden rounded-[28px] border border-gray-200 bg-white shadow-soft-md">
-                    <div className="grid gap-0 lg:grid-cols-[1.05fr_0.95fr]">
-                        <div className="space-y-6 border-b border-gray-200 p-6 lg:border-b-0 lg:border-r lg:p-8">
-                            <div className="flex items-center gap-4">
-                                <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-[24px] border border-gray-200 bg-slate-50 shadow-soft-sm">
+                    <div className="grid gap-0 lg:grid-cols-2">
+                        <div className="space-y-6 border-b border-gray-200 p-6 lg:border-b-0 lg:p-8">
+                            <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
+                                <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-[24px] border border-gray-200 bg-slate-50 shadow-soft-sm">
                                     {school.logoURL ? <img src={school.logoURL} alt={school.schoolName} className="h-full w-full object-cover" /> : <School className="h-8 w-8 text-violet-500" />}
                                 </div>
                                 <div className="min-w-0 flex-1">
@@ -137,8 +137,8 @@ export function SemesterCatalog(): JSX.Element {
                                 <div className="rounded-[20px] border border-gray-200 bg-slate-50 p-4 shadow-soft-sm"><p className="text-[11px] font-black uppercase tracking-[0.14em] text-gray-400">Mẫu đồng phục</p><p className="mt-2 text-xl font-extrabold text-gray-900">{catalog.outfits.length}</p></div>
                             </div>
                         </div>
-                        <div className="flex h-full flex-col justify-between gap-5 bg-slate-50 p-6 lg:p-8">
-                            <div className="rounded-[20px] border border-gray-200 bg-white p-5 shadow-soft-sm">
+                        <div className="flex h-full flex-col justify-between gap-5 bg-white p-6 lg:border-l lg:border-gray-200 lg:p-8">
+                            <div className="rounded-[20px] border border-gray-200 bg-slate-50 p-5 shadow-soft-sm">
                                 <p className="text-[11px] font-black uppercase tracking-[0.14em] text-gray-400">Hướng dẫn</p>
                                 <div className="mt-4 space-y-3">
                                     {["Chọn mẫu đồng phục trong catalog học kỳ", "So sánh nhà cung cấp đã được trường phê duyệt", "Thêm vào giỏ rồi thanh toán sau", "Theo dõi đơn hàng sau khi checkout"].map((item) => (
@@ -149,7 +149,7 @@ export function SemesterCatalog(): JSX.Element {
                                     ))}
                                 </div>
                             </div>
-                            <Link to={`/schools/${school.schoolId}`} className="inline-flex items-center gap-2 self-start text-sm font-extrabold text-violet-600 hover:text-violet-700">
+                            <Link to={`/schools/${school.schoolId}`} className="inline-flex items-center gap-2 self-start rounded-[12px] border border-violet-200 bg-violet-50 px-3 py-2 text-sm font-extrabold text-violet-700 hover:bg-violet-100">
                                 <ArrowLeft className="h-4 w-4" />
                                 Quay về trang giới thiệu trường
                             </Link>
