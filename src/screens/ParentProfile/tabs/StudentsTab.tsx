@@ -96,7 +96,7 @@ export const StudentsTab = (): JSX.Element => {
                   <div className="h-2 bg-purple-400/30 w-full" />
                   <div className="p-5 flex gap-4 items-start">
                     <div className="relative flex-shrink-0">
-                      <div className="w-16 h-16 rounded-2xl border border-gray-200 bg-purple-200 flex items-center justify-center shadow-soft-sm overflow-hidden">
+                      <div className="h-24 w-24 rounded-2xl border border-gray-200 bg-purple-200 flex items-center justify-center shadow-soft-sm overflow-hidden">
                         {child.avatarUrl ? (
                           <img
                             src={child.avatarUrl}
@@ -104,7 +104,7 @@ export const StudentsTab = (): JSX.Element => {
                             className="w-full h-full object-cover"
                           />
                         ) : (
-                          <span className="font-black text-gray-900 text-xl">
+                          <span className="font-black text-gray-900 text-3xl">
                             {child.fullName.charAt(0)}
                           </span>
                         )}
