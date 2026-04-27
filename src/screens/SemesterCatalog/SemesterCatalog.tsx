@@ -118,15 +118,15 @@ export function SemesterCatalog(): JSX.Element {
                 <div className="mt-5 overflow-hidden rounded-[24px] border border-gray-200 bg-white shadow-soft-md">
                     <div className="grid gap-0 lg:grid-cols-[1.2fr_0.8fr]">
                         <div className="space-y-4 border-b border-gray-200 p-5 lg:border-b-0 lg:p-6">
+                            <div className="inline-flex items-center gap-2 rounded-full border border-violet-200 bg-violet-100 px-3 py-1 text-[11px] font-black uppercase tracking-[0.14em] text-violet-700">
+                                <ShieldCheck className="h-3.5 w-3.5" />
+                                Parent-driven marketplace
+                            </div>
                             <div className="grid items-start gap-4 sm:grid-cols-[112px_1fr]">
                                 <div className="flex h-28 w-28 items-center justify-center overflow-hidden rounded-[18px] border border-gray-200 bg-slate-50 shadow-soft-sm">
                                     {school.logoURL ? <img src={school.logoURL} alt={school.schoolName} className="h-full w-full object-cover" /> : <School className="h-10 w-10 text-violet-500" />}
                                 </div>
                                 <div className="min-w-0">
-                                    <div className="mb-1.5 inline-flex items-center gap-2 rounded-full border border-violet-200 bg-violet-100 px-3 py-1 text-[11px] font-black uppercase tracking-[0.14em] text-violet-700">
-                                        <ShieldCheck className="h-3.5 w-3.5" />
-                                        Parent-driven marketplace
-                                    </div>
                                     <h1 className="text-[2rem] leading-tight font-extrabold tracking-tight text-gray-900">{school.schoolName}</h1>
                                     <p className="mt-1.5 text-sm font-medium text-gray-500">Catalog học kỳ dành cho phụ huynh. Chọn đồng phục, so sánh nhà cung cấp đã được trường duyệt và thêm vào giỏ.</p>
                                 </div>
