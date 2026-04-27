@@ -60,6 +60,7 @@ export const AddressBookTab = (): JSX.Element => {
   const [editingAddressId, setEditingAddressId] = useState<string | null>(null);
   const [addressForm, setAddressForm] = useState(DEFAULT_PARENT_ADDRESS_FORM);
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
+  const [deleteConfirmAddress, setDeleteConfirmAddress] = useState<ParentAddressDto | null>(null);
   const [isCustomLabelModalOpen, setIsCustomLabelModalOpen] = useState(false);
   const [customLabelDraft, setCustomLabelDraft] = useState("");
   const [editingCustomLabel, setEditingCustomLabel] = useState<string | null>(null);
@@ -408,11 +409,11 @@ export const AddressBookTab = (): JSX.Element => {
                     >
                       Chỉnh sửa
                     </button>
-                    <button
-                      type="button"
-                      onClick={() => void handleDeleteAddress(address.addressId)}
-                      className="inline-flex items-center gap-1 rounded-[14px] border border-red-200 bg-white px-3 py-2 text-xs font-extrabold text-red-700"
-                    >
+                      <button
+                        type="button"
+                        onClick={() => setDeleteConfirmAddress(address)}
+                        className="inline-flex items-center gap-1 rounded-[14px] border border-red-200 bg-white px-3 py-2 text-xs font-extrabold text-red-700"
+                      >
                       <Trash2 className="h-3.5 w-3.5" />
                       Xóa
                     </button>
@@ -586,6 +587,41 @@ export const AddressBookTab = (): JSX.Element => {
                 </button>
                 {addressMsg ? <span className="text-sm font-bold text-slate-600">{addressMsg}</span> : null}
               </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {deleteConfirmAddress ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 px-4">
+          <div className="w-full max-w-md rounded-[24px] border border-gray-200 bg-white p-6 shadow-soft-lg">
+            <p className="text-[11px] font-black uppercase tracking-[0.16em] text-red-500">Xác nhận xóa</p>
+            <h3 className="mt-2 text-xl font-black text-gray-900">Bạn có chắc muốn xóa địa chỉ này?</h3>
+            <p className="mt-3 text-sm font-medium text-slate-600">
+              <span className="font-bold text-gray-900">{deleteConfirmAddress.label}</span> -{" "}
+              {deleteConfirmAddress.recipientName}
+            </p>
+            <p className="mt-1 text-sm font-medium text-slate-500">{deleteConfirmAddress.addressLine}</p>
+
+            <div className="mt-6 flex items-center justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setDeleteConfirmAddress(null)}
+                className="rounded-[14px] border border-gray-200 bg-white px-4 py-2.5 text-sm font-extrabold text-gray-900"
+              >
+                Hủy
+              </button>
+              <button
+                type="button"
+                onClick={async () => {
+                  await handleDeleteAddress(deleteConfirmAddress.addressId);
+                  setDeleteConfirmAddress(null);
+                }}
+                className="inline-flex items-center gap-1 rounded-[14px] border border-red-200 bg-red-50 px-4 py-2.5 text-sm font-extrabold text-red-700"
+              >
+                <Trash2 className="h-4 w-4" />
+                Xóa địa chỉ
+              </button>
             </div>
           </div>
         </div>
