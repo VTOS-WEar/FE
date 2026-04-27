@@ -66,6 +66,7 @@ import { AdminDashboard } from "./screens/AdminDashboard/AdminDashboard";
 import { AdminUsers } from "./screens/AdminUsers/AdminUsers";
 import { AdminWithdrawals } from "./screens/AdminWithdrawals/AdminWithdrawals";
 import { ContactPartnership } from "./screens/ContactPartnership";
+import { CookiesPolicy } from "./screens/CookiesPolicy";
 import { AdminAccountRequests } from "./screens/AdminAccountRequests";
 import AdminTransactions from "./screens/AdminTransactions/AdminTransactions";
 import AdminComplaints from "./screens/AdminComplaints/AdminComplaints";
@@ -77,6 +78,7 @@ import { ProviderAccountSettings } from "./screens/ProviderProfile/ProviderAccou
 import { SchoolAccountSettings } from "./screens/SchoolProfile/SchoolAccountSettings";
 import { HowItWorks } from "./screens/HowItWorks/HowItWorks";
 import { SearchPage } from "./screens/Search/SearchPage";
+import { LegalNotice } from "./screens/LegalNotice";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import vtosLogoUrl from "../public/imgs/vtoslogo.png";
@@ -200,6 +202,14 @@ const router = createBrowserRouter([{
   {
     path: "/contact-partnership",
     element: <RoleGuard allowedRoles={[]} allowGuest><ContactPartnership /></RoleGuard>,
+  },
+  {
+    path: "/cookies-policy",
+    element: <RoleGuard allowedRoles={[]} allowGuest><CookiesPolicy /></RoleGuard>,
+  },
+  {
+    path: "/legal-notice",
+    element: <RoleGuard allowedRoles={[]} allowGuest><LegalNotice /></RoleGuard>,
   },
   {
     path: "/fillphonenumber",
