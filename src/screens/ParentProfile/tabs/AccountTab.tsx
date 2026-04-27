@@ -313,7 +313,6 @@ export const AccountTab = (): JSX.Element => {
                   type="text"
                   inputMode="numeric"
                   value={dobDay}
-                  list="dob-day-options"
                   onChange={(event) => {
                     const next = Number(event.target.value.replace(/[^\d]/g, ""));
                     if (Number.isNaN(next)) return;
@@ -326,7 +325,6 @@ export const AccountTab = (): JSX.Element => {
                   type="text"
                   inputMode="numeric"
                   value={dobMonth}
-                  list="dob-month-options"
                   onChange={(event) => {
                     const next = Number(event.target.value.replace(/[^\d]/g, ""));
                     if (Number.isNaN(next)) return;
@@ -339,7 +337,6 @@ export const AccountTab = (): JSX.Element => {
                   type="text"
                   inputMode="numeric"
                   value={dobYear}
-                  list="dob-year-options"
                   onChange={(event) => {
                     const next = Number(event.target.value.replace(/[^\d]/g, ""));
                     if (Number.isNaN(next)) return;
@@ -381,21 +378,6 @@ export const AccountTab = (): JSX.Element => {
                 tabIndex={-1}
                 aria-hidden="true"
               />
-              <datalist id="dob-day-options">
-                {DAYS.map((value) => (
-                  <option key={value} value={value} />
-                ))}
-              </datalist>
-              <datalist id="dob-month-options">
-                {MONTHS.map((value) => (
-                  <option key={value} value={value} />
-                ))}
-              </datalist>
-              <datalist id="dob-year-options">
-                {YEARS.map((value) => (
-                  <option key={value} value={value} />
-                ))}
-              </datalist>
             </div>
 
             <div className="grid gap-2">
