@@ -271,9 +271,9 @@ export const AccountTab = (): JSX.Element => {
             </div>
           </div>
 
-          <div className="mt-5 grid items-stretch gap-5 lg:grid-cols-[180px_minmax(0,1fr)]">
+          <div className="mt-5 grid items-stretch gap-5 lg:grid-cols-[220px_minmax(0,1fr)]">
             <div className="rounded-[16px] border border-gray-200 bg-slate-50 p-3">
-              <div className="relative h-full min-h-[280px] overflow-hidden rounded-[12px] border border-gray-200 bg-violet-50 shadow-soft-sm">
+              <div className="relative h-full min-h-[280px] overflow-hidden rounded-[12px] border border-gray-200 bg-violet-50">
                 {user.avatar ? (
                   <img src={user.avatar} alt="" className="h-full w-full object-cover" />
                 ) : (
@@ -291,7 +291,6 @@ export const AccountTab = (): JSX.Element => {
                 </button>
                 <input ref={avatarInputRef} type="file" accept="image/*" onChange={handleAvatarChange} className="hidden" />
               </div>
-              {avatarMsg ? <p className="mt-2 text-xs font-bold text-slate-700">{avatarMsg}</p> : null}
             </div>
 
             <div className="grid gap-4 max-w-[780px]">
@@ -408,6 +407,11 @@ export const AccountTab = (): JSX.Element => {
             </div>
             </div>
           </div>
+          {avatarMsg ? (
+            <div className="mt-3 inline-flex rounded-[12px] border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-700">
+              {avatarMsg}
+            </div>
+          ) : null}
         </section>
 
         <section className="rounded-[28px] border border-gray-200 bg-white p-6 shadow-soft-sm">
