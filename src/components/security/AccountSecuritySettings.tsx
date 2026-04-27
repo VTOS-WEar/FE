@@ -186,6 +186,98 @@ export const AccountSecuritySettings = ({
 
       <section className="rounded-[24px] border border-gray-200 bg-white p-5 shadow-soft-sm lg:p-6">
         <div className="flex items-start gap-3">
+          <div className={`rounded-2xl p-3 ${is2FAEnabled ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"}`}>
+            {is2FAEnabled ? <ShieldCheck className="h-5 w-5" /> : <ShieldAlert className="h-5 w-5" />}
+          </div>
+          <div>
+            <p className="text-[11px] font-black uppercase tracking-[0.16em] text-gray-400">Xác thực 2 bước</p>
+            <h2 className="mt-2 text-2xl font-black text-gray-900">Quản lý 2FA</h2>
+          </div>
+        </div>
+
+        <div className="mt-6 space-y-4">
+          <div
+            className={`rounded-[22px] border p-5 ${
+              is2FAEnabled ? "border-emerald-200 bg-emerald-50" : "border-amber-200 bg-amber-50"
+            }`}
+          >
+            <p className="text-sm font-extrabold text-gray-900">{is2FAEnabled ? "2FA hiện đang bật" : "2FA hiện chưa bật"}</p>
+            {!suppressHelperText && (
+              <p className="mt-1 text-sm font-medium leading-6 text-[#5b6475]">{is2FAEnabled ? "Khuyến nghị giữ nguyên." : "Khuyến nghị bật 2FA."}</p>
+            )}
+          </div>
+
+          {is2FAEnabled === null ? (
+            <div className="h-24 animate-pulse rounded-[18px] border border-gray-200 bg-gray-100" />
+          ) : is2FAEnabled ? (
+            <div className="space-y-4">
+              <div className="rounded-[18px] bg-red-50 p-4">
+                <p className="text-sm font-extrabold text-red-900">Tắt 2FA là thao tác nhạy cảm</p>
+                <button
+                  onClick={() => setShowDisable2FA((current) => !current)}
+                  className="nb-btn nb-btn-outline mt-4 text-sm !border-red-300 !text-red-800 hover:!bg-red-100"
+                >
+                  {showDisable2FA ? "Đóng xác nhận tắt 2FA" : "Mở xác nhận tắt 2FA"}
+                </button>
+              </div>
+
+              {showDisable2FA ? (
+                <div className="space-y-4 border-t border-gray-100 pt-4">
+                  <FieldGroup label="Mã xác thực 6 chữ số">
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      maxLength={6}
+                      value={disable2FACode}
+                      onChange={(event) => {
+                        if (/^\d*$/.test(event.target.value)) setDisable2FACode(event.target.value);
+                      }}
+                      placeholder="000000"
+                      className="nb-input h-11 max-w-[180px] text-center font-mono text-lg tracking-widest"
+                    />
+                  </FieldGroup>
+
+                  <div className="mt-4 flex flex-wrap items-center gap-3">
+                    <button
+                      onClick={handleDisable2FA}
+                      disabled={disabling2FA || disable2FACode.length !== 6}
+                      className="nb-btn text-sm !border-gray-200 !bg-red-800 !text-white disabled:opacity-50"
+                    >
+                      {disabling2FA ? "Đang xử lý..." : "Xác nhận tắt 2FA"}
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowDisable2FA(false);
+                        setDisable2FACode("");
+                        setDisable2FAMsg("");
+                      }}
+                      className="nb-btn nb-btn-outline text-sm"
+                    >
+                      Hủy
+                    </button>
+                  </div>
+
+                  {disable2FAMsg ? (
+                    <InlineMessage
+                      className={disable2FAMsg.startsWith("Đã") ? "text-emerald-700" : "text-red-700"}
+                      message={disable2FAMsg}
+                    />
+                  ) : null}
+                </div>
+              ) : null}
+            </div>
+          ) : (
+            <div className="flex flex-wrap items-center gap-3 border-t border-gray-100 pt-4">
+              <button onClick={() => navigate("/2fa-setup")} className="nb-btn nb-btn-purple text-sm">
+                Bật 2FA
+              </button>
+            </div>
+          )}
+        </div>
+      </section>
+
+      <section className="rounded-[24px] border border-gray-200 bg-white p-5 shadow-soft-sm lg:p-6">
+        <div className="flex items-start gap-3">
           <div className="rounded-2xl bg-violet-50 p-3 text-violet-700">
             <KeyRound className="h-5 w-5" />
           </div>
@@ -329,98 +421,6 @@ export const AccountSecuritySettings = ({
                   message={changePasswordMsg}
                 />
               ) : null}
-            </div>
-          )}
-        </div>
-      </section>
-
-      <section className="rounded-[24px] border border-gray-200 bg-white p-5 shadow-soft-sm lg:p-6">
-        <div className="flex items-start gap-3">
-          <div className={`rounded-2xl p-3 ${is2FAEnabled ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"}`}>
-            {is2FAEnabled ? <ShieldCheck className="h-5 w-5" /> : <ShieldAlert className="h-5 w-5" />}
-          </div>
-          <div>
-            <p className="text-[11px] font-black uppercase tracking-[0.16em] text-gray-400">Xác thực 2 bước</p>
-            <h2 className="mt-2 text-2xl font-black text-gray-900">Quản lý 2FA</h2>
-          </div>
-        </div>
-
-        <div className="mt-6 space-y-4">
-          <div
-            className={`rounded-[22px] border p-5 ${
-              is2FAEnabled ? "border-emerald-200 bg-emerald-50" : "border-amber-200 bg-amber-50"
-            }`}
-          >
-            <p className="text-sm font-extrabold text-gray-900">{is2FAEnabled ? "2FA hiện đang bật" : "2FA hiện chưa bật"}</p>
-            {!suppressHelperText && (
-              <p className="mt-1 text-sm font-medium leading-6 text-[#5b6475]">{is2FAEnabled ? "Khuyến nghị giữ nguyên." : "Khuyến nghị bật 2FA."}</p>
-            )}
-          </div>
-
-          {is2FAEnabled === null ? (
-            <div className="h-24 animate-pulse rounded-[18px] border border-gray-200 bg-gray-100" />
-          ) : is2FAEnabled ? (
-            <div className="space-y-4">
-              <div className="rounded-[18px] bg-red-50 p-4">
-                <p className="text-sm font-extrabold text-red-900">Tắt 2FA là thao tác nhạy cảm</p>
-                <button
-                  onClick={() => setShowDisable2FA((current) => !current)}
-                  className="nb-btn nb-btn-outline mt-4 text-sm !border-red-300 !text-red-800 hover:!bg-red-100"
-                >
-                  {showDisable2FA ? "Đóng xác nhận tắt 2FA" : "Mở xác nhận tắt 2FA"}
-                </button>
-              </div>
-
-              {showDisable2FA ? (
-                <div className="space-y-4 border-t border-gray-100 pt-4">
-                  <FieldGroup label="Mã xác thực 6 chữ số">
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      maxLength={6}
-                      value={disable2FACode}
-                      onChange={(event) => {
-                        if (/^\d*$/.test(event.target.value)) setDisable2FACode(event.target.value);
-                      }}
-                      placeholder="000000"
-                      className="nb-input h-11 max-w-[180px] text-center font-mono text-lg tracking-widest"
-                    />
-                  </FieldGroup>
-
-                  <div className="mt-4 flex flex-wrap items-center gap-3">
-                    <button
-                      onClick={handleDisable2FA}
-                      disabled={disabling2FA || disable2FACode.length !== 6}
-                      className="nb-btn text-sm !border-gray-200 !bg-red-800 !text-white disabled:opacity-50"
-                    >
-                      {disabling2FA ? "Đang xử lý..." : "Xác nhận tắt 2FA"}
-                    </button>
-                    <button
-                      onClick={() => {
-                        setShowDisable2FA(false);
-                        setDisable2FACode("");
-                        setDisable2FAMsg("");
-                      }}
-                      className="nb-btn nb-btn-outline text-sm"
-                    >
-                      Hủy
-                    </button>
-                  </div>
-
-                  {disable2FAMsg ? (
-                    <InlineMessage
-                      className={disable2FAMsg.startsWith("Đã") ? "text-emerald-700" : "text-red-700"}
-                      message={disable2FAMsg}
-                    />
-                  ) : null}
-                </div>
-              ) : null}
-            </div>
-          ) : (
-            <div className="flex flex-wrap items-center gap-3 border-t border-gray-100 pt-4">
-              <button onClick={() => navigate("/2fa-setup")} className="nb-btn nb-btn-purple text-sm">
-                Bật 2FA
-              </button>
             </div>
           )}
         </div>
