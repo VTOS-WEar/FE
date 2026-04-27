@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { AlertCircle, CheckCircle2, Clock3, Eye, LifeBuoy, MessageSquare, Plus, SearchCheck, X, XCircle } from "lucide-react";
+import { AlertCircle, CheckCircle2, ChevronDown, Clock3, Eye, LifeBuoy, MessageSquare, Plus, SearchCheck, X, XCircle } from "lucide-react";
 import { DashboardSidebar } from "../../components/layout";
 import { TopNavBar } from "../../components/layout/TopNavBar";
 import { PROVIDER_LIST_PAGE_SIZE, ProviderDataTable, type ProviderDataTableColumn } from "../../components/provider/ProviderDataTable";
@@ -246,20 +246,23 @@ function SupportTicketsPanel({ role }: { role: RoleMode }): JSX.Element {
                             <p className="text-sm font-semibold text-slate-500">{data?.total ?? 0} yêu cầu</p>
                         </div>
                         <div className="flex flex-wrap items-center gap-2">
-                            <select
-                                value={status}
-                                onChange={(event) => {
-                                    setStatus(event.target.value);
-                                    setPage(1);
-                                }}
-                                className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-700 outline-none"
-                            >
-                                <option value="">Tất cả trạng thái</option>
-                                <option value="Open">Đang mở</option>
-                                <option value="InProgress">Đang xử lý</option>
-                                <option value="Resolved">Đã giải quyết</option>
-                                <option value="Closed">Đã đóng</option>
-                            </select>
+                            <div className="relative">
+                                <select
+                                    value={status}
+                                    onChange={(event) => {
+                                        setStatus(event.target.value);
+                                        setPage(1);
+                                    }}
+                                    className="appearance-none rounded-xl border border-slate-200 bg-white py-2 pl-3 pr-11 text-sm font-bold text-slate-700 outline-none"
+                                >
+                                    <option value="">Tất cả trạng thái</option>
+                                    <option value="Open">Đang mở</option>
+                                    <option value="InProgress">Đang xử lý</option>
+                                    <option value="Resolved">Đã giải quyết</option>
+                                    <option value="Closed">Đã đóng</option>
+                                </select>
+                                <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+                            </div>
                             <button
                                 type="button"
                                 onClick={() => setIsCreateModalOpen(true)}
@@ -361,19 +364,22 @@ function SupportTicketsPanel({ role }: { role: RoleMode }): JSX.Element {
                                 className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold outline-none focus:border-sky-300"
                                 placeholder="Tiêu đề ticket"
                             />
-                            <select
-                                value={form.category}
-                                onChange={(event) => setForm((current) => ({ ...current, category: event.target.value }))}
-                                className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold outline-none focus:border-sky-300"
-                            >
-                                <option value="General">Chung</option>
-                                <option value="Account">Tài khoản</option>
-                                <option value="Order">Đơn hàng</option>
-                                <option value="Payment">Thanh toán / ví</option>
-                                <option value="Contract">Hợp đồng</option>
-                                <option value="Data">Dữ liệu</option>
-                                <option value="Technical">Kỹ thuật</option>
-                            </select>
+                            <div className="relative">
+                                <select
+                                    value={form.category}
+                                    onChange={(event) => setForm((current) => ({ ...current, category: event.target.value }))}
+                                    className="w-full appearance-none rounded-xl border border-slate-200 py-3 pl-4 pr-11 text-sm font-semibold outline-none focus:border-sky-300"
+                                >
+                                    <option value="General">Chung</option>
+                                    <option value="Account">Tài khoản</option>
+                                    <option value="Order">Đơn hàng</option>
+                                    <option value="Payment">Thanh toán / ví</option>
+                                    <option value="Contract">Hợp đồng</option>
+                                    <option value="Data">Dữ liệu</option>
+                                    <option value="Technical">Kỹ thuật</option>
+                                </select>
+                                <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+                            </div>
                             <textarea
                                 value={form.description}
                                 onChange={(event) => setForm((current) => ({ ...current, description: event.target.value }))}
