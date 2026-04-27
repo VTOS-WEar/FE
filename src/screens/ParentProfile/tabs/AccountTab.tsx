@@ -41,6 +41,7 @@ export const AccountTab = (): JSX.Element => {
   const [phoneSaving, setPhoneSaving] = useState(false);
   const [avatarSaving, setAvatarSaving] = useState(false);
   const [avatarMsg, setAvatarMsg] = useState("");
+  const [activeTab, setActiveTab] = useState<"personal" | "contact">("personal");
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const dobPickerRef = useRef<HTMLInputElement>(null);
 
@@ -291,8 +292,34 @@ export const AccountTab = (): JSX.Element => {
         </div>
       </section>
 
-      <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
-        <section className="rounded-[28px] border border-gray-200 bg-white p-6 shadow-soft-sm lg:p-6">
+      <section className="rounded-[28px] border border-gray-200 bg-white p-5 shadow-soft-sm lg:p-6">
+        <div className="mb-5 inline-flex rounded-[14px] border border-gray-200 bg-slate-50 p-1">
+          <button
+            type="button"
+            onClick={() => setActiveTab("personal")}
+            className={`rounded-[10px] px-4 py-2 text-sm font-extrabold transition-all ${
+              activeTab === "personal"
+                ? "bg-violet-500 text-white shadow-soft-sm"
+                : "text-slate-600 hover:bg-white"
+            }`}
+          >
+            Thông tin cá nhân
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab("contact")}
+            className={`rounded-[10px] px-4 py-2 text-sm font-extrabold transition-all ${
+              activeTab === "contact"
+                ? "bg-violet-500 text-white shadow-soft-sm"
+                : "text-slate-600 hover:bg-white"
+            }`}
+          >
+            Thông tin liên hệ
+          </button>
+        </div>
+
+        {activeTab === "personal" ? (
+          <section>
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="text-[11px] font-black uppercase tracking-[0.16em] text-gray-400">Personal profile</p>
@@ -414,8 +441,8 @@ export const AccountTab = (): JSX.Element => {
             </div>
           </div>
         </section>
-
-        <section className="rounded-[28px] border border-gray-200 bg-white p-6 shadow-soft-sm">
+        ) : (
+        <section>
           <div>
             <p className="text-[11px] font-black uppercase tracking-[0.16em] text-gray-400">Contact information</p>
             <h2 className="mt-2 text-2xl font-black text-gray-900">Thông tin liên hệ</h2>
@@ -483,7 +510,8 @@ export const AccountTab = (): JSX.Element => {
             </div>
           </div>
         </section>
-      </div>
+        )}
+      </section>
     </div>
   );
 };
