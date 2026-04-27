@@ -137,7 +137,7 @@ export function SemesterCatalog(): JSX.Element {
                                 <div className="rounded-[20px] border border-gray-200 bg-slate-50 p-4 shadow-soft-sm"><p className="text-[11px] font-black uppercase tracking-[0.14em] text-gray-400">Mẫu đồng phục</p><p className="mt-2 text-xl font-extrabold text-gray-900">{catalog.outfits.length}</p></div>
                             </div>
                         </div>
-                        <div className="space-y-5 bg-slate-50 p-6 lg:p-8">
+                        <div className="flex h-full flex-col justify-between gap-5 bg-slate-50 p-6 lg:p-8">
                             <div className="rounded-[20px] border border-gray-200 bg-white p-5 shadow-soft-sm">
                                 <p className="text-[11px] font-black uppercase tracking-[0.14em] text-gray-400">Hướng dẫn</p>
                                 <div className="mt-4 space-y-3">
@@ -149,7 +149,7 @@ export function SemesterCatalog(): JSX.Element {
                                     ))}
                                 </div>
                             </div>
-                            <Link to={`/schools/${school.schoolId}`} className="inline-flex items-center gap-2 text-sm font-extrabold text-violet-600 hover:text-violet-700">
+                            <Link to={`/schools/${school.schoolId}`} className="inline-flex items-center gap-2 self-start text-sm font-extrabold text-violet-600 hover:text-violet-700">
                                 <ArrowLeft className="h-4 w-4" />
                                 Quay về trang giới thiệu trường
                             </Link>
