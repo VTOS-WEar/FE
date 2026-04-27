@@ -262,8 +262,8 @@ export const StudentDetailView = ({ childId, onBack }: StudentDetailViewProps): 
             </div>
           </div>
 
-          {/* Tuổi - Row */}
-          <div className="grid grid-cols-4 gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
+          {/* Giới tính + Tuổi */}
+          <div className="grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
             {/* Giới tính */}
             <div className="flex flex-col gap-2">
               <label className="font-bold text-gray-900 text-sm transition-colors duration-300">GIỚI TÍNH</label>
@@ -283,7 +283,10 @@ export const StudentDetailView = ({ childId, onBack }: StudentDetailViewProps): 
                 className={`${inputClass} !bg-gray-100 !cursor-not-allowed opacity-70 hover:shadow-none`}
               />
             </div>
+          </div>
 
+          {/* Chiều cao + Cân nặng */}
+          <div className="grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
             {/* Chiều cao */}
             <div className="flex flex-col gap-2">
               <label htmlFor="height" className="font-bold text-gray-900 text-sm transition-colors duration-300">CHIỀU CAO (cm)</label>
