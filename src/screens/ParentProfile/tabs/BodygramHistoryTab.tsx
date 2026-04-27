@@ -320,7 +320,7 @@ export const BodygramHistoryTab = (): JSX.Element => {
               <div className="text-left leading-tight">
                 <div className="text-[13px] font-extrabold text-gray-900">{child.fullName}</div>
                 <div className="text-[11px] font-bold text-gray-500">
-                  {child.gender === "Male" ? "♂" : "♀"} {child.age || "--"} tuổi
+                  {child.age || "--"} tuổi
                 </div>
               </div>
             </button>
