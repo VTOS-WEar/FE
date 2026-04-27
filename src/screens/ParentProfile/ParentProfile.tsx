@@ -296,7 +296,7 @@ export const ParentProfile = (): JSX.Element => {
             </div>
           </aside>
 
-          <section className="relative min-h-[calc(100vh-140px)] overflow-hidden rounded-[30px] border border-gray-200 bg-white shadow-soft-md">
+          <section className="relative min-h-[420px] overflow-hidden rounded-[30px] border border-gray-200 bg-white shadow-soft-md md:min-h-[560px] xl:min-h-[calc(100vh-140px)]">
             <div className="space-y-6 p-5 lg:p-8">
               <Outlet />
             </div>
