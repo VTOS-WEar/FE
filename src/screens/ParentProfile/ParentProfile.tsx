@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
-import { ChevronRight, GraduationCap, History, LifeBuoy, LogOut, MapPinHouse, ScanLine, Settings, ShoppingBag, Star, User, WalletCards } from "lucide-react";
+import { ChevronDown, ChevronRight, GraduationCap, History, LifeBuoy, LogOut, MapPinHouse, ScanLine, Settings, ShoppingBag, Star, User, WalletCards } from "lucide-react";
 import { GuestLayout } from "../../components/layout/GuestLayout";
 import { getParentProfile } from "../../lib/api/users";
 
@@ -18,10 +18,15 @@ const SECTION_ITEMS = [
 ];
 
 const MENU_GROUPS: Array<{ title: string; items: string[] }> = [
-  { title: "Thông tin", items: ["/parentprofile/account", "/parentprofile/address-book", "/parentprofile/students"] },
+  { title: "Thông tin", items: ["/parentprofile/account-group", "/parentprofile/address-book", "/parentprofile/students"] },
   { title: "Mua sắm", items: ["/parentprofile/orders", "/parentprofile/wallet"] },
-  { title: "Dịch vụ", items: ["/parentprofile/history", "/parentprofile/bodygram-history", "/parentprofile/reviews", "/parentprofile/support", "/parentprofile/settings"] },
+  { title: "Dịch vụ", items: ["/parentprofile/history", "/parentprofile/bodygram-history", "/parentprofile/reviews", "/parentprofile/support"] },
 ];
+
+const ACCOUNT_CHILDREN = [
+  { label: "Thông tin tài khoản", to: "/parentprofile/account" },
+  { label: "Cài đặt tài khoản", to: "/parentprofile/settings" },
+] as const;
 
 const SECTION_MATCHERS: Record<string, string[]> = {
   "/parentprofile/account": ["/parentprofile/account"],
@@ -46,6 +51,9 @@ export const ParentProfile = (): JSX.Element => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({
+    account: true,
+  });
   const [user, setUser] = useState<ParentUser | null>(() => {
     try {
       const raw = localStorage.getItem("user") ?? sessionStorage.getItem("user");
@@ -120,6 +128,15 @@ export const ParentProfile = (): JSX.Element => {
       .toUpperCase();
   }, [user?.fullName]);
 
+  useEffect(() => {
+    const accountActive = ACCOUNT_CHILDREN.some((child) =>
+      (SECTION_MATCHERS[child.to] ?? [child.to]).some((path) => location.pathname.startsWith(path)),
+    );
+    if (accountActive) {
+      setOpenGroups((prev) => ({ ...prev, account: true }));
+    }
+  }, [location.pathname]);
+
   if (!user) {
     return <div />;
   }
@@ -165,6 +182,71 @@ export const ParentProfile = (): JSX.Element => {
                       </p>
                       <div className="space-y-0.5">
                         {group.items.map((to) => {
+                          if (to === "/parentprofile/account-group") {
+                            const isAccountActive = ACCOUNT_CHILDREN.some((child) =>
+                              (SECTION_MATCHERS[child.to] ?? [child.to]).some((path) =>
+                                location.pathname.startsWith(path),
+                              ),
+                            );
+                            const isOpen = openGroups.account;
+                            return (
+                              <div key={to} className="space-y-1.5">
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    setOpenGroups((prev) => ({ ...prev, account: !prev.account }))
+                                  }
+                                  className={`flex w-full items-center gap-2.5 rounded-[12px] border px-3 py-2 transition-all ${
+                                    isAccountActive
+                                      ? "border-violet-200 bg-violet-50 text-slate-950 shadow-soft-sm"
+                                      : "border-transparent bg-transparent text-slate-600 hover:border-slate-200/80 hover:bg-slate-50"
+                                  }`}
+                                >
+                                  <div
+                                    className={`flex h-8 w-8 items-center justify-center rounded-[10px] border ${
+                                      isAccountActive
+                                        ? "border-violet-100 bg-white text-violet-700"
+                                        : "border-transparent bg-transparent text-slate-400"
+                                    }`}
+                                  >
+                                    <User className="h-4 w-4" />
+                                  </div>
+                                  <div className="min-w-0 flex-1 text-left">
+                                    <p className="truncate text-sm font-extrabold">Tài khoản</p>
+                                  </div>
+                                  <ChevronDown
+                                    className={`h-4 w-4 transition-transform ${
+                                      isOpen ? "rotate-180 text-violet-600" : "text-slate-400"
+                                    }`}
+                                  />
+                                </button>
+
+                                {isOpen ? (
+                                  <div className="ml-4 space-y-1 border-l border-slate-200 pl-3">
+                                    {ACCOUNT_CHILDREN.map((child) => {
+                                      const isChildActive = (SECTION_MATCHERS[child.to] ?? [child.to]).some((path) =>
+                                        location.pathname.startsWith(path),
+                                      );
+                                      return (
+                                        <NavLink key={child.to} to={child.to}>
+                                          <div
+                                            className={`flex items-center rounded-[10px] px-2.5 py-2 text-sm font-bold transition-colors ${
+                                              isChildActive
+                                                ? "bg-violet-50 text-violet-700"
+                                                : "text-slate-500 hover:bg-slate-50 hover:text-slate-700"
+                                            }`}
+                                          >
+                                            {child.label}
+                                          </div>
+                                        </NavLink>
+                                      );
+                                    })}
+                                  </div>
+                                ) : null}
+                              </div>
+                            );
+                          }
+
                           const item = SECTION_ITEMS.find((entry) => entry.to === to);
                           if (!item) return null;
                           const Icon = item.icon;
