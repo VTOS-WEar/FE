@@ -267,11 +267,11 @@ export const StudentDetailView = ({ childId, onBack }: StudentDetailViewProps): 
             <label className="font-bold text-gray-900 text-sm transition-colors duration-300">GIỚI TÍNH</label>
             <div className="flex items-center gap-6">
               {["Nam", "Nữ", "Khác"].map(g => (
-                <label key={g} className="flex items-center gap-2 cursor-pointer group/gender hover:scale-110 transition-transform duration-300 user-select-none" role="radio" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setGender(g); } }} onClick={() => setGender(g)}>
-                  <div className={`w-5 h-5 rounded-lg border-2 flex items-center justify-center transition-all duration-300 ${gender === g ? "border-gray-200 bg-purple-400 shadow-sm scale-110" : "border-gray-300 group-hover/gender:border-gray-200 group-hover/gender:shadow-sm"}`}>
+                <label key={g} className="flex cursor-not-allowed items-center gap-2 user-select-none opacity-80" aria-disabled="true">
+                  <div className={`flex h-5 w-5 items-center justify-center rounded-lg border-2 ${gender === g ? "border-gray-200 bg-purple-400 shadow-sm" : "border-gray-300 bg-gray-100"}`}>
                     {gender === g && <div className="w-2 h-2 rounded-sm bg-gray-900 animate-pulse" />}
                   </div>
-                  <span className="font-bold text-sm text-gray-900 group-hover/gender:text-purple-400 transition-colors duration-300">{g}</span>
+                  <span className="text-sm font-bold text-gray-900">{g}</span>
                 </label>
               ))}
             </div>
