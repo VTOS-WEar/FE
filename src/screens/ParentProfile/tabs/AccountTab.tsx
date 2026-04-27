@@ -1,4 +1,4 @@
-import { type ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
+import { type ChangeEvent, useEffect, useRef, useState } from "react";
 import { CalendarDays, Camera, Mail, Phone, Save } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { getParentProfile, updateParentAvatar, updateParentProfile } from "../../../lib/api/users";
@@ -7,6 +7,15 @@ const DAYS = Array.from({ length: 31 }, (_, index) => index + 1);
 const MONTHS = Array.from({ length: 12 }, (_, index) => index + 1);
 const CURRENT_YEAR = new Date().getFullYear();
 const YEARS = Array.from({ length: 80 }, (_, index) => CURRENT_YEAR - index);
+const DEFAULT_PARENT_AVATAR =
+  "data:image/svg+xml;utf8," +
+  encodeURIComponent(
+    "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 320'>" +
+      "<rect width='240' height='320' fill='#EDE9FE'/>" +
+      "<circle cx='120' cy='112' r='48' fill='#A78BFA'/>" +
+      "<path d='M44 286c8-44 36-76 76-76s68 32 76 76' fill='#8B5CF6'/>" +
+    "</svg>",
+  );
 
 interface UserInfo {
   userId: string;
@@ -211,16 +220,6 @@ export const AccountTab = (): JSX.Element => {
     }
   };
 
-  const initials = useMemo(() => {
-    if (!fullName.trim()) return "PH";
-    return fullName
-      .split(" ")
-      .map((word) => word[0])
-      .join("")
-      .slice(-2)
-      .toUpperCase();
-  }, [fullName]);
-
   if (!user) return <div />;
 
   if (profileLoading) {
@@ -274,13 +273,14 @@ export const AccountTab = (): JSX.Element => {
           <div className="mt-5 grid items-stretch gap-5 lg:grid-cols-[220px_minmax(0,1fr)]">
             <div className="rounded-[16px] border border-gray-200 bg-slate-50 p-3">
               <div className="relative h-full min-h-[280px] overflow-hidden rounded-[12px] border border-gray-200 bg-violet-50">
-                {user.avatar ? (
-                  <img src={user.avatar} alt="" className="h-full w-full object-cover" />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center">
-                    <span className="text-4xl font-black text-violet-700">{initials}</span>
-                  </div>
-                )}
+                <img
+                  src={user.avatar || DEFAULT_PARENT_AVATAR}
+                  alt={user.fullName || "Parent avatar"}
+                  className="h-full w-full object-cover"
+                  onError={(event) => {
+                    event.currentTarget.src = DEFAULT_PARENT_AVATAR;
+                  }}
+                />
                 <button
                   type="button"
                   onClick={() => avatarInputRef.current?.click()}
