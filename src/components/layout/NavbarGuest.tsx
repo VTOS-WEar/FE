@@ -315,7 +315,7 @@ export function NavbarGuest() {
                   }
                 }}
                 onFocus={() => { if (searchResults) setShowDropdown(true) }}
-                placeholder="Tìm trường, đồng phục..."
+                placeholder="Tìm kiếm"
                 className="h-9 border-none bg-transparent text-sm font-medium shadow-none focus-visible:ring-0 placeholder:text-gray-400"
               />
               <button
