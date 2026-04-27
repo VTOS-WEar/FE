@@ -6,6 +6,16 @@ import { getVietnamseGender } from "../../../lib/utils";
 import type { ChildProfileDto, FindChildrenResponse } from "../../../lib/api/users";
 import { StudentDetailView } from "./StudentDetailView";
 
+const DEFAULT_CHILD_AVATAR =
+  "data:image/svg+xml;utf8," +
+  encodeURIComponent(
+    "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'>" +
+      "<rect width='96' height='96' rx='20' fill='#EDE9FE'/>" +
+      "<circle cx='48' cy='36' r='16' fill='#A78BFA'/>" +
+      "<path d='M22 80c2-14 12-24 26-24s24 10 26 24' fill='#8B5CF6'/>" +
+    "</svg>",
+  );
+
 export const StudentsTab = (): JSX.Element => {
   const { showToast } = useToast();
   const [children, setChildren] = useState<ChildProfileDto[]>([]);
@@ -97,17 +107,14 @@ export const StudentsTab = (): JSX.Element => {
                   <div className="p-5 flex gap-4 items-start">
                     <div className="relative flex-shrink-0">
                       <div className="h-24 w-24 rounded-2xl border border-gray-200 bg-purple-200 flex items-center justify-center shadow-soft-sm overflow-hidden">
-                        {child.avatarUrl ? (
-                          <img
-                            src={child.avatarUrl}
-                            alt={child.fullName}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <span className="font-black text-gray-900 text-3xl">
-                            {child.fullName.charAt(0)}
-                          </span>
-                        )}
+                        <img
+                          src={child.avatarUrl || DEFAULT_CHILD_AVATAR}
+                          alt={child.fullName}
+                          className="w-full h-full object-cover"
+                          onError={(event) => {
+                            event.currentTarget.src = DEFAULT_CHILD_AVATAR;
+                          }}
+                        />
                       </div>
                     </div>
 
