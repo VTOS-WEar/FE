@@ -210,18 +210,21 @@ export const AccountSecuritySettings = ({
 
         <div className="mt-6 space-y-4 border-t border-gray-100 pt-5">
           {!otpSent ? (
-            <div className="flex flex-wrap items-center gap-3">
-              <div className="inline-flex items-center gap-3 rounded-[16px] bg-slate-50 px-4 py-3">
-                <div className="rounded-2xl bg-white p-2.5 text-sky-700 shadow-soft-sm">
-                  <Mail className="h-4.5 w-4.5" />
+            <div className="rounded-[16px] border border-slate-200 bg-slate-50 p-4">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="inline-flex items-center gap-3">
+                  <div className="rounded-2xl bg-white p-2.5 text-sky-700 shadow-soft-sm">
+                    <Mail className="h-4.5 w-4.5" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-extrabold text-gray-900">Gửi OTP đến email</p>
+                    <p className="text-xs font-semibold text-slate-500">Nhấn nút để nhận mã xác thực 6 chữ số.</p>
+                  </div>
                 </div>
-                <p className="text-sm font-extrabold text-gray-900">Gửi OTP đến email</p>
-              </div>
-              <div className="flex flex-wrap items-center gap-3">
                 <button
                   onClick={handleRequestOtp}
                   disabled={requestingOtp}
-                  className="group relative inline-flex h-11 items-center justify-center gap-2 overflow-hidden rounded-[12px] border border-gray-200 bg-gradient-to-r from-[#7C63E6] via-[#8F79EB] to-[#6F56E0] px-5 text-sm font-extrabold text-white shadow-[0_8px_18px_rgba(124,99,230,0.25)] transition-all duration-200 hover:-translate-y-[1px] hover:brightness-110 hover:shadow-[0_12px_24px_rgba(124,99,230,0.32)] active:translate-y-0 active:shadow-[0_7px_14px_rgba(124,99,230,0.22)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
+                  className="group relative inline-flex h-11 w-full items-center justify-center gap-2 overflow-hidden rounded-[12px] border border-gray-200 bg-gradient-to-r from-[#7C63E6] via-[#8F79EB] to-[#6F56E0] px-5 text-sm font-extrabold text-white shadow-[0_8px_18px_rgba(124,99,230,0.25)] transition-all duration-200 hover:-translate-y-[1px] hover:brightness-110 hover:shadow-[0_12px_24px_rgba(124,99,230,0.32)] active:translate-y-0 active:shadow-[0_7px_14px_rgba(124,99,230,0.22)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 sm:w-auto"
                 >
                   <span className="pointer-events-none absolute -left-10 top-0 h-full w-14 -skew-x-12 bg-white/25 blur-[1px] transition-all duration-300 group-hover:left-[110%]" />
                   {requestingOtp ? "Đang gửi..." : "Yêu cầu mã OTP"}
@@ -229,7 +232,7 @@ export const AccountSecuritySettings = ({
               </div>
               {otpRequestMsg ? (
                 <InlineMessage
-                  className={otpRequestMsg.startsWith("Đã") ? "text-emerald-700" : "text-red-700"}
+                  className={`mt-3 ${otpRequestMsg.startsWith("Đã") ? "text-emerald-700" : "text-red-700"}`}
                   message={otpRequestMsg}
                 />
               ) : null}
