@@ -192,7 +192,13 @@ export function NavbarGuest() {
   const nbIconBtn = "relative flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 bg-white shadow-sm transition-all duration-150 hover:shadow-soft-sm hover:-translate-y-[1px] active:shadow-none active:translate-y-0"
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-gray-200/15 bg-gray-50/95 py-2 backdrop-blur supports-[backdrop-filter]:bg-gray-50/90">
+    <nav
+      className={`sticky top-0 z-50 border-b border-gray-200/15 py-2 ${
+        isMenuOpen
+          ? "bg-gray-50"
+          : "bg-gray-50/95 backdrop-blur supports-[backdrop-filter]:bg-gray-50/90"
+      }`}
+    >
       <div className="mx-auto w-full max-w-[1240px] px-3 sm:px-4 lg:px-6">
         <div className="flex h-16 items-center justify-between gap-2 sm:gap-3 lg:gap-4">
           <div className="flex shrink-0 items-center gap-4">
@@ -547,7 +553,7 @@ export function NavbarGuest() {
             className="fixed inset-0 z-[100] bg-gray-900/40"
           />
           <div
-            className="fixed inset-y-0 left-0 z-[101] w-[280px] border-r border-gray-200 bg-gray-50 p-6 shadow-lg animate-in slide-in-from-left duration-300"
+            className="fixed inset-y-0 left-0 z-[101] w-[280px] overflow-y-auto border-r border-gray-200 bg-gray-50 p-6 shadow-lg animate-in slide-in-from-left duration-300"
           >
             <div className="flex items-center justify-between mb-8">
               <img src="https://api.builder.io/api/v1/image/assets/TEMP/b5b02bd27ae25e8fcc3a61694891ffa491402bfb?width=328" alt="VTOS Logo" className="h-8 w-auto" />
