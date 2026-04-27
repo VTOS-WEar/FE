@@ -12,6 +12,15 @@ interface StudentDetailViewProps {
 const DAYS = Array.from({ length: 31 }, (_, i) => i + 1);
 const MONTHS = Array.from({ length: 12 }, (_, i) => i + 1);
 const YEARS = Array.from({ length: 30 }, (_, i) => new Date().getFullYear() - i);
+const DEFAULT_CHILD_AVATAR =
+  "data:image/svg+xml;utf8," +
+  encodeURIComponent(
+    "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 320'>" +
+      "<rect width='240' height='320' fill='#EDE9FE'/>" +
+      "<circle cx='120' cy='112' r='48' fill='#A78BFA'/>" +
+      "<path d='M44 286c8-44 36-76 76-76s68 32 76 76' fill='#8B5CF6'/>" +
+    "</svg>",
+  );
 
 export const StudentDetailView = ({ childId, onBack }: StudentDetailViewProps): JSX.Element => {
   const navigate = useNavigate();
@@ -163,7 +172,6 @@ export const StudentDetailView = ({ childId, onBack }: StudentDetailViewProps): 
     );
   }
 
-  const initials = fullName?.split(" ").map(w => w[0]).join("").slice(-2).toUpperCase();
   const inputClass = "nb-input w-full h-11 text-sm border border-gray-200 hover:shadow-sm hover:border-purple-300 focus:shadow-sm focus:border-purple-300 transition-all duration-300";
   const selectClass = "nb-input h-11 text-sm px-3 border border-gray-200 hover:shadow-sm hover:border-purple-300 focus:shadow-sm focus:border-purple-300 transition-all duration-300";
 
@@ -184,15 +192,14 @@ export const StudentDetailView = ({ childId, onBack }: StudentDetailViewProps): 
         <div className="flex flex-col items-center gap-4 group">
           <div className="relative">
             <div className="w-60 h-80 bg-violet-50 rounded-xl flex items-center justify-center border border-gray-200 shadow-soft-md overflow-hidden hover:shadow-soft-md transition-all duration-300">
-              {student.avatarUrl ? (
-                <img
-                  src={student.avatarUrl}
-                  alt={student.fullName}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <span className="font-extrabold text-gray-900 text-5xl">{initials}</span>
-              )}
+              <img
+                src={student.avatarUrl || DEFAULT_CHILD_AVATAR}
+                alt={student.fullName}
+                className="w-full h-full object-cover"
+                onError={(event) => {
+                  event.currentTarget.src = DEFAULT_CHILD_AVATAR;
+                }}
+              />
             </div>
             <button
               type="button"
@@ -228,9 +235,9 @@ export const StudentDetailView = ({ childId, onBack }: StudentDetailViewProps): 
             <input
               id="fullName"
               type="text"
+              disabled
               value={fullName}
-              onChange={e => setFullName(e.target.value)}
-              className={inputClass}
+              className={`${inputClass} !bg-gray-100 !cursor-not-allowed opacity-70 hover:shadow-none`}
             />
           </div>
 
@@ -262,23 +269,16 @@ export const StudentDetailView = ({ childId, onBack }: StudentDetailViewProps): 
             </div>
           </div>
 
-          {/* Giới tính */}
-          <div className="flex flex-col gap-2 animate-in fade-in slide-in-from-top-4 duration-500">
-            <label className="font-bold text-gray-900 text-sm transition-colors duration-300">GIỚI TÍNH</label>
-            <div className="flex items-center gap-6">
-              {["Nam", "Nữ", "Khác"].map(g => (
-                <label key={g} className="flex items-center gap-2 cursor-pointer group/gender hover:scale-110 transition-transform duration-300 user-select-none" role="radio" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setGender(g); } }} onClick={() => setGender(g)}>
-                  <div className={`w-5 h-5 rounded-lg border-2 flex items-center justify-center transition-all duration-300 ${gender === g ? "border-gray-200 bg-purple-400 shadow-sm scale-110" : "border-gray-300 group-hover/gender:border-gray-200 group-hover/gender:shadow-sm"}`}>
-                    {gender === g && <div className="w-2 h-2 rounded-sm bg-gray-900 animate-pulse" />}
-                  </div>
-                  <span className="font-bold text-sm text-gray-900 group-hover/gender:text-purple-400 transition-colors duration-300">{g}</span>
-                </label>
-              ))}
+          {/* Giới tính + Tuổi */}
+          <div className="grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
+            {/* Giới tính */}
+            <div className="flex flex-col gap-2">
+              <label className="font-bold text-gray-900 text-sm transition-colors duration-300">GIỚI TÍNH</label>
+              <div className="inline-flex h-11 items-center rounded-xl border border-gray-200 bg-gray-100 px-4 text-sm font-bold text-gray-900">
+                {gender || "—"}
+              </div>
             </div>
-          </div>
 
-          {/* Tuổi - Row */}
-          <div className="grid grid-cols-3 gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
             {/* Tuổi (calculated) */}
             <div className="flex flex-col gap-2">
               <label htmlFor="age" className="font-bold text-gray-900 text-sm transition-colors duration-300">TUỔI</label>
@@ -290,7 +290,10 @@ export const StudentDetailView = ({ childId, onBack }: StudentDetailViewProps): 
                 className={`${inputClass} !bg-gray-100 !cursor-not-allowed opacity-70 hover:shadow-none`}
               />
             </div>
+          </div>
 
+          {/* Chiều cao + Cân nặng */}
+          <div className="grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
             {/* Chiều cao */}
             <div className="flex flex-col gap-2">
               <label htmlFor="height" className="font-bold text-gray-900 text-sm transition-colors duration-300">CHIỀU CAO (cm)</label>
@@ -341,42 +344,45 @@ export const StudentDetailView = ({ childId, onBack }: StudentDetailViewProps): 
           </div>
 
           {/* Save Button */}
-          <div className="flex items-center gap-4 pt-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <button
-              onClick={() => navigate(`/children/${childId}/scan`)}
-              disabled={saving || uploadingAvatar}
-              className="nb-btn nb-btn-outline text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-            >
-              <ScanLine className="w-4 h-4" />
-              Quét số đo với Bodygram
-            </button>
-            <button
-              onClick={() => {
-                localStorage.setItem("selectedStudentId", childId);
-                navigate("/parentprofile/bodygram-history");
-              }}
-              disabled={saving || uploadingAvatar}
-              className="nb-btn nb-btn-outline text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-            >
-              <ScanLine className="w-4 h-4" />
-              Xem lịch sử quét Bodygram
-            </button>
-            <button
-              onClick={handleSave}
-              disabled={saving}
-              className="nb-btn nb-btn-purple text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 hover:shadow-sm hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all duration-300 active:translate-x-0 active:translate-y-0 active:shadow-none"
-            >
-              {saving ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Đang lưu...
-                </>
-              ) : (
-                "Lưu thay đổi ✦"
-              )}
-            </button>
+          <div className="space-y-3 pt-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+              <button
+                onClick={() => navigate(`/children/${childId}/scan`)}
+                disabled={saving || uploadingAvatar}
+                className="nb-btn nb-btn-outline h-12 w-full text-sm disabled:cursor-not-allowed disabled:opacity-50 flex items-center gap-2"
+              >
+                <ScanLine className="w-4 h-4" />
+                Quét số đo với Bodygram
+              </button>
+              <button
+                onClick={() => {
+                  localStorage.setItem("selectedStudentId", childId);
+                  navigate("/parentprofile/bodygram-history");
+                }}
+                disabled={saving || uploadingAvatar}
+                className="nb-btn nb-btn-outline h-12 w-full text-sm disabled:cursor-not-allowed disabled:opacity-50 flex items-center gap-2"
+              >
+                <ScanLine className="w-4 h-4" />
+                Xem lịch sử quét Bodygram
+              </button>
+              <button
+                onClick={handleSave}
+                disabled={saving}
+                className="group relative inline-flex h-12 w-full items-center justify-center gap-2 overflow-hidden rounded-[14px] border border-gray-200 bg-gradient-to-r from-[#7C63E6] via-[#8F79EB] to-[#6F56E0] px-6 text-sm font-extrabold text-white shadow-[0_10px_22px_rgba(124,99,230,0.28)] transition-all duration-200 hover:-translate-y-[2px] hover:brightness-110 hover:shadow-[0_14px_28px_rgba(124,99,230,0.35)] active:translate-y-0 active:shadow-[0_8px_18px_rgba(124,99,230,0.25)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
+              >
+                <span className="pointer-events-none absolute -left-10 top-0 h-full w-14 -skew-x-12 bg-white/25 blur-[1px] transition-all duration-300 group-hover:left-[110%]" />
+                {saving ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Đang lưu...
+                  </>
+                ) : (
+                  <span className="relative">Lưu thay đổi ✦</span>
+                )}
+              </button>
+            </div>
             {message && (
-              <span className={`font-bold text-sm animate-in fade-in duration-300 ${message.startsWith("✓") ? "text-emerald-800" : "text-red-800"}`}>
+              <span className={`block font-bold text-sm animate-in fade-in duration-300 ${message.startsWith("✓") ? "text-emerald-800" : "text-red-800"}`}>
                 {message}
               </span>
             )}

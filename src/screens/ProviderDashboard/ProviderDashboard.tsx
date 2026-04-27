@@ -36,7 +36,6 @@ import {
 type DashboardData = {
     profile: ProviderProfileDto | null;
     stats: ProviderOrderStatsDto | null;
-    contractsCount: number;
     contractsWaitingOnProvider: number;
     activeContracts: number;
     openComplaints: number;
@@ -46,13 +45,12 @@ type DashboardData = {
 function MetricCard({
     label,
     value,
-    note,
     icon,
     tone,
 }: {
     label: string;
     value: string | number;
-    note: string;
+    note?: string;
     icon: React.ReactNode;
     tone: string;
 }) {
@@ -60,9 +58,8 @@ function MetricCard({
         <div className="rounded-[22px] border border-gray-200 bg-white p-5 shadow-soft-sm">
             <div className="flex items-start justify-between gap-4">
                 <div>
-                    <p className="text-[11px] font-black uppercase tracking-[0.18em] text-gray-400">{label}</p>
-                    <p className="mt-2 text-3xl font-black text-gray-900">{value}</p>
-                    <p className="mt-2 text-sm font-semibold text-gray-500">{note}</p>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-gray-400">{label}</p>
+                    <p className="mt-2 text-3xl font-bold text-gray-900">{value}</p>
                 </div>
                 <div className={`flex h-11 w-11 items-center justify-center rounded-2xl border border-white/60 ${tone}`}>
                     {icon}
@@ -74,14 +71,13 @@ function MetricCard({
 
 function ActionCard({
     title,
-    description,
     href,
     badge,
     icon,
     tone,
 }: {
     title: string;
-    description: string;
+    description?: string;
     href: string;
     badge?: string;
     icon: React.ReactNode;
@@ -98,15 +94,14 @@ function ActionCard({
                         {icon}
                     </div>
                     {badge ? (
-                        <span className="inline-flex items-center rounded-full border border-violet-200 bg-violet-50 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-violet-700">
+                        <span className="inline-flex items-center rounded-full border border-violet-200 bg-violet-50 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-violet-700">
                             {badge}
                         </span>
                     ) : null}
                 </div>
-                <h3 className="mt-5 text-lg font-black text-gray-900">{title}</h3>
-                <p className="mt-2 text-sm font-medium leading-6 text-gray-500">{description}</p>
+                <h3 className="mt-5 text-lg font-bold text-gray-900">{title}</h3>
             </div>
-            <div className="mt-6 inline-flex items-center gap-2 text-sm font-black text-violet-700">
+            <div className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-violet-700">
                 Mở khu vực này
                 <ArrowRight className="h-4 w-4" />
             </div>
@@ -134,7 +129,6 @@ export const ProviderDashboard = (): JSX.Element => {
     const [data, setData] = useState<DashboardData>({
         profile: null,
         stats: null,
-        contractsCount: 0,
         contractsWaitingOnProvider: 0,
         activeContracts: 0,
         openComplaints: 0,
@@ -170,7 +164,6 @@ export const ProviderDashboard = (): JSX.Element => {
             setData({
                 profile,
                 stats,
-                contractsCount: contracts.length,
                 contractsWaitingOnProvider,
                 activeContracts,
                 openComplaints,
@@ -202,28 +195,24 @@ export const ProviderDashboard = (): JSX.Element => {
             {
                 label: "Chờ tiếp nhận",
                 value: data.stats?.paidOrders ?? 0,
-                note: "Đơn đã thanh toán cần bạn xác nhận xử lý.",
                 tone: "bg-amber-50 text-amber-600",
                 icon: <ClipboardList className="h-5 w-5" />,
             },
             {
                 label: "Đang sản xuất",
                 value: data.stats?.inProgressOrders ?? 0,
-                note: "Các đơn đang trong công đoạn chuẩn bị hoặc hoàn thiện.",
                 tone: "bg-violet-50 text-violet-600",
                 icon: <Package className="h-5 w-5" />,
             },
             {
                 label: "Hợp đồng cần xử lý",
                 value: data.contractsWaitingOnProvider,
-                note: "Bao gồm hợp đồng chờ duyệt giá hoặc chờ ký phía bạn.",
                 tone: "bg-blue-50 text-blue-600",
                 icon: <FileText className="h-5 w-5" />,
             },
             {
                 label: "Khiếu nại mở",
                 value: data.openComplaints + data.inProgressComplaints,
-                note: "Các vấn đề cần phản hồi hoặc tiếp tục xử lý.",
                 tone: "bg-rose-50 text-rose-600",
                 icon: <AlertTriangle className="h-5 w-5" />,
             },
@@ -234,7 +223,6 @@ export const ProviderDashboard = (): JSX.Element => {
     const actionCards = [
         {
             title: "Đi tới hàng chờ sản xuất",
-            description: "Ưu tiên các đơn đã thanh toán và chuyển nhanh sang trạng thái sản xuất.",
             href: "/provider/orders",
             badge: data.stats?.paidOrders ? `${data.stats.paidOrders} đơn chờ` : undefined,
             tone: "bg-amber-50 text-amber-600 border border-amber-100",
@@ -242,7 +230,6 @@ export const ProviderDashboard = (): JSX.Element => {
         },
         {
             title: "Kiểm tra hợp đồng với trường",
-            description: "Xem các hợp đồng đang chờ duyệt giá, ký số hoặc đang có hiệu lực.",
             href: "/provider/contracts",
             badge: data.contractsWaitingOnProvider ? `${data.contractsWaitingOnProvider} việc cần làm` : undefined,
             tone: "bg-blue-50 text-blue-600 border border-blue-100",
@@ -250,14 +237,12 @@ export const ProviderDashboard = (): JSX.Element => {
         },
         {
             title: "Theo dõi dòng tiền",
-            description: "Xem số dư ví, lịch sử tiền về và rà soát các mốc thanh toán gần đây.",
             href: "/provider/wallet",
             tone: "bg-emerald-50 text-emerald-600 border border-emerald-100",
             icon: <Wallet className="h-5 w-5" />,
         },
         {
             title: "Cập nhật hồ sơ vận hành",
-            description: "Bổ sung thông tin doanh nghiệp và đảm bảo tài khoản luôn sẵn sàng giao dịch.",
             href: "/provider/profile",
             tone: "bg-violet-50 text-violet-600 border border-violet-100",
             icon: <Building2 className="h-5 w-5" />,
@@ -298,30 +283,27 @@ export const ProviderDashboard = (): JSX.Element => {
                         <section className="overflow-hidden rounded-[24px] border border-slate-900/70 bg-slate-950 px-6 py-6 text-white shadow-soft-sm lg:px-8">
                             <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
                                 <div className="max-w-3xl">
-                                    <span className="inline-flex items-center rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-white">
+                                    <span className="inline-flex items-center rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">
                                         Vận hành nhà cung cấp
                                     </span>
-                                    <h1 className="mt-4 text-3xl font-black leading-tight text-white sm:text-4xl">
+                                    <h1 className="mt-4 text-3xl font-bold leading-tight text-white sm:text-4xl">
                                         {providerName || "Nhà cung cấp"} đang vận hành {data.stats?.totalOrders ?? 0} đơn hàng trong hệ thống.
                                     </h1>
-                                    <p className="mt-3 max-w-2xl text-sm font-medium leading-7 text-slate-100 sm:text-base">
-                                        Ưu tiên ba việc chính: chốt hợp đồng với trường, đưa đơn hàng qua các bước sản xuất và theo dõi dòng tiền để không chậm xử lý.
-                                    </p>
                                 </div>
-                                <div className="grid gap-3 sm:grid-cols-3 lg:w-[440px]">
+                                <div className="provider-hero-metrics grid gap-3">
                                     <div className="rounded-[22px] border border-white/10 bg-white/8 p-4">
-                                        <p className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-300">Doanh thu</p>
-                                        <p className="mt-2 text-2xl font-black text-white">
-                                            {(data.stats?.totalRevenue ?? 0).toLocaleString("vi-VN")} ₫
+                                        <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-300">Doanh thu</p>
+                                        <p className="mt-2 text-2xl font-bold text-white">
+                                            {(data.stats?.totalRevenue ?? 0).toLocaleString("vi-VN")}
                                         </p>
                                     </div>
                                     <div className="rounded-[22px] border border-white/10 bg-white/8 p-4">
-                                        <p className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-300">Hợp đồng hiệu lực</p>
-                                        <p className="mt-2 text-2xl font-black text-white">{data.activeContracts}</p>
+                                        <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-300">Hợp đồng hiệu lực</p>
+                                        <p className="mt-2 text-2xl font-bold text-white">{data.activeContracts}</p>
                                     </div>
                                     <div className="rounded-[22px] border border-white/10 bg-white/8 p-4">
-                                        <p className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-300">Hồ sơ</p>
-                                        <p className="mt-2 text-2xl font-black text-white">{formatStatus(data.profile?.status)}</p>
+                                        <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-300">Hồ sơ</p>
+                                        <p className="mt-2 text-2xl font-bold text-white">{formatStatus(data.profile?.status)}</p>
                                     </div>
                                 </div>
                             </div>
@@ -345,12 +327,12 @@ export const ProviderDashboard = (): JSX.Element => {
                             <div className="rounded-[24px] border border-gray-200 bg-white p-6 shadow-soft-sm">
                                 <div className="flex items-center justify-between gap-4">
                                     <div>
-                                        <p className="text-[11px] font-black uppercase tracking-[0.18em] text-gray-400">Việc ưu tiên</p>
-                                        <h2 className="mt-2 text-2xl font-black text-gray-900">Bảng điều phối hôm nay</h2>
+                                        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-gray-400">Việc ưu tiên</p>
+                                        <h2 className="mt-2 text-2xl font-bold text-gray-900">Bảng điều phối hôm nay</h2>
                                     </div>
                                     <Link
                                         to="/provider/orders"
-                                        className="inline-flex items-center gap-2 rounded-full border border-gray-200 px-4 py-2 text-sm font-black text-gray-700 transition-all hover:border-violet-200 hover:text-violet-700"
+                                        className="inline-flex items-center gap-2 rounded-full border border-gray-200 px-4 py-2 text-sm font-bold text-gray-700 transition-all hover:border-violet-200 hover:text-violet-700"
                                     >
                                         Xem tất cả đơn
                                         <ChevronRight className="h-4 w-4" />
@@ -365,8 +347,8 @@ export const ProviderDashboard = (): JSX.Element => {
                             </div>
 
                             <div className="rounded-[24px] border border-gray-200 bg-white p-6 shadow-soft-sm">
-                                <p className="text-[11px] font-black uppercase tracking-[0.18em] text-gray-400">Trạng thái vận hành</p>
-                                <h2 className="mt-2 text-2xl font-black text-gray-900">Sẵn sàng giao dịch</h2>
+                                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-gray-400">Trạng thái vận hành</p>
+                                <h2 className="mt-2 text-2xl font-bold text-gray-900">Sẵn sàng giao dịch</h2>
 
                                 <div className="mt-6 space-y-4">
                                     <div className="rounded-[22px] border border-emerald-100 bg-emerald-50/70 p-4">
@@ -375,10 +357,7 @@ export const ProviderDashboard = (): JSX.Element => {
                                                 <CheckCircle2 className="h-5 w-5" />
                                             </div>
                                             <div>
-                                                <h3 className="text-base font-black text-emerald-900">Luồng đơn hàng đang mở</h3>
-                                                <p className="mt-1 text-sm font-medium leading-6 text-emerald-900/80">
-                                                    {data.stats?.paidOrders ?? 0} đơn đang chờ tiếp nhận và {data.stats?.inProgressOrders ?? 0} đơn đang trong quá trình sản xuất.
-                                                </p>
+                                                <h3 className="text-base font-bold text-emerald-900">Luồng đơn hàng đang mở</h3>
                                             </div>
                                         </div>
                                     </div>
@@ -389,10 +368,7 @@ export const ProviderDashboard = (): JSX.Element => {
                                                 <ShieldCheck className="h-5 w-5" />
                                             </div>
                                             <div>
-                                                <h3 className="text-base font-black text-blue-900">Hồ sơ và hợp đồng</h3>
-                                                <p className="mt-1 text-sm font-medium leading-6 text-blue-900/80">
-                                                    {data.contractsCount} hợp đồng đã vào hệ thống. Hồ sơ hiện ở trạng thái {formatStatus(data.profile?.status).toLowerCase()}.
-                                                </p>
+                                                <h3 className="text-base font-bold text-blue-900">Hồ sơ và hợp đồng</h3>
                                             </div>
                                         </div>
                                     </div>
@@ -403,12 +379,7 @@ export const ProviderDashboard = (): JSX.Element => {
                                                 <AlertTriangle className="h-5 w-5" />
                                             </div>
                                             <div>
-                                                <h3 className="text-base font-black text-amber-900">Điểm cần theo dõi</h3>
-                                                <p className="mt-1 text-sm font-medium leading-6 text-amber-900/80">
-                                                    {data.openComplaints + data.inProgressComplaints > 0
-                                                        ? `${data.openComplaints + data.inProgressComplaints} khiếu nại đang mở hoặc đang xử lý cần rà soát thêm.`
-                                                        : "Chưa có khiếu nại nào đang mở. Bạn có thể tập trung vào hợp đồng và tiến độ sản xuất."}
-                                                </p>
+                                                <h3 className="text-base font-bold text-amber-900">Điểm cần theo dõi</h3>
                                             </div>
                                         </div>
                                     </div>

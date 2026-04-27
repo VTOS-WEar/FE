@@ -1,5 +1,5 @@
-import { type ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
-import { Camera, Mail, Phone, UserRound } from "lucide-react";
+import { type ChangeEvent, useEffect, useRef, useState } from "react";
+import { CalendarDays, Camera, Mail, Phone, Save } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { getParentProfile, updateParentAvatar, updateParentProfile } from "../../../lib/api/users";
 
@@ -7,6 +7,15 @@ const DAYS = Array.from({ length: 31 }, (_, index) => index + 1);
 const MONTHS = Array.from({ length: 12 }, (_, index) => index + 1);
 const CURRENT_YEAR = new Date().getFullYear();
 const YEARS = Array.from({ length: 80 }, (_, index) => CURRENT_YEAR - index);
+const DEFAULT_PARENT_AVATAR =
+  "data:image/svg+xml;utf8," +
+  encodeURIComponent(
+    "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 320'>" +
+      "<rect width='240' height='320' fill='#EDE9FE'/>" +
+      "<circle cx='120' cy='112' r='48' fill='#A78BFA'/>" +
+      "<path d='M44 286c8-44 36-76 76-76s68 32 76 76' fill='#8B5CF6'/>" +
+    "</svg>",
+  );
 
 interface UserInfo {
   userId: string;
@@ -42,6 +51,7 @@ export const AccountTab = (): JSX.Element => {
   const [avatarSaving, setAvatarSaving] = useState(false);
   const [avatarMsg, setAvatarMsg] = useState("");
   const avatarInputRef = useRef<HTMLInputElement>(null);
+  const dobPickerRef = useRef<HTMLInputElement>(null);
 
   const getStorage = () => (localStorage.getItem("access_token") ? localStorage : sessionStorage);
 
@@ -210,16 +220,6 @@ export const AccountTab = (): JSX.Element => {
     }
   };
 
-  const initials = useMemo(() => {
-    if (!fullName.trim()) return "PH";
-    return fullName
-      .split(" ")
-      .map((word) => word[0])
-      .join("")
-      .slice(-2)
-      .toUpperCase();
-  }, [fullName]);
-
   if (!user) return <div />;
 
   if (profileLoading) {
@@ -260,37 +260,8 @@ export const AccountTab = (): JSX.Element => {
     "h-12 w-full rounded-[16px] border border-gray-200 bg-white px-4 text-sm font-semibold text-gray-900 outline-none transition-all focus:border-violet-300 focus:ring-4 focus:ring-violet-100";
 
   return (
-    <div className="space-y-6">
-      <section className="rounded-[28px] border border-gray-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fafc_100%)] p-6 shadow-soft-sm lg:p-7">
-        <div className="flex items-center gap-4">
-          <div className="relative">
-            <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-[24px] border border-gray-200 bg-violet-50 shadow-soft-sm">
-              {user.avatar ? (
-                <img src={user.avatar} alt="" className="h-full w-full object-cover" />
-              ) : (
-                <span className="text-3xl font-black text-violet-700">{initials}</span>
-              )}
-            </div>
-            <button
-              type="button"
-              onClick={() => avatarInputRef.current?.click()}
-              disabled={avatarSaving}
-              className="absolute -bottom-2 -right-2 flex h-10 w-10 items-center justify-center rounded-[14px] border border-gray-200 bg-emerald-300 text-gray-900 shadow-soft-sm transition-all hover:-translate-y-0.5 disabled:opacity-60"
-            >
-              <Camera className="h-4.5 w-4.5" />
-            </button>
-            <input ref={avatarInputRef} type="file" accept="image/*" onChange={handleAvatarChange} className="hidden" />
-          </div>
-
-          <div className="min-w-0">
-            <p className="text-[11px] font-black uppercase tracking-[0.16em] text-slate-400">Hồ sơ phụ huynh</p>
-            <h1 className="mt-1 text-2xl font-black text-gray-900">{fullName || "Phụ huynh"}</h1>
-            {avatarMsg ? <p className="mt-3 text-sm font-bold text-slate-700">{avatarMsg}</p> : null}
-          </div>
-        </div>
-      </section>
-
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
+    <div className="space-y-5">
+      <div className="space-y-5">
         <section className="rounded-[28px] border border-gray-200 bg-white p-6 shadow-soft-sm lg:p-7">
           <div className="flex items-start justify-between gap-4">
             <div>
@@ -299,7 +270,30 @@ export const AccountTab = (): JSX.Element => {
             </div>
           </div>
 
-          <div className="mt-6 grid gap-5">
+          <div className="mt-5 grid items-stretch gap-5 lg:grid-cols-[220px_minmax(0,1fr)]">
+            <div className="rounded-[16px] border border-gray-200 bg-slate-50 p-3">
+              <div className="relative h-full min-h-[280px] overflow-hidden rounded-[12px] border border-gray-200 bg-violet-50">
+                <img
+                  src={user.avatar || DEFAULT_PARENT_AVATAR}
+                  alt={user.fullName || "Parent avatar"}
+                  className="h-full w-full object-cover"
+                  onError={(event) => {
+                    event.currentTarget.src = DEFAULT_PARENT_AVATAR;
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={() => avatarInputRef.current?.click()}
+                  disabled={avatarSaving}
+                  className="absolute bottom-2 right-2 flex h-8 w-8 items-center justify-center rounded-[10px] border border-gray-200 bg-emerald-300 text-gray-900 shadow-soft-sm transition-all hover:-translate-y-0.5 disabled:opacity-60"
+                >
+                  <Camera className="h-3.5 w-3.5" />
+                </button>
+                <input ref={avatarInputRef} type="file" accept="image/*" onChange={handleAvatarChange} className="hidden" />
+              </div>
+            </div>
+
+            <div className="grid gap-4 max-w-[780px]">
             <div className="grid gap-2">
               <label className="text-sm font-bold text-slate-600">Họ và tên</label>
               <input type="text" value={fullName} onChange={(event) => setFullName(event.target.value)} className={inputClass} />
@@ -307,29 +301,76 @@ export const AccountTab = (): JSX.Element => {
 
             <div className="grid gap-2">
               <label className="text-sm font-bold text-slate-600">Ngày sinh</label>
-              <div className="grid gap-3 sm:grid-cols-3">
-                <select value={dobDay} onChange={(event) => setDobDay(Number(event.target.value))} className={inputClass}>
-                  {DAYS.map((value) => (
-                    <option key={value} value={value}>
-                      Ngày {value}
-                    </option>
-                  ))}
-                </select>
-                <select value={dobMonth} onChange={(event) => setDobMonth(Number(event.target.value))} className={inputClass}>
-                  {MONTHS.map((value) => (
-                    <option key={value} value={value}>
-                      Tháng {value}
-                    </option>
-                  ))}
-                </select>
-                <select value={dobYear} onChange={(event) => setDobYear(Number(event.target.value))} className={inputClass}>
-                  {YEARS.map((value) => (
-                    <option key={value} value={value}>
-                      Năm {value}
-                    </option>
-                  ))}
-                </select>
+              <div className="grid gap-3 sm:grid-cols-[1fr_1fr_1fr_auto]">
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  value={dobDay}
+                  onChange={(event) => {
+                    const next = Number(event.target.value.replace(/[^\d]/g, ""));
+                    if (Number.isNaN(next)) return;
+                    setDobDay(Math.min(31, Math.max(1, next)));
+                  }}
+                  className={inputClass}
+                  placeholder="Ngày"
+                />
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  value={dobMonth}
+                  onChange={(event) => {
+                    const next = Number(event.target.value.replace(/[^\d]/g, ""));
+                    if (Number.isNaN(next)) return;
+                    setDobMonth(Math.min(12, Math.max(1, next)));
+                  }}
+                  className={inputClass}
+                  placeholder="Tháng"
+                />
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  value={dobYear}
+                  onChange={(event) => {
+                    const next = Number(event.target.value.replace(/[^\d]/g, ""));
+                    if (Number.isNaN(next)) return;
+                    setDobYear(Math.min(CURRENT_YEAR, Math.max(CURRENT_YEAR - 80, next)));
+                  }}
+                  className={inputClass}
+                  placeholder="Năm"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    const picker = dobPickerRef.current as (HTMLInputElement & { showPicker?: () => void }) | null;
+                    if (!picker) return;
+                    if (picker.showPicker) picker.showPicker();
+                    else picker.click();
+                  }}
+                  className="inline-flex h-12 w-12 items-center justify-center rounded-[16px] border border-gray-200 bg-slate-50 text-slate-600 transition-all hover:bg-white"
+                  aria-label="Chọn ngày sinh"
+                  title="Chọn ngày sinh"
+                >
+                  <CalendarDays className="h-5 w-5" />
+                </button>
               </div>
+              <input
+                ref={dobPickerRef}
+                type="date"
+                value={`${dobYear}-${String(dobMonth).padStart(2, "0")}-${String(dobDay).padStart(2, "0")}`}
+                min={`${CURRENT_YEAR - 80}-01-01`}
+                max={`${CURRENT_YEAR}-12-31`}
+                onChange={(event) => {
+                  if (!event.target.value) return;
+                  const parsed = new Date(event.target.value);
+                  if (Number.isNaN(parsed.getTime())) return;
+                  setDobDay(parsed.getDate());
+                  setDobMonth(parsed.getMonth() + 1);
+                  setDobYear(parsed.getFullYear());
+                }}
+                className="sr-only"
+                tabIndex={-1}
+                aria-hidden="true"
+              />
             </div>
 
             <div className="grid gap-2">
@@ -357,14 +398,21 @@ export const AccountTab = (): JSX.Element => {
                 type="button"
                 onClick={handleSaveProfile}
                 disabled={saving}
-                className="inline-flex items-center gap-2 rounded-[16px] border border-gray-200 bg-violet-500 px-5 py-3 text-sm font-extrabold text-white shadow-soft-sm transition-all hover:-translate-y-0.5 disabled:opacity-60"
+                className="group relative inline-flex h-12 items-center justify-center gap-2 overflow-hidden rounded-[14px] border border-gray-200 bg-gradient-to-r from-[#7C63E6] via-[#8F79EB] to-[#6F56E0] px-6 text-sm font-extrabold text-white shadow-[0_10px_22px_rgba(124,99,230,0.28)] transition-all duration-200 hover:-translate-y-[2px] hover:brightness-110 hover:shadow-[0_14px_28px_rgba(124,99,230,0.35)] active:translate-y-0 active:shadow-[0_8px_18px_rgba(124,99,230,0.25)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
               >
-                <UserRound className="h-4.5 w-4.5" />
+                <span className="pointer-events-none absolute -left-10 top-0 h-full w-14 -skew-x-12 bg-white/25 blur-[1px] transition-all duration-300 group-hover:left-[110%]" />
+                <Save className="relative h-4.5 w-4.5" />
                 {saving ? "Đang lưu..." : "Lưu hồ sơ"}
               </button>
               {saveMsg ? <span className="text-sm font-bold text-slate-600">{saveMsg}</span> : null}
             </div>
+            </div>
           </div>
+          {avatarMsg ? (
+            <div className="mt-3 inline-flex rounded-[12px] border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-700">
+              {avatarMsg}
+            </div>
+          ) : null}
         </section>
 
         <section className="rounded-[28px] border border-gray-200 bg-white p-6 shadow-soft-sm">
@@ -373,8 +421,8 @@ export const AccountTab = (): JSX.Element => {
             <h2 className="mt-2 text-2xl font-black text-gray-900">Thông tin liên hệ</h2>
           </div>
 
-          <div className="mt-6 space-y-5">
-            <div className="rounded-[22px] border border-gray-200 bg-slate-50 p-5">
+          <div className="mt-5 grid gap-4 lg:grid-cols-2">
+            <div className="rounded-[22px] border border-gray-200 bg-slate-50 p-4 sm:p-5">
               <div className="flex items-center gap-3">
                 <div className="rounded-[16px] border border-gray-200 bg-white p-3 text-violet-700">
                   <Mail className="h-5 w-5" />
@@ -385,7 +433,7 @@ export const AccountTab = (): JSX.Element => {
                 </div>
               </div>
 
-              <div className="mt-5 grid gap-3">
+              <div className="mt-4 grid gap-3">
                 <input type="email" value={email} onChange={(event) => setEmail(event.target.value)} className={inputClass} />
                 <div className="flex flex-wrap items-center gap-3">
                   <button
@@ -401,7 +449,7 @@ export const AccountTab = (): JSX.Element => {
               </div>
             </div>
 
-            <div className="rounded-[22px] border border-gray-200 bg-slate-50 p-5">
+            <div className="rounded-[22px] border border-gray-200 bg-slate-50 p-4 sm:p-5">
               <div className="flex items-center gap-3">
                 <div className="rounded-[16px] border border-gray-200 bg-white p-3 text-emerald-700">
                   <Phone className="h-5 w-5" />
@@ -412,7 +460,7 @@ export const AccountTab = (): JSX.Element => {
                 </div>
               </div>
 
-              <div className="mt-5 grid gap-3">
+              <div className="mt-4 grid gap-3">
                 <input
                   type="tel"
                   value={phone}

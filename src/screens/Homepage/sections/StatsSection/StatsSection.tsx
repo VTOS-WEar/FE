@@ -35,8 +35,12 @@ export const StatsSection = (): JSX.Element => {
                   <Icon className="nb-icon-wiggle h-6 w-6 text-gray-900" strokeWidth={2.5} />
                 </div>
 
-                <div className="nb-stat-value">{stat.value}</div>
-                <div className="nb-stat-label mt-1">{stat.label}</div>
+                <div className="nb-stat-value text-[clamp(2rem,3.2vw,2.4rem)] font-black leading-tight text-gray-900">
+                  {stat.value}
+                </div>
+                <div className="nb-stat-label mt-1 text-xs font-semibold uppercase tracking-[0.08em] text-gray-500">
+                  {stat.label}
+                </div>
               </div>
             );
           })}

@@ -694,7 +694,7 @@ export const OutfitDetail = (): JSX.Element => {
             >
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <Badge className="bg-gray-900 text-white border-none px-2.5 py-0.5 font-black text-[9px] uppercase rounded-md shadow-sm">Verified</Badge>
+                  <Badge className="bg-emerald-600 text-white border-none px-2.5 py-0.5 font-black text-[9px] uppercase rounded-md shadow-sm">Verified</Badge>
                   <span className="text-[11px] font-bold text-gray-400 tracking-widest uppercase">SKU: {selectedVariant?.skuCode || 'OFF-DEF'}</span>
                 </div>
                 <h1
@@ -819,15 +819,23 @@ export const OutfitDetail = (): JSX.Element => {
                 {/* Quantity & Action */}
                 <div className="space-y-2">
                   <h4 className="text-[9px] font-black text-gray-900 uppercase tracking-widest">Số lượng</h4>
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2.5">
                     <div className="flex items-center bg-gray-50 rounded-md p-0.5 border-[1px] border-gray-200 shadow-sm">
                       <button onClick={() => setQuantity(q => Math.max(1, q - 1))} className="w-5 h-5 rounded-sm bg-white border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-all text-gray-900"><Minus className="w-2.5 h-2.5" /></button>
                       <span className="w-7 text-center font-black text-[11px]">{quantity}</span>
                       <button onClick={() => setQuantity(q => q + 1)} className="w-5 h-5 rounded-sm bg-white border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-all text-gray-900"><Plus className="w-2.5 h-2.5" /></button>
                     </div>
                     {selectedVariant && (
-                      <p className={`text-[8px] font-black uppercase tracking-tighter ${selectedVariant.stockQuantity < 10 ? 'text-amber-600' : 'text-emerald-600'}`}>
-                        {selectedVariant.stockQuantity > 0 ? `CÒN: ${selectedVariant.stockQuantity}` : "HẾT HÀNG"}
+                      <p
+                        className={`inline-flex h-6 min-w-[94px] items-center justify-center rounded-md px-2 text-[11px] font-extrabold leading-none ${
+                          selectedVariant.stockQuantity < 10
+                            ? "bg-amber-50 text-amber-700"
+                            : "bg-emerald-50 text-emerald-700"
+                        }`}
+                      >
+                        {selectedVariant.stockQuantity > 0
+                          ? `Còn: ${selectedVariant.stockQuantity}`
+                          : "Hết hàng"}
                       </p>
                     )}
                   </div>

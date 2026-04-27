@@ -306,16 +306,18 @@ export const Cart = (): JSX.Element => {
   if (allItems.length === 0 && !checkingOut) {
     return (
       <GuestLayout bgColor="#f9fafb" mainClassName="flex-1">
-        <div className="mx-auto max-w-[1200px] px-4 py-16 text-center lg:px-8">
-          <ShoppingCart className="mx-auto mb-4 h-16 w-16 text-gray-300" />
-          <h1 className="mb-2 font-montserrat text-2xl font-extrabold text-black">Giỏ hàng trống</h1>
-          <p className="mb-6 font-montserrat text-sm text-gray-400">Bạn chưa thêm sản phẩm nào vào giỏ hàng.</p>
-          <button
-            onClick={() => navigate("/schools")}
-            className="rounded-xl bg-purple-600 px-6 py-3 font-montserrat text-sm font-semibold text-white transition-colors hover:bg-purple-700"
-          >
-            Khám phá đồng phục
-          </button>
+        <div className="mx-auto flex min-h-screen max-w-[1200px] items-center justify-center px-4 py-12 text-center lg:px-8">
+          <div>
+            <ShoppingCart className="mx-auto mb-4 h-16 w-16 text-gray-300" />
+            <h1 className="mb-2 font-montserrat text-2xl font-extrabold text-black">Giỏ hàng trống</h1>
+            <p className="mb-6 font-montserrat text-sm text-gray-400">Bạn chưa thêm sản phẩm nào vào giỏ hàng.</p>
+            <button
+              onClick={() => navigate("/schools")}
+              className="rounded-xl bg-purple-600 px-6 py-3 font-montserrat text-sm font-semibold text-white transition-colors hover:bg-purple-700"
+            >
+              Khám phá đồng phục
+            </button>
+          </div>
         </div>
       </GuestLayout>
     );

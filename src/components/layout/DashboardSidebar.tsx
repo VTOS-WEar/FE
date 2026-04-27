@@ -1,4 +1,4 @@
-import { ChevronLeftIcon, ChevronRightIcon, LogOut, School, Building2 } from "lucide-react";
+import { ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, LogOut, School, Building2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useMemo } from "react";
 
@@ -8,6 +8,8 @@ export interface NavItem {
     active?: boolean;
     badge?: string;
     href?: string;
+    activeWhen?: (pathname: string) => boolean;
+    children?: NavItem[];
 }
 
 export interface NavSection {
@@ -63,6 +65,82 @@ export const DashboardSidebar = ({
         <Icon className={`w-[18px] h-[18px] flex-shrink-0 ${active ? "text-white" : "text-gray-400"}`} strokeWidth={1.75} />
     );
 
+    const renderNavItem = (item: NavItem, key: string, depth = 0, topLevel = false) => {
+        const hasChildren = Boolean(item.children?.length);
+        const active = Boolean(item.active || item.children?.some((child) => child.active));
+        const childExpanded = hasChildren && (active || topLevel);
+        const handleClick = () => {
+            if (item.href) {
+                navigate(item.href);
+                return;
+            }
+            const firstChildHref = item.children?.find((child) => child.href)?.href;
+            if (firstChildHref) navigate(firstChildHref);
+        };
+
+        if (depth > 0) {
+            return (
+                <div key={key} className="relative group">
+                    <button
+                        onClick={handleClick}
+                        className={`w-full flex items-center ${isCollapsed ? "justify-center px-0" : "gap-2 px-3"} py-[6px] rounded-md text-[13px] transition-all duration-150
+                            ${active
+                                ? "text-white font-bold"
+                                : "text-[#D1D5DB] font-medium hover:bg-white/8 hover:text-white"
+                            } ${item.href || hasChildren ? "cursor-pointer" : ""}`}
+                    >
+                        <span className={`h-1.5 w-1.5 rotate-45 rounded-[1px] border ${active ? "border-[#93C5FD] bg-[#93C5FD]" : "border-[#7D8398]"}`} />
+                        {!isCollapsed && <span className="flex-1 text-left">{item.label}</span>}
+                        {!isCollapsed && item.badge ? (
+                            <span className="min-w-[20px] h-5 flex items-center justify-center bg-[#FECACA] text-[#DC2626] rounded-full px-1.5 text-[10px] font-bold border border-[#DC2626]">{item.badge}</span>
+                        ) : null}
+                    </button>
+                    {isCollapsed && <span className="nb-tooltip">{item.label}</span>}
+                    {!isCollapsed && childExpanded && hasChildren ? (
+                        <div className="ml-4 mt-1 flex flex-col gap-[2px] border-l border-white/10 pl-2">
+                            {item.children!.map((child, index) => renderNavItem(child, `${key}-${index}`, depth + 1))}
+                        </div>
+                    ) : null}
+                </div>
+            );
+        }
+
+        return (
+            <div key={key} className="relative group">
+                <button
+                    onClick={handleClick}
+                    className={`w-full flex items-center ${isCollapsed ? "justify-center px-0" : "gap-2.5 px-2.5"} py-[7px] rounded-md text-[13px] transition-all duration-150
+                        ${active
+                            ? "bg-gradient-to-r from-[#B8A9E8]/35 to-[#A996E2]/10 text-white font-bold border border-[#C4B5FD]/70 shadow-[0_0_0_1px_rgba(184,169,232,0.22)]"
+                            : "text-[#D1D5DB] font-medium hover:bg-white/8 hover:text-white hover:-translate-y-px"
+                        } ${item.href || hasChildren ? "cursor-pointer" : ""}`}
+                >
+                    <div className="relative flex-shrink-0">
+                        {renderIcon(item.icon, active)}
+                        {item.badge && isCollapsed && <span className="nb-dot" />}
+                    </div>
+                    {!isCollapsed && (
+                        <>
+                            <span className="flex-1 text-left">{item.label}</span>
+                            {item.badge && (
+                                <span className="min-w-[20px] h-5 flex items-center justify-center bg-[#FECACA] text-[#DC2626] rounded-full px-1.5 text-[10px] font-bold border border-[#DC2626]">{item.badge}</span>
+                            )}
+                            {hasChildren ? (
+                                <ChevronDownIcon className={`h-3.5 w-3.5 flex-shrink-0 transition-transform ${childExpanded ? "rotate-0" : "-rotate-90"}`} />
+                            ) : null}
+                        </>
+                    )}
+                </button>
+                {isCollapsed && <span className="nb-tooltip">{item.label}</span>}
+                {!isCollapsed && childExpanded && hasChildren ? (
+                    <div className="ml-5 mt-1 flex flex-col gap-[2px] border-l border-white/10 pl-2">
+                        {item.children!.map((child, index) => renderNavItem(child, `${key}-${index}`, depth + 1))}
+                    </div>
+                ) : null}
+            </div>
+        );
+    };
+
     const IconComponent = iconType === "provider" ? Building2 : School;
     const iconBg = iconType === "provider" ? "bg-[#3B82F6]" : "bg-[#6938EF]";
     const iconColor = "text-white";
@@ -107,6 +185,11 @@ export const DashboardSidebar = ({
                             {!isCollapsed && <span>{item.label}</span>}
                         </button>
                         {isCollapsed && <span className="nb-tooltip">{item.label}</span>}
+                        {!isCollapsed && item.children?.length ? (
+                            <div className="ml-5 mt-1 flex flex-col gap-[2px] border-l border-white/10 pl-2">
+                                {item.children.map((child, childIndex) => renderNavItem(child, `top-${index}-${childIndex}`, 1, true))}
+                            </div>
+                        ) : null}
                     </div>
                 ))}
 
@@ -118,36 +201,7 @@ export const DashboardSidebar = ({
                         )}
                         {isCollapsed && <div className="my-1.5 border-t border-white/10" />}
                         <div className="flex flex-col gap-[2px]">
-                            {section.items.map((item, iIdx) => (
-                                <div key={iIdx} className="relative group flex items-stretch">
-                                    <button onClick={() => item.href && navigate(item.href)}
-                                        className={`w-full flex items-center ${isCollapsed ? "justify-center px-0" : "gap-2.5 px-2.5"} py-[7px] rounded-md text-[13px] transition-all duration-150
-                                            ${item.active
-                                                ? "bg-gradient-to-r from-[#B8A9E8]/35 to-[#A996E2]/10 text-white font-bold border border-[#C4B5FD]/70 shadow-[0_0_0_1px_rgba(184,169,232,0.22)]"
-                                                : "text-[#D1D5DB] font-medium hover:bg-white/8 hover:text-white hover:-translate-y-px"
-                                            } ${item.href ? "cursor-pointer" : ""}`}
-                                    >
-                                        <div className="relative flex-shrink-0">
-                                            {renderIcon(item.icon, !!item.active)}
-                                            {item.badge && isCollapsed && <span className="nb-dot" />}
-                                        </div>
-                                        {!isCollapsed && (
-                                            <>
-                                                <span className="flex-1 text-left">{item.label}</span>
-                                                {item.badge && (
-                                                    <span className="min-w-[20px] h-5 flex items-center justify-center bg-[#FECACA] text-[#DC2626] rounded-full px-1.5 text-[10px] font-bold border border-[#DC2626]">{item.badge}</span>
-                                                )}
-                                            </>
-                                        )}
-                                    </button>
-                                    {isCollapsed && (
-                                        <span className="nb-tooltip">
-                                            {item.label}
-                                            {item.badge && <span className="ml-1.5 inline-flex items-center justify-center w-4 h-4 bg-[#EF4444] rounded-full text-xs font-bold text-white">{item.badge}</span>}
-                                        </span>
-                                    )}
-                                </div>
-                            ))}
+                            {section.items.map((item, iIdx) => renderNavItem(item, `${sIdx}-${iIdx}`))}
                         </div>
                     </div>
                 ))}

@@ -142,9 +142,13 @@ export const WalletTab = (): JSX.Element => {
   };
 
   const refreshAnimating = loading || refreshing;
+  const availableBalance = wallet?.balance ?? 0;
+  const quickWithdrawOptions = [100_000, 200_000, 500_000, 1_000_000].filter(
+    (amount) => amount <= availableBalance,
+  );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div>
           <p className="text-xs font-black uppercase tracking-[0.16em] text-emerald-600">Ví hoàn tiền</p>
@@ -172,8 +176,8 @@ export const WalletTab = (): JSX.Element => {
         </div>
       ) : null}
 
-      <div className="grid gap-4 lg:grid-cols-3">
-        <div className="rounded-[24px] border border-slate-200 bg-slate-950 p-5 text-white shadow-soft-md lg:col-span-1">
+      <div className="grid gap-4 lg:grid-cols-[340px_minmax(0,1fr)]">
+        <div className="h-full rounded-[24px] border border-slate-200 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 p-5 text-white shadow-soft-md">
           <div className="flex items-center justify-between">
             <div className="flex h-12 w-12 items-center justify-center rounded-[18px] bg-white/10">
               <WalletCards className="h-5 w-5" />
@@ -189,8 +193,8 @@ export const WalletTab = (): JSX.Element => {
           </p>
         </div>
 
-        <div className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-soft-sm lg:col-span-2">
-          <div className="flex items-center gap-3">
+        <div className="h-full rounded-[24px] border border-slate-200 bg-white p-5 shadow-soft-sm">
+          <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
             <div className="flex h-11 w-11 items-center justify-center rounded-[16px] border border-slate-200 bg-slate-50 text-slate-700">
               <Banknote className="h-5 w-5" />
             </div>
@@ -199,7 +203,7 @@ export const WalletTab = (): JSX.Element => {
             </div>
           </div>
 
-          <div className="mt-5 grid gap-3">
+          <div className="mt-4 grid gap-3">
             <div className="relative">
               <label className="mb-2 block text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">Ngân hàng</label>
               <input
@@ -249,7 +253,7 @@ export const WalletTab = (): JSX.Element => {
             </div>
           </div>
 
-          <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-[14px] bg-slate-50 px-3 py-2.5">
             <p className={`text-sm font-bold ${bankReady ? "text-emerald-700" : "text-amber-700"}`}>
               {bankReady ? "Đã có thông tin ngân hàng mặc định." : "Cần lưu ngân hàng trước khi rút tiền."}
             </p>
@@ -261,27 +265,51 @@ export const WalletTab = (): JSX.Element => {
         </div>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-[380px_minmax(0,1fr)]">
-        <div className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-soft-sm">
+      <div className="grid gap-4 lg:grid-cols-2">
+        <div className="h-full rounded-[24px] border border-slate-200 bg-white p-5 shadow-soft-sm">
           <h2 className="text-base font-black text-slate-950">Rút tiền</h2>
+          <p className="mt-1 text-xs font-semibold text-slate-500">
+            Nhập số tiền theo đơn vị VNĐ (₫). Số dư hiện có:{" "}
+            <span className="font-black text-emerald-700">{fmtCurrency(availableBalance)}</span>
+          </p>
           <input
             className="mt-5 w-full rounded-[14px] border border-slate-200 px-4 py-3 text-sm font-bold outline-none focus:border-emerald-400"
             type="number"
             min={0}
-            max={wallet?.balance ?? 0}
+            max={availableBalance}
             placeholder="Số tiền muốn rút"
             value={withdrawAmount}
             onChange={(event) => setWithdrawAmount(event.target.value)}
           />
+          <div className="mt-3 flex flex-wrap gap-2">
+            {quickWithdrawOptions.map((amount) => (
+              <button
+                key={amount}
+                type="button"
+                onClick={() => setWithdrawAmount(String(amount))}
+                className="rounded-[12px] border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-extrabold text-slate-700 transition hover:bg-white"
+              >
+                {fmtCurrency(amount)}
+              </button>
+            ))}
+            <button
+              type="button"
+              onClick={() => setWithdrawAmount(String(availableBalance))}
+              disabled={availableBalance <= 0}
+              className="rounded-[12px] border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-extrabold text-emerald-700 transition hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              Rút tất cả
+            </button>
+          </div>
           <button type="button" disabled={submitting || loading} onClick={() => void submitWithdrawal()} className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-[16px] bg-emerald-600 px-4 py-3 text-sm font-extrabold text-white transition hover:bg-emerald-700 disabled:opacity-60">
             <Send className="h-4 w-4" />
             Gửi yêu cầu rút tiền
           </button>
         </div>
 
-        <div className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-soft-sm">
+        <div className="h-full rounded-[24px] border border-slate-200 bg-white p-5 shadow-soft-sm">
           <h2 className="text-base font-black text-slate-950">Lịch sử ví</h2>
-          <div className="mt-4 divide-y divide-slate-100">
+          <div className="mt-4 max-h-[320px] divide-y divide-slate-100 overflow-y-auto pr-1">
             {transactions.length ? transactions.map((tx) => (
               <div key={tx.paymentId} className="flex flex-col gap-2 py-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>

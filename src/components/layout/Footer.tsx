@@ -1,4 +1,5 @@
 import { Facebook, Youtube, Instagram, MapPin, Phone, Mail } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export const Footer = (): JSX.Element => {
   return (
@@ -140,9 +141,9 @@ export const Footer = (): JSX.Element => {
         <div className="flex flex-col items-center justify-between gap-4 border-t border-gray-200/15 py-8 md:flex-row">
           <p className="text-xs font-bold text-gray-900/45">© 2025 VTOS. All rights reserved.</p>
           <div className="flex items-center gap-6">
-            <a href="#" className="text-[11px] font-bold uppercase tracking-wider text-gray-900/35 transition-all hover:text-gray-800">Cookies Policy</a>
+            <Link to="/cookies-policy" className="text-[11px] font-bold uppercase tracking-wider text-gray-900/35 transition-all hover:text-gray-800">Cookies Policy</Link>
             <span className="h-1 w-1 rounded-full bg-gray-900/30" />
-            <a href="#" className="text-[11px] font-bold uppercase tracking-wider text-gray-900/35 transition-all hover:text-gray-800">Legal Notice</a>
+            <Link to="/legal-notice" className="text-[11px] font-bold uppercase tracking-wider text-gray-900/35 transition-all hover:text-gray-800">Legal Notice</Link>
           </div>
         </div>
       </div>

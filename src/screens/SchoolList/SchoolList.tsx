@@ -338,9 +338,9 @@ const SchoolList = () => {
           </motion.h1>
 
           <motion.p custom={2} variants={fadeUp} initial="hidden" animate="visible"
-            className="text-base text-gray-600 max-w-2xl font-medium"
+            className="w-full text-left indent-0 ml-0 pl-0 text-base font-medium text-gray-600"
           >
-            Chọn địa điểm và tìm kiếm để xem danh sách trường học phù hợp với nhu cầu của bạn.
+            {"Chọn địa điểm và tìm kiếm để xem danh sách trường học phù hợp với nhu cầu của bạn."}
           </motion.p>
         </div>
 

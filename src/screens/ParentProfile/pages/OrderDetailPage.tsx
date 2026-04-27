@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
+    AlertTriangle,
     ArrowLeft,
     Calendar,
     CheckCircle2,
@@ -12,6 +13,9 @@ import {
     ShoppingBag,
     Star,
     Truck,
+    RotateCcw,
+    CreditCard,
+    Clock3,
 } from "lucide-react";
 import { ApiError } from "../../../lib/api/clients";
 import {
@@ -36,6 +40,15 @@ function fmtDate(iso: string) {
         hour: "2-digit",
         minute: "2-digit",
     });
+}
+
+function deliveryMethodLabel(value?: string | null) {
+    switch (value) {
+        case "HomeDelivery":
+            return "Nhận tại nhà";
+        default:
+            return value || "";
+    }
 }
 
 const ORDER_STEPS = [
@@ -81,14 +94,45 @@ function getStatusLabel(status: string | null | undefined) {
     return STATUS_LABELS[status] || status;
 }
 
+function getStatusMeta(status: string | null | undefined) {
+    const normalized = (status || "").toLowerCase();
+    switch (normalized) {
+        case "paid":
+        case "completed":
+            return { label: "Đã thanh toán", chip: "bg-emerald-50 text-emerald-700 border-emerald-200", icon: <CreditCard className="h-4 w-4" /> };
+        case "confirmed":
+            return { label: "Đã xác nhận", chip: "bg-blue-50 text-blue-700 border-blue-200", icon: <CheckCircle2 className="h-4 w-4" /> };
+        case "processed":
+            return { label: "Đang xử lý", chip: "bg-indigo-50 text-indigo-700 border-indigo-200", icon: <Package className="h-4 w-4" /> };
+        case "shipped":
+            return { label: "Đang giao", chip: "bg-cyan-50 text-cyan-700 border-cyan-200", icon: <Truck className="h-4 w-4" /> };
+        case "delivered":
+            return { label: "Đã nhận", chip: "bg-green-50 text-green-700 border-green-200", icon: <CheckCircle2 className="h-4 w-4" /> };
+        case "pending":
+            return { label: "Chờ thanh toán", chip: "bg-amber-50 text-amber-700 border-amber-200", icon: <Clock3 className="h-4 w-4" /> };
+        case "refunded":
+            return { label: "Đã hoàn tiền", chip: "bg-violet-50 text-violet-700 border-violet-200", icon: <RotateCcw className="h-4 w-4" /> };
+        case "failed":
+            return { label: "Thất bại", chip: "bg-red-50 text-red-700 border-red-200", icon: <AlertTriangle className="h-4 w-4" /> };
+        case "cancelled":
+            return { label: "Đã hủy", chip: "bg-red-50 text-red-700 border-red-200", icon: <XCircle className="h-4 w-4" /> };
+        default:
+            return { label: getStatusLabel(status), chip: "bg-gray-50 text-gray-700 border-gray-200", icon: <Package className="h-4 w-4" /> };
+    }
+}
+
 function OrderStatusStepper({ orderStatus }: { orderStatus: string }) {
     const currentIdx = STATUS_ORDER[orderStatus] ?? 0;
     const isCancelled = orderStatus === "Cancelled" || orderStatus === "Refunded";
 
     if (isCancelled) {
+        const statusMeta = getStatusMeta(orderStatus);
         return (
-            <div className="mt-4 rounded-lg border-2 border-[#FCA5A5] bg-[#FEE2E2] p-3 text-sm font-bold text-red-800">
-                {orderStatus === "Cancelled" ? "❌ Đơn hàng đã bị hủy" : "❌ Đơn hàng đã hoàn tiền"}
+            <div className={`mt-4 flex items-center gap-2 rounded-lg border-2 p-3 text-sm font-bold ${statusMeta.chip}`}>
+                {statusMeta.icon}
+                <span>
+                    {orderStatus === "Cancelled" ? "Đơn hàng đã bị hủy" : "Đơn hàng đã hoàn tiền"}
+                </span>
             </div>
         );
     }
@@ -348,6 +392,7 @@ export function OrderDetailPage(): JSX.Element {
 
     if (state.type === "direct") {
         const order = state.order;
+        const orderStatusMeta = getStatusMeta(order.orderStatus);
 
         return (
             <div className="min-h-screen bg-gray-50 p-4 md:p-6">
@@ -372,7 +417,10 @@ export function OrderDetailPage(): JSX.Element {
                                 <p className="text-[11px] font-black uppercase tracking-[0.16em] text-violet-500">Đơn hàng trực tiếp</p>
                                 <h1 className="text-3xl font-extrabold tracking-tight text-gray-900">Đơn hàng #{order.orderId.slice(0, 8)}</h1>
                                 <div className="flex flex-wrap gap-2">
-                                    <span className="nb-badge nb-badge-purple">{getStatusLabel(order.orderStatus)}</span>
+                                    <span className={`inline-flex items-center gap-1 rounded-full border px-3 py-1 text-[11px] font-bold ${orderStatusMeta.chip}`}>
+                                        {orderStatusMeta.icon}
+                                        {orderStatusMeta.label}
+                                    </span>
                                     {order.paymentStatusName && (
                                         <span className="rounded-full border border-gray-200 bg-slate-50 px-3 py-1 text-[11px] font-bold text-gray-500">
                                             {order.paymentStatusName}
@@ -431,7 +479,7 @@ export function OrderDetailPage(): JSX.Element {
                                     <p className="inline-flex gap-2"><MapPin className="mt-0.5 h-4 w-4 text-violet-500" />Địa chỉ: <span className="font-bold text-gray-900">{order.shippingAddress}</span></p>
                                     {order.recipientName && <p className="inline-flex gap-2"><ShieldCheck className="mt-0.5 h-4 w-4 text-violet-500" />Người nhận: <span className="font-bold text-gray-900">{order.recipientName}</span></p>}
                                     {order.recipientPhone && <p className="inline-flex gap-2"><ShoppingBag className="mt-0.5 h-4 w-4 text-violet-500" />Điện thoại: <span className="font-bold text-gray-900">{order.recipientPhone}</span></p>}
-                                    {order.deliveryMethod && <p>Hình thức giao: <span className="font-bold text-gray-900">{order.deliveryMethod}</span></p>}
+                                    {order.deliveryMethod && <p>Hình thức giao: <span className="font-bold text-gray-900">{deliveryMethodLabel(order.deliveryMethod)}</span></p>}
                                     {order.shippingCompany && <p>Đơn vị vận chuyển: <span className="font-bold text-gray-900">{order.shippingCompany}</span></p>}
                                     {order.trackingCode && <p>Mã vận đơn: <span className="font-bold text-gray-900">{order.trackingCode}</span></p>}
                                 </div>
@@ -473,6 +521,7 @@ export function OrderDetailPage(): JSX.Element {
     }
 
     const order = state.order;
+    const orderStatusMeta = getStatusMeta(order.orderStatus);
 
     return (
         <div className="min-h-screen bg-gray-50 p-4 md:p-6">
@@ -518,7 +567,10 @@ export function OrderDetailPage(): JSX.Element {
                             <MapPin className="h-4 w-4 text-gray-500" />
                             <p className="text-xs font-medium text-gray-500">Trạng thái</p>
                         </div>
-                        <p className="text-sm font-bold text-gray-900">{getStatusLabel(order.orderStatus)}</p>
+                        <div className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-bold ${orderStatusMeta.chip}`}>
+                            {orderStatusMeta.icon}
+                            <span>{orderStatusMeta.label}</span>
+                        </div>
                     </div>
                 </div>
 

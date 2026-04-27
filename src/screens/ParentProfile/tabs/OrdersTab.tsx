@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { ShoppingBag, CreditCard, Clock, CheckCircle, XCircle, ChevronDown, Star, Package, Calendar, ChevronRight, User } from "lucide-react";
+import { ShoppingBag, CreditCard, Clock, CheckCircle, XCircle, ChevronDown, Star, Package, Calendar, ChevronRight, User, RotateCcw, AlertTriangle, Truck } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useToast } from "../../../contexts/ToastContext";
 import { cn } from "@/lib/utils";
@@ -25,20 +25,25 @@ function statusBadge(status: string) {
     const s = status.toLowerCase();
     switch (s) {
         case "paid":
-            return { label: "Đã thanh toán", bg: "bg-green-50", text: "text-green-600", border: "border-green-200", icon: <span className="text-[10px]">💳</span> };
+        case "completed":
+            return { label: "Đã thanh toán", bg: "bg-emerald-50", text: "text-emerald-700", border: "border-emerald-200", icon: <CreditCard className="w-3 h-3" /> };
         case "confirmed":
-            return { label: "Đã xác nhận", bg: "bg-blue-50", text: "text-blue-600", border: "border-blue-200", icon: <span className="text-[10px]">✅</span> };
+            return { label: "Đã xác nhận", bg: "bg-blue-50", text: "text-blue-700", border: "border-blue-200", icon: <CheckCircle className="w-3 h-3" /> };
         case "processed":
-            return { label: "Đang xử lý", bg: "bg-indigo-50", text: "text-indigo-600", border: "border-indigo-200", icon: <span className="text-[10px]">📦</span> };
+            return { label: "Đang xử lý", bg: "bg-indigo-50", text: "text-indigo-700", border: "border-indigo-200", icon: <Package className="w-3 h-3" /> };
         case "shipped":
-            return { label: "Đang giao", bg: "bg-sky-50", text: "text-sky-600", border: "border-sky-200", icon: <span className="text-[10px]">🚚</span> };
+            return { label: "Đang giao", bg: "bg-cyan-50", text: "text-cyan-700", border: "border-cyan-200", icon: <Truck className="w-3 h-3" /> };
         case "delivered":
-            return { label: "Đã nhận", bg: "bg-emerald-50", text: "text-emerald-600", border: "border-emerald-200", icon: <span className="text-[10px]">🎉</span> };
+            return { label: "Đã nhận", bg: "bg-green-50", text: "text-green-700", border: "border-green-200", icon: <CheckCircle className="w-3 h-3" /> };
 
         case "pending":
-            return { label: "Chờ thanh toán", bg: "bg-orange-50", text: "text-orange-600", border: "border-orange-200", icon: <Clock className="w-3 h-3" /> };
-        case "cancelled": case "failed": case "refunded":
-            return { label: s === "refunded" ? "Đã hoàn tiền" : "Đã hủy", bg: "bg-red-50", text: "text-red-600", border: "border-red-200", icon: <XCircle className="w-3 h-3" /> };
+            return { label: "Chờ thanh toán", bg: "bg-amber-50", text: "text-amber-700", border: "border-amber-200", icon: <Clock className="w-3 h-3" /> };
+        case "refunded":
+            return { label: "Đã hoàn tiền", bg: "bg-violet-50", text: "text-violet-700", border: "border-violet-200", icon: <RotateCcw className="w-3 h-3" /> };
+        case "cancelled":
+            return { label: "Đã hủy", bg: "bg-red-50", text: "text-red-700", border: "border-red-200", icon: <XCircle className="w-3 h-3" /> };
+        case "failed":
+            return { label: "Thất bại", bg: "bg-red-50", text: "text-red-700", border: "border-red-200", icon: <AlertTriangle className="w-3 h-3" /> };
         default:
             return { label: status, bg: "bg-gray-50", text: "text-gray-600", border: "border-gray-200", icon: null };
     }
@@ -63,11 +68,16 @@ function OrderStatusStepper({ orderStatus }: { orderStatus: string }) {
     const isCancelled = orderStatus === "Cancelled" || orderStatus === "Refunded";
 
     if (isCancelled) {
+        const isRefunded = orderStatus === "Refunded";
         return (
-            <div className="mt-4 nb-alert nb-alert-error">
-                <XCircle className="w-5 h-5 flex-shrink-0" />
+            <div className={`mt-4 nb-alert ${isRefunded ? "bg-violet-50 border-violet-200" : "nb-alert-error"}`}>
+                {isRefunded ? (
+                    <RotateCcw className="w-5 h-5 flex-shrink-0 text-violet-700" />
+                ) : (
+                    <XCircle className="w-5 h-5 flex-shrink-0" />
+                )}
                 <span className="font-bold text-sm">
-                    {orderStatus === "Cancelled" ? "Đơn hàng đã bị hủy" : "Đơn hàng đã hoàn tiền"}
+                    {isRefunded ? "Đơn hàng đã hoàn tiền" : "Đơn hàng đã bị hủy"}
                 </span>
             </div>
         );
@@ -243,8 +253,21 @@ function OrderCard({
                             </div>
                             <div className="text-right">
                                 <p className="text-[8px] text-gray-400 font-black uppercase tracking-widest mb-1">Thanh toán</p>
-                                <div className={`text-[10px] font-black ${p.paymentStatus === 'Paid' || p.paymentStatus === 'Completed' ? 'text-green-600' : p.paymentStatus === 'Cancelled' ? 'text-red-500' : 'text-orange-500'}`}>
-                                    {p.paymentStatus === 'Paid' || p.paymentStatus === 'Completed' ? 'Đã xong' : p.paymentStatus === 'Pending' ? 'Chờ xử lý' : 'Đã hủy'}
+                                <div className={`text-[10px] font-black ${p.paymentStatus === 'Paid' || p.paymentStatus === 'Completed'
+                                    ? 'text-emerald-700'
+                                    : p.paymentStatus === 'Cancelled'
+                                        ? 'text-red-600'
+                                        : p.paymentStatus === 'Refunded'
+                                            ? 'text-violet-700'
+                                            : 'text-amber-600'
+                                    }`}>
+                                    {p.paymentStatus === 'Paid' || p.paymentStatus === 'Completed'
+                                        ? 'Đã xong'
+                                        : p.paymentStatus === 'Pending'
+                                            ? 'Chờ xử lý'
+                                            : p.paymentStatus === 'Refunded'
+                                                ? 'Hoàn tiền'
+                                                : 'Đã hủy'}
                                 </div>
                             </div>
                         </div>
@@ -284,7 +307,7 @@ function OrderCard({
 }
 
 /* ── Status Tabs ── */
-const ALL_STATUSES = ["Paid", "Confirmed", "Processed", "Shipped", "Delivered", "Cancelled"];
+const ALL_STATUSES = ["Paid", "Confirmed", "Processed", "Shipped", "Delivered", "Refunded", "Cancelled"];
 
 const STATUS_LABELS: Record<string, string> = {
     Paid: "Đã thanh toán",
@@ -292,6 +315,7 @@ const STATUS_LABELS: Record<string, string> = {
     Processed: "Đang xử lý",
     Shipped: "Đang giao",
     Delivered: "Đã nhận",
+    Refunded: "Đã hoàn tiền",
     Cancelled: "Đã hủy",
 };
 
@@ -319,10 +343,11 @@ function StatusTabs({
     }, [statusCounts]);
 
     return (
-        <div className="flex gap-2 overflow-x-auto pb-3 mb-4 pt-4">
+        <div className="mb-4 pt-4">
+            <div className="flex flex-wrap gap-2">
             <button
                 onClick={() => onStatusChange(null)}
-                className={`relative px-4 py-2 rounded-lg font-bold text-sm whitespace-nowrap transition-all ${selectedStatus === null
+                className={`relative min-w-[120px] px-4 py-2 rounded-lg font-bold text-sm whitespace-nowrap transition-all ${selectedStatus === null
                     ? "bg-purple-400 text-white border border-gray-200 shadow-sm"
                     : "bg-gray-100 text-gray-500 border-2 border-gray-300"
                     }`}
@@ -341,7 +366,7 @@ function StatusTabs({
                     <button
                         key={status}
                         onClick={() => onStatusChange(status)}
-                        className={`relative px-4 py-2 rounded-lg font-bold text-sm whitespace-nowrap transition-all ${selectedStatus === status
+                        className={`relative min-w-[120px] px-4 py-2 rounded-lg font-bold text-sm whitespace-nowrap transition-all ${selectedStatus === status
                             ? "bg-purple-400 text-white border border-gray-200 shadow-sm"
                             : "bg-gray-100 text-gray-500 border-2 border-gray-300"
                             }`}
@@ -355,6 +380,7 @@ function StatusTabs({
                     </button>
                 );
             })}
+            </div>
         </div>
     );
 }

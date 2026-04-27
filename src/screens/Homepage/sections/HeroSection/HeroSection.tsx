@@ -65,9 +65,6 @@ export function HeroSection() {
             {/* Phone frame */}
             <div className="relative h-[480px] w-[240px] rounded-[30px] bg-black p-2 sm:h-[560px] sm:w-[280px] sm:rounded-[36px] md:h-[640px] md:w-[320px] md:rounded-[40px]">
               <div className="relative h-full w-full overflow-hidden rounded-[22px] bg-black sm:rounded-[26px] md:rounded-[30px]">
-                {/* Dynamic Island */}
-                <div className="absolute left-1/2 top-3 z-10 h-5 w-16 -translate-x-1/2 rounded-full bg-black sm:top-4 sm:h-6 sm:w-20" />
-
                 <img
                   src="https://api.builder.io/api/v1/image/assets/TEMP/eef0ae9593f6a6296eb52342229bd158fe61eb1b?width=1808"
                   alt="Học sinh mặc đồng phục qua AI Virtual Try-On"

@@ -28,7 +28,7 @@ export const TEACHER_DASHBOARD_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, "isCo
                 },
                 {
                     icon: LifeBuoy,
-                    label: "Ho tro Admin",
+                    label: "Hỗ trợ Admin",
                     href: "/teacher/support",
                 },
             ],

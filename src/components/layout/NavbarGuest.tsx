@@ -13,6 +13,16 @@ import { getParentProfile } from "../../lib/api/users"
 import { searchPublic, type PublicSearchResponse } from "../../lib/api/public"
 import { ClassGroupChatLauncher } from "../ChatWidget/ClassGroupChatLauncher"
 
+const DEFAULT_USER_AVATAR =
+  "data:image/svg+xml;utf8," +
+  encodeURIComponent(
+    "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'>" +
+      "<rect width='96' height='96' fill='#EDE9FE'/>" +
+      "<circle cx='48' cy='34' r='16' fill='#A78BFA'/>" +
+      "<path d='M22 80c2-14 12-24 26-24s24 10 26 24' fill='#8B5CF6'/>" +
+    "</svg>",
+  )
+
 function getSessionUser(): { fullName: string; role: string; avatar?: string | null } | null {
   const raw = localStorage.getItem("user") || sessionStorage.getItem("user")
   if (!raw) return null
@@ -192,10 +202,16 @@ export function NavbarGuest() {
   const nbIconBtn = "relative flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 bg-white shadow-sm transition-all duration-150 hover:shadow-soft-sm hover:-translate-y-[1px] active:shadow-none active:translate-y-0"
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-gray-200/15 bg-gray-50/95 py-2 backdrop-blur supports-[backdrop-filter]:bg-gray-50/90">
+    <nav
+      className={`sticky top-0 z-50 border-b border-gray-200/15 py-2 ${
+        isMenuOpen
+          ? "bg-gray-50"
+          : "bg-gray-50/95 backdrop-blur supports-[backdrop-filter]:bg-gray-50/90"
+      }`}
+    >
       <div className="mx-auto w-full max-w-[1240px] px-3 sm:px-4 lg:px-6">
-        <div className="flex h-16 items-center justify-between gap-2 sm:gap-3 lg:gap-5">
-          <div className="flex items-center gap-4">
+        <div className="flex h-16 items-center justify-between gap-2 sm:gap-3 lg:gap-4">
+          <div className="flex shrink-0 items-center gap-4">
             {/* Mobile Menu Trigger */}
             <button
               type="button"
@@ -220,8 +236,8 @@ export function NavbarGuest() {
           </div>
 
           {/* ── Desktop Nav Bar ── */}
-          <div className="hidden w-full max-w-[760px] items-center rounded-xl border border-gray-200 bg-white px-2 py-1 shadow-soft-md lg:flex">
-            <div className="flex items-center gap-1">
+          <div className="hidden min-w-0 flex-1 max-w-[860px] items-center rounded-xl border border-gray-200 bg-white px-2 py-1 shadow-soft-md lg:flex">
+            <div className="shrink-0 flex items-center gap-1">
               {navItems.map((item) => {
                 if (item.type === "route") {
                   const isHome = item.to === "/homepage"
@@ -297,7 +313,7 @@ export function NavbarGuest() {
             <div className="mx-2 h-6 w-px bg-gray-900/15" />
 
             {/* ── Search Bar ── */}
-            <div className="relative flex min-w-0 flex-1 items-center gap-2" ref={searchContainerRef}>
+            <div className="relative flex min-w-0 flex-1 items-center gap-1.5" ref={searchContainerRef}>
               <Input
                 value={searchQuery}
                 onChange={e => onSearchChange(e.target.value)}
@@ -315,7 +331,7 @@ export function NavbarGuest() {
                   }
                 }}
                 onFocus={() => { if (searchResults) setShowDropdown(true) }}
-                placeholder="Tìm kiếm trường, đồng phục..."
+                placeholder="Tìm kiếm"
                 className="h-9 border-none bg-transparent text-sm font-medium shadow-none focus-visible:ring-0 placeholder:text-gray-400"
               />
               <button
@@ -328,7 +344,7 @@ export function NavbarGuest() {
                     setShowDropdown(false)
                   }
                 }}
-                className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg border border-gray-200 bg-gray-900 text-white shadow-soft-sm transition-all duration-150 hover:shadow-soft-md hover:-translate-y-[1px] active:shadow-none active:translate-y-0"
+                className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border border-gray-200 bg-gray-900 text-white shadow-soft-sm transition-all duration-150 hover:shadow-soft-md hover:-translate-y-[1px] active:shadow-none active:translate-y-0"
               >
                 <Search size={16} />
               </button>
@@ -439,7 +455,7 @@ export function NavbarGuest() {
           </div>
 
           {/* ── Right Actions ── */}
-          <div className="flex items-center justify-end gap-2">
+          <div className="flex shrink-0 items-center justify-end gap-2">
             <button
               type="button"
               onClick={() => navigate("/cart")}
@@ -466,17 +482,14 @@ export function NavbarGuest() {
                     type="button"
                     className="hidden h-11 items-center gap-2 rounded-xl border border-gray-200 bg-white px-3 shadow-soft-sm transition-all duration-150 hover:-translate-y-[1px] hover:shadow-soft-md active:shadow-none active:translate-y-0 lg:flex !outline-none"
                   >
-                    {userAvatar ? (
-                      <img
-                        src={userAvatar}
-                        alt="Avatar"
-                        className="h-7 w-7 rounded-lg border border-gray-200 object-cover"
-                      />
-                    ) : (
-                      <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-violet-50">
-                        <User size={14} className="text-gray-900" />
-                      </div>
-                    )}
+                    <img
+                      src={userAvatar || DEFAULT_USER_AVATAR}
+                      alt="Avatar"
+                      className="h-7 w-7 rounded-lg border border-gray-200 object-cover"
+                      onError={(event) => {
+                        event.currentTarget.src = DEFAULT_USER_AVATAR
+                      }}
+                    />
                     <span className="max-w-[120px] truncate text-sm font-bold text-gray-900">{userName}</span>
                     <ChevronDown size={14} className="text-gray-900/50" />
                   </button>
@@ -547,7 +560,7 @@ export function NavbarGuest() {
             className="fixed inset-0 z-[100] bg-gray-900/40"
           />
           <div
-            className="fixed inset-y-0 left-0 z-[101] w-[280px] border-r border-gray-200 bg-gray-50 p-6 shadow-lg animate-in slide-in-from-left duration-300"
+            className="fixed inset-y-0 left-0 z-[101] w-[280px] overflow-y-auto border-r border-gray-200 bg-gray-50 p-6 shadow-lg animate-in slide-in-from-left duration-300"
           >
             <div className="flex items-center justify-between mb-8">
               <img src="https://api.builder.io/api/v1/image/assets/TEMP/b5b02bd27ae25e8fcc3a61694891ffa491402bfb?width=328" alt="VTOS Logo" className="h-8 w-auto" />

@@ -1,10 +1,20 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { GraduationCap, Search, CheckCircle2, AlertTriangle, X, Loader2 } from "lucide-react";
 import { useToast } from "../../../contexts/ToastContext";
 import { getMyChildren, findMyChildren } from "../../../lib/api/users";
 import { getVietnamseGender } from "../../../lib/utils";
 import type { ChildProfileDto, FindChildrenResponse } from "../../../lib/api/users";
 import { StudentDetailView } from "./StudentDetailView";
+
+const DEFAULT_CHILD_AVATAR =
+  "data:image/svg+xml;utf8," +
+  encodeURIComponent(
+    "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'>" +
+      "<rect width='96' height='96' fill='#EDE9FE'/>" +
+      "<circle cx='48' cy='36' r='16' fill='#A78BFA'/>" +
+      "<path d='M22 80c2-14 12-24 26-24s24 10 26 24' fill='#8B5CF6'/>" +
+    "</svg>",
+  );
 
 export const StudentsTab = (): JSX.Element => {
   const { showToast } = useToast();
@@ -13,24 +23,7 @@ export const StudentsTab = (): JSX.Element => {
   const [findLoading, setFindLoading] = useState(false);
   const [findResult, setFindResult] = useState<FindChildrenResponse | null>(null);
   const [showConflictModal, setShowConflictModal] = useState(false);
-  const [selectedChildId, setSelectedChildId] = useState<string | null>(() => {
-    // Initialize from localStorage
-    if (typeof window !== "undefined") {
-      return localStorage.getItem("selectedStudentId") || null;
-    }
-    return null;
-  });
-
-  // Persist selectedChildId to localStorage whenever it changes
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      if (selectedChildId) {
-        localStorage.setItem("selectedStudentId", selectedChildId);
-      } else {
-        localStorage.removeItem("selectedStudentId");
-      }
-    }
-  }, [selectedChildId]);
+  const [selectedChildId, setSelectedChildId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchChildren = async () => {
@@ -113,31 +106,26 @@ export const StudentsTab = (): JSX.Element => {
                   <div className="h-2 bg-purple-400/30 w-full" />
                   <div className="p-5 flex gap-4 items-start">
                     <div className="relative flex-shrink-0">
-                      <div className="w-16 h-16 rounded-2xl border border-gray-200 bg-purple-200 flex items-center justify-center shadow-soft-sm overflow-hidden">
-                        {child.avatarUrl ? (
-                          <img
-                            src={child.avatarUrl}
-                            alt={child.fullName}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <span className="font-black text-gray-900 text-xl">
-                            {child.fullName.charAt(0)}
-                          </span>
-                        )}
-                      </div>
-                      <div className="absolute -bottom-1 -right-1 w-7 h-7 bg-white rounded-lg border border-gray-200 shadow-sm flex items-center justify-center">
-                        <span className="text-[10px] font-black text-gray-900">
-                          {child.gender === "Male" ? "♂" : "♀"}
-                        </span>
+                      <div className="h-24 w-24 rounded-2xl border border-gray-200 bg-purple-200 flex items-center justify-center shadow-soft-sm overflow-hidden">
+                        <img
+                          src={child.avatarUrl || DEFAULT_CHILD_AVATAR}
+                          alt={child.fullName}
+                          className="w-full h-full object-cover"
+                          onError={(event) => {
+                            event.currentTarget.src = DEFAULT_CHILD_AVATAR;
+                          }}
+                        />
                       </div>
                     </div>
 
                     <div className="flex-1 min-w-0">
                       <div className="flex justify-between items-start gap-2">
-                        <h3 className="font-extrabold text-gray-900 text-lg leading-tight truncate group-hover:text-purple-900 transition-colors" title={child.fullName}>
-                          {child.fullName}
-                        </h3>
+                        <span
+                          className="inline-flex max-w-full items-center rounded-full border border-violet-200 bg-violet-50 px-2.5 py-1 text-[11px] font-extrabold text-violet-700 truncate"
+                          title={child.school?.schoolName}
+                        >
+                          {child.school?.schoolName || "Chưa cập nhật trường học"}
+                        </span>
                         {child.school?.logoURL && (
                           <img
                             src={child.school.logoURL}
@@ -146,16 +134,19 @@ export const StudentsTab = (): JSX.Element => {
                           />
                         )}
                       </div>
-                      
-                      <div className="mt-2 space-y-1">
-                        <div className="flex items-center gap-1.5 text-xs font-bold text-gray-500">
-                          <span className="bg-gray-100 px-2 py-0.5 rounded-full border border-gray-200">Lớp {child.grade || "—"}</span>
-                          <span className="text-gray-900/10">•</span>
-                          <span>{getVietnamseGender(child.gender)}</span>
-                        </div>
-                        <p className="text-[11px] font-bold text-gray-600 truncate" title={child.school?.schoolName}>
-                          {child.school?.schoolName || "Chưa cập nhật trường học"}
-                        </p>
+
+                      <h3 className="mt-2 font-extrabold text-gray-900 text-lg leading-tight truncate group-hover:text-purple-900 transition-colors" title={child.fullName}>
+                        {child.fullName}
+                      </h3>
+
+                      <div className="mt-2 flex items-center gap-1.5 text-xs font-bold text-gray-500">
+                        <span className="bg-gray-100 px-2 py-0.5 rounded-full border border-gray-200">
+                          {child.grade
+                            ? (/^\s*lớp\b/i.test(child.grade) ? child.grade.trim() : `Lớp ${child.grade}`)
+                            : "Lớp —"}
+                        </span>
+                        <span className="text-gray-900/10">•</span>
+                        <span>{getVietnamseGender(child.gender)}</span>
                       </div>
                     </div>
                   </div>

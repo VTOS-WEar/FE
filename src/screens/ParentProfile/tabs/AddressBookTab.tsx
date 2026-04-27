@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { ArrowLeft, MapPinHouse, Pencil, Plus, Trash2 } from "lucide-react";
+import { ArrowLeft, ChevronDown, MapPinHouse, Pencil, Plus, Trash2, X } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   createParentAddress,
@@ -20,6 +20,7 @@ const presetAddressLabels = [
 ];
 
 const customLabelOption = { value: "__custom__", label: "Tùy chọn nhãn" };
+const VIETNAM_PHONE_REGEX = /^(03|05|07|08|09)\d{8}$/;
 
 const readCurrentUserId = (): string | null => {
   try {
@@ -59,6 +60,8 @@ export const AddressBookTab = (): JSX.Element => {
   const [addressMsg, setAddressMsg] = useState("");
   const [editingAddressId, setEditingAddressId] = useState<string | null>(null);
   const [addressForm, setAddressForm] = useState(DEFAULT_PARENT_ADDRESS_FORM);
+  const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
+  const [deleteConfirmAddress, setDeleteConfirmAddress] = useState<ParentAddressDto | null>(null);
   const [isCustomLabelModalOpen, setIsCustomLabelModalOpen] = useState(false);
   const [customLabelDraft, setCustomLabelDraft] = useState("");
   const [editingCustomLabel, setEditingCustomLabel] = useState<string | null>(null);
@@ -98,6 +101,16 @@ export const AddressBookTab = (): JSX.Element => {
   const resetAddressForm = () => {
     setEditingAddressId(null);
     setAddressForm(DEFAULT_PARENT_ADDRESS_FORM);
+  };
+
+  const openCreateAddressModal = () => {
+    resetAddressForm();
+    setIsAddressModalOpen(true);
+  };
+
+  const closeAddressModal = () => {
+    setIsAddressModalOpen(false);
+    resetAddressForm();
   };
 
   const provinceOptions = useMemo(
@@ -240,18 +253,38 @@ export const AddressBookTab = (): JSX.Element => {
       houseNumber: parsedAddress.houseNumber || address.addressLine,
       isDefault: address.isDefault,
     });
+    setIsAddressModalOpen(true);
   };
 
   const handleSaveAddress = async () => {
+    const recipientName = addressForm.recipientName.trim();
+    const recipientPhone = addressForm.recipientPhone.trim();
+    const houseNumber = addressForm.houseNumber.trim();
+
     if (
       !addressForm.label.trim() ||
-      !addressForm.recipientName.trim() ||
-      !addressForm.recipientPhone.trim() ||
+      !recipientName ||
+      !recipientPhone ||
       !addressForm.provinceName.trim() ||
       !addressForm.wardName.trim() ||
-      !addressForm.houseNumber.trim()
+      !houseNumber
     ) {
       setAddressMsg("Điền đầy đủ nhãn, người nhận, số điện thoại, tỉnh, xã/phường và số nhà.");
+      return;
+    }
+
+    if (recipientName.length <= 2) {
+      setAddressMsg("Tên người nhận phải nhiều hơn 2 ký tự.");
+      return;
+    }
+
+    if (houseNumber.length <= 2) {
+      setAddressMsg("Địa chỉ chi tiết phải nhiều hơn 2 ký tự.");
+      return;
+    }
+
+    if (!VIETNAM_PHONE_REGEX.test(recipientPhone)) {
+      setAddressMsg("Số điện thoại phải là số di động Việt Nam gồm đúng 10 chữ số.");
       return;
     }
 
@@ -260,8 +293,8 @@ export const AddressBookTab = (): JSX.Element => {
 
     const payload = {
       label: addressForm.label.trim(),
-      recipientName: addressForm.recipientName.trim(),
-      recipientPhone: addressForm.recipientPhone.trim(),
+      recipientName,
+      recipientPhone,
       addressLine: formatParentAddressLine(addressForm),
       isDefault: addressForm.isDefault,
     };
@@ -275,6 +308,7 @@ export const AddressBookTab = (): JSX.Element => {
 
       await loadAddresses();
       resetAddressForm();
+      setIsAddressModalOpen(false);
       setAddressMsg("Đã lưu sổ địa chỉ.");
     } catch (error: any) {
       setAddressMsg(error?.message || "Không thể lưu địa chỉ.");
@@ -319,6 +353,7 @@ export const AddressBookTab = (): JSX.Element => {
 
   const inputClass =
     "h-12 w-full rounded-[16px] border border-gray-200 bg-white px-4 text-sm font-semibold text-gray-900 outline-none transition-all focus:border-violet-300 focus:ring-4 focus:ring-violet-100";
+  const selectClass = `${inputClass} appearance-none pr-11`;
 
   return (
     <div className="space-y-6">
@@ -342,9 +377,11 @@ export const AddressBookTab = (): JSX.Element => {
             ) : null}
             <button
               type="button"
-              onClick={resetAddressForm}
-              className="rounded-[16px] border border-gray-200 bg-slate-50 px-4 py-3 text-sm font-extrabold text-gray-900 transition-all hover:bg-white"
+              onClick={openCreateAddressModal}
+              className="group relative inline-flex h-12 items-center justify-center gap-2 overflow-hidden rounded-[16px] border border-gray-200 bg-gradient-to-r from-[#7C63E6] via-[#8F79EB] to-[#6F56E0] px-6 text-sm font-extrabold text-white shadow-[0_10px_22px_rgba(124,99,230,0.24)] transition-all duration-200 hover:-translate-y-[1px] hover:brightness-110 hover:shadow-[0_14px_28px_rgba(124,99,230,0.32)] active:translate-y-0 active:shadow-[0_8px_18px_rgba(124,99,230,0.22)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300 focus-visible:ring-offset-2"
             >
+              <span className="pointer-events-none absolute -left-10 top-0 h-full w-14 -skew-x-12 bg-white/25 blur-[1px] transition-all duration-300 group-hover:left-[110%]" />
+              <Plus className="h-4 w-4" />
               Tạo địa chỉ mới
             </button>
           </div>
@@ -352,102 +389,119 @@ export const AddressBookTab = (): JSX.Element => {
       </section>
 
       <section className="rounded-[28px] border border-gray-200 bg-white p-6 shadow-soft-sm lg:p-7">
-        <div className="grid gap-6 xl:grid-cols-[minmax(0,1.05fr)_minmax(320px,0.95fr)]">
-          <div className="space-y-4">
-            {addressLoading ? (
-              <div className="rounded-[22px] border border-dashed border-gray-200 bg-slate-50 p-6 text-sm font-bold text-slate-500">
-                Đang tải sổ địa chỉ...
-              </div>
-            ) : addresses.length === 0 ? (
-              <div className="rounded-[22px] border border-dashed border-gray-200 bg-slate-50 p-6 text-sm font-bold text-slate-500">
-                Chưa có địa chỉ nào.
-              </div>
-            ) : (
-              addresses.map((address) => (
-                <div key={address.addressId} className="rounded-[22px] border border-gray-200 bg-slate-50 p-5 shadow-soft-sm">
-                  <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div>
-                      <div className="flex flex-wrap items-center gap-2">
-                        <p className="text-lg font-black text-gray-900">{address.label}</p>
-                        {address.isDefault ? (
-                          <span className="rounded-full border border-violet-200 bg-violet-50 px-3 py-1 text-[11px] font-extrabold text-violet-700">
-                            Mặc định
-                          </span>
-                        ) : null}
-                      </div>
-                      <p className="mt-2 text-sm font-bold text-gray-900">{address.recipientName}</p>
-                      <p className="mt-1 text-sm font-medium text-slate-500">{address.recipientPhone}</p>
-                    </div>
-
-                    <div className="flex flex-wrap gap-2">
-                      {!address.isDefault ? (
-                        <button
-                          type="button"
-                          onClick={() => void handleSetDefaultAddress(address.addressId)}
-                          className="rounded-[14px] border border-gray-200 bg-white px-3 py-2 text-xs font-extrabold text-gray-900"
-                        >
-                          Đặt mặc định
-                        </button>
+        <div className="space-y-4">
+          {addressLoading ? (
+            <div className="rounded-[22px] border border-dashed border-gray-200 bg-slate-50 p-6 text-sm font-bold text-slate-500">
+              Đang tải sổ địa chỉ...
+            </div>
+          ) : addresses.length === 0 ? (
+            <div className="rounded-[22px] border border-dashed border-gray-200 bg-slate-50 p-6 text-sm font-bold text-slate-500">
+              Chưa có địa chỉ nào.
+            </div>
+          ) : (
+            addresses.map((address) => (
+              <div key={address.addressId} className="rounded-[22px] border border-gray-200 bg-slate-50 p-5 shadow-soft-sm">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className="text-lg font-black text-gray-900">{address.label}</p>
+                      {address.isDefault ? (
+                        <span className="rounded-full border border-violet-200 bg-violet-50 px-3 py-1 text-[11px] font-extrabold text-violet-700">
+                          Mặc định
+                        </span>
                       ) : null}
+                    </div>
+                    <p className="mt-2 text-sm font-bold text-gray-900">{address.recipientName}</p>
+                    <p className="mt-1 text-sm font-medium text-slate-500">{address.recipientPhone}</p>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    {!address.isDefault ? (
                       <button
                         type="button"
-                        onClick={() => handleEditAddress(address)}
+                        onClick={() => void handleSetDefaultAddress(address.addressId)}
                         className="rounded-[14px] border border-gray-200 bg-white px-3 py-2 text-xs font-extrabold text-gray-900"
                       >
-                        Chỉnh sửa
+                        Đặt mặc định
                       </button>
+                    ) : null}
+                    <button
+                      type="button"
+                      onClick={() => handleEditAddress(address)}
+                      className="rounded-[14px] border border-gray-200 bg-white px-3 py-2 text-xs font-extrabold text-gray-900"
+                    >
+                      Chỉnh sửa
+                    </button>
                       <button
                         type="button"
-                        onClick={() => void handleDeleteAddress(address.addressId)}
+                        onClick={() => setDeleteConfirmAddress(address)}
                         className="inline-flex items-center gap-1 rounded-[14px] border border-red-200 bg-white px-3 py-2 text-xs font-extrabold text-red-700"
                       >
-                        <Trash2 className="h-3.5 w-3.5" />
-                        Xóa
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="mt-4 inline-flex items-start gap-2 text-sm font-medium text-slate-600">
-                    <MapPinHouse className="mt-0.5 h-4 w-4 text-violet-600" />
-                    <span>{address.addressLine}</span>
+                      <Trash2 className="h-3.5 w-3.5" />
+                      Xóa
+                    </button>
                   </div>
                 </div>
-              ))
-            )}
-          </div>
 
-          <div className="rounded-[24px] border border-gray-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fafc_100%)] p-5 shadow-soft-sm">
-            <p className="text-[11px] font-black uppercase tracking-[0.16em] text-gray-400">
-              {editingAddressId ? "Cập nhật địa chỉ" : "Địa chỉ mới"}
-            </p>
-            <h3 className="mt-2 text-xl font-black text-gray-900">
-              {editingAddressId ? "Chỉnh sửa sổ địa chỉ" : "Thêm địa chỉ giao hàng"}
-            </h3>
+                <div className="mt-4 inline-flex items-start gap-2 text-sm font-medium text-slate-600">
+                  <MapPinHouse className="mt-0.5 h-4 w-4 text-violet-600" />
+                  <span>{address.addressLine}</span>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </section>
+
+      {isAddressModalOpen ? (
+        <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-950/45 px-4">
+          <div className="w-full max-w-2xl rounded-[24px] border border-gray-200 bg-white p-6 shadow-soft-lg">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-[11px] font-black uppercase tracking-[0.16em] text-gray-400">
+                  {editingAddressId ? "Cập nhật địa chỉ" : "Địa chỉ mới"}
+                </p>
+                <h3 className="mt-2 text-xl font-black text-gray-900">
+                  {editingAddressId ? "Chỉnh sửa sổ địa chỉ" : "Thêm địa chỉ giao hàng"}
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={closeAddressModal}
+                className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-500 transition-all hover:bg-slate-50 hover:text-gray-900"
+                aria-label="Đóng"
+              >
+                <X className="h-4.5 w-4.5" />
+              </button>
+            </div>
 
             <div className="mt-5 grid gap-4">
               <div className="grid gap-2">
                 <label className="text-sm font-bold text-slate-600">Nhãn</label>
-                <select
-                  value={selectedLabelValue}
-                  onChange={(event) => {
-                    if (event.target.value === "__custom__") {
-                      openCustomLabelModal();
-                      return;
-                    }
+                <div className="relative">
+                  <select
+                    value={selectedLabelValue}
+                    onChange={(event) => {
+                      if (event.target.value === "__custom__") {
+                        openCustomLabelModal();
+                        return;
+                      }
 
-                    setAddressForm((current) => ({
-                      ...current,
-                      label: event.target.value,
-                    }));
-                  }}
-                  className={inputClass}
-                >
-                  {labelOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
+                      setAddressForm((current) => ({
+                        ...current,
+                        label: event.target.value,
+                      }));
+                    }}
+                    className={selectClass}
+                  >
+                    {labelOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+                </div>
               </div>
 
               <div className="grid gap-2 sm:grid-cols-2">
@@ -457,14 +511,20 @@ export const AddressBookTab = (): JSX.Element => {
                     value={addressForm.recipientName}
                     onChange={(event) => setAddressForm((current) => ({ ...current, recipientName: event.target.value }))}
                     className={inputClass}
+                    placeholder="Tên người nhận (trên 2 ký tự)"
                   />
                 </div>
                 <div className="grid gap-2">
                   <label className="text-sm font-bold text-slate-600">Số điện thoại</label>
                   <input
                     value={addressForm.recipientPhone}
-                    onChange={(event) => setAddressForm((current) => ({ ...current, recipientPhone: event.target.value }))}
+                    onChange={(event) =>
+                      setAddressForm((current) => ({ ...current, recipientPhone: event.target.value.replace(/[^\d]/g, "").slice(0, 10) }))
+                    }
+                    inputMode="numeric"
+                    maxLength={10}
                     className={inputClass}
+                    placeholder="VD: 0912345678"
                   />
                 </div>
               </div>
@@ -472,53 +532,59 @@ export const AddressBookTab = (): JSX.Element => {
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="grid gap-2">
                   <label className="text-sm font-bold text-slate-600">Tỉnh/Thành phố</label>
-                  <select
-                    value={addressForm.provinceCode}
-                    onChange={(event) => {
-                      const province = provinces.find((item) => item.codename === event.target.value);
-                      setAddressForm((current) => ({
-                        ...current,
-                        provinceCode: event.target.value,
-                        provinceName: province?.name ?? "",
-                        wardCode: "",
-                        wardName: "",
-                      }));
-                    }}
-                    className={inputClass}
-                  >
-                    <option value="">Chọn tỉnh/thành phố</option>
-                    {provinceOptions.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="relative">
+                    <select
+                      value={addressForm.provinceCode}
+                      onChange={(event) => {
+                        const province = provinces.find((item) => item.codename === event.target.value);
+                        setAddressForm((current) => ({
+                          ...current,
+                          provinceCode: event.target.value,
+                          provinceName: province?.name ?? "",
+                          wardCode: "",
+                          wardName: "",
+                        }));
+                      }}
+                      className={selectClass}
+                    >
+                      <option value="">Chọn tỉnh/thành phố</option>
+                      {provinceOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+                  </div>
                 </div>
 
                 <div className="grid gap-2">
                   <label className="text-sm font-bold text-slate-600">Xã/Phường</label>
-                  <select
-                    value={addressForm.wardCode}
-                    onChange={(event) => {
-                      const ward = wardOptions.find((item) => item.value === event.target.value);
-                      setAddressForm((current) => ({
-                        ...current,
-                        wardCode: event.target.value,
-                        wardName: ward?.label ?? "",
-                      }));
-                    }}
-                    disabled={!addressForm.provinceCode}
-                    className={`${inputClass} disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400`}
-                  >
-                    <option value="">
-                      {addressForm.provinceCode ? "Chọn xã/phường" : "Chọn tỉnh/thành phố trước"}
-                    </option>
-                    {wardOptions.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
+                  <div className="relative">
+                    <select
+                      value={addressForm.wardCode}
+                      onChange={(event) => {
+                        const ward = wardOptions.find((item) => item.value === event.target.value);
+                        setAddressForm((current) => ({
+                          ...current,
+                          wardCode: event.target.value,
+                          wardName: ward?.label ?? "",
+                        }));
+                      }}
+                      disabled={!addressForm.provinceCode}
+                      className={`${selectClass} disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400`}
+                    >
+                      <option value="">
+                        {addressForm.provinceCode ? "Chọn xã/phường" : "Chọn tỉnh/thành phố trước"}
                       </option>
-                    ))}
-                  </select>
+                      {wardOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+                  </div>
                 </div>
               </div>
 
@@ -528,6 +594,7 @@ export const AddressBookTab = (): JSX.Element => {
                   value={addressForm.houseNumber}
                   onChange={(event) => setAddressForm((current) => ({ ...current, houseNumber: event.target.value }))}
                   className={inputClass}
+                  placeholder="Địa chỉ chi tiết (trên 2 ký tự)"
                 />
               </div>
 
@@ -546,25 +613,59 @@ export const AddressBookTab = (): JSX.Element => {
                   type="button"
                   onClick={() => void handleSaveAddress()}
                   disabled={addressSaving}
-                  className="rounded-[16px] border border-gray-200 bg-violet-500 px-5 py-3 text-sm font-extrabold text-white shadow-soft-sm disabled:opacity-60"
+                  className="group relative inline-flex h-12 min-w-[180px] items-center justify-center overflow-hidden rounded-[16px] border border-gray-200 bg-gradient-to-r from-[#7C63E6] via-[#8F79EB] to-[#6F56E0] px-6 text-sm font-extrabold text-white shadow-[0_10px_22px_rgba(124,99,230,0.28)] transition-all duration-200 hover:-translate-y-[1px] hover:brightness-110 hover:shadow-[0_14px_28px_rgba(124,99,230,0.34)] active:translate-y-0 active:shadow-[0_8px_18px_rgba(124,99,230,0.24)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0"
                 >
+                  <span className="pointer-events-none absolute -left-10 top-0 h-full w-14 -skew-x-12 bg-white/25 blur-[1px] transition-all duration-300 group-hover:left-[110%]" />
                   {addressSaving ? "Đang lưu..." : editingAddressId ? "Lưu cập nhật" : "Thêm địa chỉ"}
                 </button>
-                {editingAddressId ? (
-                  <button
-                    type="button"
-                    onClick={resetAddressForm}
-                    className="rounded-[16px] border border-gray-200 bg-white px-4 py-3 text-sm font-extrabold text-gray-900"
-                  >
-                    Hủy chỉnh sửa
-                  </button>
-                ) : null}
+                <button
+                  type="button"
+                  onClick={closeAddressModal}
+                  className="inline-flex h-12 min-w-[92px] items-center justify-center rounded-[16px] border border-gray-200 bg-white px-5 text-sm font-extrabold text-gray-900 shadow-soft-sm transition-all duration-200 hover:-translate-y-[1px] hover:bg-slate-50 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 focus-visible:ring-offset-2"
+                >
+                  Hủy
+                </button>
                 {addressMsg ? <span className="text-sm font-bold text-slate-600">{addressMsg}</span> : null}
               </div>
             </div>
           </div>
         </div>
-      </section>
+      ) : null}
+
+      {deleteConfirmAddress ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 px-4">
+          <div className="w-full max-w-md rounded-[24px] border border-gray-200 bg-white p-6 shadow-soft-lg">
+            <p className="text-[11px] font-black uppercase tracking-[0.16em] text-red-500">Xác nhận xóa</p>
+            <h3 className="mt-2 text-xl font-black text-gray-900">Bạn có chắc muốn xóa địa chỉ này?</h3>
+            <p className="mt-3 text-sm font-medium text-slate-600">
+              <span className="font-bold text-gray-900">{deleteConfirmAddress.label}</span> -{" "}
+              {deleteConfirmAddress.recipientName}
+            </p>
+            <p className="mt-1 text-sm font-medium text-slate-500">{deleteConfirmAddress.addressLine}</p>
+
+            <div className="mt-6 flex items-center justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setDeleteConfirmAddress(null)}
+                className="rounded-[14px] border border-gray-200 bg-white px-4 py-2.5 text-sm font-extrabold text-gray-900"
+              >
+                Hủy
+              </button>
+              <button
+                type="button"
+                onClick={async () => {
+                  await handleDeleteAddress(deleteConfirmAddress.addressId);
+                  setDeleteConfirmAddress(null);
+                }}
+                className="inline-flex items-center gap-1 rounded-[14px] border border-red-200 bg-red-50 px-4 py-2.5 text-sm font-extrabold text-red-700"
+              >
+                <Trash2 className="h-4 w-4" />
+                Xóa địa chỉ
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
 
       {isCustomLabelModalOpen ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 px-4">

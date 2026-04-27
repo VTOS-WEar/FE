@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
-import { ChevronRight, GraduationCap, History, LifeBuoy, LogOut, MapPinHouse, ScanLine, Settings, ShoppingBag, Star, User, WalletCards } from "lucide-react";
+import { ChevronDown, ChevronRight, GraduationCap, History, LifeBuoy, LogOut, MapPinHouse, ScanLine, Settings, ShoppingBag, Star, User, WalletCards } from "lucide-react";
 import { GuestLayout } from "../../components/layout/GuestLayout";
+import { PublicPageBreadcrumb } from "../../components/PublicPageBreadcrumb";
 import { getParentProfile } from "../../lib/api/users";
 
 const SECTION_ITEMS = [
@@ -16,6 +17,17 @@ const SECTION_ITEMS = [
   { label: "Hỗ trợ", icon: LifeBuoy, to: "/parentprofile/support" },
   { label: "Cài đặt", icon: Settings, to: "/parentprofile/settings" },
 ];
+
+const MENU_GROUPS: Array<{ title: string; items: string[] }> = [
+  { title: "Thông tin", items: ["/parentprofile/account-group", "/parentprofile/address-book", "/parentprofile/students"] },
+  { title: "Mua sắm", items: ["/parentprofile/orders", "/parentprofile/wallet"] },
+  { title: "Dịch vụ", items: ["/parentprofile/history", "/parentprofile/bodygram-history", "/parentprofile/reviews", "/parentprofile/support"] },
+];
+
+const ACCOUNT_CHILDREN = [
+  { label: "Thông tin tài khoản", to: "/parentprofile/account" },
+  { label: "Cài đặt tài khoản", to: "/parentprofile/settings" },
+] as const;
 
 const SECTION_MATCHERS: Record<string, string[]> = {
   "/parentprofile/account": ["/parentprofile/account"],
@@ -36,10 +48,23 @@ type ParentUser = {
   avatar?: string | null;
 };
 
+const DEFAULT_PARENT_AVATAR =
+  "data:image/svg+xml;utf8," +
+  encodeURIComponent(
+    "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'>" +
+      "<rect width='96' height='96' fill='#EDE9FE'/>" +
+      "<circle cx='48' cy='34' r='16' fill='#A78BFA'/>" +
+      "<path d='M22 80c2-14 12-24 26-24s24 10 26 24' fill='#8B5CF6'/>" +
+    "</svg>",
+  );
+
 export const ParentProfile = (): JSX.Element => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({
+    account: true,
+  });
   const [user, setUser] = useState<ParentUser | null>(() => {
     try {
       const raw = localStorage.getItem("user") ?? sessionStorage.getItem("user");
@@ -103,16 +128,12 @@ export const ParentProfile = (): JSX.Element => {
     }, 350);
   };
 
-  const initials = useMemo(() => {
-    const value = user?.fullName?.trim();
-    if (!value) return "PH";
-    return value
-      .split(" ")
-      .map((part) => part[0])
-      .join("")
-      .slice(-2)
-      .toUpperCase();
-  }, [user?.fullName]);
+  useEffect(() => {
+    const accountActive = ACCOUNT_CHILDREN.some((child) =>
+      (SECTION_MATCHERS[child.to] ?? [child.to]).some((path) => location.pathname.startsWith(path)),
+    );
+    setOpenGroups((prev) => ({ ...prev, account: accountActive }));
+  }, [location.pathname]);
 
   if (!user) {
     return <div />;
@@ -121,13 +142,13 @@ export const ParentProfile = (): JSX.Element => {
   return (
     <GuestLayout bgColor="#f8fafc" mainClassName="flex-1">
       <div className="relative z-10 mx-auto max-w-[1320px] px-4 py-6 md:py-8 lg:px-8">
-        <nav className="mb-5 flex items-center gap-2 text-sm font-bold">
-          <a href="/" className="text-gray-500 transition-colors hover:text-gray-800">
-            Trang chủ
-          </a>
-          <span className="text-gray-400">/</span>
-          <span className="text-gray-900">Khu vực phụ huynh</span>
-        </nav>
+        <PublicPageBreadcrumb
+          className="mb-5"
+          items={[
+            { label: "Trang chủ", to: "/homepage" },
+            { label: "Khu vực phụ huynh" },
+          ]}
+        />
 
         <div className="grid gap-6 xl:grid-cols-[320px_minmax(0,1fr)] xl:items-start">
           <aside className="xl:sticky xl:top-20">
@@ -135,11 +156,14 @@ export const ParentProfile = (): JSX.Element => {
               <div className="border-b border-slate-100 bg-[linear-gradient(180deg,#ffffff_0%,#f8fafc_100%)] px-5 py-5 sm:px-6">
                 <div className="flex items-center gap-4">
                   <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-[22px] border border-gray-200 bg-violet-50 shadow-soft-sm">
-                    {user.avatar ? (
-                      <img src={user.avatar} alt="" className="h-full w-full object-cover" />
-                    ) : (
-                      <span className="text-xl font-black text-violet-700">{initials}</span>
-                    )}
+                    <img
+                      src={user.avatar || DEFAULT_PARENT_AVATAR}
+                      alt={user.fullName || "Parent avatar"}
+                      className="h-full w-full object-cover"
+                      onError={(event) => {
+                        event.currentTarget.src = DEFAULT_PARENT_AVATAR;
+                      }}
+                    />
                   </div>
 
                   <div className="min-w-0 flex-1">
@@ -151,38 +175,116 @@ export const ParentProfile = (): JSX.Element => {
               </div>
 
               <div className="space-y-3 px-4 py-4 sm:px-5">
-                <div className="space-y-2">
-                  {SECTION_ITEMS.map((item) => {
-                    const Icon = item.icon;
-                    const isActive = (SECTION_MATCHERS[item.to] ?? [item.to]).some((path) => location.pathname.startsWith(path));
-                    return (
-                      <NavLink key={item.to} to={item.to}>
-                        {() => (
-                          <div
-                            className={`flex items-center gap-3 rounded-[20px] border px-4 py-3 transition-all ${
-                              isActive
-                                ? "border-violet-200 bg-violet-50 text-slate-950 shadow-soft-sm"
-                                : "border-transparent bg-slate-50 text-slate-600 hover:border-slate-200 hover:bg-white"
-                            }`}
-                          >
-                            <div
-                              className={`flex h-11 w-11 items-center justify-center rounded-[16px] border ${
-                                isActive
-                                  ? "border-violet-100 bg-white text-violet-700"
-                                  : "border-slate-200 bg-white text-slate-500"
-                              }`}
-                            >
-                              <Icon className="h-4.5 w-4.5" />
-                            </div>
-                            <div className="min-w-0 flex-1">
-                              <p className="truncate text-sm font-extrabold">{item.label}</p>
-                            </div>
-                            {isActive ? <ChevronRight className="h-4 w-4 text-violet-600" /> : null}
-                          </div>
-                        )}
-                      </NavLink>
-                    );
-                  })}
+                <div className="space-y-3">
+                  {MENU_GROUPS.map((group) => (
+                    <div key={group.title} className="space-y-1">
+                      <p className="px-2 text-[10px] font-black uppercase tracking-[0.14em] text-slate-500">
+                        {group.title}
+                      </p>
+                      <div className="space-y-0.5">
+                        {group.items.map((to) => {
+                          if (to === "/parentprofile/account-group") {
+                            const isAccountActive = ACCOUNT_CHILDREN.some((child) =>
+                              (SECTION_MATCHERS[child.to] ?? [child.to]).some((path) =>
+                                location.pathname.startsWith(path),
+                              ),
+                            );
+                            const isOpen = openGroups.account;
+                            return (
+                              <div key={to} className="space-y-1.5">
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    setOpenGroups((prev) => ({ ...prev, account: !prev.account }))
+                                  }
+                                  className={`flex w-full items-center gap-2.5 rounded-[12px] border px-3 py-2 transition-all ${
+                                    isAccountActive
+                                      ? "border-violet-200 bg-violet-50 text-slate-950 shadow-soft-sm"
+                                      : "border-transparent bg-transparent text-slate-600 hover:border-slate-200/80 hover:bg-slate-50"
+                                  }`}
+                                >
+                                  <div
+                                    className={`flex h-8 w-8 items-center justify-center rounded-[10px] border ${
+                                      isAccountActive
+                                        ? "border-violet-100 bg-white text-violet-700"
+                                        : "border-transparent bg-transparent text-slate-400"
+                                    }`}
+                                  >
+                                    <User className="h-4 w-4" />
+                                  </div>
+                                  <div className="min-w-0 flex-1 text-left">
+                                    <p className="truncate text-sm font-extrabold">Tài khoản</p>
+                                  </div>
+                                  <ChevronDown
+                                    className={`h-4 w-4 transition-transform ${
+                                      isOpen ? "rotate-180 text-violet-600" : "text-slate-400"
+                                    }`}
+                                  />
+                                </button>
+
+                                {isOpen ? (
+                                  <div className="ml-4 space-y-1 border-l border-slate-200 pl-3">
+                                    {ACCOUNT_CHILDREN.map((child) => {
+                                      const isChildActive = (SECTION_MATCHERS[child.to] ?? [child.to]).some((path) =>
+                                        location.pathname.startsWith(path),
+                                      );
+                                      return (
+                                        <NavLink key={child.to} to={child.to}>
+                                          <div
+                                            className={`flex items-center rounded-[10px] px-2.5 py-2 text-sm font-bold transition-colors ${
+                                              isChildActive
+                                                ? "bg-violet-50 text-violet-700"
+                                                : "text-slate-500 hover:bg-slate-50 hover:text-slate-700"
+                                            }`}
+                                          >
+                                            {child.label}
+                                          </div>
+                                        </NavLink>
+                                      );
+                                    })}
+                                  </div>
+                                ) : null}
+                              </div>
+                            );
+                          }
+
+                          const item = SECTION_ITEMS.find((entry) => entry.to === to);
+                          if (!item) return null;
+                          const Icon = item.icon;
+                          const isActive = (SECTION_MATCHERS[item.to] ?? [item.to]).some((path) =>
+                            location.pathname.startsWith(path),
+                          );
+                          return (
+                            <NavLink key={item.to} to={item.to}>
+                              {() => (
+                                <div
+                                  className={`flex items-center gap-2.5 rounded-[12px] border px-3 py-2 transition-all ${
+                                    isActive
+                                      ? "border-violet-200 bg-violet-50 text-slate-950 shadow-soft-sm"
+                                      : "border-transparent bg-transparent text-slate-600 hover:border-slate-200/80 hover:bg-slate-50"
+                                  }`}
+                                >
+                                  <div
+                                    className={`flex h-8 w-8 items-center justify-center rounded-[10px] border ${
+                                      isActive
+                                        ? "border-violet-100 bg-white text-violet-700"
+                                        : "border-transparent bg-transparent text-slate-400"
+                                    }`}
+                                  >
+                                    <Icon className="h-4 w-4" />
+                                  </div>
+                                  <div className="min-w-0 flex-1">
+                                    <p className="truncate text-sm font-extrabold">{item.label}</p>
+                                  </div>
+                                  {isActive ? <ChevronRight className="h-4 w-4 text-violet-600" /> : null}
+                                </div>
+                              )}
+                            </NavLink>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
                 </div>
 
                 <button
@@ -197,7 +299,7 @@ export const ParentProfile = (): JSX.Element => {
             </div>
           </aside>
 
-          <section className="relative min-h-[420px] overflow-hidden rounded-[30px] border border-gray-200 bg-white shadow-soft-md">
+          <section className="relative min-h-screen overflow-hidden rounded-[30px] border border-gray-200 bg-white shadow-soft-md md:min-h-[560px] xl:min-h-[calc(100vh-140px)]">
             <div className="space-y-6 p-5 lg:p-8">
               <Outlet />
             </div>

@@ -156,8 +156,20 @@ function SearchableSelect({
     );
 }
 
-const SectionHeader = ({ title, icon: Icon, subtitle, badge }: { title: string; icon: any; subtitle?: string; badge?: string }) => (
-  <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+const SectionHeader = ({
+  title,
+  icon: Icon,
+  subtitle,
+  badge,
+  className = "mb-8",
+}: {
+  title: string;
+  icon: any;
+  subtitle?: string;
+  badge?: string;
+  className?: string;
+}) => (
+  <div className={`${className} flex flex-col md:flex-row md:items-end justify-between gap-4`}>
     <div className="space-y-1">
       <div className="flex items-center gap-3">
         <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-emerald-400 shadow-soft-sm">
@@ -396,7 +408,7 @@ export default function ProductList() {
             </motion.h1>
 
             <motion.p custom={2} variants={fadeUp} initial="hidden" animate="visible"
-                className="text-base text-gray-600 max-w-2xl font-medium"
+                className="w-full text-base text-gray-600 font-medium"
             >
                 Tìm kiếm sản phẩm theo tên hoặc lọc theo trường học để bắt đầu trang bị cho năm học mới.
             </motion.p>
@@ -531,11 +543,12 @@ export default function ProductList() {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
               >
-                <div className="flex flex-col md:flex-row md:items-end justify-between border-b-2 border-dashed border-gray-200/20 pb-6 mb-10 gap-6">
+                <div className="flex flex-col md:flex-row md:items-start justify-between border-b-2 border-dashed border-gray-200/20 pb-6 mb-10 gap-4">
                   <SectionHeader 
                     title="Tất cả sản phẩm" 
                     icon={LayoutGrid} 
                     subtitle="Toàn bộ danh mục đồng phục hiện có."
+                    className="mb-0"
                   />
                   <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-1.5 shadow-sm">
                     <Tag className="h-3 w-3 text-gray-900" />
@@ -545,7 +558,7 @@ export default function ProductList() {
                   </div>
                 </div>
                 
-                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+                <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5">
                   {filteredData.allOutfits.map((p) => (
                     <ProductCard key={"all-" + p.id} product={p} />
                   ))}
