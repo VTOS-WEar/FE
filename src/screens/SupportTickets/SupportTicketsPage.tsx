@@ -285,6 +285,7 @@ function SupportTicketsPanel({ role }: { role: RoleMode }): JSX.Element {
                         ) : (
                             <div className="px-5 py-12 text-center">
                                 <SearchCheck className="mx-auto h-10 w-10 text-slate-300" />
+                                <p className="mt-3 text-sm font-bold text-slate-500">Chưa có ticket nào</p>
                             </div>
                         )}
                         {totalPages > 1 ? (
@@ -328,7 +329,9 @@ function SupportTicketsPanel({ role }: { role: RoleMode }): JSX.Element {
                                 </div>
                             </div>
                         ) : (
-                            null
+                            <div className="mt-4 rounded-xl border border-dashed border-slate-200 bg-slate-50 p-4 text-sm font-bold text-slate-500">
+                                Chưa có detail nào
+                            </div>
                         )}
                     </section>
                 </aside>
