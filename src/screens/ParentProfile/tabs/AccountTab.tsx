@@ -285,7 +285,6 @@ export const AccountTab = (): JSX.Element => {
                 </button>
                 <input ref={avatarInputRef} type="file" accept="image/*" onChange={handleAvatarChange} className="hidden" />
               </div>
-              <h1 className="mt-3 text-xl font-black text-gray-900">{fullName || "Phụ huynh"}</h1>
               {avatarMsg ? <p className="mt-2 text-xs font-bold text-slate-700">{avatarMsg}</p> : null}
               </div>
             </div>
