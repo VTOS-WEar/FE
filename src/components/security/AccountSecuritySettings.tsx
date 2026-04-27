@@ -182,20 +182,18 @@ export const AccountSecuritySettings = ({
             {is2FAEnabled === null ? "Đang tải trạng thái 2FA" : is2FAEnabled ? "2FA đang bật" : "2FA đang tắt"}
           </div>
         </div>
-      </section>
 
-      <section className="rounded-[24px] border border-gray-200 bg-white p-5 shadow-soft-sm lg:p-6">
-        <div className="flex items-start gap-3">
-          <div className={`rounded-2xl p-3 ${is2FAEnabled ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"}`}>
-            {is2FAEnabled ? <ShieldCheck className="h-5 w-5" /> : <ShieldAlert className="h-5 w-5" />}
+        <div className="mt-6 space-y-4 border-t border-gray-100 pt-5">
+          <div className="flex items-start gap-3">
+            <div className={`rounded-2xl p-3 ${is2FAEnabled ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"}`}>
+              {is2FAEnabled ? <ShieldCheck className="h-5 w-5" /> : <ShieldAlert className="h-5 w-5" />}
+            </div>
+            <div>
+              <p className="text-[11px] font-black uppercase tracking-[0.16em] text-gray-400">Xác thực 2 bước</p>
+              <h2 className="mt-2 text-2xl font-black text-gray-900">Quản lý 2FA</h2>
+            </div>
           </div>
-          <div>
-            <p className="text-[11px] font-black uppercase tracking-[0.16em] text-gray-400">Xác thực 2 bước</p>
-            <h2 className="mt-2 text-2xl font-black text-gray-900">Quản lý 2FA</h2>
-          </div>
-        </div>
 
-        <div className="mt-6 space-y-4">
           <div
             className={`rounded-[22px] border p-5 ${
               is2FAEnabled ? "border-emerald-200 bg-emerald-50" : "border-amber-200 bg-amber-50"
