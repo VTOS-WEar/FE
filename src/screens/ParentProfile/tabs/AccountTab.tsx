@@ -420,7 +420,7 @@ export const AccountTab = (): JSX.Element => {
             <h2 className="mt-2 text-2xl font-black text-gray-900">Thông tin liên hệ</h2>
           </div>
 
-          <div className="mt-5 space-y-4">
+          <div className="mt-5 grid gap-4 lg:grid-cols-2">
             <div className="rounded-[22px] border border-gray-200 bg-slate-50 p-4 sm:p-5">
               <div className="flex items-center gap-3">
                 <div className="rounded-[16px] border border-gray-200 bg-white p-3 text-violet-700">
