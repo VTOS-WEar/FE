@@ -16,7 +16,7 @@ const DEFAULT_CHILD_AVATAR =
   "data:image/svg+xml;utf8," +
   encodeURIComponent(
     "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 320'>" +
-      "<rect width='240' height='320' rx='28' fill='#EDE9FE'/>" +
+      "<rect width='240' height='320' fill='#EDE9FE'/>" +
       "<circle cx='120' cy='112' r='48' fill='#A78BFA'/>" +
       "<path d='M44 286c8-44 36-76 76-76s68 32 76 76' fill='#8B5CF6'/>" +
     "</svg>",
