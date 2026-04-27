@@ -10,6 +10,19 @@ import { OutfitOrderModal } from "../../components/outfits/OutfitOrderModal";
 import { formatRating } from "../../lib/utils/format";
 
 const formatCurrency = (value: number) => `${value.toLocaleString("vi-VN")} ₫`;
+const SIZE_ORDER = ["XXS", "XS", "S", "M", "L", "XL", "XXL", "3XL", "4XL"] as const;
+
+const sortSizes = (sizes: string[]) =>
+    [...sizes].sort((a, b) => {
+        const normalize = (value: string) => value.trim().toUpperCase();
+        const ai = SIZE_ORDER.indexOf(normalize(a) as (typeof SIZE_ORDER)[number]);
+        const bi = SIZE_ORDER.indexOf(normalize(b) as (typeof SIZE_ORDER)[number]);
+
+        if (ai === -1 && bi === -1) return normalize(a).localeCompare(normalize(b));
+        if (ai === -1) return 1;
+        if (bi === -1) return -1;
+        return ai - bi;
+    });
 
 export function SemesterCatalog(): JSX.Element {
     const { id } = useParams<{ id: string }>();
@@ -203,7 +216,7 @@ export function SemesterCatalog(): JSX.Element {
                                             <h3 className="text-lg font-extrabold text-gray-900">{outfit.outfitName}</h3>
                                             <p className="mt-1 break-words text-xs font-medium text-gray-500">{outfit.description || "Đồng phục được nhà trường xác nhận cho học kỳ hiện tại."}</p>
                                         </div>
-                                        <div className="flex flex-wrap gap-2">{outfit.sizes.map((size) => <span key={size} className="rounded-full border border-gray-200 bg-slate-50 px-3 py-1 text-[11px] font-bold text-gray-600">{size}</span>)}</div>
+                                        <div className="flex flex-wrap gap-2">{sortSizes(outfit.sizes).map((size) => <span key={size} className="rounded-full border border-gray-200 bg-slate-50 px-3 py-1 text-[11px] font-bold text-gray-600">{size}</span>)}</div>
                                         <div className="grid gap-3 sm:grid-cols-2">
                                             <div className="rounded-[16px] border border-gray-200 bg-slate-50 p-3"><p className="text-[10px] font-black uppercase tracking-[0.14em] text-gray-400">Giá từ</p><p className="mt-1 text-xl font-extrabold text-violet-600">{formatCurrency(bestProvider?.price ?? outfit.price)}</p></div>
                                             <div className="rounded-[16px] border border-gray-200 bg-slate-50 p-3"><p className="text-[10px] font-black uppercase tracking-[0.14em] text-gray-400">Nhà cung cấp</p><p className="mt-1 text-xl font-extrabold text-gray-900">{outfit.providers.length}</p></div>
