@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { ArrowLeft, MapPinHouse, Pencil, Plus, Trash2 } from "lucide-react";
+import { ArrowLeft, MapPinHouse, Pencil, Plus, Trash2, X } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   createParentAddress,
@@ -432,12 +432,24 @@ export const AddressBookTab = (): JSX.Element => {
       {isAddressModalOpen ? (
         <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-950/45 px-4">
           <div className="w-full max-w-2xl rounded-[24px] border border-gray-200 bg-white p-6 shadow-soft-lg">
-            <p className="text-[11px] font-black uppercase tracking-[0.16em] text-gray-400">
-              {editingAddressId ? "Cập nhật địa chỉ" : "Địa chỉ mới"}
-            </p>
-            <h3 className="mt-2 text-xl font-black text-gray-900">
-              {editingAddressId ? "Chỉnh sửa sổ địa chỉ" : "Thêm địa chỉ giao hàng"}
-            </h3>
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-[11px] font-black uppercase tracking-[0.16em] text-gray-400">
+                  {editingAddressId ? "Cập nhật địa chỉ" : "Địa chỉ mới"}
+                </p>
+                <h3 className="mt-2 text-xl font-black text-gray-900">
+                  {editingAddressId ? "Chỉnh sửa sổ địa chỉ" : "Thêm địa chỉ giao hàng"}
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={closeAddressModal}
+                className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-500 transition-all hover:bg-slate-50 hover:text-gray-900"
+                aria-label="Đóng"
+              >
+                <X className="h-4.5 w-4.5" />
+              </button>
+            </div>
 
             <div className="mt-5 grid gap-4">
               <div className="grid gap-2">
