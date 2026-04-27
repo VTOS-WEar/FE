@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { ShoppingBag, CreditCard, Clock, CheckCircle, XCircle, ChevronDown, Star, Package, Calendar, ChevronRight, User, RotateCcw } from "lucide-react";
+import { ShoppingBag, CreditCard, Clock, CheckCircle, XCircle, ChevronDown, Star, Package, Calendar, ChevronRight, User, RotateCcw, AlertTriangle, Truck } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useToast } from "../../../contexts/ToastContext";
 import { cn } from "@/lib/utils";
@@ -25,46 +25,28 @@ function statusBadge(status: string) {
     const s = status.toLowerCase();
     switch (s) {
         case "paid":
+        case "completed":
             return { label: "Đã thanh toán", bg: "bg-emerald-50", text: "text-emerald-700", border: "border-emerald-200", icon: <CreditCard className="w-3 h-3" /> };
         case "confirmed":
             return { label: "Đã xác nhận", bg: "bg-blue-50", text: "text-blue-700", border: "border-blue-200", icon: <CheckCircle className="w-3 h-3" /> };
         case "processed":
             return { label: "Đang xử lý", bg: "bg-indigo-50", text: "text-indigo-700", border: "border-indigo-200", icon: <Package className="w-3 h-3" /> };
         case "shipped":
-            return { label: "Đang giao", bg: "bg-cyan-50", text: "text-cyan-700", border: "border-cyan-200", icon: <TruckIcon /> };
+            return { label: "Đang giao", bg: "bg-cyan-50", text: "text-cyan-700", border: "border-cyan-200", icon: <Truck className="w-3 h-3" /> };
         case "delivered":
             return { label: "Đã nhận", bg: "bg-green-50", text: "text-green-700", border: "border-green-200", icon: <CheckCircle className="w-3 h-3" /> };
 
         case "pending":
             return { label: "Chờ thanh toán", bg: "bg-amber-50", text: "text-amber-700", border: "border-amber-200", icon: <Clock className="w-3 h-3" /> };
         case "refunded":
-            return { label: "Đã hoàn tiền", bg: "bg-rose-50", text: "text-rose-700", border: "border-rose-200", icon: <RefreshStatusIcon /> };
+            return { label: "Đã hoàn tiền", bg: "bg-violet-50", text: "text-violet-700", border: "border-violet-200", icon: <RotateCcw className="w-3 h-3" /> };
         case "cancelled":
-        case "failed":
             return { label: "Đã hủy", bg: "bg-red-50", text: "text-red-700", border: "border-red-200", icon: <XCircle className="w-3 h-3" /> };
+        case "failed":
+            return { label: "Thất bại", bg: "bg-red-50", text: "text-red-700", border: "border-red-200", icon: <AlertTriangle className="w-3 h-3" /> };
         default:
             return { label: status, bg: "bg-gray-50", text: "text-gray-600", border: "border-gray-200", icon: null };
     }
-}
-
-function TruckIcon() {
-    return (
-        <svg viewBox="0 0 24 24" className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <rect x="1" y="3" width="15" height="13" rx="2" />
-            <path d="M16 8h3l4 4v4h-7z" />
-            <circle cx="5.5" cy="18.5" r="1.5" />
-            <circle cx="18.5" cy="18.5" r="1.5" />
-        </svg>
-    );
-}
-
-function RefreshStatusIcon() {
-    return (
-        <svg viewBox="0 0 24 24" className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M21 12a9 9 0 1 1-2.64-6.36" />
-            <path d="M21 3v6h-6" />
-        </svg>
-    );
 }
 
 /* ── Order Status Stepper — NB Style ── */
@@ -88,9 +70,9 @@ function OrderStatusStepper({ orderStatus }: { orderStatus: string }) {
     if (isCancelled) {
         const isRefunded = orderStatus === "Refunded";
         return (
-            <div className={`mt-4 nb-alert ${isRefunded ? "bg-rose-50 border-rose-200" : "nb-alert-error"}`}>
+            <div className={`mt-4 nb-alert ${isRefunded ? "bg-violet-50 border-violet-200" : "nb-alert-error"}`}>
                 {isRefunded ? (
-                    <RotateCcw className="w-5 h-5 flex-shrink-0 text-rose-700" />
+                    <RotateCcw className="w-5 h-5 flex-shrink-0 text-violet-700" />
                 ) : (
                     <XCircle className="w-5 h-5 flex-shrink-0" />
                 )}
@@ -276,7 +258,7 @@ function OrderCard({
                                     : p.paymentStatus === 'Cancelled'
                                         ? 'text-red-600'
                                         : p.paymentStatus === 'Refunded'
-                                            ? 'text-rose-600'
+                                            ? 'text-violet-700'
                                             : 'text-amber-600'
                                     }`}>
                                     {p.paymentStatus === 'Paid' || p.paymentStatus === 'Completed'
@@ -325,7 +307,7 @@ function OrderCard({
 }
 
 /* ── Status Tabs ── */
-const ALL_STATUSES = ["Paid", "Confirmed", "Processed", "Shipped", "Delivered", "Cancelled"];
+const ALL_STATUSES = ["Paid", "Confirmed", "Processed", "Shipped", "Delivered", "Refunded", "Cancelled"];
 
 const STATUS_LABELS: Record<string, string> = {
     Paid: "Đã thanh toán",
@@ -333,6 +315,7 @@ const STATUS_LABELS: Record<string, string> = {
     Processed: "Đang xử lý",
     Shipped: "Đang giao",
     Delivered: "Đã nhận",
+    Refunded: "Đã hoàn tiền",
     Cancelled: "Đã hủy",
 };
 
@@ -360,10 +343,11 @@ function StatusTabs({
     }, [statusCounts]);
 
     return (
-        <div className="flex gap-2 overflow-x-auto pb-3 mb-4 pt-4">
+        <div className="mb-4 pt-4">
+            <div className="flex flex-wrap gap-2">
             <button
                 onClick={() => onStatusChange(null)}
-                className={`relative px-4 py-2 rounded-lg font-bold text-sm whitespace-nowrap transition-all ${selectedStatus === null
+                className={`relative min-w-[120px] px-4 py-2 rounded-lg font-bold text-sm whitespace-nowrap transition-all ${selectedStatus === null
                     ? "bg-purple-400 text-white border border-gray-200 shadow-sm"
                     : "bg-gray-100 text-gray-500 border-2 border-gray-300"
                     }`}
@@ -382,7 +366,7 @@ function StatusTabs({
                     <button
                         key={status}
                         onClick={() => onStatusChange(status)}
-                        className={`relative px-4 py-2 rounded-lg font-bold text-sm whitespace-nowrap transition-all ${selectedStatus === status
+                        className={`relative min-w-[120px] px-4 py-2 rounded-lg font-bold text-sm whitespace-nowrap transition-all ${selectedStatus === status
                             ? "bg-purple-400 text-white border border-gray-200 shadow-sm"
                             : "bg-gray-100 text-gray-500 border-2 border-gray-300"
                             }`}
@@ -396,6 +380,7 @@ function StatusTabs({
                     </button>
                 );
             })}
+            </div>
         </div>
     );
 }
