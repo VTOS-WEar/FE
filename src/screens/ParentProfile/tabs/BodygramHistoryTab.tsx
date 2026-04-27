@@ -291,10 +291,9 @@ export const BodygramHistoryTab = (): JSX.Element => {
   );
 
   return (
-    <div className="relative overflow-x-hidden pb-10 p-2">
-      <div className="pointer-events-none absolute left-[-48px] top-6 h-36 w-36 rounded-full bg-[#E9D5FF]/50 blur-3xl" />
-      <div className="pointer-events-none absolute right-[-64px] top-24 h-44 w-44 rounded-full bg-emerald-400/25 blur-3xl" />
-      <div className="flex animate-in fade-in slide-in-from-top-4 duration-500 flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6 overflow-x-auto pt-2 pb-4 custom-scrollbar">
+    <div className="overflow-x-hidden p-2 pb-10">
+      <div className="mb-6 rounded-[24px] border border-gray-200 bg-white p-4 shadow-soft-sm">
+        <div className="flex animate-in fade-in slide-in-from-top-4 duration-500 flex-col gap-4 md:flex-row md:items-center md:justify-between overflow-x-auto pt-1 pb-3 custom-scrollbar">
         <div className="flex gap-2">
           {children.map((child) => (
             <button
@@ -307,9 +306,9 @@ export const BodygramHistoryTab = (): JSX.Element => {
                 setSelectedCompareIds([]);
                 setCurrentPage(1);
               }}
-              className={`min-w-max rounded-xl border border-gray-200 px-3 py-1.5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-soft-sm active:translate-y-0 flex items-center gap-2 ${selectedChildId === child.childId
-                ? "bg-[#E9D5FF] shadow-sm"
-                : "bg-white hover:bg-gray-50"
+              className={`min-w-max rounded-xl border px-3 py-1.5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-soft-sm active:translate-y-0 flex items-center gap-2 ${selectedChildId === child.childId
+                ? "border-violet-200 bg-violet-50 shadow-soft-sm"
+                : "border-gray-200 bg-white hover:bg-gray-50"
                 }`}
             >
               <Avatar className="h-8 w-8 border border-gray-200">
@@ -329,10 +328,12 @@ export const BodygramHistoryTab = (): JSX.Element => {
         </div>
         <Link
           to={`/children/${selectedChildId}/scan`}
-          className="nb-btn nb-btn-purple whitespace-nowrap text-[13px] px-4 py-2 mr-2 !rounded-xl transition-all duration-300 hover:-translate-y-0.5 hover:shadow-soft-md"
+          className="group relative mr-2 inline-flex h-11 items-center justify-center overflow-hidden whitespace-nowrap rounded-xl border border-gray-200 bg-gradient-to-r from-[#7C63E6] via-[#8F79EB] to-[#6F56E0] px-4 text-[13px] font-extrabold text-white shadow-[0_8px_18px_rgba(124,99,230,0.25)] transition-all duration-200 hover:-translate-y-0.5 hover:brightness-110 hover:shadow-[0_12px_24px_rgba(124,99,230,0.32)]"
         >
+          <span className="pointer-events-none absolute -left-10 top-0 h-full w-14 -skew-x-12 bg-white/25 blur-[1px] transition-all duration-300 group-hover:left-[110%]" />
           Thực hiện Quét Body Mới
         </Link>
+      </div>
       </div>
 
       {error && (
@@ -347,7 +348,7 @@ export const BodygramHistoryTab = (): JSX.Element => {
           <div className="h-[350px] bg-gray-100 rounded-[24px] border border-gray-200"></div>
         </div>
       ) : allItems.length === 0 ? (
-        <div className="rounded-[24px] border-2 border-dashed border-gray-200 bg-gray-50 p-10 text-center">
+        <div className="rounded-[24px] border-2 border-dashed border-gray-200 bg-white p-10 text-center">
           <p className="text-lg font-extrabold text-gray-900">Chưa có lần scan Bodygram nào</p>
         </div>
       ) : (
