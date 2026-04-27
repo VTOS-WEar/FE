@@ -297,7 +297,7 @@ export function NavbarGuest() {
             <div className="mx-2 h-6 w-px bg-gray-900/15" />
 
             {/* ── Search Bar ── */}
-            <div className="relative flex min-w-0 flex-1 items-center gap-2" ref={searchContainerRef}>
+            <div className="relative flex min-w-0 flex-1 items-center gap-1.5" ref={searchContainerRef}>
               <Input
                 value={searchQuery}
                 onChange={e => onSearchChange(e.target.value)}
@@ -315,7 +315,7 @@ export function NavbarGuest() {
                   }
                 }}
                 onFocus={() => { if (searchResults) setShowDropdown(true) }}
-                placeholder="Tìm kiếm trường, đồng phục..."
+                placeholder="Tìm trường, đồng phục..."
                 className="h-9 border-none bg-transparent text-sm font-medium shadow-none focus-visible:ring-0 placeholder:text-gray-400"
               />
               <button
@@ -328,7 +328,7 @@ export function NavbarGuest() {
                     setShowDropdown(false)
                   }
                 }}
-                className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg border border-gray-200 bg-gray-900 text-white shadow-soft-sm transition-all duration-150 hover:shadow-soft-md hover:-translate-y-[1px] active:shadow-none active:translate-y-0"
+                className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border border-gray-200 bg-gray-900 text-white shadow-soft-sm transition-all duration-150 hover:shadow-soft-md hover:-translate-y-[1px] active:shadow-none active:translate-y-0"
               >
                 <Search size={16} />
               </button>
