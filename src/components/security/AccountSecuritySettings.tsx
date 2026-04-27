@@ -268,7 +268,7 @@ export const AccountSecuritySettings = ({
             <div className="flex flex-wrap items-center gap-3 border-t border-gray-100 pt-4">
               <button
                 onClick={() => navigate("/2fa-setup")}
-                className="group relative inline-flex h-11 items-center justify-center gap-2 overflow-hidden rounded-[12px] border border-gray-200 bg-gradient-to-r from-[#7C63E6] via-[#8F79EB] to-[#6F56E0] px-5 text-sm font-extrabold text-white shadow-[0_8px_18px_rgba(124,99,230,0.25)] transition-all duration-200 hover:-translate-y-[1px] hover:brightness-110 hover:shadow-[0_12px_24px_rgba(124,99,230,0.32)] active:translate-y-0 active:shadow-[0_7px_14px_rgba(124,99,230,0.22)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300 focus-visible:ring-offset-2"
+                className="group relative inline-flex h-11 min-w-[120px] items-center justify-center gap-2 overflow-hidden whitespace-nowrap rounded-[12px] border border-gray-200 bg-gradient-to-r from-[#7C63E6] via-[#8F79EB] to-[#6F56E0] px-5 text-sm font-extrabold text-white shadow-[0_8px_18px_rgba(124,99,230,0.25)] transition-all duration-200 hover:-translate-y-[1px] hover:brightness-110 hover:shadow-[0_12px_24px_rgba(124,99,230,0.32)] active:translate-y-0 active:shadow-[0_7px_14px_rgba(124,99,230,0.22)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300 focus-visible:ring-offset-2"
               >
                 <span className="pointer-events-none absolute -left-10 top-0 h-full w-14 -skew-x-12 bg-white/25 blur-[1px] transition-all duration-300 group-hover:left-[110%]" />
                 Bật 2FA
