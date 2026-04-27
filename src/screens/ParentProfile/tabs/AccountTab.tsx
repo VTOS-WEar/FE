@@ -262,37 +262,34 @@ export const AccountTab = (): JSX.Element => {
 
   return (
     <div className="space-y-5">
-      <section className="rounded-[28px] border border-gray-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fafc_100%)] p-6 shadow-soft-sm lg:p-7">
-        <div className="flex items-center gap-4">
-          <div className="relative">
-            <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-[24px] border border-gray-200 bg-violet-50 shadow-soft-sm">
-              {user.avatar ? (
-                <img src={user.avatar} alt="" className="h-full w-full object-cover" />
-              ) : (
-                <span className="text-3xl font-black text-violet-700">{initials}</span>
-              )}
-            </div>
-            <button
-              type="button"
-              onClick={() => avatarInputRef.current?.click()}
-              disabled={avatarSaving}
-              className="absolute -bottom-2 -right-2 flex h-10 w-10 items-center justify-center rounded-[14px] border border-gray-200 bg-emerald-300 text-gray-900 shadow-soft-sm transition-all hover:-translate-y-0.5 disabled:opacity-60"
-            >
-              <Camera className="h-4.5 w-4.5" />
-            </button>
-            <input ref={avatarInputRef} type="file" accept="image/*" onChange={handleAvatarChange} className="hidden" />
-          </div>
-
-          <div className="min-w-0">
-            <p className="text-[11px] font-black uppercase tracking-[0.16em] text-slate-400">Hồ sơ phụ huynh</p>
-            <h1 className="mt-1 text-2xl font-black text-gray-900">{fullName || "Phụ huynh"}</h1>
-            {avatarMsg ? <p className="mt-3 text-sm font-bold text-slate-700">{avatarMsg}</p> : null}
-          </div>
-        </div>
-      </section>
-
       <div className="space-y-5">
         <section className="rounded-[28px] border border-gray-200 bg-white p-6 shadow-soft-sm lg:p-6">
+          <div className="mb-5 flex items-center gap-4">
+            <div className="relative">
+              <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-[20px] border border-gray-200 bg-violet-50 shadow-soft-sm">
+                {user.avatar ? (
+                  <img src={user.avatar} alt="" className="h-full w-full object-cover" />
+                ) : (
+                  <span className="text-2xl font-black text-violet-700">{initials}</span>
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={() => avatarInputRef.current?.click()}
+                disabled={avatarSaving}
+                className="absolute -bottom-2 -right-2 flex h-9 w-9 items-center justify-center rounded-[12px] border border-gray-200 bg-emerald-300 text-gray-900 shadow-soft-sm transition-all hover:-translate-y-0.5 disabled:opacity-60"
+              >
+                <Camera className="h-4 w-4" />
+              </button>
+              <input ref={avatarInputRef} type="file" accept="image/*" onChange={handleAvatarChange} className="hidden" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-[11px] font-black uppercase tracking-[0.16em] text-slate-400">Hồ sơ phụ huynh</p>
+              <h1 className="mt-1 text-2xl font-black text-gray-900">{fullName || "Phụ huynh"}</h1>
+            </div>
+          </div>
+          {avatarMsg ? <p className="mb-4 text-sm font-bold text-slate-700">{avatarMsg}</p> : null}
+
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="text-[11px] font-black uppercase tracking-[0.16em] text-gray-400">Personal profile</p>
