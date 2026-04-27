@@ -264,24 +264,24 @@ export const AccountTab = (): JSX.Element => {
     <div className="space-y-5">
       <div className="space-y-5">
         <section className="rounded-[28px] border border-gray-200 bg-white p-6 shadow-soft-sm lg:p-7">
-          <div className="grid items-start gap-6 lg:grid-cols-[220px_minmax(0,1fr)]">
-            <div className="rounded-[20px] border border-gray-200 bg-slate-50 p-4">
+          <div className="grid items-start gap-5 lg:grid-cols-[128px_minmax(0,1fr)]">
+            <div className="rounded-[16px] border border-gray-200 bg-slate-50 p-3">
               <div className="flex flex-col items-center text-center">
               <div className="relative">
-                <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-[20px] border border-gray-200 bg-violet-50 shadow-soft-sm">
+                <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-[12px] border border-gray-200 bg-violet-50 shadow-soft-sm">
                   {user.avatar ? (
                     <img src={user.avatar} alt="" className="h-full w-full object-cover" />
                   ) : (
-                    <span className="text-2xl font-black text-violet-700">{initials}</span>
+                    <span className="text-sm font-black text-violet-700">{initials}</span>
                   )}
                 </div>
                 <button
                   type="button"
                   onClick={() => avatarInputRef.current?.click()}
                   disabled={avatarSaving}
-                  className="absolute -bottom-2 -right-2 flex h-9 w-9 items-center justify-center rounded-[12px] border border-gray-200 bg-emerald-300 text-gray-900 shadow-soft-sm transition-all hover:-translate-y-0.5 disabled:opacity-60"
+                  className="absolute -bottom-1.5 -right-1.5 flex h-6 w-6 items-center justify-center rounded-[8px] border border-gray-200 bg-emerald-300 text-gray-900 shadow-soft-sm transition-all hover:-translate-y-0.5 disabled:opacity-60"
                 >
-                  <Camera className="h-4 w-4" />
+                  <Camera className="h-3 w-3" />
                 </button>
                 <input ref={avatarInputRef} type="file" accept="image/*" onChange={handleAvatarChange} className="hidden" />
               </div>
