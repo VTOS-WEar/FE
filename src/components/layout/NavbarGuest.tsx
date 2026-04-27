@@ -194,8 +194,8 @@ export function NavbarGuest() {
   return (
     <nav className="sticky top-0 z-50 border-b border-gray-200/15 bg-gray-50/95 py-2 backdrop-blur supports-[backdrop-filter]:bg-gray-50/90">
       <div className="mx-auto w-full max-w-[1240px] px-3 sm:px-4 lg:px-6">
-        <div className="flex h-16 items-center justify-between gap-2 sm:gap-3 lg:gap-5">
-          <div className="flex items-center gap-4">
+        <div className="flex h-16 items-center justify-between gap-2 sm:gap-3 lg:gap-4">
+          <div className="flex shrink-0 items-center gap-4">
             {/* Mobile Menu Trigger */}
             <button
               type="button"
@@ -220,8 +220,8 @@ export function NavbarGuest() {
           </div>
 
           {/* ── Desktop Nav Bar ── */}
-          <div className="hidden w-full max-w-[760px] items-center rounded-xl border border-gray-200 bg-white px-2 py-1 shadow-soft-md lg:flex">
-            <div className="flex items-center gap-1">
+          <div className="hidden min-w-0 flex-1 max-w-[860px] items-center rounded-xl border border-gray-200 bg-white px-2 py-1 shadow-soft-md lg:flex">
+            <div className="shrink-0 flex items-center gap-1">
               {navItems.map((item) => {
                 if (item.type === "route") {
                   const isHome = item.to === "/homepage"
@@ -439,7 +439,7 @@ export function NavbarGuest() {
           </div>
 
           {/* ── Right Actions ── */}
-          <div className="flex items-center justify-end gap-2">
+          <div className="flex shrink-0 items-center justify-end gap-2">
             <button
               type="button"
               onClick={() => navigate("/cart")}
