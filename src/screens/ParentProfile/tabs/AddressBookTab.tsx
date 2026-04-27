@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { ArrowLeft, MapPinHouse, Pencil, Plus, Trash2, X } from "lucide-react";
+import { ArrowLeft, ChevronDown, MapPinHouse, Pencil, Plus, Trash2, X } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   createParentAddress,
@@ -353,6 +353,7 @@ export const AddressBookTab = (): JSX.Element => {
 
   const inputClass =
     "h-12 w-full rounded-[16px] border border-gray-200 bg-white px-4 text-sm font-semibold text-gray-900 outline-none transition-all focus:border-violet-300 focus:ring-4 focus:ring-violet-100";
+  const selectClass = `${inputClass} appearance-none pr-11`;
 
   return (
     <div className="space-y-6">
@@ -475,27 +476,30 @@ export const AddressBookTab = (): JSX.Element => {
             <div className="mt-5 grid gap-4">
               <div className="grid gap-2">
                 <label className="text-sm font-bold text-slate-600">Nhãn</label>
-                <select
-                  value={selectedLabelValue}
-                  onChange={(event) => {
-                    if (event.target.value === "__custom__") {
-                      openCustomLabelModal();
-                      return;
-                    }
+                <div className="relative">
+                  <select
+                    value={selectedLabelValue}
+                    onChange={(event) => {
+                      if (event.target.value === "__custom__") {
+                        openCustomLabelModal();
+                        return;
+                      }
 
-                    setAddressForm((current) => ({
-                      ...current,
-                      label: event.target.value,
-                    }));
-                  }}
-                  className={inputClass}
-                >
-                  {labelOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
+                      setAddressForm((current) => ({
+                        ...current,
+                        label: event.target.value,
+                      }));
+                    }}
+                    className={selectClass}
+                  >
+                    {labelOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+                </div>
               </div>
 
               <div className="grid gap-2 sm:grid-cols-2">
@@ -526,53 +530,59 @@ export const AddressBookTab = (): JSX.Element => {
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="grid gap-2">
                   <label className="text-sm font-bold text-slate-600">Tỉnh/Thành phố</label>
-                  <select
-                    value={addressForm.provinceCode}
-                    onChange={(event) => {
-                      const province = provinces.find((item) => item.codename === event.target.value);
-                      setAddressForm((current) => ({
-                        ...current,
-                        provinceCode: event.target.value,
-                        provinceName: province?.name ?? "",
-                        wardCode: "",
-                        wardName: "",
-                      }));
-                    }}
-                    className={inputClass}
-                  >
-                    <option value="">Chọn tỉnh/thành phố</option>
-                    {provinceOptions.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="relative">
+                    <select
+                      value={addressForm.provinceCode}
+                      onChange={(event) => {
+                        const province = provinces.find((item) => item.codename === event.target.value);
+                        setAddressForm((current) => ({
+                          ...current,
+                          provinceCode: event.target.value,
+                          provinceName: province?.name ?? "",
+                          wardCode: "",
+                          wardName: "",
+                        }));
+                      }}
+                      className={selectClass}
+                    >
+                      <option value="">Chọn tỉnh/thành phố</option>
+                      {provinceOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+                  </div>
                 </div>
 
                 <div className="grid gap-2">
                   <label className="text-sm font-bold text-slate-600">Xã/Phường</label>
-                  <select
-                    value={addressForm.wardCode}
-                    onChange={(event) => {
-                      const ward = wardOptions.find((item) => item.value === event.target.value);
-                      setAddressForm((current) => ({
-                        ...current,
-                        wardCode: event.target.value,
-                        wardName: ward?.label ?? "",
-                      }));
-                    }}
-                    disabled={!addressForm.provinceCode}
-                    className={`${inputClass} disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400`}
-                  >
-                    <option value="">
-                      {addressForm.provinceCode ? "Chọn xã/phường" : "Chọn tỉnh/thành phố trước"}
-                    </option>
-                    {wardOptions.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
+                  <div className="relative">
+                    <select
+                      value={addressForm.wardCode}
+                      onChange={(event) => {
+                        const ward = wardOptions.find((item) => item.value === event.target.value);
+                        setAddressForm((current) => ({
+                          ...current,
+                          wardCode: event.target.value,
+                          wardName: ward?.label ?? "",
+                        }));
+                      }}
+                      disabled={!addressForm.provinceCode}
+                      className={`${selectClass} disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400`}
+                    >
+                      <option value="">
+                        {addressForm.provinceCode ? "Chọn xã/phường" : "Chọn tỉnh/thành phố trước"}
                       </option>
-                    ))}
-                  </select>
+                      {wardOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+                  </div>
                 </div>
               </div>
 
