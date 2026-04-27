@@ -159,11 +159,11 @@ export const ParentProfile = (): JSX.Element => {
               <div className="space-y-3 px-4 py-4 sm:px-5">
                 <div className="space-y-3">
                   {MENU_GROUPS.map((group) => (
-                    <div key={group.title} className="space-y-1.5">
-                      <p className="px-2 text-[10px] font-black uppercase tracking-[0.14em] text-slate-400">
+                    <div key={group.title} className="space-y-1">
+                      <p className="px-2 text-[10px] font-black uppercase tracking-[0.14em] text-slate-500">
                         {group.title}
                       </p>
-                      <div className="space-y-1.5">
+                      <div className="space-y-0.5">
                         {group.items.map((to) => {
                           const item = SECTION_ITEMS.find((entry) => entry.to === to);
                           if (!item) return null;
@@ -175,17 +175,17 @@ export const ParentProfile = (): JSX.Element => {
                             <NavLink key={item.to} to={item.to}>
                               {() => (
                                 <div
-                                  className={`flex items-center gap-2.5 rounded-[14px] border px-3 py-2.5 transition-all ${
+                                  className={`flex items-center gap-2.5 rounded-[12px] border px-3 py-2 transition-all ${
                                     isActive
                                       ? "border-violet-200 bg-violet-50 text-slate-950 shadow-soft-sm"
-                                      : "border-transparent bg-slate-50 text-slate-600 hover:border-slate-200 hover:bg-white"
+                                      : "border-transparent bg-transparent text-slate-600 hover:border-slate-200/80 hover:bg-slate-50"
                                   }`}
                                 >
                                   <div
-                                    className={`flex h-9 w-9 items-center justify-center rounded-[12px] border ${
+                                    className={`flex h-8 w-8 items-center justify-center rounded-[10px] border ${
                                       isActive
                                         ? "border-violet-100 bg-white text-violet-700"
-                                        : "border-slate-200 bg-white text-slate-500"
+                                        : "border-transparent bg-transparent text-slate-400"
                                     }`}
                                   >
                                     <Icon className="h-4 w-4" />
