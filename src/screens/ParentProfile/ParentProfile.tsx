@@ -17,6 +17,12 @@ const SECTION_ITEMS = [
   { label: "Cài đặt", icon: Settings, to: "/parentprofile/settings" },
 ];
 
+const MENU_GROUPS: Array<{ title: string; items: string[] }> = [
+  { title: "Thông tin", items: ["/parentprofile/account", "/parentprofile/address-book", "/parentprofile/students"] },
+  { title: "Mua sắm", items: ["/parentprofile/orders", "/parentprofile/wallet"] },
+  { title: "Dịch vụ", items: ["/parentprofile/history", "/parentprofile/bodygram-history", "/parentprofile/reviews", "/parentprofile/support", "/parentprofile/settings"] },
+];
+
 const SECTION_MATCHERS: Record<string, string[]> = {
   "/parentprofile/account": ["/parentprofile/account"],
   "/parentprofile/address-book": ["/parentprofile/address-book"],
@@ -151,38 +157,51 @@ export const ParentProfile = (): JSX.Element => {
               </div>
 
               <div className="space-y-3 px-4 py-4 sm:px-5">
-                <div className="space-y-2">
-                  {SECTION_ITEMS.map((item) => {
-                    const Icon = item.icon;
-                    const isActive = (SECTION_MATCHERS[item.to] ?? [item.to]).some((path) => location.pathname.startsWith(path));
-                    return (
-                      <NavLink key={item.to} to={item.to}>
-                        {() => (
-                          <div
-                            className={`flex items-center gap-3 rounded-[20px] border px-4 py-3 transition-all ${
-                              isActive
-                                ? "border-violet-200 bg-violet-50 text-slate-950 shadow-soft-sm"
-                                : "border-transparent bg-slate-50 text-slate-600 hover:border-slate-200 hover:bg-white"
-                            }`}
-                          >
-                            <div
-                              className={`flex h-11 w-11 items-center justify-center rounded-[16px] border ${
-                                isActive
-                                  ? "border-violet-100 bg-white text-violet-700"
-                                  : "border-slate-200 bg-white text-slate-500"
-                              }`}
-                            >
-                              <Icon className="h-4.5 w-4.5" />
-                            </div>
-                            <div className="min-w-0 flex-1">
-                              <p className="truncate text-sm font-extrabold">{item.label}</p>
-                            </div>
-                            {isActive ? <ChevronRight className="h-4 w-4 text-violet-600" /> : null}
-                          </div>
-                        )}
-                      </NavLink>
-                    );
-                  })}
+                <div className="space-y-3">
+                  {MENU_GROUPS.map((group) => (
+                    <div key={group.title} className="space-y-1.5">
+                      <p className="px-2 text-[10px] font-black uppercase tracking-[0.14em] text-slate-400">
+                        {group.title}
+                      </p>
+                      <div className="space-y-1.5">
+                        {group.items.map((to) => {
+                          const item = SECTION_ITEMS.find((entry) => entry.to === to);
+                          if (!item) return null;
+                          const Icon = item.icon;
+                          const isActive = (SECTION_MATCHERS[item.to] ?? [item.to]).some((path) =>
+                            location.pathname.startsWith(path),
+                          );
+                          return (
+                            <NavLink key={item.to} to={item.to}>
+                              {() => (
+                                <div
+                                  className={`flex items-center gap-2.5 rounded-[14px] border px-3 py-2.5 transition-all ${
+                                    isActive
+                                      ? "border-violet-200 bg-violet-50 text-slate-950 shadow-soft-sm"
+                                      : "border-transparent bg-slate-50 text-slate-600 hover:border-slate-200 hover:bg-white"
+                                  }`}
+                                >
+                                  <div
+                                    className={`flex h-9 w-9 items-center justify-center rounded-[12px] border ${
+                                      isActive
+                                        ? "border-violet-100 bg-white text-violet-700"
+                                        : "border-slate-200 bg-white text-slate-500"
+                                    }`}
+                                  >
+                                    <Icon className="h-4 w-4" />
+                                  </div>
+                                  <div className="min-w-0 flex-1">
+                                    <p className="truncate text-sm font-extrabold">{item.label}</p>
+                                  </div>
+                                  {isActive ? <ChevronRight className="h-4 w-4 text-violet-600" /> : null}
+                                </div>
+                              )}
+                            </NavLink>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
                 </div>
 
                 <button
