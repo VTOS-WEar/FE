@@ -59,6 +59,7 @@ export const AddressBookTab = (): JSX.Element => {
   const [addressMsg, setAddressMsg] = useState("");
   const [editingAddressId, setEditingAddressId] = useState<string | null>(null);
   const [addressForm, setAddressForm] = useState(DEFAULT_PARENT_ADDRESS_FORM);
+  const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
   const [isCustomLabelModalOpen, setIsCustomLabelModalOpen] = useState(false);
   const [customLabelDraft, setCustomLabelDraft] = useState("");
   const [editingCustomLabel, setEditingCustomLabel] = useState<string | null>(null);
@@ -98,6 +99,16 @@ export const AddressBookTab = (): JSX.Element => {
   const resetAddressForm = () => {
     setEditingAddressId(null);
     setAddressForm(DEFAULT_PARENT_ADDRESS_FORM);
+  };
+
+  const openCreateAddressModal = () => {
+    resetAddressForm();
+    setIsAddressModalOpen(true);
+  };
+
+  const closeAddressModal = () => {
+    setIsAddressModalOpen(false);
+    resetAddressForm();
   };
 
   const provinceOptions = useMemo(
@@ -240,6 +251,7 @@ export const AddressBookTab = (): JSX.Element => {
       houseNumber: parsedAddress.houseNumber || address.addressLine,
       isDefault: address.isDefault,
     });
+    setIsAddressModalOpen(true);
   };
 
   const handleSaveAddress = async () => {
@@ -275,6 +287,7 @@ export const AddressBookTab = (): JSX.Element => {
 
       await loadAddresses();
       resetAddressForm();
+      setIsAddressModalOpen(false);
       setAddressMsg("Đã lưu sổ địa chỉ.");
     } catch (error: any) {
       setAddressMsg(error?.message || "Không thể lưu địa chỉ.");
@@ -342,7 +355,7 @@ export const AddressBookTab = (): JSX.Element => {
             ) : null}
             <button
               type="button"
-              onClick={resetAddressForm}
+              onClick={openCreateAddressModal}
               className="rounded-[16px] border border-gray-200 bg-slate-50 px-4 py-3 text-sm font-extrabold text-gray-900 transition-all hover:bg-white"
             >
               Tạo địa chỉ mới
@@ -352,71 +365,73 @@ export const AddressBookTab = (): JSX.Element => {
       </section>
 
       <section className="rounded-[28px] border border-gray-200 bg-white p-6 shadow-soft-sm lg:p-7">
-        <div className="grid gap-6 xl:grid-cols-[minmax(0,1.05fr)_minmax(320px,0.95fr)]">
-          <div className="space-y-4">
-            {addressLoading ? (
-              <div className="rounded-[22px] border border-dashed border-gray-200 bg-slate-50 p-6 text-sm font-bold text-slate-500">
-                Đang tải sổ địa chỉ...
-              </div>
-            ) : addresses.length === 0 ? (
-              <div className="rounded-[22px] border border-dashed border-gray-200 bg-slate-50 p-6 text-sm font-bold text-slate-500">
-                Chưa có địa chỉ nào.
-              </div>
-            ) : (
-              addresses.map((address) => (
-                <div key={address.addressId} className="rounded-[22px] border border-gray-200 bg-slate-50 p-5 shadow-soft-sm">
-                  <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div>
-                      <div className="flex flex-wrap items-center gap-2">
-                        <p className="text-lg font-black text-gray-900">{address.label}</p>
-                        {address.isDefault ? (
-                          <span className="rounded-full border border-violet-200 bg-violet-50 px-3 py-1 text-[11px] font-extrabold text-violet-700">
-                            Mặc định
-                          </span>
-                        ) : null}
-                      </div>
-                      <p className="mt-2 text-sm font-bold text-gray-900">{address.recipientName}</p>
-                      <p className="mt-1 text-sm font-medium text-slate-500">{address.recipientPhone}</p>
-                    </div>
-
-                    <div className="flex flex-wrap gap-2">
-                      {!address.isDefault ? (
-                        <button
-                          type="button"
-                          onClick={() => void handleSetDefaultAddress(address.addressId)}
-                          className="rounded-[14px] border border-gray-200 bg-white px-3 py-2 text-xs font-extrabold text-gray-900"
-                        >
-                          Đặt mặc định
-                        </button>
+        <div className="space-y-4">
+          {addressLoading ? (
+            <div className="rounded-[22px] border border-dashed border-gray-200 bg-slate-50 p-6 text-sm font-bold text-slate-500">
+              Đang tải sổ địa chỉ...
+            </div>
+          ) : addresses.length === 0 ? (
+            <div className="rounded-[22px] border border-dashed border-gray-200 bg-slate-50 p-6 text-sm font-bold text-slate-500">
+              Chưa có địa chỉ nào.
+            </div>
+          ) : (
+            addresses.map((address) => (
+              <div key={address.addressId} className="rounded-[22px] border border-gray-200 bg-slate-50 p-5 shadow-soft-sm">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className="text-lg font-black text-gray-900">{address.label}</p>
+                      {address.isDefault ? (
+                        <span className="rounded-full border border-violet-200 bg-violet-50 px-3 py-1 text-[11px] font-extrabold text-violet-700">
+                          Mặc định
+                        </span>
                       ) : null}
+                    </div>
+                    <p className="mt-2 text-sm font-bold text-gray-900">{address.recipientName}</p>
+                    <p className="mt-1 text-sm font-medium text-slate-500">{address.recipientPhone}</p>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    {!address.isDefault ? (
                       <button
                         type="button"
-                        onClick={() => handleEditAddress(address)}
+                        onClick={() => void handleSetDefaultAddress(address.addressId)}
                         className="rounded-[14px] border border-gray-200 bg-white px-3 py-2 text-xs font-extrabold text-gray-900"
                       >
-                        Chỉnh sửa
+                        Đặt mặc định
                       </button>
-                      <button
-                        type="button"
-                        onClick={() => void handleDeleteAddress(address.addressId)}
-                        className="inline-flex items-center gap-1 rounded-[14px] border border-red-200 bg-white px-3 py-2 text-xs font-extrabold text-red-700"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                        Xóa
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="mt-4 inline-flex items-start gap-2 text-sm font-medium text-slate-600">
-                    <MapPinHouse className="mt-0.5 h-4 w-4 text-violet-600" />
-                    <span>{address.addressLine}</span>
+                    ) : null}
+                    <button
+                      type="button"
+                      onClick={() => handleEditAddress(address)}
+                      className="rounded-[14px] border border-gray-200 bg-white px-3 py-2 text-xs font-extrabold text-gray-900"
+                    >
+                      Chỉnh sửa
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => void handleDeleteAddress(address.addressId)}
+                      className="inline-flex items-center gap-1 rounded-[14px] border border-red-200 bg-white px-3 py-2 text-xs font-extrabold text-red-700"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                      Xóa
+                    </button>
                   </div>
                 </div>
-              ))
-            )}
-          </div>
 
-          <div className="rounded-[24px] border border-gray-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fafc_100%)] p-5 shadow-soft-sm">
+                <div className="mt-4 inline-flex items-start gap-2 text-sm font-medium text-slate-600">
+                  <MapPinHouse className="mt-0.5 h-4 w-4 text-violet-600" />
+                  <span>{address.addressLine}</span>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </section>
+
+      {isAddressModalOpen ? (
+        <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-950/45 px-4">
+          <div className="w-full max-w-2xl rounded-[24px] border border-gray-200 bg-white p-6 shadow-soft-lg">
             <p className="text-[11px] font-black uppercase tracking-[0.16em] text-gray-400">
               {editingAddressId ? "Cập nhật địa chỉ" : "Địa chỉ mới"}
             </p>
@@ -550,21 +565,19 @@ export const AddressBookTab = (): JSX.Element => {
                 >
                   {addressSaving ? "Đang lưu..." : editingAddressId ? "Lưu cập nhật" : "Thêm địa chỉ"}
                 </button>
-                {editingAddressId ? (
-                  <button
-                    type="button"
-                    onClick={resetAddressForm}
-                    className="rounded-[16px] border border-gray-200 bg-white px-4 py-3 text-sm font-extrabold text-gray-900"
-                  >
-                    Hủy chỉnh sửa
-                  </button>
-                ) : null}
+                <button
+                  type="button"
+                  onClick={closeAddressModal}
+                  className="rounded-[16px] border border-gray-200 bg-white px-4 py-3 text-sm font-extrabold text-gray-900"
+                >
+                  Hủy
+                </button>
                 {addressMsg ? <span className="text-sm font-bold text-slate-600">{addressMsg}</span> : null}
               </div>
             </div>
           </div>
         </div>
-      </section>
+      ) : null}
 
       {isCustomLabelModalOpen ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 px-4">
