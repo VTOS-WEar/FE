@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { AlertCircle, CheckCircle2, Clock3, Eye, LifeBuoy, MessageSquare, Plus, SearchCheck, XCircle } from "lucide-react";
+import { AlertCircle, CheckCircle2, Clock3, Eye, LifeBuoy, MessageSquare, Plus, SearchCheck, X, XCircle } from "lucide-react";
 import { DashboardSidebar } from "../../components/layout";
 import { TopNavBar } from "../../components/layout/TopNavBar";
 import { PROVIDER_LIST_PAGE_SIZE, ProviderDataTable, type ProviderDataTableColumn } from "../../components/provider/ProviderDataTable";
@@ -100,6 +100,7 @@ function SupportTicketsPanel({ role }: { role: RoleMode }): JSX.Element {
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [form, setForm] = useState({ title: "", category: "General", description: "" });
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
     const load = useCallback(async () => {
         setLoading(true);
@@ -139,6 +140,7 @@ function SupportTicketsPanel({ role }: { role: RoleMode }): JSX.Element {
                 description: form.description.trim(),
             });
             setForm({ title: "", category: "General", description: "" });
+            setIsCreateModalOpen(false);
             await load();
             setSelected(created);
         } catch (err) {
@@ -243,20 +245,30 @@ function SupportTicketsPanel({ role }: { role: RoleMode }): JSX.Element {
                             <h2 className="text-lg font-black text-slate-950">Danh sách ticket</h2>
                             <p className="text-sm font-semibold text-slate-500">{data?.total ?? 0} yêu cầu</p>
                         </div>
-                        <select
-                            value={status}
-                            onChange={(event) => {
-                                setStatus(event.target.value);
-                                setPage(1);
-                            }}
-                            className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-700 outline-none"
-                        >
-                            <option value="">Tất cả trạng thái</option>
-                            <option value="Open">Đang mở</option>
-                            <option value="InProgress">Đang xử lý</option>
-                            <option value="Resolved">Đã giải quyết</option>
-                            <option value="Closed">Đã đóng</option>
-                        </select>
+                        <div className="flex flex-wrap items-center gap-2">
+                            <select
+                                value={status}
+                                onChange={(event) => {
+                                    setStatus(event.target.value);
+                                    setPage(1);
+                                }}
+                                className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-700 outline-none"
+                            >
+                                <option value="">Tất cả trạng thái</option>
+                                <option value="Open">Đang mở</option>
+                                <option value="InProgress">Đang xử lý</option>
+                                <option value="Resolved">Đã giải quyết</option>
+                                <option value="Closed">Đã đóng</option>
+                            </select>
+                            <button
+                                type="button"
+                                onClick={() => setIsCreateModalOpen(true)}
+                                className="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-200 bg-sky-700 px-4 text-sm font-black text-white transition-colors hover:bg-sky-800"
+                            >
+                                <Plus className="h-4 w-4" />
+                                Tạo ticket mới
+                            </button>
+                        </div>
                     </div>
 
                     <div className="p-4">
@@ -291,47 +303,6 @@ function SupportTicketsPanel({ role }: { role: RoleMode }): JSX.Element {
 
                 <aside className="space-y-6">
                     <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-soft-sm">
-                        <div className="flex items-center gap-2">
-                            <Plus className="h-5 w-5 text-sky-700" />
-                            <h2 className="text-lg font-black text-slate-950">Tạo ticket mới</h2>
-                        </div>
-                        <div className="mt-4 space-y-3">
-                            <input
-                                value={form.title}
-                                onChange={(event) => setForm((current) => ({ ...current, title: event.target.value }))}
-                                className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold outline-none focus:border-sky-300"
-                            />
-                            <select
-                                value={form.category}
-                                onChange={(event) => setForm((current) => ({ ...current, category: event.target.value }))}
-                                className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold outline-none focus:border-sky-300"
-                            >
-                                <option value="General">Chung</option>
-                                <option value="Account">Tài khoản</option>
-                                <option value="Order">Đơn hàng</option>
-                                <option value="Payment">Thanh toán / ví</option>
-                                <option value="Contract">Hợp đồng</option>
-                                <option value="Data">Dữ liệu</option>
-                                <option value="Technical">Kỹ thuật</option>
-                            </select>
-                            <textarea
-                                value={form.description}
-                                onChange={(event) => setForm((current) => ({ ...current, description: event.target.value }))}
-                                className="h-32 w-full resize-none rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold leading-6 outline-none focus:border-sky-300"
-                            />
-                            <button
-                                type="button"
-                                onClick={handleSubmit}
-                                disabled={submitting || !form.title.trim() || !form.description.trim()}
-                                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-sky-700 px-4 py-3 text-sm font-black text-white transition-colors hover:bg-sky-800 disabled:cursor-not-allowed disabled:opacity-60"
-                            >
-                                <MessageSquare className="h-4 w-4" />
-                                {submitting ? "Đang gửi..." : "Gửi Admin"}
-                            </button>
-                        </div>
-                    </section>
-
-                    <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-soft-sm">
                         <h2 className="text-lg font-black text-slate-950">Chi tiết</h2>
                         {selected ? (
                             <div className="mt-4 space-y-4">
@@ -362,6 +333,72 @@ function SupportTicketsPanel({ role }: { role: RoleMode }): JSX.Element {
                     </section>
                 </aside>
             </div>
+
+            {isCreateModalOpen ? (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 px-4">
+                    <div className="w-full max-w-2xl rounded-2xl border border-slate-200 bg-white p-6 shadow-soft-lg">
+                        <div className="flex items-start justify-between gap-3">
+                            <div>
+                                <p className="text-[11px] font-black uppercase tracking-[0.16em] text-slate-400">Support ticket</p>
+                                <h3 className="mt-2 text-xl font-black text-slate-950">Tạo ticket mới</h3>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setIsCreateModalOpen(false)}
+                                className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 transition-all hover:bg-slate-50 hover:text-slate-900"
+                                aria-label="Đóng modal tạo ticket"
+                            >
+                                <X className="h-4.5 w-4.5" />
+                            </button>
+                        </div>
+                        <div className="mt-5 space-y-3">
+                            <input
+                                value={form.title}
+                                onChange={(event) => setForm((current) => ({ ...current, title: event.target.value }))}
+                                className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold outline-none focus:border-sky-300"
+                                placeholder="Tiêu đề ticket"
+                            />
+                            <select
+                                value={form.category}
+                                onChange={(event) => setForm((current) => ({ ...current, category: event.target.value }))}
+                                className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold outline-none focus:border-sky-300"
+                            >
+                                <option value="General">Chung</option>
+                                <option value="Account">Tài khoản</option>
+                                <option value="Order">Đơn hàng</option>
+                                <option value="Payment">Thanh toán / ví</option>
+                                <option value="Contract">Hợp đồng</option>
+                                <option value="Data">Dữ liệu</option>
+                                <option value="Technical">Kỹ thuật</option>
+                            </select>
+                            <textarea
+                                value={form.description}
+                                onChange={(event) => setForm((current) => ({ ...current, description: event.target.value }))}
+                                className="h-36 w-full resize-none rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold leading-6 outline-none focus:border-sky-300"
+                                placeholder="Mô tả chi tiết vấn đề..."
+                            />
+                            <div className="flex items-center gap-3 pt-1">
+                                <button
+                                    type="button"
+                                    onClick={handleSubmit}
+                                    disabled={submitting || !form.title.trim() || !form.description.trim()}
+                                    className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-sky-700 px-5 text-sm font-black text-white transition-colors hover:bg-sky-800 disabled:cursor-not-allowed disabled:opacity-60"
+                                >
+                                    <MessageSquare className="h-4 w-4" />
+                                    {submitting ? "Đang gửi..." : "Gửi Admin"}
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setIsCreateModalOpen(false)}
+                                    className="inline-flex h-11 items-center justify-center rounded-xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-900"
+                                >
+                                    Hủy
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            ) : null}
         </div>
     );
 }
