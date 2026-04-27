@@ -109,11 +109,6 @@ export const StudentsTab = (): JSX.Element => {
                           </span>
                         )}
                       </div>
-                      <div className="absolute -bottom-1 -right-1 w-7 h-7 bg-white rounded-lg border border-gray-200 shadow-sm flex items-center justify-center">
-                        <span className="text-[10px] font-black text-gray-900">
-                          {child.gender === "Male" ? "♂" : "♀"}
-                        </span>
-                      </div>
                     </div>
 
                     <div className="flex-1 min-w-0">
