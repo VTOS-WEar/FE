@@ -238,7 +238,7 @@ function SupportTicketsPanel({ role }: { role: RoleMode }): JSX.Element {
                 </div>
             )}
 
-            <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_420px]">
+            <div className="space-y-6">
                 <section className="rounded-2xl border border-slate-200 bg-white shadow-soft-sm">
                     <div className="flex flex-col gap-3 border-b border-slate-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
                         <div>
