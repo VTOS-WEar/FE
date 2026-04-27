@@ -308,28 +308,61 @@ export const AccountTab = (): JSX.Element => {
             <div className="grid gap-2">
               <label className="text-sm font-bold text-slate-600">Ngày sinh</label>
               <div className="grid gap-3 sm:grid-cols-3">
-                <select value={dobDay} onChange={(event) => setDobDay(Number(event.target.value))} className={inputClass}>
-                  {DAYS.map((value) => (
-                    <option key={value} value={value}>
-                      Ngày {value}
-                    </option>
-                  ))}
-                </select>
-                <select value={dobMonth} onChange={(event) => setDobMonth(Number(event.target.value))} className={inputClass}>
-                  {MONTHS.map((value) => (
-                    <option key={value} value={value}>
-                      Tháng {value}
-                    </option>
-                  ))}
-                </select>
-                <select value={dobYear} onChange={(event) => setDobYear(Number(event.target.value))} className={inputClass}>
-                  {YEARS.map((value) => (
-                    <option key={value} value={value}>
-                      Năm {value}
-                    </option>
-                  ))}
-                </select>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  value={dobDay}
+                  list="dob-day-options"
+                  onChange={(event) => {
+                    const next = Number(event.target.value.replace(/[^\d]/g, ""));
+                    if (Number.isNaN(next)) return;
+                    setDobDay(Math.min(31, Math.max(1, next)));
+                  }}
+                  className={inputClass}
+                  placeholder="Ngày"
+                />
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  value={dobMonth}
+                  list="dob-month-options"
+                  onChange={(event) => {
+                    const next = Number(event.target.value.replace(/[^\d]/g, ""));
+                    if (Number.isNaN(next)) return;
+                    setDobMonth(Math.min(12, Math.max(1, next)));
+                  }}
+                  className={inputClass}
+                  placeholder="Tháng"
+                />
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  value={dobYear}
+                  list="dob-year-options"
+                  onChange={(event) => {
+                    const next = Number(event.target.value.replace(/[^\d]/g, ""));
+                    if (Number.isNaN(next)) return;
+                    setDobYear(Math.min(CURRENT_YEAR, Math.max(CURRENT_YEAR - 80, next)));
+                  }}
+                  className={inputClass}
+                  placeholder="Năm"
+                />
               </div>
+              <datalist id="dob-day-options">
+                {DAYS.map((value) => (
+                  <option key={value} value={value} />
+                ))}
+              </datalist>
+              <datalist id="dob-month-options">
+                {MONTHS.map((value) => (
+                  <option key={value} value={value} />
+                ))}
+              </datalist>
+              <datalist id="dob-year-options">
+                {YEARS.map((value) => (
+                  <option key={value} value={value} />
+                ))}
+              </datalist>
             </div>
 
             <div className="grid gap-2">
