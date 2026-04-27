@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { ChevronDown, ChevronRight, GraduationCap, History, LifeBuoy, LogOut, MapPinHouse, ScanLine, Settings, ShoppingBag, Star, User, WalletCards } from "lucide-react";
 import { GuestLayout } from "../../components/layout/GuestLayout";
@@ -47,6 +47,16 @@ type ParentUser = {
   email?: string;
   avatar?: string | null;
 };
+
+const DEFAULT_PARENT_AVATAR =
+  "data:image/svg+xml;utf8," +
+  encodeURIComponent(
+    "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'>" +
+      "<rect width='96' height='96' fill='#EDE9FE'/>" +
+      "<circle cx='48' cy='34' r='16' fill='#A78BFA'/>" +
+      "<path d='M22 80c2-14 12-24 26-24s24 10 26 24' fill='#8B5CF6'/>" +
+    "</svg>",
+  );
 
 export const ParentProfile = (): JSX.Element => {
   const navigate = useNavigate();
@@ -118,17 +128,6 @@ export const ParentProfile = (): JSX.Element => {
     }, 350);
   };
 
-  const initials = useMemo(() => {
-    const value = user?.fullName?.trim();
-    if (!value) return "PH";
-    return value
-      .split(" ")
-      .map((part) => part[0])
-      .join("")
-      .slice(-2)
-      .toUpperCase();
-  }, [user?.fullName]);
-
   useEffect(() => {
     const accountActive = ACCOUNT_CHILDREN.some((child) =>
       (SECTION_MATCHERS[child.to] ?? [child.to]).some((path) => location.pathname.startsWith(path)),
@@ -157,11 +156,14 @@ export const ParentProfile = (): JSX.Element => {
               <div className="border-b border-slate-100 bg-[linear-gradient(180deg,#ffffff_0%,#f8fafc_100%)] px-5 py-5 sm:px-6">
                 <div className="flex items-center gap-4">
                   <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-[22px] border border-gray-200 bg-violet-50 shadow-soft-sm">
-                    {user.avatar ? (
-                      <img src={user.avatar} alt="" className="h-full w-full object-cover" />
-                    ) : (
-                      <span className="text-xl font-black text-violet-700">{initials}</span>
-                    )}
+                    <img
+                      src={user.avatar || DEFAULT_PARENT_AVATAR}
+                      alt={user.fullName || "Parent avatar"}
+                      className="h-full w-full object-cover"
+                      onError={(event) => {
+                        event.currentTarget.src = DEFAULT_PARENT_AVATAR;
+                      }}
+                    />
                   </div>
 
                   <div className="min-w-0 flex-1">
