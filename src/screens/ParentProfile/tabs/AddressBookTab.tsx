@@ -611,14 +611,15 @@ export const AddressBookTab = (): JSX.Element => {
                   type="button"
                   onClick={() => void handleSaveAddress()}
                   disabled={addressSaving}
-                  className="rounded-[16px] border border-gray-200 bg-violet-500 px-5 py-3 text-sm font-extrabold text-white shadow-soft-sm disabled:opacity-60"
+                  className="group relative inline-flex h-12 min-w-[180px] items-center justify-center overflow-hidden rounded-[16px] border border-gray-200 bg-gradient-to-r from-[#7C63E6] via-[#8F79EB] to-[#6F56E0] px-6 text-sm font-extrabold text-white shadow-[0_10px_22px_rgba(124,99,230,0.28)] transition-all duration-200 hover:-translate-y-[1px] hover:brightness-110 hover:shadow-[0_14px_28px_rgba(124,99,230,0.34)] active:translate-y-0 active:shadow-[0_8px_18px_rgba(124,99,230,0.24)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0"
                 >
+                  <span className="pointer-events-none absolute -left-10 top-0 h-full w-14 -skew-x-12 bg-white/25 blur-[1px] transition-all duration-300 group-hover:left-[110%]" />
                   {addressSaving ? "Đang lưu..." : editingAddressId ? "Lưu cập nhật" : "Thêm địa chỉ"}
                 </button>
                 <button
                   type="button"
                   onClick={closeAddressModal}
-                  className="rounded-[16px] border border-gray-200 bg-white px-4 py-3 text-sm font-extrabold text-gray-900"
+                  className="inline-flex h-12 min-w-[92px] items-center justify-center rounded-[16px] border border-gray-200 bg-white px-5 text-sm font-extrabold text-gray-900 shadow-soft-sm transition-all duration-200 hover:-translate-y-[1px] hover:bg-slate-50 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 focus-visible:ring-offset-2"
                 >
                   Hủy
                 </button>
