@@ -337,43 +337,45 @@ export const StudentDetailView = ({ childId, onBack }: StudentDetailViewProps): 
           </div>
 
           {/* Save Button */}
-          <div className="flex items-center gap-4 pt-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <button
-              onClick={() => navigate(`/children/${childId}/scan`)}
-              disabled={saving || uploadingAvatar}
-              className="nb-btn nb-btn-outline text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-            >
-              <ScanLine className="w-4 h-4" />
-              Quét số đo với Bodygram
-            </button>
-            <button
-              onClick={() => {
-                localStorage.setItem("selectedStudentId", childId);
-                navigate("/parentprofile/bodygram-history");
-              }}
-              disabled={saving || uploadingAvatar}
-              className="nb-btn nb-btn-outline text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-            >
-              <ScanLine className="w-4 h-4" />
-              Xem lịch sử quét Bodygram
-            </button>
-            <button
-              onClick={handleSave}
-              disabled={saving}
-              className="group relative inline-flex h-12 items-center justify-center gap-2 overflow-hidden rounded-[14px] border border-gray-200 bg-gradient-to-r from-[#7C63E6] via-[#8F79EB] to-[#6F56E0] px-6 text-sm font-extrabold text-white shadow-[0_10px_22px_rgba(124,99,230,0.28)] transition-all duration-200 hover:-translate-y-[2px] hover:brightness-110 hover:shadow-[0_14px_28px_rgba(124,99,230,0.35)] active:translate-y-0 active:shadow-[0_8px_18px_rgba(124,99,230,0.25)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
-            >
-              <span className="pointer-events-none absolute -left-10 top-0 h-full w-14 -skew-x-12 bg-white/25 blur-[1px] transition-all duration-300 group-hover:left-[110%]" />
-              {saving ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Đang lưu...
-                </>
-              ) : (
-                <span className="relative">Lưu thay đổi ✦</span>
-              )}
-            </button>
+          <div className="space-y-3 pt-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+              <button
+                onClick={() => navigate(`/children/${childId}/scan`)}
+                disabled={saving || uploadingAvatar}
+                className="nb-btn nb-btn-outline h-12 w-full text-sm disabled:cursor-not-allowed disabled:opacity-50 flex items-center gap-2"
+              >
+                <ScanLine className="w-4 h-4" />
+                Quét số đo với Bodygram
+              </button>
+              <button
+                onClick={() => {
+                  localStorage.setItem("selectedStudentId", childId);
+                  navigate("/parentprofile/bodygram-history");
+                }}
+                disabled={saving || uploadingAvatar}
+                className="nb-btn nb-btn-outline h-12 w-full text-sm disabled:cursor-not-allowed disabled:opacity-50 flex items-center gap-2"
+              >
+                <ScanLine className="w-4 h-4" />
+                Xem lịch sử quét Bodygram
+              </button>
+              <button
+                onClick={handleSave}
+                disabled={saving}
+                className="group relative inline-flex h-12 w-full items-center justify-center gap-2 overflow-hidden rounded-[14px] border border-gray-200 bg-gradient-to-r from-[#7C63E6] via-[#8F79EB] to-[#6F56E0] px-6 text-sm font-extrabold text-white shadow-[0_10px_22px_rgba(124,99,230,0.28)] transition-all duration-200 hover:-translate-y-[2px] hover:brightness-110 hover:shadow-[0_14px_28px_rgba(124,99,230,0.35)] active:translate-y-0 active:shadow-[0_8px_18px_rgba(124,99,230,0.25)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
+              >
+                <span className="pointer-events-none absolute -left-10 top-0 h-full w-14 -skew-x-12 bg-white/25 blur-[1px] transition-all duration-300 group-hover:left-[110%]" />
+                {saving ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Đang lưu...
+                  </>
+                ) : (
+                  <span className="relative">Lưu thay đổi ✦</span>
+                )}
+              </button>
+            </div>
             {message && (
-              <span className={`font-bold text-sm animate-in fade-in duration-300 ${message.startsWith("✓") ? "text-emerald-800" : "text-red-800"}`}>
+              <span className={`block font-bold text-sm animate-in fade-in duration-300 ${message.startsWith("✓") ? "text-emerald-800" : "text-red-800"}`}>
                 {message}
               </span>
             )}
