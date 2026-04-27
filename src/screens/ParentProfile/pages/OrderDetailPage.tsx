@@ -38,6 +38,15 @@ function fmtDate(iso: string) {
     });
 }
 
+function deliveryMethodLabel(value?: string | null) {
+    switch (value) {
+        case "HomeDelivery":
+            return "Nhận tại nhà";
+        default:
+            return value || "";
+    }
+}
+
 const ORDER_STEPS = [
     { key: "Paid", label: "Đã thanh toán", icon: "💳" },
     { key: "Confirmed", label: "Đã xác nhận", icon: "✅" },
@@ -431,7 +440,7 @@ export function OrderDetailPage(): JSX.Element {
                                     <p className="inline-flex gap-2"><MapPin className="mt-0.5 h-4 w-4 text-violet-500" />Địa chỉ: <span className="font-bold text-gray-900">{order.shippingAddress}</span></p>
                                     {order.recipientName && <p className="inline-flex gap-2"><ShieldCheck className="mt-0.5 h-4 w-4 text-violet-500" />Người nhận: <span className="font-bold text-gray-900">{order.recipientName}</span></p>}
                                     {order.recipientPhone && <p className="inline-flex gap-2"><ShoppingBag className="mt-0.5 h-4 w-4 text-violet-500" />Điện thoại: <span className="font-bold text-gray-900">{order.recipientPhone}</span></p>}
-                                    {order.deliveryMethod && <p>Hình thức giao: <span className="font-bold text-gray-900">{order.deliveryMethod}</span></p>}
+                                    {order.deliveryMethod && <p>Hình thức giao: <span className="font-bold text-gray-900">{deliveryMethodLabel(order.deliveryMethod)}</span></p>}
                                     {order.shippingCompany && <p>Đơn vị vận chuyển: <span className="font-bold text-gray-900">{order.shippingCompany}</span></p>}
                                     {order.trackingCode && <p>Mã vận đơn: <span className="font-bold text-gray-900">{order.trackingCode}</span></p>}
                                 </div>

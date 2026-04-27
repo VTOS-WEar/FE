@@ -1,18 +1,32 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
+    Box,
     CheckCircle2,
-    ChevronRight,
-    Clock3,
+    ChevronDown,
+    CreditCard,
+    Eye,
     Loader2,
-    Package,
+    PackageSearch,
+    RotateCcw,
+    Search,
     ShoppingBag,
-    Sparkles,
     Truck,
     WandSparkles,
+    XCircle,
 } from "lucide-react";
+import {
+    CartesianGrid as OriginalCartesianGrid,
+    Line as OriginalLine,
+    LineChart as OriginalLineChart,
+    ResponsiveContainer as OriginalResponsiveContainer,
+    Tooltip as OriginalTooltip,
+    XAxis as OriginalXAxis,
+    YAxis as OriginalYAxis,
+} from "recharts";
 import { DashboardSidebar } from "../../components/layout";
 import { TopNavBar } from "../../components/layout/TopNavBar";
+import { PROVIDER_LIST_PAGE_SIZE, ProviderDataTable, type ProviderDataTableColumn } from "../../components/provider/ProviderDataTable";
 import { usePreservedResultsHeight } from "../../hooks/usePreservedResultsHeight";
 import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
 import { useProviderSidebarConfig } from "../../hooks/useProviderSidebarConfig";
@@ -26,6 +40,14 @@ import {
     type ProviderOrderStatsDto,
 } from "../../lib/api/providers";
 import { useToast } from "../../contexts/ToastContext";
+
+const LineChart = OriginalLineChart as any;
+const Line = OriginalLine as any;
+const XAxis = OriginalXAxis as any;
+const YAxis = OriginalYAxis as any;
+const CartesianGrid = OriginalCartesianGrid as any;
+const Tooltip = OriginalTooltip as any;
+const ResponsiveContainer = OriginalResponsiveContainer as any;
 
 const ORDER_STATUS_MAP: Record<string, { label: string; className: string; tone: string }> = {
     Pending: { label: "Chờ xử lý", className: "nb-badge-yellow", tone: "bg-slate-100 text-slate-600" },
@@ -50,8 +72,49 @@ const STATUS_FILTER_OPTIONS = [
     { value: "Cancelled", label: "Đã hủy" },
 ];
 
+const PROCESSING_STATUS_FILTER = "Accepted,InProduction,ReadyToShip";
+
+const PAYMENT_STATUS_OPTIONS = [
+    { value: "", label: "Trạng thái thanh toán" },
+    { value: "Pending", label: "Chờ thanh toán" },
+    { value: "Paid", label: "Đã thanh toán" },
+    { value: "Refunded", label: "Đã hoàn tiền" },
+    { value: "Cancelled", label: "Đã hủy" },
+];
+
+const RECEIVED_STATUS_OPTIONS = [
+    { value: "", label: "Trạng thái tiếp nhận" },
+    { value: PROCESSING_STATUS_FILTER, label: "Đang xử lý" },
+    { value: "Accepted", label: "Đã tiếp nhận" },
+    { value: "InProduction", label: "Đang sản xuất" },
+    { value: "ReadyToShip", label: "Chờ giao" },
+    { value: "Shipped", label: "Đang giao" },
+    { value: "Delivered", label: "Đã giao" },
+];
+
+const DATE_SORT_OPTIONS = [
+    { value: "all", label: "All time" },
+    { value: "week", label: "This week" },
+    { value: "month", label: "This month" },
+];
+
+const MIN_PAGE_FETCH_FEEDBACK_MS = 700;
+
 function formatCurrency(value: number) {
     return `${value.toLocaleString("vi-VN")} ₫`;
+}
+
+function formatCompactCurrency(value: number) {
+    if (value >= 1_000_000) return `${Math.round(value / 1_000_000)}tr`;
+    if (value >= 1_000) return `${Math.round(value / 1_000)}k`;
+    return String(value);
+}
+
+function formatDateParam(value: Date) {
+    const year = value.getFullYear();
+    const month = String(value.getMonth() + 1).padStart(2, "0");
+    const day = String(value.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
 }
 
 function OrderStatusBadge({ status }: { status: string }) {
@@ -64,30 +127,40 @@ function OrderStatusBadge({ status }: { status: string }) {
     return <span className={`nb-badge ${config.className}`}>{config.label}</span>;
 }
 
-function StageSummaryCard({
+function StatusSummaryCard({
     label,
     value,
-    note,
     icon,
-    tone,
+    surfaceClassName,
+    iconClassName,
+    active,
+    onClick,
 }: {
     label: string;
     value: string | number;
-    note: string;
     icon: React.ReactNode;
-    tone: string;
+    surfaceClassName: string;
+    iconClassName: string;
+    active: boolean;
+    onClick: () => void;
 }) {
     return (
-        <div className="rounded-[24px] border border-gray-200 bg-white p-5 shadow-soft-sm">
-            <div className="flex items-start justify-between gap-3">
-                <div>
-                    <p className="text-[11px] font-black uppercase tracking-[0.18em] text-gray-400">{label}</p>
-                    <p className="mt-2 text-3xl font-black text-gray-900">{value}</p>
-                    <p className="mt-2 text-sm font-semibold text-gray-500">{note}</p>
+        <button
+            type="button"
+            onClick={onClick}
+            aria-pressed={active}
+            className={`min-h-[100px] rounded-[8px] border p-5 text-left shadow-soft-sm transition-all hover:-translate-y-0.5 hover:shadow-soft-md focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-violet-100 ${
+                active ? "border-violet-500 ring-2 ring-violet-200" : "border-white/70"
+            } ${surfaceClassName}`}
+        >
+            <div className="flex h-full items-center gap-4">
+                <div className={`flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-white shadow-soft-xs ${iconClassName}`}>{icon}</div>
+                <div className="min-w-0">
+                    <p className="text-sm font-semibold text-slate-700">{label}</p>
+                    <p className="mt-2 text-2xl font-bold leading-none text-slate-950">{value}</p>
                 </div>
-                <div className={`flex h-11 w-11 items-center justify-center rounded-2xl ${tone}`}>{icon}</div>
             </div>
-        </div>
+        </button>
     );
 }
 
@@ -97,23 +170,76 @@ export function ProviderOrders(): JSX.Element {
     const [orders, setOrders] = useState<ProviderIncomingOrderItemDto[]>([]);
     const [stats, setStats] = useState<ProviderOrderStatsDto | null>(null);
     const [status, setStatus] = useState("");
+    const [searchTerm, setSearchTerm] = useState("");
+    const [dateRange, setDateRange] = useState("all");
+    const [page, setPage] = useState(1);
+    const [totalCount, setTotalCount] = useState(0);
     const [loading, setLoading] = useState(true);
+    const [fetchingOrders, setFetchingOrders] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [confirmAction, setConfirmAction] = useState<{ title: string; message: string; onConfirm: () => void } | null>(null);
+    const hasLoadedOrdersRef = useRef(false);
+    const fetchStartedAtRef = useRef(0);
+    const fetchSequenceRef = useRef(0);
     const { showToast } = useToast();
     const navigate = useNavigate();
 
+    const dateFilters = useMemo(() => {
+        const now = new Date();
+        const start = new Date(now);
+        start.setHours(0, 0, 0, 0);
+
+        if (dateRange === "all") {
+            return {
+                search: searchTerm,
+            };
+        }
+
+        if (dateRange === "week") {
+            const day = start.getDay();
+            const diffToMonday = day === 0 ? -6 : 1 - day;
+            start.setDate(start.getDate() + diffToMonday);
+        } else {
+            start.setDate(1);
+        }
+
+        return {
+            fromDate: formatDateParam(start),
+            toDate: formatDateParam(now),
+            search: searchTerm,
+        };
+    }, [dateRange, searchTerm]);
+
     const fetchData = useCallback(() => {
-        setLoading(true);
-        Promise.all([getProviderDirectOrders(1, 40, status || undefined), getProviderDirectOrderStats()])
+        const isInitialLoad = !hasLoadedOrdersRef.current;
+        const fetchSequence = fetchSequenceRef.current + 1;
+        fetchSequenceRef.current = fetchSequence;
+        setLoading(isInitialLoad);
+        setFetchingOrders(!isInitialLoad);
+        fetchStartedAtRef.current = Date.now();
+        Promise.all([getProviderDirectOrders(page, PROVIDER_LIST_PAGE_SIZE, status || undefined, dateFilters), getProviderDirectOrderStats()])
             .then(([orderResponse, statsResponse]) => {
                 setOrders(orderResponse.items);
+                setTotalCount(orderResponse.totalCount);
                 setStats(statsResponse);
             })
             .finally(() => {
-                setLoading(false);
+                const elapsed = Date.now() - fetchStartedAtRef.current;
+                const finish = () => {
+                    if (fetchSequence !== fetchSequenceRef.current) return;
+                    hasLoadedOrdersRef.current = true;
+                    setLoading(false);
+                    setFetchingOrders(false);
+                };
+
+                if (!isInitialLoad && elapsed < MIN_PAGE_FETCH_FEEDBACK_MS) {
+                    window.setTimeout(finish, MIN_PAGE_FETCH_FEEDBACK_MS - elapsed);
+                    return;
+                }
+
+                finish();
             });
-    }, [status]);
+    }, [dateFilters, page, status]);
 
     useEffect(() => {
         fetchData();
@@ -153,7 +279,6 @@ export function ProviderOrders(): JSX.Element {
         if (order.orderStatus === "Paid") {
             return {
                 label: "Tiếp nhận đơn",
-                description: "Đơn đã thanh toán, sẵn sàng đưa vào dây chuyền.",
                 onClick: () =>
                     confirmStatusChange(
                         "Tiếp nhận đơn hàng?",
@@ -166,7 +291,6 @@ export function ProviderOrders(): JSX.Element {
         if (order.orderStatus === "Accepted") {
             return {
                 label: "Bắt đầu sản xuất",
-                description: "Chuyển đơn sang giai đoạn đang sản xuất.",
                 onClick: () =>
                     confirmStatusChange(
                         "Bắt đầu sản xuất?",
@@ -179,7 +303,6 @@ export function ProviderOrders(): JSX.Element {
         if (order.orderStatus === "InProduction") {
             return {
                 label: "Xác nhận có hàng",
-                description: "Đánh dấu đơn đã hoàn tất sản xuất và chờ giao.",
                 onClick: () =>
                     confirmStatusChange(
                         "Xác nhận sẵn sàng giao?",
@@ -192,43 +315,191 @@ export function ProviderOrders(): JSX.Element {
         return null;
     };
 
-    const stageCards = useMemo(
+    const statusSummaryCards = useMemo(
         () => [
+            {
+                label: "Tổng đơn",
+                value: stats?.totalOrders ?? 0,
+                filterValue: "",
+                surfaceClassName: "bg-blue-100",
+                iconClassName: "text-slate-900",
+                icon: <Box className="h-6 w-6" />,
+            },
+            {
+                label: "Chờ thanh toán",
+                value: stats?.pendingOrders ?? 0,
+                filterValue: "Pending",
+                surfaceClassName: "bg-yellow-100",
+                iconClassName: "text-slate-900",
+                icon: <CreditCard className="h-6 w-6" />,
+            },
             {
                 label: "Chờ tiếp nhận",
                 value: stats?.paidOrders ?? 0,
-                note: "Ưu tiên xác nhận để tránh đơn bị tồn ở đầu dây chuyền.",
-                tone: "bg-amber-50 text-amber-600",
-                icon: <Clock3 className="h-5 w-5" />,
+                filterValue: "Paid",
+                surfaceClassName: "bg-teal-100",
+                iconClassName: "text-slate-900",
+                icon: <PackageSearch className="h-6 w-6" />,
             },
             {
-                label: "Đang sản xuất",
+                label: "Đang xử lý",
                 value: stats?.inProgressOrders ?? 0,
-                note: "Các đơn đang đi qua giai đoạn cắt may hoặc hoàn thiện.",
-                tone: "bg-violet-50 text-violet-600",
-                icon: <WandSparkles className="h-5 w-5" />,
+                filterValue: PROCESSING_STATUS_FILTER,
+                surfaceClassName: "bg-orange-100",
+                iconClassName: "text-slate-900",
+                icon: <WandSparkles className="h-6 w-6" />,
             },
             {
-                label: "Đã giao hoàn tất",
-                value: stats?.completedShipmentOrders ?? 0,
-                note: "Các đơn đã hoàn thành vòng đời giao nhận.",
-                tone: "bg-emerald-50 text-emerald-600",
-                icon: <CheckCircle2 className="h-5 w-5" />,
+                label: "Đang giao",
+                value: stats?.statusCounts?.Shipped ?? 0,
+                filterValue: "Shipped",
+                surfaceClassName: "bg-pink-100",
+                iconClassName: "text-slate-900",
+                icon: <Truck className="h-6 w-6" />,
             },
             {
-                label: "Doanh thu từ đơn",
-                value: formatCurrency(stats?.totalRevenue ?? 0),
-                note: "Tổng doanh thu hiện ghi nhận từ kênh đơn trực tiếp.",
-                tone: "bg-blue-50 text-blue-600",
-                icon: <Truck className="h-5 w-5" />,
+                label: "Đã giao",
+                value: stats?.statusCounts?.Delivered ?? 0,
+                filterValue: "Delivered",
+                surfaceClassName: "bg-lime-200",
+                iconClassName: "text-slate-900",
+                icon: <CheckCircle2 className="h-6 w-6" />,
+            },
+            {
+                label: "Đã hủy",
+                value: stats?.statusCounts?.Cancelled ?? 0,
+                filterValue: "Cancelled",
+                surfaceClassName: "bg-amber-200",
+                iconClassName: "text-slate-900",
+                icon: <XCircle className="h-6 w-6" />,
+            },
+            {
+                label: "Hoàn tiền",
+                value: stats?.statusCounts?.Refunded ?? 0,
+                filterValue: "Refunded",
+                surfaceClassName: "bg-cyan-100",
+                iconClassName: "text-slate-900",
+                icon: <RotateCcw className="h-6 w-6" />,
             },
         ],
         [stats],
     );
 
-    const actionRequiredCount = (stats?.paidOrders ?? 0) + (stats?.inProgressOrders ?? 0);
+    const chartData = useMemo(
+        () => (stats?.monthlyMetrics ?? []).map((item) => ({
+            month: item.month,
+            revenue: item.revenue,
+            completedRevenue: item.completedRevenue,
+            orders: item.orders,
+        })),
+        [stats],
+    );
+
+    const totalPages = Math.max(1, Math.ceil(totalCount / PROVIDER_LIST_PAGE_SIZE));
     const isFilteredEmptyState = !loading && !!status && orders.length === 0;
     const { preserveResultsHeight, preservedHeightStyle, resultsRegionRef } = usePreservedResultsHeight(isFilteredEmptyState);
+    const displayedOrders = orders;
+    const paymentStatus = PAYMENT_STATUS_OPTIONS.some((item) => item.value === status) ? status : "";
+    const receivedStatus = RECEIVED_STATUS_OPTIONS.some((item) => item.value === status) ? status : "";
+
+    const handleStatusChange = (nextStatus: string) => {
+        preserveResultsHeight();
+        setStatus(nextStatus);
+        setPage(1);
+    };
+
+    const handleSummaryCardClick = (nextStatus: string) => {
+        preserveResultsHeight();
+        setStatus(nextStatus);
+        setDateRange("all");
+        setPage(1);
+    };
+
+    const orderColumns: ProviderDataTableColumn<ProviderIncomingOrderItemDto>[] = [
+        {
+            key: "id",
+            header: "ID",
+            render: (order) => (
+                <span className="font-mono text-sm font-bold text-slate-900">
+                    #{order.orderId.slice(0, 8).toUpperCase()}
+                </span>
+            ),
+        },
+        {
+            key: "customer",
+            header: "Khách hàng",
+            render: (order) => <span className="font-bold text-slate-900">{order.parentName}</span>,
+        },
+        {
+            key: "items",
+            header: "Sản phẩm",
+            render: (order) => <span className="font-semibold">{order.itemCount} món</span>,
+        },
+        {
+            key: "amount",
+            header: "Giá trị",
+            render: (order) => <span className="font-bold text-violet-700">{formatCurrency(order.totalAmount)}</span>,
+        },
+        {
+            key: "status",
+            header: "Trạng thái",
+            render: (order) => <OrderStatusBadge status={order.orderStatus} />,
+        },
+        {
+            key: "tracking",
+            header: "Vận chuyển",
+            render: (order) => (
+                <span className="font-semibold text-slate-700">
+                    {order.trackingCode ? order.trackingCode : "Chưa có mã"}
+                </span>
+            ),
+        },
+        {
+            key: "date",
+            header: "Ngày",
+            render: (order) => (
+                <span className="whitespace-nowrap font-semibold text-slate-600">
+                    {new Date(order.orderDate).toLocaleDateString("vi-VN")}
+                </span>
+            ),
+        },
+        {
+            key: "action",
+            header: "Action",
+            className: "text-right",
+            render: (order) => {
+                const action = getNextAction(order);
+
+                return (
+                    <div className="flex items-center justify-end gap-2">
+                        {action ? (
+                            <button
+                                type="button"
+                                onClick={(event) => {
+                                    event.stopPropagation();
+                                    action.onClick();
+                                }}
+                                className="rounded-[8px] bg-violet-50 px-3 py-2 text-xs font-bold text-violet-700 transition-colors hover:bg-violet-100"
+                            >
+                                {action.label}
+                            </button>
+                        ) : null}
+                        <button
+                            type="button"
+                            onClick={(event) => {
+                                event.stopPropagation();
+                                navigate(`/provider/orders/${order.orderId}`);
+                            }}
+                            className="inline-flex h-9 w-9 items-center justify-center rounded-[8px] border border-slate-200 bg-white text-slate-700 transition-colors hover:border-violet-200 hover:text-violet-700"
+                            aria-label="Xem chi tiết đơn hàng"
+                        >
+                            <Eye className="h-4 w-4" />
+                        </button>
+                    </div>
+                );
+            },
+        },
+    ];
 
     return (
         <div className="nb-page flex flex-col">
@@ -244,63 +515,168 @@ export function ProviderOrders(): JSX.Element {
                                 <ShoppingBag className="h-5 w-5" />
                             </div>
                             <div>
-                                <h1 className="text-xl font-extrabold leading-none text-gray-900">Điều phối đơn hàng</h1>
-                                <p className="mt-1 text-[12px] font-semibold text-gray-400">
-                                    Theo dõi tiến độ sản xuất, chuẩn bị giao hàng, và xử lý các điểm nghẽn trong ngày.
-                                </p>
+                                <h1 className="text-xl font-bold leading-none text-gray-900">Điều phối đơn hàng</h1>
                             </div>
                         </div>
                     </TopNavBar>
 
                     <main className="space-y-6 px-4 py-6 sm:px-6 lg:px-10 lg:py-8">
-                        <section className="overflow-hidden rounded-[32px] border border-slate-900/70 bg-slate-950 bg-gradient-to-br from-slate-950 via-slate-800 to-violet-900 px-6 py-7 text-white shadow-soft-lg lg:px-8">
-                            <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-                                <div className="max-w-3xl">
-                                    <span className="inline-flex items-center rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-white">
-                                        Đơn hàng sản xuất
-                                    </span>
-                                    <h2 className="mt-4 text-3xl font-black leading-tight text-white sm:text-4xl">
-                                        {stats?.totalOrders ?? 0} đơn đang thuộc phạm vi vận hành của bạn.
-                                    </h2>
-                                    <p className="mt-3 text-sm font-medium leading-7 text-slate-100 sm:text-base">
-                                        Ưu tiên các đơn đã thanh toán, rồi tiếp tục theo dõi sản xuất và giao hàng để không bị dồn việc ở các bước sau.
+                        <section className="space-y-5">
+                            <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                                <div>
+                                    <h2 className="text-2xl font-bold text-slate-950">Tổng quan đơn hàng</h2>
+                                    <p className="mt-1 text-sm font-semibold text-slate-500">
+                                        Doanh thu ghi nhận: <span className="text-slate-900">{formatCurrency(stats?.totalRevenue ?? 0)}</span>
                                     </p>
                                 </div>
+                            </div>
 
-                                <div className="grid gap-3 sm:grid-cols-3 lg:w-[430px]">
-                                    <div className="rounded-[22px] border border-white/10 bg-white/8 p-4">
-                                        <p className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-300">Ưu tiên hôm nay</p>
-                                        <p className="mt-2 text-2xl font-black text-white">{actionRequiredCount}</p>
-                                    </div>
-                                    <div className="rounded-[22px] border border-white/10 bg-white/8 p-4">
-                                        <p className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-300">Đang giao</p>
-                                        <p className="mt-2 text-2xl font-black text-white">{stats?.statusCounts?.Shipped ?? 0}</p>
-                                    </div>
-                                    <div className="rounded-[22px] border border-white/10 bg-white/8 p-4">
-                                        <p className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-300">Doanh thu</p>
-                                        <p className="mt-2 text-2xl font-black text-white">
-                                            {(stats?.totalRevenue ?? 0).toLocaleString("vi-VN")} ₫
-                                        </p>
-                                    </div>
-                                </div>
+                            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                                {statusSummaryCards.map((card) => (
+                                    <StatusSummaryCard
+                                        key={card.label}
+                                        {...card}
+                                        active={status === card.filterValue}
+                                        onClick={() => handleSummaryCardClick(card.filterValue)}
+                                    />
+                                ))}
                             </div>
                         </section>
 
-                        <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                            {stageCards.map((card) => (
-                                <StageSummaryCard key={card.label} {...card} />
-                            ))}
-                        </section>
-
-                        <section className="rounded-[28px] border border-gray-200 bg-white p-6 shadow-soft-sm">
+                        <section className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-soft-sm lg:p-6">
                             <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                                 <div>
-                                    <p className="text-[11px] font-black uppercase tracking-[0.18em] text-gray-400">Bộ lọc điều phối</p>
-                                    <h2 className="mt-2 text-2xl font-black text-gray-900">Chọn hàng đợi cần xử lý</h2>
+                                    <h2 className="text-2xl font-bold text-slate-950">Hiệu suất đơn hàng</h2>
+                                    <p className="mt-1 text-sm font-semibold text-slate-500">Theo dõi doanh thu và doanh thu đã giao trong 12 tháng gần nhất.</p>
                                 </div>
-                                <div className="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-black text-amber-700">
-                                    <Sparkles className="h-4 w-4" />
-                                    {stats?.paidOrders ?? 0} đơn đang cần tiếp nhận ngay
+                                <div className="flex flex-wrap gap-4 text-sm font-semibold text-slate-600">
+                                    <span className="inline-flex items-center gap-2">
+                                        <span className="h-2.5 w-2.5 rounded-full bg-teal-600" />
+                                        Doanh thu
+                                    </span>
+                                    <span className="inline-flex items-center gap-2">
+                                        <span className="h-2.5 w-2.5 rounded-full bg-amber-400" />
+                                        Đã giao
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div className="mt-6 h-[300px] w-full">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <LineChart data={chartData} margin={{ top: 10, right: 18, bottom: 0, left: -12 }}>
+                                        <CartesianGrid stroke="#E5E7EB" strokeDasharray="4 6" vertical={false} />
+                                        <XAxis
+                                            dataKey="month"
+                                            axisLine={false}
+                                            tickLine={false}
+                                            tick={{ fill: "#64748B", fontSize: 12, fontWeight: 600 }}
+                                            dy={12}
+                                        />
+                                        <YAxis
+                                            axisLine={false}
+                                            tickLine={false}
+                                            tick={{ fill: "#64748B", fontSize: 12, fontWeight: 600 }}
+                                            tickFormatter={formatCompactCurrency}
+                                        />
+                                        <Tooltip
+                                            cursor={{ stroke: "#CBD5E1", strokeWidth: 1 }}
+                                            formatter={(value: number, name: string) => [
+                                                formatCurrency(Number(value)),
+                                                name === "revenue" ? "Doanh thu" : "Đã giao",
+                                            ]}
+                                            labelFormatter={(label: string) => `Tháng ${String(label).replace("T", "")}`}
+                                            contentStyle={{
+                                                border: "1px solid #E2E8F0",
+                                                borderRadius: "8px",
+                                                boxShadow: "0 14px 30px rgba(15, 23, 42, 0.12)",
+                                                fontWeight: 700,
+                                            }}
+                                        />
+                                        <Line
+                                            type="monotone"
+                                            dataKey="revenue"
+                                            stroke="#0F8F85"
+                                            strokeWidth={3}
+                                            dot={false}
+                                            activeDot={{ r: 5, fill: "#0F8F85", stroke: "#FFFFFF", strokeWidth: 2 }}
+                                        />
+                                        <Line
+                                            type="monotone"
+                                            dataKey="completedRevenue"
+                                            stroke="#F7B84B"
+                                            strokeWidth={3}
+                                            dot={false}
+                                            activeDot={{ r: 5, fill: "#F7B84B", stroke: "#FFFFFF", strokeWidth: 2 }}
+                                        />
+                                    </LineChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </section>
+
+                        <section className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                            <label className="relative block w-full lg:max-w-[300px]">
+                                <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+                                <input
+                                    value={searchTerm}
+                                    onChange={(event) => {
+                                        setSearchTerm(event.target.value);
+                                        setPage(1);
+                                    }}
+                                    placeholder="Search..."
+                                    className="h-10 w-full rounded-full border border-slate-200 bg-white pl-11 pr-4 text-sm font-medium text-slate-800 outline-none shadow-soft-xs transition-colors placeholder:text-slate-500 focus:border-violet-200 focus:ring-4 focus:ring-violet-50"
+                                />
+                            </label>
+
+                            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+                                <label className="relative block">
+                                    <select
+                                        value={paymentStatus}
+                                        onChange={(event) => handleStatusChange(event.target.value)}
+                                        className="h-10 min-w-[148px] appearance-none rounded-full border border-slate-200 bg-white py-0 pl-4 pr-10 text-sm font-medium text-slate-700 outline-none shadow-soft-xs transition-colors focus:border-violet-200 focus:ring-4 focus:ring-violet-50"
+                                    >
+                                        {PAYMENT_STATUS_OPTIONS.map((option) => (
+                                            <option key={option.value || "all-payment"} value={option.value}>{option.label}</option>
+                                        ))}
+                                    </select>
+                                    <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-900" />
+                                </label>
+
+                                <label className="relative block">
+                                    <select
+                                        value={receivedStatus}
+                                        onChange={(event) => handleStatusChange(event.target.value)}
+                                        className="h-10 min-w-[156px] appearance-none rounded-full border border-slate-200 bg-white py-0 pl-4 pr-10 text-sm font-medium text-slate-700 outline-none shadow-soft-xs transition-colors focus:border-violet-200 focus:ring-4 focus:ring-violet-50"
+                                    >
+                                        {RECEIVED_STATUS_OPTIONS.map((option) => (
+                                            <option key={option.value || "all-received"} value={option.value}>{option.label}</option>
+                                        ))}
+                                    </select>
+                                    <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-900" />
+                                </label>
+
+                                <label className="relative block">
+                                    <select
+                                        value={dateRange}
+                                        onChange={(event) => {
+                                            setDateRange(event.target.value);
+                                            setPage(1);
+                                        }}
+                                        className="h-10 min-w-[112px] appearance-none rounded-full border border-slate-200 bg-white py-0 pl-4 pr-10 text-sm font-medium text-slate-700 outline-none shadow-soft-xs transition-colors focus:border-violet-200 focus:ring-4 focus:ring-violet-50"
+                                    >
+                                        {DATE_SORT_OPTIONS.map((option) => (
+                                            <option key={option.value} value={option.value}>{option.label}</option>
+                                        ))}
+                                    </select>
+                                    <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-900" />
+                                </label>
+                            </div>
+                        </section>
+
+                        <section className="hidden">
+                            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                                <div>
+                                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-gray-400">Bộ lọc điều phối</p>
+                                    <h2 className="mt-2 text-2xl font-bold text-gray-900">Chọn hàng đợi cần xử lý</h2>
                                 </div>
                             </div>
 
@@ -318,6 +694,7 @@ export function ProviderOrders(): JSX.Element {
                                             onClick={() => {
                                                 preserveResultsHeight();
                                                 setStatus(item.value);
+                                                setPage(1);
                                             }}
                                             className={`inline-flex min-w-max items-center gap-3 rounded-[18px] border px-4 py-3 text-left transition-all ${
                                                 active
@@ -325,9 +702,9 @@ export function ProviderOrders(): JSX.Element {
                                                     : "border-gray-200 bg-white text-gray-600 hover:border-violet-100 hover:text-gray-900"
                                             }`}
                                         >
-                                            <span className="text-sm font-black">{item.label}</span>
+                                            <span className="text-sm font-bold">{item.label}</span>
                                             <span
-                                                className={`inline-flex h-6 min-w-[24px] items-center justify-center rounded-full px-2 text-[11px] font-black ${
+                                                className={`inline-flex h-6 min-w-[24px] items-center justify-center rounded-full px-2 text-[11px] font-bold ${
                                                     active ? "bg-violet-600 text-white" : "bg-slate-100 text-slate-700"
                                                 }`}
                                             >
@@ -339,117 +716,60 @@ export function ProviderOrders(): JSX.Element {
                             </div>
                         </section>
 
-                        <div ref={resultsRegionRef} style={preservedHeightStyle}>
+                        <div ref={resultsRegionRef} style={preservedHeightStyle} className="relative">
                         {loading ? (
                             <div className="flex min-h-[320px] flex-col items-center justify-center gap-4 rounded-[32px] border border-gray-200 bg-white shadow-soft-sm">
                                 <Loader2 className="h-10 w-10 animate-spin text-violet-600" />
-                                <p className="text-xs font-black uppercase tracking-[0.18em] text-gray-400">Đang đồng bộ dữ liệu đơn hàng...</p>
+                                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">Đang đồng bộ dữ liệu đơn hàng...</p>
                             </div>
-                        ) : orders.length === 0 ? (
+                        ) : displayedOrders.length === 0 ? (
                             <div className="rounded-[32px] border border-dashed border-gray-300 bg-white p-20 text-center shadow-soft-sm">
                                 <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-[24px] border border-gray-100 bg-violet-50">
                                     <ShoppingBag className="h-9 w-9 text-violet-500" />
                                 </div>
-                                <h2 className="mt-6 text-xl font-black text-gray-900">Không có đơn trong hàng đợi này</h2>
-                                <p className="mt-2 text-sm font-medium text-gray-500">
-                                    Thử đổi bộ lọc để xem các đơn ở giai đoạn khác trong luồng sản xuất.
-                                </p>
+                                <h2 className="mt-6 text-xl font-bold text-gray-900">Không có đơn trong hàng đợi này</h2>
                             </div>
                         ) : (
-                            <section className="space-y-4">
-                                {orders.map((order) => {
-                                    const action = getNextAction(order);
-                                    const statusConfig = ORDER_STATUS_MAP[order.orderStatus] || ORDER_STATUS_MAP.Pending;
-
-                                    return (
-                                        <article
-                                            key={order.orderId}
-                                            className="w-full rounded-[28px] border border-gray-200 bg-white p-5 shadow-soft-sm transition-all hover:border-violet-200"
-                                        >
-                                            <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_240px] xl:items-start">
-                                                <div className="min-w-0 w-full break-normal [overflow-wrap:normal]">
-                                                    <div className="flex min-w-0 flex-wrap items-center gap-3">
-                                                        <span className="shrink-0 font-mono text-sm font-black text-gray-900">
-                                                            #{order.orderId.slice(0, 8).toUpperCase()}
-                                                        </span>
-                                                        <OrderStatusBadge status={order.orderStatus} />
-                                                        <span className={`inline-flex shrink-0 items-center rounded-full px-3 py-1 text-[11px] font-black ${statusConfig.tone}`}>
-                                                            {new Date(order.orderDate).toLocaleDateString("vi-VN")}
-                                                        </span>
-                                                    </div>
-
-                                                    <div className="mt-4 grid gap-4 md:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)]">
-                                                        <div>
-                                                            <p className="text-[10px] font-black uppercase tracking-[0.16em] text-gray-400">Khách hàng</p>
-                                                            <p className="mt-1 text-base font-black text-gray-900">{order.parentName}</p>
-                                                            <p className="mt-1 text-sm font-medium text-gray-500">Học sinh: {order.childName}</p>
-                                                        </div>
-                                                        <div>
-                                                            <p className="text-[10px] font-black uppercase tracking-[0.16em] text-gray-400">Sản phẩm</p>
-                                                            <p className="mt-1 text-base font-black text-gray-900">{order.itemCount} món</p>
-                                                            <p className="mt-1 text-sm font-medium text-gray-500">Đơn trực tiếp từ phụ huynh</p>
-                                                        </div>
-                                                        <div>
-                                                            <p className="text-[10px] font-black uppercase tracking-[0.16em] text-gray-400">Tổng giá trị</p>
-                                                            <p className="mt-1 text-base font-black text-violet-700">{formatCurrency(order.totalAmount)}</p>
-                                                            <p className="mt-1 text-sm font-medium text-gray-500">Theo đơn hiện tại</p>
-                                                        </div>
-                                                        <div>
-                                                            <p className="text-[10px] font-black uppercase tracking-[0.16em] text-gray-400">Theo dõi vận chuyển</p>
-                                                            <p className="mt-1 text-base font-black text-gray-900">
-                                                                {order.trackingCode ? order.trackingCode : "Chưa có mã"}
-                                                            </p>
-                                                            <p className="mt-1 text-sm font-medium text-gray-500">
-                                                                {order.trackingCode ? "Đã có thông tin chuyển phát" : "Sẽ cập nhật ở bước giao hàng"}
-                                                            </p>
-                                                        </div>
-                                                    </div>
-
-                                                    {action ? (
-                                                        <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-black text-amber-700">
-                                                            <Clock3 className="h-4 w-4" />
-                                                            {action.description}
-                                                        </div>
-                                                    ) : null}
-                                                </div>
-
-                                                <div className="flex w-full flex-col gap-3 xl:w-[240px] xl:shrink-0">
-                                                    {action ? (
-                                                        <button
-                                                            onClick={(event) => {
-                                                                event.preventDefault();
-                                                                action.onClick();
-                                                            }}
-                                                            className="inline-flex h-11 items-center justify-center rounded-[16px] bg-violet-600 px-4 text-sm font-black text-white shadow-soft-sm transition-all hover:bg-violet-700"
-                                                        >
-                                                            {action.label}
-                                                        </button>
-                                                    ) : null}
-
-                                                    <button
-                                                        onClick={() => navigate(`/provider/orders/${order.orderId}`)}
-                                                        className="inline-flex h-11 items-center justify-center gap-2 rounded-[16px] border border-gray-200 bg-white px-4 text-sm font-black text-gray-700 transition-all hover:border-violet-200 hover:text-violet-700"
-                                                    >
-                                                        Xem chi tiết
-                                                        <ChevronRight className="h-4 w-4" />
-                                                    </button>
-
-                                                    {!action ? (
-                                                        <Link
-                                                            to={`/provider/orders/${order.orderId}`}
-                                                            className="inline-flex h-11 items-center justify-center gap-2 rounded-[16px] bg-slate-50 px-4 text-sm font-black text-slate-700 transition-all hover:bg-slate-100"
-                                                        >
-                                                            Mở hồ sơ đơn
-                                                            <Package className="h-4 w-4" />
-                                                        </Link>
-                                                    ) : null}
-                                                </div>
-                                            </div>
-                                        </article>
-                                    );
-                                })}
-                            </section>
+                            <ProviderDataTable
+                                items={displayedOrders}
+                                columns={orderColumns}
+                                getKey={(order) => order.orderId}
+                                onRowClick={(order) => navigate(`/provider/orders/${order.orderId}`)}
+                            />
                         )}
+
+                        {fetchingOrders ? (
+                            <div className="absolute right-4 top-4 inline-flex items-center gap-2 rounded-full border border-violet-100 bg-white/90 px-3 py-1.5 text-xs font-bold text-violet-700 shadow-soft-sm backdrop-blur">
+                                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                Đang tải
+                            </div>
+                        ) : null}
+
+                        {totalPages > 1 ? (
+                            <div className="flex items-center justify-center gap-3">
+                                <button
+                                    disabled={page <= 1 || fetchingOrders}
+                                    onClick={() => {
+                                        preserveResultsHeight();
+                                        setPage((current) => current - 1);
+                                    }}
+                                    className="nb-btn nb-btn-outline nb-btn-sm text-sm"
+                                >
+                                    ← Trước
+                                </button>
+                                <span className="text-sm font-medium text-gray-500">{page}/{totalPages}</span>
+                                <button
+                                    disabled={page >= totalPages || fetchingOrders}
+                                    onClick={() => {
+                                        preserveResultsHeight();
+                                        setPage((current) => current + 1);
+                                    }}
+                                    className="nb-btn nb-btn-outline nb-btn-sm text-sm"
+                                >
+                                    Sau →
+                                </button>
+                            </div>
+                        ) : null}
                         </div>
                     </main>
                 </div>
@@ -460,21 +780,21 @@ export function ProviderOrders(): JSX.Element {
                     <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setConfirmAction(null)} />
                     <div className="relative w-full max-w-[400px] overflow-hidden rounded-[24px] border border-gray-200 bg-white shadow-soft-xl animate-in fade-in zoom-in duration-200">
                         <div className="border-b border-violet-100 bg-violet-50 px-6 py-4">
-                            <h3 className="text-lg font-black text-gray-900">{confirmAction.title}</h3>
+                            <h3 className="text-lg font-bold text-gray-900">{confirmAction.title}</h3>
                         </div>
                         <div className="px-6 py-6">
                             <p className="text-sm font-semibold leading-7 text-gray-600">{confirmAction.message}</p>
                             <div className="mt-6 flex gap-2.5">
                                 <button
                                     onClick={() => setConfirmAction(null)}
-                                    className="flex-1 rounded-xl border border-gray-200 bg-white py-3 text-[13px] font-black text-gray-900 transition-all hover:bg-slate-50"
+                                    className="flex-1 rounded-xl border border-gray-200 bg-white py-3 text-[13px] font-bold text-gray-900 transition-all hover:bg-slate-50"
                                 >
                                     Quay lại
                                 </button>
                                 <button
                                     onClick={confirmAction.onConfirm}
                                     disabled={submitting}
-                                    className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-violet-600 py-3 text-[13px] font-black text-white shadow-soft-sm transition-all hover:bg-violet-700 disabled:opacity-50"
+                                    className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-violet-600 py-3 text-[13px] font-bold text-white shadow-soft-sm transition-all hover:bg-violet-700 disabled:opacity-50"
                                 >
                                     {submitting ? <Loader2 className="h-4 w-4 animate-spin text-white" /> : null}
                                     Xác nhận

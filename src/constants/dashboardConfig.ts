@@ -43,7 +43,7 @@ export const DASHBOARD_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, "isCollapsed"
                 },
                 {
                     icon: LifeBuoy,
-                    label: "Ho tro Admin",
+                    label: "Hỗ trợ Admin",
                     href: "/school/support",
                 },
             ],

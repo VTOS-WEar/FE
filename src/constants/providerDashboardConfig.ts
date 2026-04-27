@@ -35,16 +35,48 @@ export const PROVIDER_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, "isCollapsed" 
                     icon: ClipboardList,
                     label: "Đơn hàng",
                     href: "/provider/orders",
+                    children: [
+                        {
+                            icon: ClipboardList,
+                            label: "Danh sách đơn",
+                            href: "/provider/orders",
+                            activeWhen: (pathname) => pathname === "/provider/orders",
+                        },
+                        {
+                            icon: FileText,
+                            label: "Chi tiết đơn",
+                            activeWhen: (pathname) => pathname.startsWith("/provider/orders/"),
+                        },
+                        {
+                            icon: BarChart3,
+                            label: "Theo dõi giao hàng",
+                            activeWhen: (pathname) => pathname.startsWith("/provider/orders/"),
+                        },
+                    ],
                 },
                 {
                     icon: AlertTriangle,
                     label: "Khiếu nại",
                     href: "/provider/complaints",
+                    children: [
+                        {
+                            icon: AlertTriangle,
+                            label: "Danh sách khiếu nại",
+                            href: "/provider/complaints",
+                        },
+                    ],
                 },
                 {
                     icon: LifeBuoy,
-                    label: "Ho tro Admin",
+                    label: "Hỗ trợ Admin",
                     href: "/provider/support",
+                    children: [
+                        {
+                            icon: LifeBuoy,
+                            label: "Danh sách ticket",
+                            href: "/provider/support",
+                        },
+                    ],
                 },
             ],
         },
@@ -55,6 +87,13 @@ export const PROVIDER_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, "isCollapsed" 
                     icon: FileText,
                     label: "Hợp đồng",
                     href: "/provider/contracts",
+                    children: [
+                        {
+                            icon: FileText,
+                            label: "Danh sách hợp đồng",
+                            href: "/provider/contracts",
+                        },
+                    ],
                 },
             ],
         },
@@ -65,6 +104,18 @@ export const PROVIDER_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, "isCollapsed" 
                     icon: Wallet,
                     label: "Ví nhà cung cấp",
                     href: "/provider/wallet",
+                    children: [
+                        {
+                            icon: Wallet,
+                            label: "Giao dịch ví",
+                            href: "/provider/wallet",
+                        },
+                        {
+                            icon: BarChart3,
+                            label: "Yêu cầu rút tiền",
+                            href: "/provider/wallet",
+                        },
+                    ],
                 },
                 {
                     icon: BarChart3,

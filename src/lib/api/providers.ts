@@ -103,15 +103,27 @@ export type ProviderOrderStatsDto = {
     completedShipmentOrders: number;
     totalRevenue: number;
     statusCounts: Record<string, number>;
+    monthlyMetrics: ProviderOrderMonthlyMetricDto[];
+};
+
+export type ProviderOrderMonthlyMetricDto = {
+    month: string;
+    orders: number;
+    revenue: number;
+    completedRevenue: number;
 };
 
 export async function getProviderDirectOrders(
     page = 1,
     pageSize = 10,
     status?: string,
+    filters: { fromDate?: string; toDate?: string; search?: string } = {},
 ): Promise<ProviderIncomingOrdersResponse> {
     const params = new URLSearchParams({ page: String(page), pageSize: String(pageSize) });
     if (status) params.set("status", status);
+    if (filters.fromDate) params.set("fromDate", filters.fromDate);
+    if (filters.toDate) params.set("toDate", filters.toDate);
+    if (filters.search?.trim()) params.set("search", filters.search.trim());
 
     const result = await api<ResultEnvelope<ProviderIncomingOrdersResponse>>(
         `${endpoints.providers.directOrders}?${params}`,

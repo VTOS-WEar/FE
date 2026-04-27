@@ -2,22 +2,24 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
     Banknote,
-    Building2,
-    CreditCard,
+    Clock3,
+    ExternalLink,
     Landmark,
     Loader2,
-    ShieldCheck,
     WalletCards,
 } from "lucide-react";
 import { DashboardSidebar } from "../../components/layout";
 import { TopNavBar } from "../../components/layout/TopNavBar";
+import { PROVIDER_LIST_PAGE_SIZE, ProviderDataTable, type ProviderDataTableColumn } from "../../components/provider/ProviderDataTable";
 import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
 import { useProviderSidebarConfig } from "../../hooks/useProviderSidebarConfig";
 import {
     getProviderWallet,
     getProviderWalletTransactions,
+    getProviderWithdrawalRequests,
     requestProviderWithdrawal,
     updateProviderWalletBankInfo,
+    type ProviderWithdrawalRequestDto,
     type WalletDto,
     type WalletTransactionDto,
 } from "../../lib/api/payments";
@@ -38,17 +40,20 @@ function fmtDate(iso: string) {
     });
 }
 
-const formatBankOption = (bankName: string, bankCode: string): string =>
-    bankCode ? `${bankName} (${bankCode})` : "";
+function formatBankOption(bankName: string, bankCode: string) {
+    return bankCode ? `${bankName} (${bankCode})` : "";
+}
 
 function txLabel(type: string) {
     switch (type) {
         case "OrderPayment":
-            return "Nhận từ trường";
+            return "Thanh toán đơn hàng";
         case "ProviderPayment":
             return "Thanh toán sản xuất";
         case "Refund":
             return "Hoàn tiền";
+        case "Withdrawal":
+            return "Rút tiền";
         default:
             return type;
     }
@@ -57,36 +62,109 @@ function txLabel(type: string) {
 function txColor(type: string) {
     switch (type) {
         case "ProviderPayment":
+        case "OrderPayment":
             return "text-emerald-600";
         case "Refund":
             return "text-amber-600";
+        case "Withdrawal":
+            return "text-rose-600";
         default:
             return "text-slate-600";
+    }
+}
+
+function orderStatusLabel(status?: string | null) {
+    switch (status) {
+        case "Pending":
+            return "chờ xử lý";
+        case "Paid":
+            return "đã thanh toán";
+        case "Accepted":
+            return "đã tiếp nhận";
+        case "InProduction":
+            return "đang sản xuất";
+        case "ReadyToShip":
+            return "sẵn sàng giao";
+        case "Shipped":
+            return "đang giao";
+        case "Delivered":
+            return "được giao thành công";
+        case "Cancelled":
+            return "đã hủy";
+        case "Refunded":
+            return "đã hoàn tiền";
+        default:
+            return status ? status.toLowerCase() : "";
+    }
+}
+
+function walletTransactionTitle(tx: WalletTransactionDto) {
+    if (tx.orderId && (tx.transactionType === "OrderPayment" || tx.transactionType === "ProviderPayment")) {
+        return `Thanh toán đơn #${tx.orderId.slice(0, 8)}`;
+    }
+
+    return txLabel(tx.transactionType);
+}
+
+function walletTransactionDescription(tx: WalletTransactionDto) {
+    if (tx.orderStatus === "Delivered") return "Đơn hàng được giao thành công";
+    if (tx.orderStatus) return `Đơn hàng ${orderStatusLabel(tx.orderStatus)}`;
+    return tx.description || "-";
+}
+
+function withdrawalStatusLabel(status: string) {
+    switch (status) {
+        case "Pending":
+            return "Đang chờ duyệt";
+        case "Approved":
+            return "Đã duyệt";
+        case "Rejected":
+            return "Từ chối";
+        case "Paid":
+            return "Đã chuyển tiền";
+        default:
+            return status;
+    }
+}
+
+function withdrawalStatusTone(status: string) {
+    switch (status) {
+        case "Pending":
+            return "border-amber-200 bg-amber-50 text-amber-700";
+        case "Approved":
+            return "border-blue-200 bg-blue-50 text-blue-700";
+        case "Paid":
+            return "border-emerald-200 bg-emerald-50 text-emerald-700";
+        case "Rejected":
+            return "border-rose-200 bg-rose-50 text-rose-700";
+        default:
+            return "border-slate-200 bg-slate-50 text-slate-600";
     }
 }
 
 function SummaryCard({
     label,
     value,
-    note,
     icon,
-    tone,
+    surfaceClassName,
+    iconClassName,
 }: {
     label: string;
     value: string;
-    note: string;
     icon: React.ReactNode;
-    tone: string;
+    surfaceClassName: string;
+    iconClassName: string;
 }) {
     return (
-        <div className="rounded-[24px] border border-gray-200 bg-white p-5 shadow-soft-sm">
-            <div className="flex items-start justify-between gap-3">
-                <div>
-                    <p className="text-[11px] font-black uppercase tracking-[0.18em] text-gray-400">{label}</p>
-                    <p className="mt-2 text-3xl font-black text-gray-900">{value}</p>
-                    <p className="mt-2 text-sm font-semibold text-gray-500">{note}</p>
+        <div className={`min-h-[112px] rounded-[8px] border border-white/70 p-5 shadow-soft-sm ${surfaceClassName}`}>
+            <div className="flex h-full items-center gap-4">
+                <div className={`flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-white shadow-soft-xs ${iconClassName}`}>
+                    {icon}
                 </div>
-                <div className={`flex h-11 w-11 items-center justify-center rounded-2xl ${tone}`}>{icon}</div>
+                <div className="min-w-0">
+                    <p className="text-sm font-semibold text-slate-700">{label}</p>
+                    <p className="mt-2 text-2xl font-bold leading-tight text-slate-950">{value}</p>
+                </div>
             </div>
         </div>
     );
@@ -100,7 +178,12 @@ export default function ProviderWallet() {
     const [wallet, setWallet] = useState<WalletDto | null>(null);
     const [txns, setTxns] = useState<WalletTransactionDto[]>([]);
     const [txTotal, setTxTotal] = useState(0);
+    const [withdrawals, setWithdrawals] = useState<ProviderWithdrawalRequestDto[]>([]);
+    const [withdrawalTotal, setWithdrawalTotal] = useState(0);
+    const [pendingWithdrawal, setPendingWithdrawal] = useState<ProviderWithdrawalRequestDto | undefined>();
+    const [pendingWithdrawalAmount, setPendingWithdrawalAmount] = useState(0);
     const [page, setPage] = useState(1);
+    const [withdrawalPage, setWithdrawalPage] = useState(1);
     const [loading, setLoading] = useState(true);
     const [editingBank, setEditingBank] = useState(false);
     const [bankForm, setBankForm] = useState({ bankCode: "", bankName: "", accountNumber: "", accountName: "" });
@@ -115,15 +198,21 @@ export default function ProviderWallet() {
     const fetchData = useCallback(async () => {
         setLoading(true);
         try {
-            const [profile, currentWallet, tx] = await Promise.all([
+            const [profile, currentWallet, tx, withdrawalRes, pendingWithdrawalRes] = await Promise.all([
                 getProviderProfile(),
                 getProviderWallet(),
-                getProviderWalletTransactions(page, 10),
+                getProviderWalletTransactions(page, PROVIDER_LIST_PAGE_SIZE),
+                getProviderWithdrawalRequests(withdrawalPage, PROVIDER_LIST_PAGE_SIZE),
+                getProviderWithdrawalRequests(1, PROVIDER_LIST_PAGE_SIZE, "Pending"),
             ]);
             setProviderName(profile.providerName || "Nhà cung cấp");
             setWallet(currentWallet);
             setTxns(tx.items);
             setTxTotal(tx.total);
+            setWithdrawals(withdrawalRes.items ?? []);
+            setWithdrawalTotal(withdrawalRes.total ?? 0);
+            setPendingWithdrawal(pendingWithdrawalRes.items?.[0]);
+            setPendingWithdrawalAmount((pendingWithdrawalRes.items ?? []).reduce((total, item) => total + item.amount, 0));
             setBankForm({
                 bankCode: currentWallet.bankCode || "",
                 bankName: currentWallet.bankName || "",
@@ -132,11 +221,11 @@ export default function ProviderWallet() {
             });
             setBankSearch(formatBankOption(currentWallet.bankName || "", currentWallet.bankCode || ""));
         } catch {
-            // ignore
+            // keep current UI state if wallet APIs are temporarily unavailable
         } finally {
             setLoading(false);
         }
-    }, [page]);
+    }, [page, withdrawalPage]);
 
     useEffect(() => {
         fetchData();
@@ -150,43 +239,133 @@ export default function ProviderWallet() {
         navigate("/signin", { replace: true });
     };
 
-    const totalPages = Math.max(1, Math.ceil(txTotal / 10));
-
-    const isBankReady = !!wallet?.bankAccountNumber && !!wallet?.bankAccountName;
+    const totalPages = Math.max(1, Math.ceil(txTotal / PROVIDER_LIST_PAGE_SIZE));
+    const withdrawalTotalPages = Math.max(1, Math.ceil(withdrawalTotal / PROVIDER_LIST_PAGE_SIZE));
+    const isBankReady = Boolean(wallet?.bankAccountNumber && wallet?.bankAccountName);
+    const canRequestWithdrawal = isBankReady && !pendingWithdrawal;
 
     const summaryCards = useMemo(
         () => [
             {
                 label: "Số dư khả dụng",
                 value: fmt(wallet?.balance ?? 0),
-                note: "Số tiền hiện có thể theo dõi để chuẩn bị rút hoặc đối soát.",
                 icon: <WalletCards className="h-5 w-5" />,
-                tone: "bg-emerald-50 text-emerald-600",
+                surfaceClassName: "bg-emerald-100",
+                iconClassName: "text-slate-900",
+            },
+            {
+                label: "Đang chờ rút",
+                value: fmt(pendingWithdrawalAmount),
+                icon: <Clock3 className="h-5 w-5" />,
+                surfaceClassName: pendingWithdrawal ? "bg-yellow-100" : "bg-lime-200",
+                iconClassName: "text-slate-900",
+            },
+            {
+                label: "Yêu cầu rút tiền",
+                value: String(withdrawalTotal),
+                icon: <Banknote className="h-5 w-5" />,
+                surfaceClassName: "bg-teal-100",
+                iconClassName: "text-slate-900",
             },
             {
                 label: "Ngân hàng",
-                value: isBankReady ? "Sẵn sàng" : "Chưa đủ",
-                note: isBankReady ? "Đã có thông tin để gửi yêu cầu rút tiền." : "Cần cập nhật tài khoản ngân hàng trước khi rút tiền.",
+                value: wallet?.bankName || (isBankReady ? "Sẵn sàng" : "Chưa đủ"),
                 icon: <Landmark className="h-5 w-5" />,
-                tone: "bg-blue-50 text-blue-600",
-            },
-            {
-                label: "Giao dịch",
-                value: String(txTotal),
-                note: "Tổng số giao dịch đang có trong lịch sử ví nhà cung cấp.",
-                icon: <CreditCard className="h-5 w-5" />,
-                tone: "bg-violet-50 text-violet-600",
-            },
-            {
-                label: "Mã ví",
-                value: wallet?.walletId?.slice(0, 8) || "—",
-                note: wallet?.updatedAt ? `Cập nhật lúc ${fmtDate(wallet.updatedAt)}` : "Chưa có thông tin cập nhật",
-                icon: <ShieldCheck className="h-5 w-5" />,
-                tone: "bg-amber-50 text-amber-600",
+                surfaceClassName: "bg-blue-100",
+                iconClassName: "text-slate-900",
             },
         ],
-        [wallet, txTotal, isBankReady],
+        [isBankReady, pendingWithdrawal, pendingWithdrawalAmount, wallet, withdrawalTotal],
     );
+
+    const withdrawalColumns: ProviderDataTableColumn<ProviderWithdrawalRequestDto>[] = [
+        {
+            key: "amount",
+            header: "Số tiền",
+            render: (item) => <span className="font-bold text-slate-900">{fmt(item.amount)}</span>,
+        },
+        {
+            key: "status",
+            header: "Trạng thái",
+            render: (item) => (
+                <span className={`inline-flex w-fit rounded-full border px-3 py-1 text-xs font-bold ${withdrawalStatusTone(item.status)}`}>
+                    {withdrawalStatusLabel(item.status)}
+                </span>
+            ),
+        },
+        {
+            key: "requested",
+            header: "Ngày gửi",
+            render: (item) => <span className="whitespace-nowrap font-semibold text-slate-600">{fmtDate(item.requestedAt)}</span>,
+        },
+        {
+            key: "paid",
+            header: "Ngày chuyển",
+            render: (item) => <span className="whitespace-nowrap font-semibold text-slate-600">{item.paidAt ? fmtDate(item.paidAt) : "-"}</span>,
+        },
+        {
+            key: "note",
+            header: "Ghi chú",
+            render: (item) => <span className="line-clamp-1 font-semibold text-slate-600">{item.adminNote || "-"}</span>,
+        },
+    ];
+
+    const walletTransactionColumns: ProviderDataTableColumn<WalletTransactionDto>[] = [
+        {
+            key: "time",
+            header: "Thời gian",
+            render: (tx) => <span className="whitespace-nowrap font-semibold text-slate-600">{fmtDate(tx.timestamp)}</span>,
+        },
+        {
+            key: "type",
+            header: "Loại giao dịch",
+            render: (tx) => <span className="font-bold text-slate-950">{walletTransactionTitle(tx)}</span>,
+        },
+        {
+            key: "description",
+            header: "Mô tả",
+            render: (tx) => <span className="line-clamp-2 font-semibold text-slate-700">{walletTransactionDescription(tx)}</span>,
+        },
+        {
+            key: "amount",
+            header: "Số tiền",
+            className: "text-right",
+            render: (tx) => (
+                <span className={`font-bold ${txColor(tx.transactionType)}`}>
+                    {tx.amount >= 0 ? "+" : ""}
+                    {fmt(tx.amount)}
+                </span>
+            ),
+        },
+        {
+            key: "status",
+            header: "Trạng thái",
+            className: "text-center",
+            render: (tx) => (
+                <span className="inline-flex w-fit rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-bold text-slate-600">
+                    {tx.status}
+                </span>
+            ),
+        },
+        {
+            key: "action",
+            header: "Đơn hàng",
+            className: "text-right",
+            render: (tx) => tx.orderId ? (
+                <button
+                    type="button"
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-[8px] border border-slate-200 bg-white text-slate-700 transition-colors hover:border-violet-200 hover:text-violet-700"
+                    onClick={(event) => {
+                        event.stopPropagation();
+                        navigate(`/provider/orders/${tx.orderId}`);
+                    }}
+                    aria-label="Xem đơn hàng"
+                >
+                    <ExternalLink className="h-4 w-4" />
+                </button>
+            ) : <span className="text-sm font-semibold text-slate-400">-</span>,
+        },
+    ];
 
     return (
         <div className="nb-page flex flex-col">
@@ -198,95 +377,134 @@ export default function ProviderWallet() {
                 <div className="flex-1 flex flex-col min-w-0">
                     <TopNavBar>
                         <div className="px-2 py-2">
-                            <h1 className="text-xl font-extrabold text-gray-900">Ví nhà cung cấp</h1>
-                            <p className="mt-1 text-[12px] font-semibold text-gray-400">
-                                Theo dõi số dư, chuẩn bị rút tiền, và kiểm tra thông tin ngân hàng đối soát.
-                            </p>
+                            <h1 className="text-xl font-bold text-gray-900">Ví nhà cung cấp</h1>
                         </div>
                     </TopNavBar>
 
                     <main className="flex-1 space-y-6 px-4 py-6 sm:px-6 lg:px-10 lg:py-8">
-                        <section className="overflow-hidden rounded-[32px] border border-slate-900/70 bg-slate-950 bg-gradient-to-br from-slate-950 via-slate-800 to-emerald-900 px-6 py-7 text-white shadow-soft-lg lg:px-8">
-                            <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-                                <div className="max-w-3xl">
-                                    <span className="inline-flex items-center rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-white">
-                                        Ví nhà cung cấp
-                                    </span>
-                                    <h2 className="mt-4 text-3xl font-black leading-tight text-white sm:text-4xl">
-                                        Số dư hiện tại là {fmt(wallet?.balance ?? 0)}.
-                                    </h2>
-                                    <p className="mt-3 text-sm font-medium leading-7 text-slate-100 sm:text-base">
-                                        Theo dõi số dư hiện có, kiểm tra tài khoản ngân hàng đã sẵn sàng chưa và rà soát các giao dịch gần đây trước khi gửi yêu cầu rút tiền.
+                        <section className="space-y-5">
+                            <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                                <div>
+                                    <h2 className="text-2xl font-bold text-slate-950">Tổng quan ví</h2>
+                                    <p className="mt-1 text-sm font-semibold text-slate-500">
+                                        Theo dõi số dư khả dụng, yêu cầu rút tiền và tài khoản nhận tiền.
                                     </p>
                                 </div>
-                                <div className="grid gap-3 sm:grid-cols-3 lg:w-[430px]">
-                                    <div className="rounded-[22px] border border-white/10 bg-white/8 p-4">
-                                        <p className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-300">Số dư</p>
-                                        <p className="mt-2 text-2xl font-black text-white">{fmt(wallet?.balance ?? 0)}</p>
-                                    </div>
-                                    <div className="rounded-[22px] border border-white/10 bg-white/8 p-4">
-                                        <p className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-300">Ngân hàng</p>
-                                        <p className="mt-2 text-2xl font-black text-white">{isBankReady ? "OK" : "Thiếu"}</p>
-                                    </div>
-                                    <div className="rounded-[22px] border border-white/10 bg-white/8 p-4">
-                                        <p className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-300">Giao dịch</p>
-                                        <p className="mt-2 text-2xl font-black text-white">{txTotal}</p>
-                                    </div>
-                                </div>
+                                {pendingWithdrawal ? (
+                                    <span className="inline-flex w-fit items-center rounded-full border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-bold text-amber-700 shadow-soft-xs">
+                                        Có yêu cầu chờ duyệt
+                                    </span>
+                                ) : (
+                                    <button
+                                        className="nb-btn nb-btn-green w-full sm:w-auto"
+                                        disabled={!canRequestWithdrawal || loading}
+                                        onClick={() => {
+                                            setShowWithdraw(true);
+                                            setWithdrawMsg(null);
+                                            setWithdrawAmount("");
+                                        }}
+                                    >
+                                        Yêu cầu rút tiền
+                                    </button>
+                                )}
+                            </div>
+
+                            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                                {summaryCards.map((card) => (
+                                    <SummaryCard key={card.label} {...card} />
+                                ))}
                             </div>
                         </section>
 
                         {loading ? (
-                            <div className="flex min-h-[320px] items-center justify-center rounded-[32px] border border-gray-200 bg-white shadow-soft-sm">
+                            <div className="flex min-h-[320px] items-center justify-center rounded-[8px] border border-gray-200 bg-white shadow-soft-sm">
                                 <Loader2 className="h-10 w-10 animate-spin text-violet-600" />
                             </div>
                         ) : (
                             <>
-                                <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                                    {summaryCards.map((card) => (
-                                        <SummaryCard key={card.label} {...card} />
-                                    ))}
-                                </section>
-
                                 <section className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
-                                    <div className="rounded-[28px] border border-gray-200 bg-white p-6 shadow-soft-sm">
+                                    <div className="rounded-[8px] border border-gray-200 bg-white p-6 shadow-soft-sm">
                                         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                                             <div>
-                                                <p className="text-[11px] font-black uppercase tracking-[0.18em] text-gray-400">Rút tiền</p>
-                                                <h2 className="mt-2 text-2xl font-black text-gray-900">Chuẩn bị yêu cầu rút tiền</h2>
+                                                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-gray-400">Rút tiền</p>
+                                                <h2 className="mt-2 text-2xl font-bold text-gray-900">Chuẩn bị yêu cầu rút tiền</h2>
                                             </div>
-                                            <button
-                                                className="nb-btn nb-btn-green"
-                                                onClick={() => {
-                                                    setShowWithdraw(true);
-                                                    setWithdrawMsg(null);
-                                                    setWithdrawAmount("");
-                                                }}
-                                            >
-                                                Yêu cầu rút tiền
-                                            </button>
+                                            {pendingWithdrawal ? (
+                                                <span className="inline-flex w-fit items-center rounded-full border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-bold text-amber-700">
+                                                    Chờ admin xử lý
+                                                </span>
+                                            ) : (
+                                                <button
+                                                    className="nb-btn nb-btn-green"
+                                                    disabled={!canRequestWithdrawal}
+                                                    onClick={() => {
+                                                        setShowWithdraw(true);
+                                                        setWithdrawMsg(null);
+                                                        setWithdrawAmount("");
+                                                    }}
+                                                >
+                                                    Yêu cầu rút tiền
+                                                </button>
+                                            )}
                                         </div>
 
-                                        <div className="mt-5 rounded-[22px] border border-emerald-200 bg-emerald-50 p-4">
+                                        <div className={`mt-5 rounded-[8px] border p-4 ${pendingWithdrawal ? "border-amber-200 bg-amber-50" : "border-emerald-200 bg-emerald-50"}`}>
                                             <div className="flex items-start gap-3">
-                                                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-emerald-600 shadow-soft-sm">
-                                                    <Banknote className="h-5 w-5" />
+                                                <div className={`flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-soft-sm ${pendingWithdrawal ? "text-amber-600" : "text-emerald-600"}`}>
+                                                    {pendingWithdrawal ? <Clock3 className="h-5 w-5" /> : <Banknote className="h-5 w-5" />}
                                                 </div>
                                                 <div>
-                                                    <h3 className="text-base font-black text-emerald-900">Trạng thái dòng tiền</h3>
-                                                    <p className="mt-1 text-sm font-medium leading-6 text-emerald-900/80">
-                                                        Số dư được cập nhật theo các thanh toán đi vào ví. Khi thông tin ngân hàng đã đầy đủ, bạn có thể gửi yêu cầu rút tiền để đội vận hành xử lý tiếp.
+                                                    <h3 className={`text-base font-bold ${pendingWithdrawal ? "text-amber-900" : "text-emerald-900"}`}>
+                                                        {pendingWithdrawal ? `Đang chờ rút ${fmt(pendingWithdrawal.amount)}` : "Sẵn sàng tạo yêu cầu rút tiền"}
+                                                    </h3>
+                                                    <p className={`mt-1 text-sm font-medium leading-6 ${pendingWithdrawal ? "text-amber-900/80" : "text-emerald-900/80"}`}>
+                                                        {pendingWithdrawal
+                                                            ? `Gửi lúc ${fmtDate(pendingWithdrawal.requestedAt)}. Admin sẽ cập nhật trạng thái tại đây.`
+                                                            : isBankReady
+                                                                ? "Thông tin ngân hàng đã đầy đủ. Yêu cầu mới sẽ xuất hiện trong lịch sử bên dưới."
+                                                                : "Cập nhật ngân hàng trước khi gửi yêu cầu rút tiền."}
                                                     </p>
                                                 </div>
                                             </div>
                                         </div>
+
+                                        <div className="mt-5">
+                                            <div className="flex items-center justify-between">
+                                                <h3 className="text-sm font-bold text-gray-900">Lịch sử yêu cầu rút tiền</h3>
+                                                <span className="text-xs font-medium text-gray-400">{withdrawalTotal} yêu cầu</span>
+                                            </div>
+                                            {withdrawals.length === 0 ? (
+                                                <p className="mt-4 rounded-[8px] border border-dashed border-gray-200 bg-slate-50 p-4 text-sm font-medium text-gray-500">
+                                                    Chưa có yêu cầu rút tiền nào.
+                                                </p>
+                                            ) : (
+                                                <div className="mt-4">
+                                                    <ProviderDataTable
+                                                        items={withdrawals}
+                                                        columns={withdrawalColumns}
+                                                        getKey={(item) => item.withdrawalRequestId}
+                                                    />
+                                                    {withdrawalTotalPages > 1 ? (
+                                                        <div className="mt-4 flex justify-center gap-2">
+                                                            <button disabled={withdrawalPage <= 1} onClick={() => setWithdrawalPage((current) => current - 1)} className="nb-btn nb-btn-outline nb-btn-sm text-sm">
+                                                                ← Trước
+                                                            </button>
+                                                            <span className="flex items-center px-2 text-sm font-medium text-gray-500">{withdrawalPage}/{withdrawalTotalPages}</span>
+                                                            <button disabled={withdrawalPage >= withdrawalTotalPages} onClick={() => setWithdrawalPage((current) => current + 1)} className="nb-btn nb-btn-outline nb-btn-sm text-sm">
+                                                                Sau →
+                                                            </button>
+                                                        </div>
+                                                    ) : null}
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
 
-                                    <div className="rounded-[28px] border border-gray-200 bg-white p-6 shadow-soft-sm">
+                                    <div className="rounded-[8px] border border-gray-200 bg-white p-6 shadow-soft-sm">
                                         <div className="flex items-center justify-between">
                                             <div>
-                                                <p className="text-[11px] font-black uppercase tracking-[0.18em] text-gray-400">Độ sẵn sàng</p>
-                                                <h2 className="mt-2 text-2xl font-black text-gray-900">Thông tin ngân hàng</h2>
+                                                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-gray-400">Độ sẵn sàng</p>
+                                                <h2 className="mt-2 text-2xl font-bold text-gray-900">Thông tin ngân hàng</h2>
                                             </div>
                                             {!editingBank ? (
                                                 <button className="nb-btn nb-btn-outline text-sm" onClick={() => setEditingBank(true)}>
@@ -299,7 +517,7 @@ export default function ProviderWallet() {
                                             {editingBank ? (
                                                 <>
                                                     <div className="relative">
-                                                        <label className="block text-[10px] font-black uppercase tracking-[0.16em] text-gray-400">Ngân hàng</label>
+                                                        <label className="block text-[10px] font-semibold uppercase tracking-[0.16em] text-gray-400">Ngân hàng</label>
                                                         <input
                                                             className="nb-input mt-2 w-full"
                                                             value={bankSearch}
@@ -308,8 +526,7 @@ export default function ProviderWallet() {
                                                                 setBankForm((current) => ({ ...current, bankCode: "", bankName: "" }));
                                                                 setShowBankDropdown(true);
                                                             }}
-                                                            onFocus={() => { setShowBankDropdown(true); }}
-                                                            placeholder="Tìm ngân hàng..."
+                                                            onFocus={() => setShowBankDropdown(true)}
                                                             autoComplete="off"
                                                         />
                                                         {showBankDropdown ? (
@@ -341,16 +558,16 @@ export default function ProviderWallet() {
 
                                                     <div className="grid gap-3 sm:grid-cols-2">
                                                         <div>
-                                                            <label className="block text-[10px] font-black uppercase tracking-[0.16em] text-gray-400">Số tài khoản</label>
+                                                            <label className="block text-[10px] font-semibold uppercase tracking-[0.16em] text-gray-400">Số tài khoản</label>
                                                             <input className="nb-input mt-2 w-full" value={bankForm.accountNumber} onChange={(event) => setBankForm((current) => ({ ...current, accountNumber: event.target.value }))} />
                                                         </div>
                                                         <div>
-                                                            <label className="block text-[10px] font-black uppercase tracking-[0.16em] text-gray-400">Tên chủ tài khoản</label>
+                                                            <label className="block text-[10px] font-semibold uppercase tracking-[0.16em] text-gray-400">Tên chủ tài khoản</label>
                                                             <input className="nb-input mt-2 w-full" value={bankForm.accountName} onChange={(event) => setBankForm((current) => ({ ...current, accountName: event.target.value }))} />
                                                         </div>
                                                     </div>
 
-                                                    <div className="flex gap-2 justify-end">
+                                                    <div className="flex justify-end gap-2">
                                                         <button
                                                             className="nb-btn nb-btn-outline text-sm"
                                                             onClick={() => {
@@ -389,44 +606,35 @@ export default function ProviderWallet() {
                                                     <BankInfoRow label="Ngân hàng" value={wallet?.bankName ? `${wallet.bankName}${wallet.bankCode ? ` (${wallet.bankCode})` : ""}` : "Chưa cập nhật"} />
                                                     <BankInfoRow label="Số tài khoản" value={wallet?.bankAccountNumber || "Chưa cập nhật"} />
                                                     <BankInfoRow label="Chủ tài khoản" value={wallet?.bankAccountName || "Chưa cập nhật"} />
-                                                    <div className={`rounded-[18px] border px-4 py-3 text-sm font-semibold ${isBankReady ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-amber-200 bg-amber-50 text-amber-700"}`}>
-                                                        {isBankReady ? "Thông tin ngân hàng đã sẵn sàng cho việc rút tiền." : "Cần hoàn thiện ngân hàng để gửi yêu cầu rút tiền."}
-                                                    </div>
                                                 </>
                                             )}
                                         </div>
                                     </div>
                                 </section>
 
-                                <section className="rounded-[28px] border border-gray-200 bg-white p-6 shadow-soft-sm">
+                                <section className="rounded-[8px] border border-gray-200 bg-white p-6 shadow-soft-sm">
                                     <div className="flex items-center justify-between gap-4">
                                         <div>
-                                            <p className="text-[11px] font-black uppercase tracking-[0.18em] text-gray-400">Dòng tiền gần đây</p>
-                                            <h2 className="mt-2 text-2xl font-black text-gray-900">Lịch sử giao dịch</h2>
+                                            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-gray-400">Ví nhà cung cấp</p>
+                                            <h2 className="mt-2 text-2xl font-bold text-gray-900">Lịch sử giao dịch ví</h2>
                                         </div>
+                                        <span className="inline-flex w-fit items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-bold text-slate-600">
+                                            {txTotal} giao dịch
+                                        </span>
                                     </div>
 
                                     {txns.length === 0 ? (
                                         <p className="py-10 text-center text-sm font-medium text-gray-500">Chưa có giao dịch nào trong ví.</p>
                                     ) : (
-                                        <div className="mt-5 space-y-3">
-                                            {txns.map((tx) => (
-                                                <div key={tx.paymentId} className="flex flex-col gap-3 rounded-[20px] border border-gray-200 bg-slate-50/70 p-4 md:flex-row md:items-center md:justify-between">
-                                                    <div className="flex items-center gap-3">
-                                                        <div className={`flex h-11 w-11 items-center justify-center rounded-2xl border border-white bg-white shadow-soft-sm ${tx.transactionType === "ProviderPayment" ? "text-emerald-600" : tx.transactionType === "Refund" ? "text-amber-600" : "text-slate-600"}`}>
-                                                            <Building2 className="h-5 w-5" />
-                                                        </div>
-                                                        <div>
-                                                            <p className="text-sm font-black text-gray-900">{txLabel(tx.transactionType)}</p>
-                                                            <p className="mt-1 text-xs font-medium text-gray-500">{tx.description || fmtDate(tx.timestamp)}</p>
-                                                        </div>
-                                                    </div>
-                                                    <div className="text-left md:text-right">
-                                                        <p className={`text-base font-black ${txColor(tx.transactionType)}`}>+{fmt(tx.amount)}</p>
-                                                        <p className="mt-1 text-xs font-bold uppercase tracking-[0.12em] text-gray-400">{tx.status}</p>
-                                                    </div>
-                                                </div>
-                                            ))}
+                                        <div className="mt-5">
+                                            <ProviderDataTable
+                                                items={txns}
+                                                columns={walletTransactionColumns}
+                                                getKey={(tx) => tx.paymentId}
+                                                onRowClick={(tx) => {
+                                                    if (tx.orderId) navigate(`/provider/orders/${tx.orderId}`);
+                                                }}
+                                            />
                                         </div>
                                     )}
 
@@ -435,7 +643,7 @@ export default function ProviderWallet() {
                                             <button disabled={page <= 1} onClick={() => setPage((current) => current - 1)} className="nb-btn nb-btn-outline nb-btn-sm text-sm">
                                                 ← Trước
                                             </button>
-                                            <span className="flex items-center px-2 text-sm font-bold text-gray-500">{page}/{totalPages}</span>
+                                            <span className="flex items-center px-2 text-sm font-medium text-gray-500">{page}/{totalPages}</span>
                                             <button disabled={page >= totalPages} onClick={() => setPage((current) => current + 1)} className="nb-btn nb-btn-outline nb-btn-sm text-sm">
                                                 Sau →
                                             </button>
@@ -451,12 +659,12 @@ export default function ProviderWallet() {
             {showWithdraw ? (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
                     <div className="w-full max-w-md space-y-4 rounded-md border border-gray-200 bg-white p-6 shadow-soft-md">
-                        <h3 className="text-lg font-extrabold text-gray-900">Yêu cầu rút tiền</h3>
+                        <h3 className="text-lg font-bold text-gray-900">Yêu cầu rút tiền</h3>
                         <p className="text-sm text-gray-500">
-                            Số dư hiện tại: <span className="font-extrabold text-emerald-600">{fmt(wallet?.balance ?? 0)}</span>
+                            Số dư hiện tại: <span className="font-bold text-emerald-600">{fmt(wallet?.balance ?? 0)}</span>
                         </p>
                         <div>
-                            <label className="block text-xs font-bold text-gray-500 mb-1">Số tiền muốn rút (₫)</label>
+                            <label className="mb-1 block text-xs font-bold text-gray-500">Số tiền muốn rút (₫)</label>
                             <input
                                 className="nb-input w-full"
                                 type="number"
@@ -465,9 +673,7 @@ export default function ProviderWallet() {
                                 max={wallet?.balance ?? 0}
                                 value={withdrawAmount}
                                 onChange={(event) => setWithdrawAmount(event.target.value)}
-                                placeholder="Nhập số tiền..."
                             />
-                            <p className="mt-1 text-xs text-gray-400">Tối thiểu 100,000₫ · Số tiền phải chia hết cho 10</p>
                         </div>
                         {withdrawMsg ? (
                             <div className={`nb-alert ${withdrawMsg.type === "ok" ? "nb-alert-success" : "nb-alert-error"}`}>
@@ -478,7 +684,7 @@ export default function ProviderWallet() {
                             <button className="nb-btn nb-btn-outline text-sm" onClick={() => setShowWithdraw(false)}>Hủy</button>
                             <button
                                 className="nb-btn nb-btn-green text-sm"
-                                disabled={withdrawing}
+                                disabled={withdrawing || Boolean(pendingWithdrawal)}
                                 onClick={async () => {
                                     const amount = Number(withdrawAmount);
                                     const max = wallet?.balance ?? 0;
@@ -487,12 +693,13 @@ export default function ProviderWallet() {
                                     if (amount % 10 !== 0) { setWithdrawMsg({ type: "err", text: "Số tiền phải chia hết cho 10" }); return; }
                                     if (amount > max) { setWithdrawMsg({ type: "err", text: "Số tiền vượt quá số dư" }); return; }
                                     if (!wallet?.bankAccountNumber) { setWithdrawMsg({ type: "err", text: "Vui lòng cập nhật thông tin ngân hàng trước" }); return; }
+                                    if (pendingWithdrawal) { setWithdrawMsg({ type: "err", text: "Bạn đang có một yêu cầu rút tiền chờ xử lý" }); return; }
                                     setWithdrawing(true);
                                     try {
                                         await requestProviderWithdrawal(amount);
-                                        setWithdrawMsg({ type: "ok", text: "Đã gửi yêu cầu rút tiền. Đội vận hành sẽ xử lý tiếp." });
                                         setWithdrawAmount("");
                                         await fetchData();
+                                        setShowWithdraw(false);
                                     } catch {
                                         setWithdrawMsg({ type: "err", text: "Gửi yêu cầu thất bại" });
                                     } finally {
@@ -512,9 +719,9 @@ export default function ProviderWallet() {
 
 function BankInfoRow({ label, value }: { label: string; value: string }) {
     return (
-        <div className="rounded-[18px] border border-gray-200 bg-slate-50 p-4">
-            <p className="text-[10px] font-black uppercase tracking-[0.16em] text-gray-400">{label}</p>
-            <p className="mt-2 text-sm font-black text-gray-900">{value}</p>
+        <div className="rounded-[8px] border border-gray-200 bg-slate-50 p-4">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-gray-400">{label}</p>
+            <p className="mt-2 text-sm font-bold text-gray-900">{value}</p>
         </div>
     );
 }

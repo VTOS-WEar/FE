@@ -20,11 +20,42 @@ export type WalletTransactionDto = {
     status: string;
     description: string | null;
     timestamp: string;
+    orderId?: string | null;
+    parentName?: string | null;
+    childName?: string | null;
+    orderStatus?: string | null;
+    firstItemImageUrl?: string | null;
+    firstOutfitName?: string | null;
+    itemCount?: number | null;
+    quantityTotal?: number | null;
+    sizeSummary?: string | null;
 };
 
 export type WalletTransactionsResponse = {
     items: WalletTransactionDto[];
     total: number;
+};
+
+export type ProviderWithdrawalRequestDto = {
+    withdrawalRequestId: string;
+    walletId: string;
+    amount: number;
+    status: string;
+    bankCode?: string | null;
+    bankName?: string | null;
+    bankAccountNumber?: string | null;
+    bankAccountName?: string | null;
+    requestedAt: string;
+    approvedAt?: string | null;
+    paidAt?: string | null;
+    adminNote?: string | null;
+};
+
+export type ProviderWithdrawalRequestsResponse = {
+    items: ProviderWithdrawalRequestDto[];
+    total: number;
+    page: number;
+    pageSize: number;
 };
 
 export type PayOrderResponse = {
@@ -127,7 +158,7 @@ export async function getProviderRevenue(): Promise<ProviderRevenueDto> {
     return api<ProviderRevenueDto>(endpoints.payments.providerRevenue, { auth: true });
 }
 
-export async function getProviderPaymentHistory(page = 1, pageSize = 20): Promise<ProviderPaymentHistoryResponse> {
+export async function getProviderPaymentHistory(page = 1, pageSize = 10): Promise<ProviderPaymentHistoryResponse> {
     return api<ProviderPaymentHistoryResponse>(
         `${endpoints.payments.providerPayments}?page=${page}&pageSize=${pageSize}`,
         { auth: true }
@@ -145,7 +176,7 @@ export async function getProviderWallet(): Promise<WalletDto> {
     return api<WalletDto>(endpoints.payments.providerWallet, { auth: true });
 }
 
-export async function getProviderWalletTransactions(page = 1, pageSize = 20): Promise<WalletTransactionsResponse> {
+export async function getProviderWalletTransactions(page = 1, pageSize = 10): Promise<WalletTransactionsResponse> {
     return api<WalletTransactionsResponse>(
         `${endpoints.payments.providerWalletTransactions}?page=${page}&pageSize=${pageSize}`,
         { auth: true }
@@ -162,10 +193,19 @@ export async function updateProviderWalletBankInfo(data: {
     });
 }
 
-export async function requestProviderWithdrawal(amount: number): Promise<{ id: string }> {
-    return api<{ id: string }>("/api/providers/me/wallet/withdrawals", {
+export async function requestProviderWithdrawal(amount: number): Promise<ProviderWithdrawalRequestDto> {
+    return api<ProviderWithdrawalRequestDto>("/api/providers/me/wallet/withdrawals", {
         method: "POST",
         body: JSON.stringify({ amount }),
+        auth: true,
+    });
+}
+
+export async function getProviderWithdrawalRequests(page = 1, pageSize = 10, status?: string): Promise<ProviderWithdrawalRequestsResponse> {
+    const params = new URLSearchParams({ page: String(page), pageSize: String(pageSize) });
+    if (status) params.set("status", status);
+
+    return api<ProviderWithdrawalRequestsResponse>(`/api/providers/me/wallet/withdrawals?${params}`, {
         auth: true,
     });
 }

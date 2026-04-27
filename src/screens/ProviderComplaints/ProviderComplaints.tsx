@@ -1,14 +1,18 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
     AlertTriangle,
     CheckCircle2,
+    ChevronDown,
+    Eye,
     Loader2,
     MessageSquare,
+    Search,
     ShieldAlert,
     TimerReset,
 } from "lucide-react";
 import { DashboardSidebar } from "../../components/layout";
 import { TopNavBar } from "../../components/layout/TopNavBar";
+import { PROVIDER_LIST_PAGE_SIZE, ProviderDataTable, type ProviderDataTableColumn } from "../../components/provider/ProviderDataTable";
 import { usePreservedResultsHeight } from "../../hooks/usePreservedResultsHeight";
 import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
 import { useProviderSidebarConfig } from "../../hooks/useProviderSidebarConfig";
@@ -28,34 +32,56 @@ const STATUS_MAP: Record<string, { label: string; badge: string; tone: string }>
     Closed: { label: "Đã đóng", badge: "nb-badge nb-badge-purple", tone: "bg-violet-50 text-violet-700" },
 };
 
+const STATUS_FILTER_OPTIONS = [
+    { value: "", label: "Tất cả" },
+    { value: "Open", label: "Mở" },
+    { value: "InProgress", label: "Đang xử lý" },
+    { value: "Resolved", label: "Đã giải quyết" },
+    { value: "Closed", label: "Đã đóng" },
+];
+
+const MIN_PAGE_FETCH_FEEDBACK_MS = 700;
+
 function formatDateTime(value: string) {
     return new Date(value).toLocaleString("vi-VN");
 }
 
-function SummaryCard({
+function StatusSummaryCard({
     label,
     value,
-    note,
     icon,
-    tone,
+    surfaceClassName,
+    iconClassName,
+    active,
+    onClick,
 }: {
     label: string;
     value: number;
-    note: string;
     icon: React.ReactNode;
-    tone: string;
+    surfaceClassName: string;
+    iconClassName: string;
+    active: boolean;
+    onClick: () => void;
 }) {
     return (
-        <div className="rounded-[24px] border border-gray-200 bg-white p-5 shadow-soft-sm">
-            <div className="flex items-start justify-between gap-3">
-                <div>
-                    <p className="text-[11px] font-black uppercase tracking-[0.18em] text-gray-400">{label}</p>
-                    <p className="mt-2 text-3xl font-black text-gray-900">{value}</p>
-                    <p className="mt-2 text-sm font-semibold text-gray-500">{note}</p>
+        <button
+            type="button"
+            onClick={onClick}
+            aria-pressed={active}
+            className={`min-h-[100px] rounded-[8px] border p-5 text-left shadow-soft-sm transition-all hover:-translate-y-0.5 hover:shadow-soft-md focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-violet-100 ${
+                active ? "border-violet-500 ring-2 ring-violet-200" : "border-white/70"
+            } ${surfaceClassName}`}
+        >
+            <div className="flex h-full items-center gap-4">
+                <div className={`flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-white shadow-soft-xs ${iconClassName}`}>
+                    {icon}
                 </div>
-                <div className={`flex h-11 w-11 items-center justify-center rounded-2xl ${tone}`}>{icon}</div>
+                <div className="min-w-0">
+                    <p className="text-sm font-semibold text-slate-700">{label}</p>
+                    <p className="mt-2 text-2xl font-bold leading-none text-slate-950">{value}</p>
+                </div>
             </div>
-        </div>
+        </button>
     );
 }
 
@@ -64,7 +90,9 @@ export function ProviderComplaints() {
     const [isCollapsed, toggle] = useSidebarCollapsed();
     const [complaints, setComplaints] = useState<ComplaintDto[]>([]);
     const [loading, setLoading] = useState(true);
+    const [fetchingComplaints, setFetchingComplaints] = useState(false);
     const [statusFilter, setStatusFilter] = useState("");
+    const [searchTerm, setSearchTerm] = useState("");
     const [page, setPage] = useState(1);
     const [total, setTotal] = useState(0);
     const [detail, setDetail] = useState<ComplaintDetailDto | null>(null);
@@ -75,18 +103,38 @@ export function ProviderComplaints() {
     const [chatOpen, setChatOpen] = useState(false);
     const [chatId, setChatId] = useState("");
     const [chatContext, setChatContext] = useState<ChatContextInfo | undefined>();
-    const pageSize = 10;
+    const hasLoadedComplaintsRef = useRef(false);
+    const fetchStartedAtRef = useRef(0);
+    const fetchSequenceRef = useRef(0);
 
     const fetchComplaints = useCallback(async () => {
-        setLoading(true);
+        const isInitialLoad = !hasLoadedComplaintsRef.current;
+        const fetchSequence = fetchSequenceRef.current + 1;
+        fetchSequenceRef.current = fetchSequence;
+        setLoading(isInitialLoad);
+        setFetchingComplaints(!isInitialLoad);
+        fetchStartedAtRef.current = Date.now();
         try {
-            const result = await getProviderComplaints(page, pageSize, statusFilter || undefined);
+            const result = await getProviderComplaints(page, PROVIDER_LIST_PAGE_SIZE, statusFilter || undefined);
             setComplaints(result.items);
             setTotal(result.total);
         } catch (e) {
             console.error("Error:", e);
         } finally {
-            setLoading(false);
+            const elapsed = Date.now() - fetchStartedAtRef.current;
+            const finish = () => {
+                if (fetchSequence !== fetchSequenceRef.current) return;
+                hasLoadedComplaintsRef.current = true;
+                setLoading(false);
+                setFetchingComplaints(false);
+            };
+
+            if (!isInitialLoad && elapsed < MIN_PAGE_FETCH_FEEDBACK_MS) {
+                window.setTimeout(finish, MIN_PAGE_FETCH_FEEDBACK_MS - elapsed);
+                return;
+            }
+
+            finish();
         }
     }, [page, statusFilter]);
 
@@ -134,27 +182,170 @@ export function ProviderComplaints() {
         setChatOpen(true);
     };
 
-    const totalPages = Math.max(1, Math.ceil(total / pageSize));
-    const isFilteredEmptyState = !loading && !!statusFilter && complaints.length === 0;
-    const { preserveResultsHeight, preservedHeightStyle, resultsRegionRef } = usePreservedResultsHeight(isFilteredEmptyState);
-
-    const filterTabs = [
-        { value: "", label: "Tất cả" },
-        { value: "Open", label: "Mở" },
-        { value: "InProgress", label: "Đang xử lý" },
-        { value: "Resolved", label: "Đã giải quyết" },
-        { value: "Closed", label: "Đã đóng" },
-    ];
-
+    const totalPages = Math.max(1, Math.ceil(total / PROVIDER_LIST_PAGE_SIZE));
     const counts = useMemo(
         () => ({
-            all: complaints.length,
+            all: total,
             open: complaints.filter((item) => item.status === "Open").length,
             inProgress: complaints.filter((item) => item.status === "InProgress").length,
             resolved: complaints.filter((item) => item.status === "Resolved").length,
+            closed: complaints.filter((item) => item.status === "Closed").length,
         }),
-        [complaints],
+        [complaints, total],
     );
+    const displayedComplaints = useMemo(() => {
+        const normalizedSearch = searchTerm.trim().toLowerCase();
+        if (!normalizedSearch) return complaints;
+
+        return complaints.filter((complaint) => {
+            const statusLabel = STATUS_MAP[complaint.status]?.label || complaint.status;
+            return [
+                complaint.title,
+                complaint.description,
+                complaint.campaignName,
+                complaint.response,
+                statusLabel,
+            ]
+                .filter(Boolean)
+                .some((value) => String(value).toLowerCase().includes(normalizedSearch));
+        });
+    }, [complaints, searchTerm]);
+    const isFilteredEmptyState = !loading && (!!statusFilter || !!searchTerm.trim()) && displayedComplaints.length === 0;
+    const { preserveResultsHeight, preservedHeightStyle, resultsRegionRef } = usePreservedResultsHeight(isFilteredEmptyState);
+
+    const handleStatusChange = (nextStatus: string) => {
+        preserveResultsHeight();
+        setStatusFilter(nextStatus);
+        setPage(1);
+    };
+
+    const handleSummaryCardClick = (nextStatus: string) => {
+        preserveResultsHeight();
+        setStatusFilter(nextStatus);
+        setSearchTerm("");
+        setPage(1);
+    };
+
+    const statusSummaryCards = useMemo(
+        () => [
+            {
+                label: "Tổng khiếu nại",
+                value: counts.all,
+                filterValue: "",
+                surfaceClassName: "bg-blue-100",
+                iconClassName: "text-slate-900",
+                icon: <AlertTriangle className="h-6 w-6" />,
+            },
+            {
+                label: "Cần phản hồi",
+                value: counts.open,
+                filterValue: "Open",
+                surfaceClassName: "bg-yellow-100",
+                iconClassName: "text-slate-900",
+                icon: <ShieldAlert className="h-6 w-6" />,
+            },
+            {
+                label: "Đang xử lý",
+                value: counts.inProgress,
+                filterValue: "InProgress",
+                surfaceClassName: "bg-orange-100",
+                iconClassName: "text-slate-900",
+                icon: <TimerReset className="h-6 w-6" />,
+            },
+            {
+                label: "Đã giải quyết",
+                value: counts.resolved,
+                filterValue: "Resolved",
+                surfaceClassName: "bg-lime-200",
+                iconClassName: "text-slate-900",
+                icon: <CheckCircle2 className="h-6 w-6" />,
+            },
+            {
+                label: "Đã đóng",
+                value: counts.closed,
+                filterValue: "Closed",
+                surfaceClassName: "bg-cyan-100",
+                iconClassName: "text-slate-900",
+                icon: <MessageSquare className="h-6 w-6" />,
+            },
+        ],
+        [counts],
+    );
+
+    const complaintColumns: ProviderDataTableColumn<ComplaintDto>[] = [
+        {
+            key: "title",
+            header: "Khiếu nại",
+            render: (complaint) => (
+                <div className="min-w-0">
+                    <p className="font-bold text-slate-900">{complaint.title}</p>
+                    <p className="mt-1 line-clamp-1 text-xs font-semibold text-slate-500">{complaint.description}</p>
+                </div>
+            ),
+        },
+        {
+            key: "category",
+            header: "Danh mục",
+            render: (complaint) => <span className="font-semibold text-slate-700">{complaint.campaignName || "Chưa có"}</span>,
+        },
+        {
+            key: "status",
+            header: "Trạng thái",
+            render: (complaint) => {
+                const statusMeta = STATUS_MAP[complaint.status];
+                return <span className={statusMeta?.badge || "nb-badge"}>{statusMeta?.label || complaint.status}</span>;
+            },
+        },
+        {
+            key: "response",
+            header: "Phản hồi",
+            render: (complaint) => (
+                <span className={`nb-badge ${complaint.response ? "nb-badge-green" : "nb-badge-yellow"}`}>
+                    {complaint.response ? "Đã phản hồi" : "Chưa phản hồi"}
+                </span>
+            ),
+        },
+        {
+            key: "date",
+            header: "Ngày",
+            render: (complaint) => (
+                <span className="whitespace-nowrap font-semibold text-slate-600">
+                    {new Date(complaint.createdAt).toLocaleDateString("vi-VN")}
+                </span>
+            ),
+        },
+        {
+            key: "action",
+            header: "Action",
+            className: "text-right",
+            render: (complaint) => (
+                <div className="flex items-center justify-end gap-2">
+                    <button
+                        type="button"
+                        onClick={(event) => {
+                            event.stopPropagation();
+                            openDetail(complaint.complaintId);
+                        }}
+                        className="inline-flex h-9 w-9 items-center justify-center rounded-[8px] border border-slate-200 bg-white text-slate-700 transition-colors hover:border-violet-200 hover:text-violet-700"
+                        aria-label="Mở chi tiết khiếu nại"
+                    >
+                        <Eye className="h-4 w-4" />
+                    </button>
+                    <button
+                        type="button"
+                        onClick={(event) => {
+                            event.stopPropagation();
+                            openChat(complaint);
+                        }}
+                        className="inline-flex h-9 w-9 items-center justify-center rounded-[8px] border border-slate-200 bg-white text-slate-700 transition-colors hover:border-violet-200 hover:text-violet-700"
+                        aria-label="Chat trao đổi"
+                    >
+                        <MessageSquare className="h-4 w-4" />
+                    </button>
+                </div>
+            ),
+        },
+    ];
 
     return (
         <div className="nb-page flex flex-col">
@@ -163,225 +354,121 @@ export function ProviderComplaints() {
                     <DashboardSidebar {...sidebarConfig} isCollapsed={isCollapsed} onToggle={toggle} />
                 </div>
 
-                <div className="flex-1 flex flex-col min-w-0">
+                <div className="flex-1 min-w-0">
                     <TopNavBar>
-                        <div className="px-2 py-2">
-                            <h1 className="text-xl font-extrabold text-gray-900">Điều phối khiếu nại</h1>
-                            <p className="mt-1 text-[12px] font-semibold text-gray-400">
-                                Theo dõi các vấn đề từ trường, phản hồi rõ ràng, và chốt trạng thái xử lý.
-                            </p>
+                        <div className="flex items-center gap-3 px-2 py-2">
+                            <div className="hidden h-10 w-10 items-center justify-center rounded-2xl bg-violet-600 text-white shadow-soft-sm sm:flex">
+                                <AlertTriangle className="h-5 w-5" />
+                            </div>
+                            <div>
+                                <h1 className="text-xl font-bold leading-none text-gray-900">Điều phối khiếu nại</h1>
+                            </div>
                         </div>
                     </TopNavBar>
 
-                    <main className="flex-1 space-y-6 px-4 py-6 sm:px-6 lg:px-10 lg:py-8">
-                        <section className="overflow-hidden rounded-[32px] border border-slate-900/70 bg-slate-950 bg-gradient-to-br from-slate-950 via-slate-800 to-rose-900 px-6 py-7 text-white shadow-soft-lg lg:px-8">
-                            <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-                                <div className="max-w-3xl">
-                                    <span className="inline-flex items-center rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-white">
-                                        Xử lý khiếu nại
-                                    </span>
-                                    <h2 className="mt-4 text-3xl font-black leading-tight text-white sm:text-4xl">
-                                        {counts.open + counts.inProgress} khiếu nại đang cần theo dõi hoặc phản hồi thêm.
-                                    </h2>
-                                    <p className="mt-3 text-sm font-medium leading-7 text-slate-100 sm:text-base">
-                                        Xác nhận bối cảnh, phản hồi rõ ràng và chốt trạng thái đúng lúc để khiếu nại không bị kéo dài.
+                    <main className="space-y-6 px-4 py-6 sm:px-6 lg:px-10 lg:py-8">
+                        <section className="space-y-5">
+                            <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                                <div>
+                                    <h2 className="text-2xl font-bold text-slate-950">Tổng quan khiếu nại</h2>
+                                    <p className="mt-1 text-sm font-semibold text-slate-500">
+                                        Cần theo dõi: <span className="text-slate-900">{counts.open + counts.inProgress}</span>
                                     </p>
                                 </div>
-                                <div className="grid gap-3 sm:grid-cols-3 lg:w-[420px]">
-                                    <div className="rounded-[22px] border border-white/10 bg-white/8 p-4">
-                                        <p className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-300">Mở</p>
-                                        <p className="mt-2 text-2xl font-black text-white">{counts.open}</p>
-                                    </div>
-                                    <div className="rounded-[22px] border border-white/10 bg-white/8 p-4">
-                                        <p className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-300">Đang xử lý</p>
-                                        <p className="mt-2 text-2xl font-black text-white">{counts.inProgress}</p>
-                                    </div>
-                                    <div className="rounded-[22px] border border-white/10 bg-white/8 p-4">
-                                        <p className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-300">Đã giải quyết</p>
-                                        <p className="mt-2 text-2xl font-black text-white">{counts.resolved}</p>
-                                    </div>
-                                </div>
+                            </div>
+
+                            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+                                {statusSummaryCards.map((card) => (
+                                    <StatusSummaryCard
+                                        key={card.label}
+                                        {...card}
+                                        active={statusFilter === card.filterValue}
+                                        onClick={() => handleSummaryCardClick(card.filterValue)}
+                                    />
+                                ))}
                             </div>
                         </section>
 
-                        <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                            <SummaryCard
-                                label="Cần phản hồi"
-                                value={counts.open}
-                                note="Các khiếu nại mới vào hàng chờ cần đọc và xác nhận."
-                                icon={<ShieldAlert className="h-5 w-5" />}
-                                tone="bg-amber-50 text-amber-600"
-                            />
-                            <SummaryCard
-                                label="Đang xử lý"
-                                value={counts.inProgress}
-                                note="Các trường hợp đã có trao đổi nhưng chưa thể chốt."
-                                icon={<TimerReset className="h-5 w-5" />}
-                                tone="bg-blue-50 text-blue-600"
-                            />
-                            <SummaryCard
-                                label="Đã giải quyết"
-                                value={counts.resolved}
-                                note="Các tình huống đã có phản hồi rõ ràng và khép lại."
-                                icon={<CheckCircle2 className="h-5 w-5" />}
-                                tone="bg-emerald-50 text-emerald-600"
-                            />
-                            <SummaryCard
-                                label="Tổng hiển thị"
-                                value={complaints.length}
-                                note="Số lượng khiếu nại đang hiển thị trong trang hiện tại."
-                                icon={<AlertTriangle className="h-5 w-5" />}
-                                tone="bg-violet-50 text-violet-600"
-                            />
-                        </section>
+                        <section className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                            <label className="relative block w-full lg:max-w-[300px]">
+                                <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+                                <input
+                                    value={searchTerm}
+                                    onChange={(event) => {
+                                        preserveResultsHeight();
+                                        setSearchTerm(event.target.value);
+                                    }}
+                                    placeholder="Search..."
+                                    className="h-10 w-full rounded-full border border-slate-200 bg-white pl-11 pr-4 text-sm font-medium text-slate-800 outline-none shadow-soft-xs transition-colors placeholder:text-slate-500 focus:border-violet-200 focus:ring-4 focus:ring-violet-50"
+                                />
+                            </label>
 
-                        <section className="rounded-[28px] border border-gray-200 bg-white p-6 shadow-soft-sm">
-                            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                                <div>
-                                    <p className="text-[11px] font-black uppercase tracking-[0.18em] text-gray-400">Bộ lọc theo trạng thái</p>
-                                    <h2 className="mt-2 text-2xl font-black text-gray-900">Chọn nhóm vấn đề cần rà soát</h2>
-                                </div>
-                                <div className="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-black text-amber-700">
-                                    <MessageSquare className="h-4 w-4" />
-                                    {counts.open} trường hợp cần phản hồi đầu tiên
-                                </div>
-                            </div>
-
-                            <div className="mt-6 flex min-w-full gap-3 overflow-x-auto pb-1">
-                                {filterTabs.map((tab) => {
-                                    const count = tab.value === ""
-                                        ? total
-                                        : complaints.filter((item) => item.status === tab.value).length;
-                                    const active = statusFilter === tab.value;
-
-                                    return (
-                                        <button
-                                            key={tab.value || "all"}
-                                            onClick={() => {
-                                                preserveResultsHeight();
-                                                setStatusFilter(tab.value);
-                                                setPage(1);
-                                            }}
-                                            className={`inline-flex min-w-max items-center gap-3 rounded-[18px] border px-4 py-3 transition-all ${
-                                                active
-                                                    ? "border-violet-200 bg-violet-50 text-violet-700"
-                                                    : "border-gray-200 bg-white text-gray-600 hover:border-violet-100 hover:text-gray-900"
-                                            }`}
-                                        >
-                                            <span className="text-sm font-black">{tab.label}</span>
-                                            <span className={`inline-flex h-6 min-w-[24px] items-center justify-center rounded-full px-2 text-[11px] font-black ${
-                                                active ? "bg-violet-600 text-white" : "bg-slate-100 text-slate-700"
-                                            }`}>
-                                                {count}
-                                            </span>
-                                        </button>
-                                    );
-                                })}
+                            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+                                <label className="relative block">
+                                    <select
+                                        value={statusFilter}
+                                        onChange={(event) => handleStatusChange(event.target.value)}
+                                        className="h-10 min-w-[168px] appearance-none rounded-full border border-slate-200 bg-white py-0 pl-4 pr-10 text-sm font-medium text-slate-700 outline-none shadow-soft-xs transition-colors focus:border-violet-200 focus:ring-4 focus:ring-violet-50"
+                                    >
+                                        {STATUS_FILTER_OPTIONS.map((option) => (
+                                            <option key={option.value || "all"} value={option.value}>{option.label}</option>
+                                        ))}
+                                    </select>
+                                    <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-900" />
+                                </label>
                             </div>
                         </section>
 
-                        <div ref={resultsRegionRef} style={preservedHeightStyle}>
+                        <div ref={resultsRegionRef} style={preservedHeightStyle} className="relative">
                         {loading ? (
                             <div className="flex min-h-[320px] flex-col items-center justify-center gap-4 rounded-[32px] border border-gray-200 bg-white shadow-soft-sm">
                                 <Loader2 className="h-10 w-10 animate-spin text-violet-600" />
-                                <p className="text-xs font-black uppercase tracking-[0.18em] text-gray-400">Đang đồng bộ khiếu nại...</p>
+                                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">Đang đồng bộ khiếu nại...</p>
                             </div>
-                        ) : complaints.length === 0 ? (
+                        ) : displayedComplaints.length === 0 ? (
                             <div className="rounded-[32px] border border-dashed border-gray-300 bg-white p-20 text-center shadow-soft-sm">
                                 <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-[24px] border border-gray-100 bg-violet-50">
                                     <AlertTriangle className="h-9 w-9 text-violet-500" />
                                 </div>
-                                <h2 className="mt-6 text-xl font-black text-gray-900">Không có khiếu nại trong nhóm này</h2>
-                                <p className="mt-2 text-sm font-medium text-gray-500">
-                                    Thử đổi bộ lọc để xem các trường hợp ở trạng thái khác.
-                                </p>
+                                <h2 className="mt-6 text-xl font-bold text-gray-900">Không có khiếu nại trong nhóm này</h2>
                             </div>
                         ) : (
-                            <section className="space-y-4">
-                                {complaints.map((complaint) => {
-                                    const statusMeta = STATUS_MAP[complaint.status];
-                                    const actionable = complaint.status === "Open" || complaint.status === "InProgress";
-
-                                    return (
-                                        <article
-                                            key={complaint.complaintId}
-                                            className="w-full rounded-[28px] border border-gray-200 bg-white p-5 shadow-soft-sm transition-all hover:border-violet-200"
-                                        >
-                                            <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_220px] xl:items-start">
-                                                <div className="min-w-0 flex-1 break-normal [overflow-wrap:normal]">
-                                                    <div className="flex min-w-0 flex-wrap items-center gap-3">
-                                                        <h3 className="min-w-0 break-normal text-lg font-black text-gray-900">{complaint.title}</h3>
-                                                        <span className={statusMeta?.badge || "nb-badge"}>{statusMeta?.label || complaint.status}</span>
-                                                        <span className={`inline-flex shrink-0 items-center rounded-full px-3 py-1 text-[11px] font-black ${statusMeta?.tone || "bg-slate-100 text-slate-700"}`}>
-                                                            {new Date(complaint.createdAt).toLocaleDateString("vi-VN")}
-                                                        </span>
-                                                    </div>
-
-                                                    <div className="mt-4 grid gap-4 md:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)]">
-                                                        <div>
-                                                            <p className="text-[10px] font-black uppercase tracking-[0.16em] text-gray-400">Mô tả nhanh</p>
-                                                            <p className="mt-1 text-sm font-medium leading-6 text-gray-700">{complaint.description}</p>
-                                                        </div>
-                                                        <div>
-                                                            <p className="text-[10px] font-black uppercase tracking-[0.16em] text-gray-400">Danh mục</p>
-                                                            <p className="mt-1 text-base font-black text-gray-900">{complaint.campaignName || "Chưa có"}</p>
-                                                            <p className="mt-1 text-sm font-medium text-gray-500">Nguồn phát sinh vụ việc</p>
-                                                        </div>
-                                                        <div>
-                                                            <p className="text-[10px] font-black uppercase tracking-[0.16em] text-gray-400">Phản hồi hiện có</p>
-                                                            <p className="mt-1 text-sm font-black text-gray-900">
-                                                                {complaint.response ? "Đã phản hồi" : "Chưa phản hồi"}
-                                                            </p>
-                                                            <p className="mt-1 text-sm font-medium text-gray-500">
-                                                                {complaint.respondedAt ? `Lúc ${formatDateTime(complaint.respondedAt)}` : "Chưa có mốc phản hồi"}
-                                                            </p>
-                                                        </div>
-                                                        <div>
-                                                            <p className="text-[10px] font-black uppercase tracking-[0.16em] text-gray-400">Next step</p>
-                                                            <p className="mt-1 text-base font-black text-gray-900">
-                                                                {complaint.status === "Open"
-                                                                    ? "Phản hồi lần đầu"
-                                                                    : complaint.status === "InProgress"
-                                                                        ? "Cập nhật tiến độ"
-                                                                        : "Lưu hồ sơ"}
-                                                            </p>
-                                                            <p className="mt-1 text-sm font-medium text-gray-500">
-                                                                {actionable ? "Mở chi tiết để phản hồi hoặc chat." : "Đã ở trạng thái đã chốt."}
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div className="flex w-full flex-col gap-3 xl:w-[220px] xl:shrink-0">
-                                                    <button
-                                                        onClick={() => openDetail(complaint.complaintId)}
-                                                        className="inline-flex h-11 items-center justify-center rounded-[16px] bg-violet-600 px-4 text-sm font-black text-white shadow-soft-sm transition-all hover:bg-violet-700"
-                                                    >
-                                                        Mở vùng xử lý
-                                                    </button>
-                                                    <button
-                                                        onClick={() =>
-                                                            openChat(complaint)
-                                                        }
-                                                        className="inline-flex h-11 items-center justify-center rounded-[16px] bg-slate-50 px-4 text-sm font-black text-slate-700 transition-all hover:bg-slate-100"
-                                                    >
-                                                        Chat trao đổi
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </article>
-                                    );
-                                })}
-                            </section>
+                            <ProviderDataTable
+                                items={displayedComplaints}
+                                columns={complaintColumns}
+                                getKey={(complaint) => complaint.complaintId}
+                                onRowClick={(complaint) => openDetail(complaint.complaintId)}
+                            />
                         )}
+
+                        {fetchingComplaints ? (
+                            <div className="absolute right-4 top-4 inline-flex items-center gap-2 rounded-full border border-violet-100 bg-white/90 px-3 py-1.5 text-xs font-bold text-violet-700 shadow-soft-sm backdrop-blur">
+                                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                Đang tải
+                            </div>
+                        ) : null}
 
                         {totalPages > 1 ? (
                             <div className="flex items-center justify-center gap-3">
-                                <button disabled={page <= 1} onClick={() => setPage((current) => current - 1)} className="nb-btn nb-btn-outline nb-btn-sm text-sm">
+                                <button
+                                    disabled={page <= 1 || fetchingComplaints}
+                                    onClick={() => {
+                                        preserveResultsHeight();
+                                        setPage((current) => current - 1);
+                                    }}
+                                    className="nb-btn nb-btn-outline nb-btn-sm text-sm"
+                                >
                                     ← Trước
                                 </button>
-                                <span className="text-sm font-bold text-gray-500">{page}/{totalPages}</span>
-                                <button disabled={page >= totalPages} onClick={() => setPage((current) => current + 1)} className="nb-btn nb-btn-outline nb-btn-sm text-sm">
+                                <span className="text-sm font-medium text-gray-500">{page}/{totalPages}</span>
+                                <button
+                                    disabled={page >= totalPages || fetchingComplaints}
+                                    onClick={() => {
+                                        preserveResultsHeight();
+                                        setPage((current) => current + 1);
+                                    }}
+                                    className="nb-btn nb-btn-outline nb-btn-sm text-sm"
+                                >
                                     Sau →
                                 </button>
                             </div>
@@ -399,8 +486,8 @@ export function ProviderComplaints() {
                                         <>
                                             <div className="flex flex-col gap-4 border-b border-gray-100 pb-5 sm:flex-row sm:items-start sm:justify-between">
                                                 <div>
-                                                    <p className="text-[11px] font-black uppercase tracking-[0.16em] text-gray-400">Vùng xử lý khiếu nại</p>
-                                                    <h2 className="mt-2 text-2xl font-black text-gray-900">{detail.title}</h2>
+                                                    <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-400">Vùng xử lý khiếu nại</p>
+                                                    <h2 className="mt-2 text-2xl font-bold text-gray-900">{detail.title}</h2>
                                                     <p className="mt-2 text-sm font-medium text-gray-500">
                                                         Danh mục: {detail.campaignName || "Chưa có"} · Tạo lúc {formatDateTime(detail.createdAt)}
                                                     </p>
@@ -415,24 +502,23 @@ export function ProviderComplaints() {
                                             </div>
 
                                             <div className="mt-6 rounded-[22px] border border-gray-200 bg-slate-50 p-4">
-                                                <p className="text-[10px] font-black uppercase tracking-[0.16em] text-gray-400">Mô tả khiếu nại</p>
+                                                <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-gray-400">Mô tả khiếu nại</p>
                                                 <p className="mt-2 text-sm font-medium leading-7 text-gray-700">{detail.description}</p>
                                             </div>
 
                                             {detail.response ? (
                                                 <div className="mt-4 rounded-[22px] border border-emerald-200 bg-emerald-50 p-4">
-                                                    <p className="text-[10px] font-black uppercase tracking-[0.16em] text-emerald-700">Phản hồi hiện có</p>
+                                                    <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-emerald-700">Phản hồi hiện có</p>
                                                     <p className="mt-2 text-sm font-medium leading-7 text-emerald-900">{detail.response}</p>
                                                 </div>
                                             ) : null}
 
                                             {(detail.status === "Open" || detail.status === "InProgress") ? (
                                                 <div className="mt-5 rounded-[22px] border border-violet-200 bg-violet-50/60 p-4">
-                                                    <label className="block text-sm font-black text-gray-900">Phản hồi cho trường</label>
+                                                    <label className="block text-sm font-bold text-gray-900">Phản hồi cho trường</label>
                                                     <textarea
                                                         value={responseText}
                                                         onChange={(event) => setResponseText(event.target.value)}
-                                                        placeholder="Nêu rõ tình trạng hiện tại, hướng xử lý, hoặc thông tin bạn cần xác nhận thêm."
                                                         rows={4}
                                                         className="nb-input mt-3 w-full resize-y"
                                                         maxLength={500}
@@ -485,8 +571,8 @@ export function ProviderComplaints() {
 function DetailBox({ label, value }: { label: string; value: string }) {
     return (
         <div className="rounded-[18px] border border-gray-200 bg-slate-50 p-4">
-            <p className="text-[10px] font-black uppercase tracking-[0.16em] text-gray-400">{label}</p>
-            <p className="mt-2 text-sm font-black text-gray-900">{value}</p>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-gray-400">{label}</p>
+            <p className="mt-2 text-sm font-bold text-gray-900">{value}</p>
         </div>
     );
 }

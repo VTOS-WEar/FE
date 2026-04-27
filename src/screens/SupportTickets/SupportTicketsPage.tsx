@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { AlertCircle, CheckCircle2, Clock3, LifeBuoy, MessageSquare, Plus, SearchCheck, XCircle } from "lucide-react";
+import { AlertCircle, CheckCircle2, Clock3, Eye, LifeBuoy, MessageSquare, Plus, SearchCheck, XCircle } from "lucide-react";
 import { DashboardSidebar } from "../../components/layout";
 import { TopNavBar } from "../../components/layout/TopNavBar";
+import { PROVIDER_LIST_PAGE_SIZE, ProviderDataTable, type ProviderDataTableColumn } from "../../components/provider/ProviderDataTable";
 import { useProviderSidebarConfig } from "../../hooks/useProviderSidebarConfig";
 import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
 import { useSidebarConfig } from "../../hooks/useSidebarConfig";
@@ -17,25 +18,18 @@ const statusMeta: Record<string, { label: string; className: string; icon: typeo
     Closed: { label: "Đã đóng", className: "bg-slate-100 text-slate-600 border-slate-200", icon: XCircle },
 };
 
-const roleCopy: Record<RoleMode, { title: string; subtitle?: string; empty: string }> = {
+const roleCopy: Record<RoleMode, { title: string }> = {
     Parent: {
         title: "Hỗ trợ Admin",
-        empty: "Bạn chưa có yêu cầu hỗ trợ nào.",
     },
     Provider: {
         title: "Yêu cầu hỗ trợ",
-        subtitle: "Tạo ticket khi cần Admin hỗ trợ vấn đề tài khoản, hợp đồng, đơn hàng, ví hoặc vận hành.",
-        empty: "Nhà cung cấp chưa gửi yêu cầu hỗ trợ nào.",
     },
     School: {
         title: "Yêu cầu hỗ trợ",
-        subtitle: "Gửi ticket cho Admin khi trường cần hỗ trợ tài khoản, dữ liệu học sinh, công bố học kỳ, hợp đồng hoặc thanh toán.",
-        empty: "Trường chưa gửi yêu cầu hỗ trợ nào.",
     },
     HomeroomTeacher: {
         title: "Hỗ trợ Admin",
-        subtitle: "Gửi yêu cầu khi cần Admin hỗ trợ tài khoản giáo viên, lớp chủ nhiệm, thông báo hoặc báo cáo.",
-        empty: "Giáo viên chưa gửi yêu cầu hỗ trợ nào.",
     },
 };
 
@@ -100,6 +94,7 @@ function SupportTicketsPanel({ role }: { role: RoleMode }): JSX.Element {
     const copy = roleCopy[role];
     const [data, setData] = useState<SupportTicketListResult | null>(null);
     const [status, setStatus] = useState("");
+    const [page, setPage] = useState(1);
     const [selected, setSelected] = useState<SupportTicketDto | null>(null);
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
@@ -110,7 +105,7 @@ function SupportTicketsPanel({ role }: { role: RoleMode }): JSX.Element {
         setLoading(true);
         setError(null);
         try {
-            const result = await getMySupportTickets({ page: 1, pageSize: 30, status: status || undefined });
+            const result = await getMySupportTickets({ page, pageSize: PROVIDER_LIST_PAGE_SIZE, status: status || undefined });
             setData(result);
             setSelected((current) => {
                 if (!current) return null;
@@ -121,7 +116,7 @@ function SupportTicketsPanel({ role }: { role: RoleMode }): JSX.Element {
         } finally {
             setLoading(false);
         }
-    }, [status]);
+    }, [page, status]);
 
     useEffect(() => {
         void load();
@@ -152,6 +147,62 @@ function SupportTicketsPanel({ role }: { role: RoleMode }): JSX.Element {
             setSubmitting(false);
         }
     };
+    const totalPages = Math.max(1, Math.ceil((data?.total ?? 0) / PROVIDER_LIST_PAGE_SIZE));
+    const ticketColumns: ProviderDataTableColumn<SupportTicketDto>[] = [
+        {
+            key: "ticket",
+            header: "Ticket",
+            render: (ticket) => (
+                <div className="min-w-0">
+                    <p className="font-black text-slate-900">{ticket.title}</p>
+                    <p className="mt-1 line-clamp-1 text-xs font-semibold text-slate-500">{ticket.description}</p>
+                </div>
+            ),
+        },
+        {
+            key: "category",
+            header: "Danh mục",
+            render: (ticket) => <span className="font-semibold text-slate-700">{ticket.category}</span>,
+        },
+        {
+            key: "status",
+            header: "Trạng thái",
+            render: (ticket) => {
+                const meta = statusMeta[ticket.status] ?? statusMeta.Open;
+                const Icon = meta.icon;
+
+                return (
+                    <span className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-black ${meta.className}`}>
+                        <Icon className="h-3.5 w-3.5" />
+                        {meta.label}
+                    </span>
+                );
+            },
+        },
+        {
+            key: "created",
+            header: "Ngày gửi",
+            render: (ticket) => <span className="whitespace-nowrap font-semibold text-slate-600">{formatDate(ticket.createdAt)}</span>,
+        },
+        {
+            key: "action",
+            header: "Action",
+            className: "text-right",
+            render: (ticket) => (
+                <button
+                    type="button"
+                    onClick={(event) => {
+                        event.stopPropagation();
+                        setSelected(ticket);
+                    }}
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-[8px] border border-slate-200 bg-white text-slate-700 transition-colors hover:border-sky-200 hover:text-sky-700"
+                    aria-label="Xem chi tiết ticket"
+                >
+                    <Eye className="h-4 w-4" />
+                </button>
+            ),
+        },
+    ];
 
     return (
         <div className="space-y-6">
@@ -163,7 +214,6 @@ function SupportTicketsPanel({ role }: { role: RoleMode }): JSX.Element {
                             Support desk
                         </div>
                         <h1 className="mt-4 text-2xl font-black text-slate-950 sm:text-3xl">{copy.title}</h1>
-                        {copy.subtitle ? <p className="mt-2 text-sm font-semibold leading-6 text-slate-600">{copy.subtitle}</p> : null}
                     </div>
                     <div className="grid gap-3 sm:grid-cols-3 lg:min-w-[420px]">
                         {stats.map((item) => {
@@ -193,7 +243,14 @@ function SupportTicketsPanel({ role }: { role: RoleMode }): JSX.Element {
                             <h2 className="text-lg font-black text-slate-950">Danh sách ticket</h2>
                             <p className="text-sm font-semibold text-slate-500">{data?.total ?? 0} yêu cầu</p>
                         </div>
-                        <select value={status} onChange={(event) => setStatus(event.target.value)} className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-700 outline-none">
+                        <select
+                            value={status}
+                            onChange={(event) => {
+                                setStatus(event.target.value);
+                                setPage(1);
+                            }}
+                            className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-700 outline-none"
+                        >
                             <option value="">Tất cả trạng thái</option>
                             <option value="Open">Đang mở</option>
                             <option value="InProgress">Đang xử lý</option>
@@ -202,45 +259,33 @@ function SupportTicketsPanel({ role }: { role: RoleMode }): JSX.Element {
                         </select>
                     </div>
 
-                    <div className="divide-y divide-slate-100">
+                    <div className="p-4">
                         {loading ? (
                             <div className="px-5 py-10 text-center text-sm font-bold text-slate-500">Đang tải...</div>
                         ) : data?.items.length ? (
-                            data.items.map((ticket) => {
-                                const meta = statusMeta[ticket.status] ?? statusMeta.Open;
-                                const Icon = meta.icon;
-                                return (
-                                    <button
-                                        key={ticket.id}
-                                        type="button"
-                                        onClick={() => setSelected(ticket)}
-                                        className={`w-full px-5 py-4 text-left transition-colors hover:bg-sky-50/50 ${selected?.id === ticket.id ? "bg-sky-50" : "bg-white"}`}
-                                    >
-                                        <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-                                            <div className="min-w-0">
-                                                <div className="flex flex-wrap items-center gap-2">
-                                                    <h3 className="text-base font-black text-slate-950">{ticket.title}</h3>
-                                                    <span className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-black ${meta.className}`}>
-                                                        <Icon className="h-3.5 w-3.5" />
-                                                        {meta.label}
-                                                    </span>
-                                                </div>
-                                                <p className="mt-2 line-clamp-2 text-sm font-semibold leading-6 text-slate-600">{ticket.description}</p>
-                                            </div>
-                                            <div className="text-xs font-bold text-slate-500 lg:text-right">
-                                                <p>{ticket.category}</p>
-                                                <p className="mt-1">{formatDate(ticket.createdAt)}</p>
-                                            </div>
-                                        </div>
-                                    </button>
-                                );
-                            })
+                            <ProviderDataTable
+                                items={data.items}
+                                columns={ticketColumns}
+                                getKey={(ticket) => ticket.id}
+                                onRowClick={(ticket) => setSelected(ticket)}
+                                rowClassName={(ticket) => selected?.id === ticket.id ? "bg-sky-50" : ""}
+                            />
                         ) : (
                             <div className="px-5 py-12 text-center">
                                 <SearchCheck className="mx-auto h-10 w-10 text-slate-300" />
-                                <p className="mt-3 text-sm font-bold text-slate-500">{copy.empty}</p>
                             </div>
                         )}
+                        {totalPages > 1 ? (
+                            <div className="mt-4 flex items-center justify-center gap-3">
+                                <button disabled={page <= 1} onClick={() => setPage((current) => current - 1)} className="nb-btn nb-btn-outline nb-btn-sm text-sm">
+                                    ← Trước
+                                </button>
+                                <span className="text-sm font-bold text-gray-500">{page}/{totalPages}</span>
+                                <button disabled={page >= totalPages} onClick={() => setPage((current) => current + 1)} className="nb-btn nb-btn-outline nb-btn-sm text-sm">
+                                    Sau →
+                                </button>
+                            </div>
+                        ) : null}
                     </div>
                 </section>
 
@@ -254,7 +299,6 @@ function SupportTicketsPanel({ role }: { role: RoleMode }): JSX.Element {
                             <input
                                 value={form.title}
                                 onChange={(event) => setForm((current) => ({ ...current, title: event.target.value }))}
-                                placeholder="Tiêu đề"
                                 className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold outline-none focus:border-sky-300"
                             />
                             <select
@@ -273,7 +317,6 @@ function SupportTicketsPanel({ role }: { role: RoleMode }): JSX.Element {
                             <textarea
                                 value={form.description}
                                 onChange={(event) => setForm((current) => ({ ...current, description: event.target.value }))}
-                                placeholder="Mô tả vấn đề cần Admin hỗ trợ"
                                 className="h-32 w-full resize-none rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold leading-6 outline-none focus:border-sky-300"
                             />
                             <button
@@ -314,7 +357,7 @@ function SupportTicketsPanel({ role }: { role: RoleMode }): JSX.Element {
                                 </div>
                             </div>
                         ) : (
-                            <p className="mt-4 text-sm font-semibold leading-6 text-slate-500">Chưa chọn ticket.</p>
+                            null
                         )}
                     </section>
                 </aside>
