@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { ChevronDown, ChevronRight, GraduationCap, History, LifeBuoy, LogOut, MapPinHouse, ScanLine, Settings, ShoppingBag, Star, User, WalletCards } from "lucide-react";
 import { GuestLayout } from "../../components/layout/GuestLayout";
+import { PublicPageBreadcrumb } from "../../components/PublicPageBreadcrumb";
 import { getParentProfile } from "../../lib/api/users";
 
 const SECTION_ITEMS = [
@@ -142,13 +143,13 @@ export const ParentProfile = (): JSX.Element => {
   return (
     <GuestLayout bgColor="#f8fafc" mainClassName="flex-1">
       <div className="relative z-10 mx-auto max-w-[1320px] px-4 py-6 md:py-8 lg:px-8">
-        <nav className="mb-5 flex items-center gap-2 text-sm font-bold">
-          <a href="/" className="text-gray-500 transition-colors hover:text-gray-800">
-            Trang chủ
-          </a>
-          <span className="text-gray-400">/</span>
-          <span className="text-gray-900">Khu vực phụ huynh</span>
-        </nav>
+        <PublicPageBreadcrumb
+          className="mb-5"
+          items={[
+            { label: "Trang chủ", to: "/homepage" },
+            { label: "Khu vực phụ huynh" },
+          ]}
+        />
 
         <div className="grid gap-6 xl:grid-cols-[320px_minmax(0,1fr)] xl:items-start">
           <aside className="xl:sticky xl:top-20">
