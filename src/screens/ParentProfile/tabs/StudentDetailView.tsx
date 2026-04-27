@@ -12,6 +12,15 @@ interface StudentDetailViewProps {
 const DAYS = Array.from({ length: 31 }, (_, i) => i + 1);
 const MONTHS = Array.from({ length: 12 }, (_, i) => i + 1);
 const YEARS = Array.from({ length: 30 }, (_, i) => new Date().getFullYear() - i);
+const DEFAULT_CHILD_AVATAR =
+  "data:image/svg+xml;utf8," +
+  encodeURIComponent(
+    "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 320'>" +
+      "<rect width='240' height='320' rx='28' fill='#EDE9FE'/>" +
+      "<circle cx='120' cy='112' r='48' fill='#A78BFA'/>" +
+      "<path d='M44 286c8-44 36-76 76-76s68 32 76 76' fill='#8B5CF6'/>" +
+    "</svg>",
+  );
 
 export const StudentDetailView = ({ childId, onBack }: StudentDetailViewProps): JSX.Element => {
   const navigate = useNavigate();
@@ -163,7 +172,6 @@ export const StudentDetailView = ({ childId, onBack }: StudentDetailViewProps): 
     );
   }
 
-  const initials = fullName?.split(" ").map(w => w[0]).join("").slice(-2).toUpperCase();
   const inputClass = "nb-input w-full h-11 text-sm border border-gray-200 hover:shadow-sm hover:border-purple-300 focus:shadow-sm focus:border-purple-300 transition-all duration-300";
   const selectClass = "nb-input h-11 text-sm px-3 border border-gray-200 hover:shadow-sm hover:border-purple-300 focus:shadow-sm focus:border-purple-300 transition-all duration-300";
 
@@ -184,15 +192,14 @@ export const StudentDetailView = ({ childId, onBack }: StudentDetailViewProps): 
         <div className="flex flex-col items-center gap-4 group">
           <div className="relative">
             <div className="w-60 h-80 bg-violet-50 rounded-xl flex items-center justify-center border border-gray-200 shadow-soft-md overflow-hidden hover:shadow-soft-md transition-all duration-300">
-              {student.avatarUrl ? (
-                <img
-                  src={student.avatarUrl}
-                  alt={student.fullName}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <span className="font-extrabold text-gray-900 text-5xl">{initials}</span>
-              )}
+              <img
+                src={student.avatarUrl || DEFAULT_CHILD_AVATAR}
+                alt={student.fullName}
+                className="w-full h-full object-cover"
+                onError={(event) => {
+                  event.currentTarget.src = DEFAULT_CHILD_AVATAR;
+                }}
+              />
             </div>
             <button
               type="button"
