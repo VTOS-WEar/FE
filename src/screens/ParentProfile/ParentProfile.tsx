@@ -132,9 +132,7 @@ export const ParentProfile = (): JSX.Element => {
     const accountActive = ACCOUNT_CHILDREN.some((child) =>
       (SECTION_MATCHERS[child.to] ?? [child.to]).some((path) => location.pathname.startsWith(path)),
     );
-    if (accountActive) {
-      setOpenGroups((prev) => ({ ...prev, account: true }));
-    }
+    setOpenGroups((prev) => ({ ...prev, account: accountActive }));
   }, [location.pathname]);
 
   if (!user) {
