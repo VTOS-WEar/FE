@@ -265,15 +265,8 @@ export const StudentDetailView = ({ childId, onBack }: StudentDetailViewProps): 
           {/* Giới tính */}
           <div className="flex flex-col gap-2 animate-in fade-in slide-in-from-top-4 duration-500">
             <label className="font-bold text-gray-900 text-sm transition-colors duration-300">GIỚI TÍNH</label>
-            <div className="flex items-center gap-6">
-              {["Nam", "Nữ", "Khác"].map(g => (
-                <label key={g} className="flex cursor-not-allowed items-center gap-2 user-select-none opacity-80" aria-disabled="true">
-                  <div className={`flex h-5 w-5 items-center justify-center rounded-lg border-2 ${gender === g ? "border-gray-200 bg-purple-400 shadow-sm" : "border-gray-300 bg-gray-100"}`}>
-                    {gender === g && <div className="w-2 h-2 rounded-sm bg-gray-900 animate-pulse" />}
-                  </div>
-                  <span className="text-sm font-bold text-gray-900">{g}</span>
-                </label>
-              ))}
+            <div className="inline-flex h-11 min-w-[120px] items-center rounded-xl border border-gray-200 bg-gray-100 px-4 text-sm font-bold text-gray-900">
+              {gender || "—"}
             </div>
           </div>
 
