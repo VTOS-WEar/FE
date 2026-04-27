@@ -13,6 +13,16 @@ import { getParentProfile } from "../../lib/api/users"
 import { searchPublic, type PublicSearchResponse } from "../../lib/api/public"
 import { ClassGroupChatLauncher } from "../ChatWidget/ClassGroupChatLauncher"
 
+const DEFAULT_USER_AVATAR =
+  "data:image/svg+xml;utf8," +
+  encodeURIComponent(
+    "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'>" +
+      "<rect width='96' height='96' fill='#EDE9FE'/>" +
+      "<circle cx='48' cy='34' r='16' fill='#A78BFA'/>" +
+      "<path d='M22 80c2-14 12-24 26-24s24 10 26 24' fill='#8B5CF6'/>" +
+    "</svg>",
+  )
+
 function getSessionUser(): { fullName: string; role: string; avatar?: string | null } | null {
   const raw = localStorage.getItem("user") || sessionStorage.getItem("user")
   if (!raw) return null
@@ -472,17 +482,14 @@ export function NavbarGuest() {
                     type="button"
                     className="hidden h-11 items-center gap-2 rounded-xl border border-gray-200 bg-white px-3 shadow-soft-sm transition-all duration-150 hover:-translate-y-[1px] hover:shadow-soft-md active:shadow-none active:translate-y-0 lg:flex !outline-none"
                   >
-                    {userAvatar ? (
-                      <img
-                        src={userAvatar}
-                        alt="Avatar"
-                        className="h-7 w-7 rounded-lg border border-gray-200 object-cover"
-                      />
-                    ) : (
-                      <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-violet-50">
-                        <User size={14} className="text-gray-900" />
-                      </div>
-                    )}
+                    <img
+                      src={userAvatar || DEFAULT_USER_AVATAR}
+                      alt="Avatar"
+                      className="h-7 w-7 rounded-lg border border-gray-200 object-cover"
+                      onError={(event) => {
+                        event.currentTarget.src = DEFAULT_USER_AVATAR
+                      }}
+                    />
                     <span className="max-w-[120px] truncate text-sm font-bold text-gray-900">{userName}</span>
                     <ChevronDown size={14} className="text-gray-900/50" />
                   </button>
