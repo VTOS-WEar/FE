@@ -116,7 +116,7 @@ export function SemesterCatalog(): JSX.Element {
                 <PublicPageBreadcrumb items={[{ label: "Trang chủ", to: "/homepage" }, { label: "Danh sách trường", to: "/schools" }, { label: school.schoolName, to: `/schools/${school.schoolId}` }, { label: "Catalog học kỳ" }]} />
 
                 <div className="mt-5 overflow-hidden rounded-[24px] border border-gray-200 bg-white shadow-soft-md">
-                    <div className="grid gap-0 lg:grid-cols-2">
+                    <div className="grid gap-0 lg:grid-cols-[1.2fr_0.8fr]">
                         <div className="space-y-4 border-b border-gray-200 p-5 lg:border-b-0 lg:p-6">
                             <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
                                 <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-[18px] border border-gray-200 bg-slate-50 shadow-soft-sm">
@@ -133,7 +133,7 @@ export function SemesterCatalog(): JSX.Element {
                             </div>
                             <div className="grid gap-3 sm:grid-cols-3">
                                 <div className="rounded-[16px] border border-gray-200 bg-slate-50 p-3 shadow-soft-sm"><p className="text-[10px] font-black uppercase tracking-[0.12em] text-gray-400">Học kỳ</p><p className="mt-1 text-[1.35rem] leading-tight font-extrabold text-gray-900">{catalog.semester}</p></div>
-                                <div className="rounded-[16px] border border-gray-200 bg-slate-50 p-3 shadow-soft-sm"><p className="text-[10px] font-black uppercase tracking-[0.12em] text-gray-400">Niên khóa</p><p className="mt-1 text-[1.35rem] leading-tight font-extrabold text-gray-900">{catalog.academicYear}</p></div>
+                                <div className="rounded-[16px] border border-gray-200 bg-slate-50 p-3 shadow-soft-sm"><p className="text-[10px] font-black uppercase tracking-[0.12em] text-gray-400">Niên khóa</p><p className="mt-1 whitespace-nowrap text-[1.35rem] leading-tight font-extrabold text-gray-900">{catalog.academicYear}</p></div>
                                 <div className="rounded-[16px] border border-gray-200 bg-slate-50 p-3 shadow-soft-sm"><p className="text-[10px] font-black uppercase tracking-[0.12em] text-gray-400">Mẫu đồng phục</p><p className="mt-1 text-[1.35rem] leading-tight font-extrabold text-gray-900">{catalog.outfits.length}</p></div>
                             </div>
                         </div>
