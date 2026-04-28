@@ -21,7 +21,7 @@ const stats = [
 export const StatsSection = (): JSX.Element => {
   return (
     <section className="w-full bg-gray-50 py-16 lg:py-20">
-      <div className="mx-auto w-full max-w-[1280px] px-4 md:px-8 lg:px-10">
+      <div className="mx-auto w-full max-w-[1400px] px-4 md:px-8 lg:px-12">
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
           {stats.map((stat, index) => {
             const Icon = stat.icon;
