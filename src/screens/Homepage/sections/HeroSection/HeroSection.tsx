@@ -6,10 +6,10 @@ export function HeroSection() {
 
   return (
     <section className="relative w-full overflow-hidden py-10 lg:py-14">
-      <div className="mx-auto grid max-w-[1100px] grid-cols-1 items-center gap-8 px-6 md:grid-cols-2 md:gap-6">
+      <div className="mx-auto grid w-full max-w-[1280px] grid-cols-1 items-center gap-8 px-6 md:grid-cols-2 md:gap-8 lg:px-10">
 
         {/* Left — Branding + Copy */}
-        <div className="flex flex-col items-center text-center nb-stagger">
+        <div className="flex flex-col items-center text-center nb-stagger md:items-start md:text-left">
           {/* Big VTOS branding */}
           <div className="relative inline-block">
             <h1
@@ -39,7 +39,7 @@ export function HeroSection() {
           </p>
 
           {/* CTA Buttons */}
-          <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+          <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center md:justify-start">
             <button
               type="button"
               onClick={() => navigate("/schools")}
@@ -63,7 +63,7 @@ export function HeroSection() {
         <div className="flex justify-center nb-fade-in" style={{ animationDelay: "0.3s" }}>
           <div className="relative nb-phone-breathe">
             {/* Phone frame */}
-            <div className="relative h-[420px] w-[210px] rounded-[28px] bg-black p-2 sm:h-[500px] sm:w-[250px] sm:rounded-[32px] md:h-[560px] md:w-[280px] md:rounded-[36px]">
+            <div className="relative h-[420px] w-[210px] rounded-[28px] bg-black p-2 sm:h-[500px] sm:w-[250px] sm:rounded-[32px] md:h-[600px] md:w-[300px] md:rounded-[36px]">
               <div className="relative h-full w-full overflow-hidden rounded-[22px] bg-black sm:rounded-[26px] md:rounded-[30px]">
                 <img
                   src="https://api.builder.io/api/v1/image/assets/TEMP/eef0ae9593f6a6296eb52342229bd158fe61eb1b?width=1808"
