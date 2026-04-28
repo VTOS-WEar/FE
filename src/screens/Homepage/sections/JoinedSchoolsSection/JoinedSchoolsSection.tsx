@@ -36,7 +36,7 @@ const schools: School[] = [
 export const JoinedSchoolsSection = (): JSX.Element => {
   return (
     <section className="nb-section-calm">
-      <div className="mx-auto w-full max-w-[1280px] px-4 md:px-8 lg:px-10">
+      <div className="mx-auto w-full max-w-[1400px] px-4 md:px-8 lg:px-12">
         {/* Header */}
         <div className="flex items-end justify-between mb-12 nb-reveal">
           <h2 className="text-3xl font-extrabold text-gray-900 md:text-4xl">
