@@ -6,10 +6,10 @@ export function HeroSection() {
 
   return (
     <section className="relative w-full overflow-hidden py-10 lg:py-14">
-      <div className="mx-auto grid w-full max-w-[1280px] grid-cols-1 items-center gap-8 px-6 md:grid-cols-2 md:gap-8 lg:px-10">
+      <div className="mx-auto grid w-full max-w-[1400px] grid-cols-1 items-center gap-8 px-6 md:grid-cols-[1.1fr_0.9fr] md:gap-8 lg:px-12">
 
         {/* Left — Branding + Copy */}
-        <div className="flex flex-col items-center text-center nb-stagger md:items-start md:text-left">
+        <div className="flex flex-col items-center text-center nb-stagger">
           {/* Big VTOS branding */}
           <div className="relative inline-block">
             <h1
@@ -32,14 +32,14 @@ export function HeroSection() {
           </h2>
 
           {/* Description */}
-          <p className="mt-4 max-w-[520px] text-base font-medium leading-relaxed text-gray-600 md:text-lg">
+          <p className="mt-4 max-w-[620px] text-base font-medium leading-relaxed text-gray-600 md:text-lg">
             Tải ảnh của bạn lên và xem đồng phục trường hiển thị ngay lập tức.
             Không cần thử trực tiếp, không mất thời gian. Phụ huynh, học sinh
             và nhà trường đều có thể sử dụng dễ dàng.
           </p>
 
           {/* CTA Buttons */}
-          <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center md:justify-start">
+          <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
             <button
               type="button"
               onClick={() => navigate("/schools")}
@@ -63,7 +63,7 @@ export function HeroSection() {
         <div className="flex justify-center nb-fade-in" style={{ animationDelay: "0.3s" }}>
           <div className="relative nb-phone-breathe">
             {/* Phone frame */}
-            <div className="relative h-[420px] w-[210px] rounded-[28px] bg-black p-2 sm:h-[500px] sm:w-[250px] sm:rounded-[32px] md:h-[600px] md:w-[300px] md:rounded-[36px]">
+            <div className="relative h-[420px] w-[210px] rounded-[28px] bg-black p-2 sm:h-[500px] sm:w-[250px] sm:rounded-[32px] md:h-[640px] md:w-[320px] md:rounded-[40px]">
               <div className="relative h-full w-full overflow-hidden rounded-[22px] bg-black sm:rounded-[26px] md:rounded-[30px]">
                 <img
                   src="https://api.builder.io/api/v1/image/assets/TEMP/eef0ae9593f6a6296eb52342229bd158fe61eb1b?width=1808"
