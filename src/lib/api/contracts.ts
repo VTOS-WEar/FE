@@ -7,6 +7,7 @@ export type ContractItemDto = {
     itemId: string;
     outfitId: string;
     outfitName: string;
+    mainImageURL?: string | null;
     pricePerUnit?: number | null;
     minQuantity?: number | null;
     maxQuantity?: number | null;

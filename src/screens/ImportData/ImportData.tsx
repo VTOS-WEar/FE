@@ -2,25 +2,22 @@ import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
 import { useState, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-} from "../../components/ui/breadcrumb";
+    ArrowLeft,
+    FileSpreadsheet,
+    History,
+    UploadCloud,
+} from "lucide-react";
 import { DashboardSidebar } from "../../components/layout";
 import { TopNavBar } from "../../components/layout/TopNavBar";
+import { SCHOOL_THEME } from "../../constants/schoolTheme";
 import { useSidebarConfig } from "../../hooks/useSidebarConfig";
 import {
     downloadImportTemplate,
     importStudents,
     getSchoolProfile,
     getImportHistory,
-    getImportStatus,
     type ImportStudentResult,
     type ImportBatchDto,
-    type ImportStatusDto,
 } from "../../lib/api/schools";
 import { ApiError } from "../../lib/api/clients";
 import { useEffect } from "react";
@@ -56,10 +53,7 @@ export const ImportData = (): JSX.Element => {
     const [importHistory, setImportHistory] = useState<ImportBatchDto[]>([]);
     const historySectionRef = useRef<HTMLDivElement>(null);
 
-    /* ── Import status state (dynamic banner) ── */
-    const [importStatus, setImportStatus] = useState<ImportStatusDto | null>(null);
-
-    /* ── Load school name + import history + import status ── */
+    /* ── Load school name + import history ── */
     const fetchHistory = useCallback(async () => {
         try {
             const data = await getImportHistory(10);
@@ -72,9 +66,6 @@ export const ImportData = (): JSX.Element => {
             .then((p) => setSchoolName(p.schoolName || ""))
             .catch(() => {});
         fetchHistory();
-        getImportStatus()
-            .then(setImportStatus)
-            .catch(() => {});
     }, [fetchHistory]);
 
     /* ── Handlers ── */
@@ -134,9 +125,8 @@ export const ImportData = (): JSX.Element => {
             setResult(res);
             setSelectedFile(null);
             if (fileInputRef.current) fileInputRef.current.value = "";
-            // Refresh import history + status after successful import
+            // Refresh import history after successful import
             fetchHistory();
-            getImportStatus().then(setImportStatus).catch(() => {});
         } catch (err) {
             if (err instanceof ApiError) {
                 setError(err.message);
@@ -150,7 +140,7 @@ export const ImportData = (): JSX.Element => {
 
     /* ── modern step data ── */
     const steps = [
-        { step: 1, title: "Tải mẫu chuẩn", bg: "#ede9fe", borderColor: "border-gray-200" },
+        { step: 1, title: "Tải mẫu chuẩn", bg: "#DBEAFE", borderColor: "border-blue-100" },
         { step: 2, title: "Điền thông tin", bg: "#dbeafe", borderColor: "border-gray-200" },
         { step: 3, title: "Tải lên hệ thống", bg: "#dcfce7", borderColor: "border-emerald-200" },
     ];
@@ -174,144 +164,74 @@ export const ImportData = (): JSX.Element => {
 
                 {/* Content */}
                 <div className="flex-1 flex flex-col min-w-0">
-                    {/* Breadcrumb header */}
                     <TopNavBar>
-                        <Breadcrumb>
-                            <BreadcrumbList className="gap-2.5">
-                                <BreadcrumbItem>
-                                    <BreadcrumbLink className="font-semibold text-[#4c5769] text-base">
-                                        Trang chủ
-                                    </BreadcrumbLink>
-                                </BreadcrumbItem>
-                                <BreadcrumbSeparator className="font-semibold text-[#cbcad7] text-base">
-                                    /
-                                </BreadcrumbSeparator>
-                                <BreadcrumbItem>
-                                    <BreadcrumbLink className="font-semibold text-[#4c5769] text-base">
-                                        Danh sách học sinh
-                                    </BreadcrumbLink>
-                                </BreadcrumbItem>
-                                <BreadcrumbSeparator className="font-semibold text-[#cbcad7] text-base">
-                                    /
-                                </BreadcrumbSeparator>
-                                <BreadcrumbItem>
-                                    <BreadcrumbPage className="font-semibold text-black text-base">
-                                        Nhập dữ liệu học sinh
-                                    </BreadcrumbPage>
-                                </BreadcrumbItem>
-                            </BreadcrumbList>
-                        </Breadcrumb>
+                        <div className="flex items-center gap-3 px-2 py-2">
+                            <button
+                                type="button"
+                                onClick={() => navigate("/school/students")}
+                                className="flex h-9 w-9 items-center justify-center rounded-[8px] border border-gray-200 bg-white shadow-soft-sm transition-colors hover:bg-slate-50"
+                                aria-label="Quay lại danh sách học sinh"
+                            >
+                                <ArrowLeft className="h-4 w-4 text-gray-900" />
+                            </button>
+                            <div className={`flex h-9 w-9 items-center justify-center rounded-[8px] border ${SCHOOL_THEME.primarySoftBorder} ${SCHOOL_THEME.primarySoftBg} ${SCHOOL_THEME.primaryText}`}>
+                                <FileSpreadsheet className="h-4 w-4" />
+                            </div>
+                            <h1 className="text-xl font-bold leading-none text-gray-900">Nhập dữ liệu học sinh</h1>
+                        </div>
                     </TopNavBar>
 
                     <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-6">
-                        {/* ── Page header ── */}
-                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                            <div>
-                                <h1 className="font-black text-gray-900 text-[28px] lg:text-[32px] leading-[1.22]">
-                                    Nhập dữ liệu học sinh
-                                </h1>
-                            </div>
-                            <button
-                                type="button"
-                                onClick={() => historySectionRef.current?.scrollIntoView({ behavior: "smooth" })}
-                                className="flex items-center gap-2 rounded-[10px] border border-gray-200 bg-white px-4 py-2.5 text-[13px] font-extrabold text-gray-900 shadow-soft-sm transition-all hover:scale-[0.99] whitespace-nowrap"
-                            >
-                                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M13 3a9 9 0 0 0-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42A8.954 8.954 0 0 0 13 21a9 9 0 0 0 0-18zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z" />
-                                </svg>
-                                Lịch sử tải lên
-                            </button>
-                        </div>
-
-                        {/* ── Announcement card (dynamic) ── */}
-                        {importStatus?.needsUpdate && (
-                            <div className="rounded-[14px] border border-gray-200 bg-amber-50 p-5 shadow-soft-md flex gap-4">
-                                <div className="flex-shrink-0 w-11 h-11 rounded-[10px] border border-amber-200 bg-amber-100 shadow-soft-sm flex items-center justify-center">
-                                    <svg className="w-6 h-6 text-[#E65100]" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M18 11v2h4v-2h-4zm-2 6.61c.96.71 2.21 1.65 3.2 2.39.4-.53.8-1.07 1.2-1.6-.99-.74-2.24-1.68-3.2-2.4-.4.54-.8 1.07-1.2 1.61zM20.4 5.6c-.4-.53-.8-1.07-1.2-1.6-.99.74-2.24 1.68-3.2 2.4.4.53.8 1.07 1.2 1.6.96-.72 2.21-1.65 3.2-2.4zM4 9c-1.1 0-2 .9-2 2v2c0 1.1.9 2 2 2h1l5 3V6L5 9H4zm5.03-1.71L8 8.15V9h-.17L5.03 7.29zm0 9.42L5.86 15H5v-.85l-1.97-1.15V15l4 2.71zM11.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
-                                    </svg>
-                                </div>
-                                <div className="flex-1">
-                                    <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                                        <h3 className="font-black text-gray-900 text-base">
-                                            Cần cập nhật: Dữ liệu {importStatus.currentSemester}
-                                        </h3>
-                                        <span className="rounded-full border border-red-200 bg-red-50 px-2.5 py-0.5 text-[11px] font-extrabold text-red-600 shadow-soft-sm">
-                                            Chưa nhập liệu
-                                        </span>
+                        <section className="overflow-hidden rounded-[8px] border border-gray-200 bg-white shadow-soft-sm">
+                            <div className="grid grid-cols-1 lg:grid-cols-[360px_1fr]">
+                                <aside className="space-y-5 border-b border-gray-200 bg-slate-50/70 p-5 lg:border-b-0 lg:border-r">
+                                    <div>
+                                        <h2 className="text-lg font-black text-gray-900">Quy trình nhập liệu</h2>
+                                        <p className="mt-1 text-sm font-semibold leading-6 text-slate-500">
+                                            Tải file mẫu, điền dữ liệu học sinh rồi tải lên hệ thống.
+                                        </p>
                                     </div>
-                                    <span className="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-3 py-1 shadow-soft-sm">
-                                        <svg className="w-4 h-4 text-amber-600" viewBox="0 0 24 24" fill="currentColor">
-                                            <path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm4-7h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z" />
-                                        </svg>
-                                        <span className="font-extrabold text-amber-700 text-[12px]">
-                                            Hạn chót đề xuất: {importStatus.suggestedDeadline}
-                                        </span>
-                                    </span>
-                                </div>
-                            </div>
-                        )}
 
-                        {/* ── 3-Step instructions ── */}
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            {steps.map(({ step, title, bg, borderColor }) => (
-                                <div
-                                    key={step}
-                                    className={`rounded-[14px] border ${borderColor} p-5 flex flex-col items-start gap-3 transition-all ${step === 3 ? "bg-emerald-50 border-emerald-200" : "bg-white"}`}
-                                >
-                                    <div
-                                        className={`w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center font-black text-gray-900 text-lg shadow-soft-sm ${step === 3 ? "scale-110" : ""}`}
-                                        style={{ backgroundColor: bg }}
-                                    >
-                                        {step}
+                                    <div className="space-y-3">
+                                        {steps.map(({ step, title, bg, borderColor }) => (
+                                            <div key={step} className={`flex items-center gap-3 rounded-[8px] border ${borderColor} bg-white p-3 shadow-soft-sm`}>
+                                                <div
+                                                    className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-gray-200 text-sm font-black text-gray-900 shadow-soft-sm"
+                                                    style={{ backgroundColor: bg }}
+                                                >
+                                                    {step}
+                                                </div>
+                                                <span className="text-sm font-black text-gray-900">{title}</span>
+                                            </div>
+                                        ))}
                                     </div>
-                                    <h3 className="font-black text-gray-900 text-base">
-                                        {title}
-                                    </h3>
-                                </div>
-                            ))}
-                        </div>
 
-                        {/* ── Two-column: Template + Notes | Upload ── */}
-                        <div className="grid grid-cols-1 lg:grid-cols-[minmax(300px,420px)_1fr] gap-6">
-                            {/* Left column */}
-                            <div className="space-y-6">
-                                {/* Template download card */}
-                                <div className="rounded-[14px] border border-gray-200 bg-white p-5 shadow-soft-md space-y-3">
-                                    <div className="flex items-center gap-3">
-                                        <div className="flex h-10 w-10 items-center justify-center rounded-[10px] border border-gray-200 bg-sky-50 shadow-soft-sm">
-                                            <svg className="w-5 h-5 text-sky-500" viewBox="0 0 24 24" fill="currentColor">
-                                                <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zM6 20V4h7v5h5v11H6z" />
-                                            </svg>
+                                    <div className="rounded-[8px] border border-gray-200 bg-white p-4 shadow-soft-sm">
+                                        <div className="flex items-center gap-3">
+                                            <div className={`flex h-10 w-10 items-center justify-center rounded-[8px] border ${SCHOOL_THEME.primarySoftBorder} ${SCHOOL_THEME.primarySoftBg} shadow-soft-sm`}>
+                                                <FileSpreadsheet className={`h-5 w-5 ${SCHOOL_THEME.primaryText}`} />
+                                            </div>
+                                            <h3 className="font-black text-gray-900 text-base">File mẫu nhập liệu</h3>
                                         </div>
-                                    <h3 className="font-black text-gray-900 text-base">
-                                        File mẫu nhập liệu
-                                    </h3>
-                                </div>
-                                    <button
-                                        type="button"
-                                        onClick={handleDownloadTemplate}
-                                        disabled={downloadingTemplate}
-                                        className="w-full flex items-center justify-center gap-2 rounded-[10px] border border-gray-200 bg-white px-4 py-3 text-[14px] font-extrabold text-gray-700 shadow-soft-sm transition-all hover:scale-[0.99] hover:shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"
-                                    >
-                                        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                                            <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
-                                        </svg>
-                                        {downloadingTemplate ? "Đang tải..." : "Tải xuống mẫu Excel chuẩn"}
-                                    </button>
-                                </div>
+                                        <button
+                                            type="button"
+                                            onClick={handleDownloadTemplate}
+                                            disabled={downloadingTemplate}
+                                            className="mt-4 w-full flex items-center justify-center gap-2 rounded-[8px] border border-gray-200 bg-white px-4 py-3 text-[14px] font-extrabold text-gray-700 shadow-soft-sm transition-colors hover:border-blue-200 hover:text-[#2563EB] disabled:opacity-60 disabled:cursor-not-allowed"
+                                        >
+                                            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
+                                            </svg>
+                                            {downloadingTemplate ? "Đang tải..." : "Tải xuống mẫu Excel chuẩn"}
+                                        </button>
+                                    </div>
+                                </aside>
 
-                            </div>
-
-                            {/* Right column: Upload zone */}
-                            <div className="rounded-[14px] border border-gray-200 bg-white p-5 shadow-soft-md space-y-4">
+                                <div className="space-y-4 p-5">
                                 <div className="flex items-center justify-between">
                                     <h3 className="font-black text-gray-900 text-lg">
                                         Tải lên dữ liệu
                                     </h3>
-                                    <span className="rounded-full border border-gray-200 bg-sky-50 px-2.5 py-0.5 text-[11px] font-extrabold text-sky-600 shadow-soft-sm">
-                                        Kỳ học mới
-                                    </span>
                                 </div>
 
                                 {/* Drag-drop zone */}
@@ -323,33 +243,26 @@ export const ImportData = (): JSX.Element => {
                                     onDragLeave={() => setDragover(false)}
                                     onDrop={handleDrop}
                                     onClick={() => fileInputRef.current?.click()}
-                                    className={`rounded-[14px] border-2 border-dashed px-6 py-12 flex flex-col items-center justify-center gap-4 cursor-pointer transition-all ${
+                                    className={`rounded-[8px] border-2 border-dashed px-6 py-12 flex flex-col items-center justify-center gap-4 cursor-pointer transition-all ${
                                         dragover
-                                            ? "border-violet-400 bg-violet-50 shadow-soft-sm"
-                                            : "border-gray-200 bg-gray-50 shadow-soft-sm hover:border-violet-300 hover:bg-white"
+                                            ? "border-blue-300 bg-blue-50 shadow-soft-sm"
+                                            : "border-gray-200 bg-gray-50 shadow-soft-sm hover:border-blue-200 hover:bg-white"
                                     }`}
                                 >
                                     {/* Upload icon */}
-                                    <div className="flex h-[72px] w-[72px] items-center justify-center rounded-[14px] border border-gray-200 bg-violet-50 shadow-soft-sm">
-                                        <svg
-                                            className={`w-10 h-10 ${dragover ? "text-violet-400" : "text-violet-500"}`}
-                                            viewBox="0 0 24 24"
-                                            fill="currentColor"
-                                        >
-                                            <path d="M9 16h6v-6h4l-7-7-7 7h4v6zm-4 2h14v2H5v-2z" />
-                                        </svg>
+                                    <div className={`flex h-[72px] w-[72px] items-center justify-center rounded-[8px] border ${SCHOOL_THEME.primarySoftBorder} ${SCHOOL_THEME.primarySoftBg} shadow-soft-sm`}>
+                                        <UploadCloud className={`h-10 w-10 ${SCHOOL_THEME.primaryText}`} />
                                     </div>
                                     <p className="font-black text-gray-900 text-[17px]">
                                         Kéo thả file vào đây
                                     </p>
-                                    {/* CTA: purple primary */}
                                     <button
                                         type="button"
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             fileInputRef.current?.click();
                                         }}
-                                        className="rounded-[10px] border border-violet-500 bg-violet-500 px-6 py-3 text-[14px] font-extrabold text-white shadow-soft-sm transition-all hover:scale-[0.99] hover:shadow-sm"
+                                        className={SCHOOL_THEME.primaryButton}
                                     >
                                         Chọn file Excel (.xlsx)
                                     </button>
@@ -418,8 +331,9 @@ export const ImportData = (): JSX.Element => {
                                         )}
                                     </button>
                                 )}
+                                </div>
                             </div>
-                        </div>
+                        </section>
 
                         {/* ── Error message ── */}
                         {error && (
@@ -434,7 +348,7 @@ export const ImportData = (): JSX.Element => {
                         {/* ── Import result ── */}
                         {result && (
                             <div
-                                className={`rounded-[14px] border border-gray-200 p-5 shadow-soft-md ${
+                                className={`rounded-[8px] border border-gray-200 p-5 shadow-soft-sm ${
                                     result.errorCount > 0 ? "bg-amber-50" : "bg-emerald-50"
                                 }`}
                             >
@@ -483,13 +397,18 @@ export const ImportData = (): JSX.Element => {
 
                         {/* ── Import history ── */}
                         <div className="space-y-4" ref={historySectionRef}>
-                            <h2 className="font-black text-gray-900 text-xl">
-                                Lịch sử nhập liệu gần đây
-                            </h2>
+                            <div className="flex items-center gap-3">
+                                <div className={`flex h-9 w-9 items-center justify-center rounded-[8px] border ${SCHOOL_THEME.primarySoftBorder} ${SCHOOL_THEME.primarySoftBg} ${SCHOOL_THEME.primaryText}`}>
+                                    <History className="h-4 w-4" />
+                                </div>
+                                <h2 className="font-black text-gray-900 text-xl">
+                                    Lịch sử nhập liệu gần đây
+                                </h2>
+                            </div>
 
                             {importHistory.length === 0 ? (
-                                <div className="rounded-[14px] border border-gray-200 bg-white p-10 shadow-soft-md flex flex-col items-center gap-3">
-                                    <div className="flex h-16 w-16 items-center justify-center rounded-[14px] border border-gray-200 bg-gray-50 shadow-soft-sm">
+                                <div className="rounded-[8px] border border-gray-200 bg-white p-10 shadow-soft-sm flex flex-col items-center gap-3">
+                                    <div className="flex h-16 w-16 items-center justify-center rounded-[8px] border border-gray-200 bg-gray-50 shadow-soft-sm">
                                         <svg className="w-8 h-8 text-gray-400" viewBox="0 0 24 24" fill="currentColor">
                                             <path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" />
                                         </svg>
@@ -499,7 +418,7 @@ export const ImportData = (): JSX.Element => {
                                     </p>
                                 </div>
                             ) : (
-                                <div className="rounded-[14px] border border-gray-200 bg-white overflow-hidden shadow-soft-md">
+                                <div className="rounded-[8px] border border-gray-200 bg-white overflow-hidden shadow-soft-sm">
                                     {/* Table header */}
                                     <div className="hidden sm:grid grid-cols-[3fr_2fr_2fr_1.5fr] px-6 lg:px-8 py-4 bg-gray-50 border-b border-gray-200">
                                         {["Tên file", "Thời gian", "Trạng thái", "Chi tiết"].map((h) => (

@@ -1,15 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-} from "../../components/ui/breadcrumb";
+import { Building2 } from "lucide-react";
 import { DashboardSidebar } from "../../components/layout";
 import { TopNavBar } from "../../components/layout/TopNavBar";
+import { SCHOOL_THEME } from "../../constants/schoolTheme";
 import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
 import { useSidebarConfig } from "../../hooks/useSidebarConfig";
 import { getSchoolProfile, deriveProfileStatus, type ProfileStatus, type SchoolProfileDto } from "../../lib/api/schools";
@@ -67,7 +61,7 @@ export const SchoolProfile = (): JSX.Element => {
     return (
         <div className="nb-page flex flex-col">
             <div className="flex flex-1 flex-col lg:flex-row">
-                <div className={`${isCollapsed ? "lg:w-16" : "lg:w-[16rem]"} flex-shrink-0 lg:sticky lg:top-0 lg:h-screen transition-all duration-300`}>
+                <div className={`${isCollapsed ? "lg:w-16" : "lg:w-[16rem]"} flex-shrink-0 transition-all duration-300 lg:sticky lg:top-0 lg:h-screen`}>
                     <DashboardSidebar
                         {...sidebarConfig}
                         name={profileData?.schoolName || ""}
@@ -79,33 +73,22 @@ export const SchoolProfile = (): JSX.Element => {
 
                 <div className="flex min-w-0 flex-1 flex-col">
                     <TopNavBar>
-                        <Breadcrumb>
-                            <BreadcrumbList>
-                                <BreadcrumbItem>
-                                    <BreadcrumbLink href="/school/dashboard" className="font-semibold text-[#4c5769] text-base">
-                                        Trang chủ
-                                    </BreadcrumbLink>
-                                </BreadcrumbItem>
-                                <BreadcrumbSeparator className="text-[#cbcad7]">/</BreadcrumbSeparator>
-                                <BreadcrumbItem>
-                                    <BreadcrumbPage className="font-bold text-gray-900 text-base">
-                                        Hồ sơ trường học
-                                    </BreadcrumbPage>
-                                </BreadcrumbItem>
-                            </BreadcrumbList>
-                        </Breadcrumb>
+                        <div className="flex items-center gap-2 px-2 py-2">
+                            <Building2 className={`h-5 w-5 ${SCHOOL_THEME.primaryText}`} />
+                            <h1 className="text-xl font-bold text-gray-900">Hồ sơ trường học</h1>
+                        </div>
                     </TopNavBar>
 
-                    <main className="nb-fade-in flex-1 space-y-6 px-4 py-6 sm:px-6 lg:px-10 lg:py-8">
+                    <main className="flex-1 space-y-6 px-4 py-6 sm:px-6 lg:px-10 lg:py-8">
                         {loading && (
                             <div className="flex items-center justify-center py-20">
-                                <div className="h-10 w-10 animate-spin rounded-full border-2 border-[#6938EF] border-t-transparent" />
+                                <div className={`h-10 w-10 animate-spin rounded-full border-2 border-blue-100 border-t-[#2563EB]`} />
                             </div>
                         )}
 
                         {fetchError && (
-                            <div className="nb-card-static border-[#EF4444] bg-[#FEE2E2] px-4 py-3 text-sm font-semibold text-[#DC2626]">
-                                ⚠️ {fetchError}
+                            <div className="rounded-[8px] border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
+                                {fetchError}
                             </div>
                         )}
 

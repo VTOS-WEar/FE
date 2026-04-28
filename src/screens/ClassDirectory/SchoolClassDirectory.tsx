@@ -1,24 +1,41 @@
-import { useEffect, useState } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowRight, FolderTree, GraduationCap, Upload } from "lucide-react";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "../../components/ui/breadcrumb";
+import { ArrowRight, BookOpenCheck, FolderTree, GraduationCap, Upload, UsersRound } from "lucide-react";
 import { DashboardSidebar } from "../../components/layout";
 import { TopNavBar } from "../../components/layout/TopNavBar";
+import { SCHOOL_THEME } from "../../constants/schoolTheme";
 import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
 import { useSidebarConfig } from "../../hooks/useSidebarConfig";
 import { getSchoolClassesOverview, getSchoolProfile, type SchoolClassesOverviewDto } from "../../lib/api/schools";
 
-function StatCard({ label, value, tone }: { label: string; value: number | string; tone: "violet" | "blue" | "amber" }) {
+function StatCard({
+    label,
+    value,
+    tone,
+    icon,
+}: {
+    label: string;
+    value: number | string;
+    tone: "school" | "cyan" | "mint";
+    icon: ReactNode;
+}) {
     const toneMap = {
-        violet: "from-violet-50 to-white border-violet-200 text-violet-700",
-        blue: "from-sky-50 to-white border-sky-200 text-sky-700",
-        amber: "from-amber-50 to-white border-amber-200 text-amber-700",
+        school: SCHOOL_THEME.summary.school,
+        cyan: SCHOOL_THEME.summary.cyan,
+        mint: SCHOOL_THEME.summary.mint,
     };
 
     return (
-        <div className={`rounded-2xl border bg-gradient-to-br p-5 shadow-soft-md ${toneMap[tone]}`}>
-            <p className="text-sm font-semibold uppercase tracking-[0.12em] opacity-80">{label}</p>
-            <p className="mt-3 text-3xl font-extrabold text-gray-900">{value}</p>
+        <div className={`min-h-[112px] rounded-[8px] border p-5 shadow-soft-sm ${toneMap[tone]}`}>
+            <div className="flex h-full items-center gap-4">
+                <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-white text-slate-900 shadow-soft-xs">
+                    {icon}
+                </div>
+                <div className="min-w-0">
+                    <p className="text-sm font-semibold text-slate-700">{label}</p>
+                    <p className="mt-2 text-2xl font-bold leading-tight text-slate-950">{value}</p>
+                </div>
+            </div>
         </div>
     );
 }
@@ -59,29 +76,28 @@ export const SchoolClassDirectory = (): JSX.Element => {
                 </div>
                 <div className="flex-1 flex min-w-0 flex-col">
                     <TopNavBar>
-                        <Breadcrumb>
-                            <BreadcrumbList>
-                                <BreadcrumbItem><BreadcrumbLink href="/school/dashboard" className="font-semibold text-[#4c5769] text-base">Trang chủ</BreadcrumbLink></BreadcrumbItem>
-                                <BreadcrumbSeparator className="text-[#cbcad7]">/</BreadcrumbSeparator>
-                                <BreadcrumbItem><BreadcrumbPage className="font-bold text-gray-900 text-base">Học sinh theo lớp</BreadcrumbPage></BreadcrumbItem>
-                            </BreadcrumbList>
-                        </Breadcrumb>
+                        <div className="flex items-center gap-2 px-2 py-2">
+                            <FolderTree className={`h-5 w-5 ${SCHOOL_THEME.primaryText}`} />
+                            <h1 className="text-xl font-bold text-gray-900">Sơ đồ lớp học</h1>
+                        </div>
                     </TopNavBar>
 
-                    <main className="flex-1 px-4 py-6 sm:px-6 lg:px-10 lg:py-8">
-                        <section className="rounded-[28px] border border-violet-200 bg-[radial-gradient(circle_at_top_left,_rgba(139,92,246,0.18),_transparent_38%),linear-gradient(135deg,_#ffffff_10%,_#f8f5ff_55%,_#eef7ff_100%)] p-5 shadow-soft-lg lg:p-6">
+                    <main className="flex-1 space-y-6 px-4 py-6 sm:px-6 lg:px-10 lg:py-8">
+                        <section className="space-y-5">
                             <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
                                 <div className="max-w-3xl">
-                                    <div className="inline-flex items-center gap-2 rounded-full border border-violet-200 bg-white/80 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.16em] text-violet-700">
-                                        <FolderTree className="h-4 w-4" />
-                                        Sơ đồ lớp học
-                                    </div>
-                                     <h1 className="mt-3 text-[26px] font-extrabold leading-tight text-gray-900 lg:text-[34px]">
+                                     <h1 className="text-2xl font-bold leading-tight text-slate-950">
                                          Quản lý học sinh theo khối và lớp
                                      </h1>
+                                     <p className="mt-1 text-sm font-semibold text-slate-500">
+                                         Theo dõi số lớp, số học sinh và mức độ sẵn sàng dữ liệu theo từng khối.
+                                     </p>
                                  </div>
                                 <div className="flex flex-wrap gap-3">
-                                    <button onClick={() => navigate("/school/students/import")} className="nb-btn nb-btn-outline text-sm">
+                                    <button
+                                        onClick={() => navigate("/school/students/import")}
+                                        className={SCHOOL_THEME.primaryButton}
+                                    >
                                         <Upload className="h-4 w-4" />
                                         Nhập từ Excel
                                     </button>
@@ -89,16 +105,16 @@ export const SchoolClassDirectory = (): JSX.Element => {
                             </div>
 
                             {overview && (
-                                <div className="mt-5 grid gap-3 md:grid-cols-3">
-                                    <StatCard label="Năm học" value={overview.academicYear || "Chưa có"} tone="violet" />
-                                    <StatCard label="Tổng lớp" value={overview.totalClasses} tone="blue" />
-                                    <StatCard label="Tổng học sinh" value={overview.totalStudents} tone="amber" />
+                                <div className="grid gap-4 md:grid-cols-3">
+                                    <StatCard label="Năm học" value={overview.academicYear || "Chưa có"} tone="school" icon={<BookOpenCheck className="h-5 w-5" />} />
+                                    <StatCard label="Tổng lớp" value={overview.totalClasses} tone="cyan" icon={<FolderTree className="h-5 w-5" />} />
+                                    <StatCard label="Tổng học sinh" value={overview.totalStudents} tone="mint" icon={<UsersRound className="h-5 w-5" />} />
                                 </div>
                             )}
                         </section>
 
                         {overview && overview.grades.length > 0 && (
-                            <section className="mt-4 rounded-[20px] border border-gray-200 bg-white p-4 shadow-soft-sm">
+                            <section className="rounded-[8px] border border-gray-200 bg-white p-4 shadow-soft-sm">
                                 <div className="flex flex-wrap items-center gap-2">
                                     <span className="text-sm font-semibold text-[#4c5769]">Khối:</span>
                                     <button
@@ -106,8 +122,8 @@ export const SchoolClassDirectory = (): JSX.Element => {
                                         onClick={() => setSelectedGrade("all")}
                                         className={`rounded-full border px-3 py-2 text-sm font-semibold transition-colors ${
                                             selectedGrade === "all"
-                                                ? "border-violet-200 bg-violet-50 text-violet-700"
-                                                : "border-gray-200 bg-white text-[#4c5769] hover:border-violet-200 hover:text-violet-700"
+                                                ? SCHOOL_THEME.activePill
+                                                : SCHOOL_THEME.inactivePill
                                         }`}
                                     >
                                         Tất cả
@@ -119,8 +135,8 @@ export const SchoolClassDirectory = (): JSX.Element => {
                                             onClick={() => setSelectedGrade(grade.grade)}
                                             className={`rounded-full border px-3 py-2 text-sm font-semibold transition-colors ${
                                                 selectedGrade === grade.grade
-                                                    ? "border-violet-200 bg-violet-50 text-violet-700"
-                                                    : "border-gray-200 bg-white text-[#4c5769] hover:border-violet-200 hover:text-violet-700"
+                                                    ? SCHOOL_THEME.activePill
+                                                    : SCHOOL_THEME.inactivePill
                                             }`}
                                         >
                                             Khối {grade.grade}
@@ -131,32 +147,32 @@ export const SchoolClassDirectory = (): JSX.Element => {
                         )}
 
                          {loading && (
-                            <section className="mt-6 rounded-2xl border border-gray-200 bg-white p-10 text-center shadow-soft-md">
-                                <div className="mx-auto mb-3 h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-violet-600" />
+                            <section className="rounded-[8px] border border-gray-200 bg-white p-10 text-center shadow-soft-sm">
+                                <div className={`mx-auto mb-3 h-8 w-8 animate-spin rounded-full border-4 border-gray-200 ${SCHOOL_THEME.spinner}`} />
                                 <p className="text-sm font-semibold text-[#4c5769]">Đang tải cấu trúc lớp học...</p>
                             </section>
                         )}
 
                         {!loading && error && (
-                            <section className="mt-6 rounded-2xl border border-red-200 bg-white p-8 text-center shadow-soft-md">
+                            <section className="rounded-[8px] border border-red-200 bg-white p-8 text-center shadow-soft-sm">
                                 <p className="text-base font-bold text-red-600">{error}</p>
                             </section>
                         )}
 
                         {!loading && !error && overview && overview.grades.length === 0 && (
-                            <section className="mt-6 rounded-2xl border border-gray-200 bg-white p-10 text-center shadow-soft-md">
-                                 <GraduationCap className="mx-auto h-10 w-10 text-violet-600" />
+                            <section className="rounded-[8px] border border-gray-200 bg-white p-10 text-center shadow-soft-sm">
+                                 <GraduationCap className={`mx-auto h-10 w-10 ${SCHOOL_THEME.primaryText}`} />
                                  <h2 className="mt-4 text-xl font-extrabold text-gray-900">Chưa có lớp học nào</h2>
                              </section>
                          )}
 
                         {!loading && !error && overview && overview.grades.length > 0 && (
-                            <section className="mt-6 space-y-5">
+                            <section className="space-y-5">
                                 {overview.grades.filter((grade) => selectedGrade === "all" || grade.grade === selectedGrade).map((grade) => (
-                                    <div key={grade.grade} className="rounded-[26px] border border-gray-200 bg-white p-5 shadow-soft-md">
+                                    <div key={grade.grade} className="rounded-[8px] border border-gray-200 bg-white p-5 shadow-soft-sm">
                                         <div className="flex flex-col gap-2">
                                             <div>
-                                                <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-violet-600">Khối {grade.grade}</p>
+                                                <p className={`text-xs font-extrabold uppercase tracking-[0.18em] ${SCHOOL_THEME.primaryText}`}>Khối {grade.grade}</p>
                                                 <h2 className="mt-1 text-2xl font-extrabold text-gray-900">{grade.classCount} lớp, {grade.studentCount} học sinh</h2>
                                             </div>
                                         </div>
@@ -167,32 +183,32 @@ export const SchoolClassDirectory = (): JSX.Element => {
                                                     key={classGroup.id}
                                                     type="button"
                                                     onClick={() => navigate(`/school/students/classes/${classGroup.id}`)}
-                                                    className="group rounded-2xl border border-gray-200 bg-[linear-gradient(180deg,_#ffffff_0%,_#f9fafb_100%)] p-5 text-left shadow-soft-sm transition-all hover:-translate-y-1 hover:border-violet-300 hover:shadow-soft-md"
+                                                    className={`group rounded-[8px] border border-gray-200 bg-white p-5 text-left shadow-soft-sm transition-all hover:-translate-y-1 ${SCHOOL_THEME.hoverPanel} hover:shadow-soft-md`}
                                                 >
                                                     <div className="flex items-start justify-between gap-3">
                                                         <div>
-                                                            <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#7c3aed]">Lớp {classGroup.className}</p>
+                                                            <p className={`text-xs font-bold uppercase tracking-[0.18em] ${SCHOOL_THEME.primaryText}`}>Lớp {classGroup.className}</p>
                                                             <h3 className="mt-2 text-xl font-extrabold text-gray-900">{classGroup.studentCount} học sinh</h3>
                                                         </div>
-                                                        <div className="rounded-full bg-violet-50 p-2 text-violet-700">
+                                                        <div className={`rounded-full ${SCHOOL_THEME.primarySoftBg} p-2 ${SCHOOL_THEME.primaryText}`}>
                                                             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                                                         </div>
                                                     </div>
 
                                                     <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
-                                                        <div className="rounded-xl bg-[#f8f5ff] p-3">
+                                                        <div className="rounded-[8px] bg-[#EFF6FF] p-3">
                                                             <dt className="font-semibold text-[#6b7280]">GVCN</dt>
                                                             <dd className="mt-1 font-bold text-gray-900">{classGroup.homeroomTeacherName || "Chưa gán"}</dd>
                                                         </div>
-                                                        <div className="rounded-xl bg-[#eef7ff] p-3">
+                                                        <div className="rounded-[8px] bg-[#ECFEFF] p-3">
                                                             <dt className="font-semibold text-[#6b7280]">Đo áo</dt>
                                                             <dd className="mt-1 font-bold text-gray-900">{classGroup.measurementReadyCount}/{classGroup.studentCount}</dd>
                                                         </div>
-                                                        <div className="rounded-xl bg-[#f7faf7] p-3">
+                                                        <div className="rounded-[8px] bg-[#F0FDF4] p-3">
                                                             <dt className="font-semibold text-[#6b7280]">PH liên kết</dt>
                                                             <dd className="mt-1 font-bold text-gray-900">{classGroup.parentLinkedCount}/{classGroup.studentCount}</dd>
                                                         </div>
-                                                        <div className="rounded-xl bg-[#fff8eb] p-3">
+                                                        <div className="rounded-[8px] bg-[#F8FAFC] p-3">
                                                             <dt className="font-semibold text-[#6b7280]">Năm học</dt>
                                                             <dd className="mt-1 font-bold text-gray-900">{classGroup.academicYear}</dd>
                                                         </div>

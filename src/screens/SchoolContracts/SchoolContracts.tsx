@@ -1,14 +1,13 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-    AlertTriangle,
     ArrowRight,
     CalendarClock,
     CalendarRange,
     CheckCircle2,
     ClipboardCheck,
+    ChevronDown,
     FilePenLine,
-    Layers3,
     MessageCircle,
     Plus,
     Search,
@@ -18,16 +17,9 @@ import {
     XCircle,
 } from "lucide-react";
 import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
-import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-} from "../../components/ui/breadcrumb";
 import { DashboardSidebar } from "../../components/layout";
 import { TopNavBar } from "../../components/layout/TopNavBar";
+import { SCHOOL_THEME } from "../../constants/schoolTheme";
 import { usePreservedResultsHeight } from "../../hooks/usePreservedResultsHeight";
 import { useSidebarConfig } from "../../hooks/useSidebarConfig";
 import { ChatWidget, type ChatContextInfo } from "../../components/ChatWidget/ChatWidget";
@@ -97,6 +89,9 @@ const FILTER_TABS = [
     { key: "Cancelled", label: "Đã hủy" },
 ] as const;
 
+const MIN_FILTER_FEEDBACK_MS = 700;
+const CONTRACT_TABLE_GRID_CLASS = "lg:grid-cols-[1.35fr_1fr_190px_0.8fr_152px]";
+
 function formatDate(value?: string | null) {
     if (!value) return "Chưa có";
     return new Date(value).toLocaleDateString("vi-VN", {
@@ -112,36 +107,6 @@ function getDaysRemaining(value: string) {
     return Math.ceil(diff / (1000 * 60 * 60 * 24));
 }
 
-function getContractTone(status: string) {
-    switch (status) {
-        case "Pending":
-            return {
-                surface: "border-amber-200 bg-amber-50/70",
-            };
-        case "PendingSchoolSign":
-            return {
-                surface: "border-orange-200 bg-orange-50/70",
-            };
-        case "PendingProviderSign":
-            return {
-                surface: "border-indigo-200 bg-indigo-50/70",
-            };
-        case "Active":
-        case "InUse":
-            return {
-                surface: "border-emerald-200 bg-emerald-50/70",
-            };
-        case "Rejected":
-            return {
-                surface: "border-rose-200 bg-rose-50/70",
-            };
-        default:
-            return {
-                surface: "border-slate-200 bg-slate-50",
-            };
-    }
-}
-
 function SummaryCard({
     label,
     value,
@@ -149,26 +114,26 @@ function SummaryCard({
 }: {
     label: string;
     value: number;
-    tone: "violet" | "amber" | "indigo" | "green";
+    tone: "school" | "amber" | "cyan" | "green";
 }) {
     const toneClass =
         tone === "amber"
-            ? "border-amber-200 bg-amber-50"
-            : tone === "indigo"
-              ? "border-indigo-200 bg-indigo-50"
+            ? SCHOOL_THEME.summary.cyan
+            : tone === "cyan"
+              ? SCHOOL_THEME.summary.slate
               : tone === "green"
-                ? "border-emerald-200 bg-emerald-50"
-                : "border-violet-200 bg-violet-50";
+                ? SCHOOL_THEME.summary.mint
+                : SCHOOL_THEME.summary.school;
 
     return (
-        <div className={`rounded-[22px] border p-4 shadow-soft-sm ${toneClass}`}>
-            <p className="text-[11px] font-extrabold uppercase tracking-[0.18em] text-gray-500">{label}</p>
-            <p className="mt-3 text-3xl font-extrabold text-gray-900">{value}</p>
+        <div className={`min-h-[112px] rounded-[8px] border p-5 shadow-soft-sm ${toneClass}`}>
+            <p className="text-sm font-semibold text-slate-700">{label}</p>
+            <p className="mt-2 text-2xl font-bold leading-tight text-slate-950">{value}</p>
         </div>
     );
 }
 
-function ContractCard({
+function ContractRow({
     contract,
     onOpen,
     onViewDocument,
@@ -183,109 +148,142 @@ function ContractCard({
     onCancel: () => void;
     cancelling: boolean;
 }) {
-    const tone = getContractTone(contract.status);
     const daysRemaining = getDaysRemaining(contract.expiresAt);
     const expiresSoon = (contract.status === "Active" || contract.status === "InUse") && daysRemaining >= 0 && daysRemaining <= 14;
     const canCancel = contract.status === "Pending";
+    const timelineLabel = daysRemaining >= 0 ? `Còn khoảng ${daysRemaining} ngày` : "Đã quá hạn, cần rà soát trạng thái";
 
     return (
         <div
             onClick={onOpen}
-            className={`group cursor-pointer rounded-[26px] border p-5 shadow-soft-md transition-all hover:-translate-y-0.5 hover:shadow-soft-lg ${tone.surface}`}
+            className={`group grid cursor-pointer gap-4 px-5 py-4 transition-colors hover:bg-blue-50/50 lg:items-center ${CONTRACT_TABLE_GRID_CLASS}`}
         >
-            <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                        <span className={STATUS_BADGE[contract.status] || "nb-badge"}>
-                            {STATUS_LABELS[contract.status] || contract.status}
-                        </span>
-                        {expiresSoon && (
-                            <span className="rounded-full border border-amber-200 bg-white px-2.5 py-1 text-[11px] font-extrabold text-amber-700 shadow-soft-sm">
-                                Sắp đến hạn hiệu lực
-                            </span>
-                        )}
-                    </div>
-
-                    <h3 className="mt-4 text-xl font-extrabold leading-tight text-gray-900 transition-colors group-hover:text-violet-700">
+            <div className="min-w-0">
+                <div className="flex min-w-0 items-center gap-2">
+                    <p className="truncate text-sm font-bold text-slate-950 transition-colors group-hover:text-[#2563EB]">
                         {contract.contractName}
-                    </h3>
-                    <p className="mt-2 text-sm font-semibold text-[#4c5769]">
-                        Nhà cung cấp: <span className="text-gray-900">{contract.providerName || "Chưa xác định"}</span>
                     </p>
+                    {expiresSoon ? (
+                        <span className="hidden flex-shrink-0 rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[11px] font-bold text-amber-700 xl:inline-flex">
+                            Sắp hết hạn
+                        </span>
+                    ) : null}
                 </div>
+                <p className="mt-1 line-clamp-1 text-xs font-medium text-slate-500">
+                    {contract.contractNumber ? `#${contract.contractNumber}` : "Chưa có số hợp đồng"}
+                </p>
+            </div>
 
-                <button
-                    type="button"
-                    onClick={(event) => {
-                        event.stopPropagation();
-                        onOpen();
-                    }}
-                    className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-600 shadow-soft-sm transition-colors hover:text-violet-700"
-                >
+            <div className="min-w-0">
+                <p className="truncate text-sm font-bold text-slate-900">{contract.providerName || "Chưa xác định"}</p>
+                <p className="mt-1 line-clamp-1 text-xs font-semibold text-slate-500">{contract.items.length} mẫu đính kèm</p>
+            </div>
+
+            <div className="min-w-0">
+                <p className="text-sm font-bold text-slate-900">{formatDate(contract.expiresAt)}</p>
+                <p className="mt-1 line-clamp-1 text-xs font-semibold text-slate-500">{timelineLabel}</p>
+            </div>
+
+            <span className={`inline-flex w-fit ${STATUS_BADGE[contract.status] || "nb-badge"}`}>
+                {STATUS_LABELS[contract.status] || contract.status}
+            </span>
+
+            <div className="flex items-center gap-2" onClick={(event) => event.stopPropagation()}>
+                <button type="button" onClick={onViewDocument} className="inline-flex h-8 w-8 items-center justify-center rounded-[8px] text-slate-700 transition-colors hover:bg-blue-50 hover:text-[#2563EB]" aria-label="Xem hợp đồng">
+                    <FilePenLine className="h-4 w-4" />
+                </button>
+                <button type="button" onClick={onOpenChat} className="inline-flex h-8 w-8 items-center justify-center rounded-[8px] text-slate-700 transition-colors hover:bg-blue-50 hover:text-[#2563EB]" aria-label="Chat">
+                    <MessageCircle className="h-4 w-4" />
+                </button>
+                {canCancel ? (
+                    <button
+                        type="button"
+                        onClick={onCancel}
+                        disabled={cancelling}
+                        className="inline-flex h-8 w-8 items-center justify-center rounded-[8px] text-slate-700 transition-colors hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
+                        aria-label="Hủy"
+                    >
+                        <XCircle className="h-4 w-4" />
+                    </button>
+                ) : null}
+                <button type="button" onClick={onOpen} className="inline-flex h-8 w-8 items-center justify-center rounded-[8px] text-slate-700 transition-colors hover:bg-blue-50 hover:text-[#2563EB]" aria-label="Mở">
                     <ArrowRight className="h-4 w-4" />
                 </button>
-            </div>
-
-            <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                <div className="rounded-[18px] border border-white/70 bg-white/90 p-4 shadow-soft-sm">
-                    <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-gray-500">Khung thời gian</p>
-                    <p className="mt-2 text-sm font-bold text-gray-900">Hết hạn {formatDate(contract.expiresAt)}</p>
-                    <p className="mt-2 text-xs font-semibold text-[#5b6475]">
-                        {daysRemaining >= 0 ? `Còn khoảng ${daysRemaining} ngày` : "Đã quá hạn, cần rà soát trạng thái"}
-                    </p>
-                </div>
-                <div className="rounded-[18px] border border-white/70 bg-white/90 p-4 shadow-soft-sm">
-                    <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-gray-500">Phạm vi thỏa thuận</p>
-                    <p className="mt-2 text-sm font-bold text-gray-900">{contract.items.length} mẫu đính kèm</p>
-                </div>
-            </div>
-
-            {contract.rejectionReason && (
-                <div className="mt-4 rounded-[18px] border border-rose-200 bg-white/90 px-4 py-3 text-sm font-medium text-rose-700 shadow-soft-sm">
-                    <span className="font-extrabold">Lý do từ chối:</span> {contract.rejectionReason}
-                </div>
-            )}
-
-            <div className="mt-5 flex flex-wrap items-center justify-end gap-3 border-t border-white/70 pt-4">
-                <div className="flex flex-wrap gap-2" onClick={(event) => event.stopPropagation()}>
-                    <button onClick={onViewDocument} className="nb-btn nb-btn-outline nb-btn-sm text-xs">
-                        Xem hợp đồng
-                    </button>
-                    <button onClick={onOpenChat} className="nb-btn nb-btn-outline nb-btn-sm text-xs">
-                        Chat
-                    </button>
-                    {canCancel && (
-                        <button
-                            onClick={onCancel}
-                            disabled={cancelling}
-                            className="nb-btn nb-btn-red nb-btn-sm text-xs disabled:opacity-50"
-                        >
-                            {cancelling ? "Đang hủy..." : "Hủy"}
-                        </button>
-                    )}
-                </div>
             </div>
         </div>
     );
 }
 
-function DetailMetric({
-    label,
-    value,
-    icon,
+function ContractTableSkeleton() {
+    return (
+        <div className="overflow-hidden rounded-[8px] border border-slate-200 bg-white shadow-soft-sm">
+            <div className={`hidden items-center gap-4 border-b border-gray-200 bg-slate-50 px-5 py-4 text-sm font-bold text-slate-950 lg:grid ${CONTRACT_TABLE_GRID_CLASS}`}>
+                <span>Hợp đồng</span>
+                <span>Nhà cung cấp</span>
+                <span>Hết hạn</span>
+                <span>Trạng thái</span>
+                <span>Thao tác</span>
+            </div>
+            {[1, 2, 3, 4, 5].map((item) => (
+                <div key={item} className={`grid gap-4 border-b border-gray-100 px-5 py-4 last:border-b-0 lg:items-center ${CONTRACT_TABLE_GRID_CLASS}`}>
+                    <div className="space-y-2">
+                        <div className="nb-skeleton h-5 w-48 rounded-full" />
+                        <div className="nb-skeleton h-4 w-40 rounded-full" />
+                    </div>
+                    <div className="space-y-2">
+                        <div className="nb-skeleton h-4 w-40 rounded-full" />
+                        <div className="nb-skeleton h-3 w-28 rounded-full" />
+                    </div>
+                    <div className="space-y-2">
+                        <div className="nb-skeleton h-4 w-28 rounded-full" />
+                        <div className="nb-skeleton h-3 w-32 rounded-full" />
+                    </div>
+                    <div className="nb-skeleton h-6 w-24 rounded-full" />
+                    <div className="nb-skeleton h-8 w-32 rounded-[8px]" />
+                </div>
+            ))}
+        </div>
+    );
+}
+
+function ContractTable({
+    items,
+    onOpen,
+    onViewDocument,
+    onOpenChat,
+    onCancel,
+    cancelling,
 }: {
-    label: string;
-    value: string;
-    icon: React.ReactNode;
+    items: ContractDto[];
+    onOpen: (contract: ContractDto) => void;
+    onViewDocument: (contract: ContractDto) => void;
+    onOpenChat: (contract: ContractDto) => void;
+    onCancel: (contract: ContractDto) => void;
+    cancelling: string | null;
 }) {
     return (
-        <div className="rounded-[18px] border border-gray-200 bg-white p-4 shadow-soft-sm">
-            <div className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-[0.16em] text-gray-500">
-                {icon}
-                {label}
+        <section className="overflow-hidden rounded-[8px] border border-slate-200 bg-white shadow-soft-sm">
+            <div className={`hidden items-center gap-4 border-b border-gray-200 bg-slate-50 px-5 py-4 text-sm font-bold text-slate-950 lg:grid ${CONTRACT_TABLE_GRID_CLASS}`}>
+                <span>Hợp đồng</span>
+                <span>Nhà cung cấp</span>
+                <span>Hết hạn</span>
+                <span>Trạng thái</span>
+                <span>Thao tác</span>
             </div>
-            <p className="mt-3 text-sm font-bold leading-6 text-gray-900">{value}</p>
-        </div>
+            <div className="divide-y divide-gray-100">
+                {items.map((contract) => (
+                    <ContractRow
+                        key={contract.contractId}
+                        contract={contract}
+                        onOpen={() => onOpen(contract)}
+                        onViewDocument={() => onViewDocument(contract)}
+                        onOpenChat={() => onOpenChat(contract)}
+                        onCancel={() => onCancel(contract)}
+                        cancelling={cancelling === contract.contractId}
+                    />
+                ))}
+            </div>
+        </section>
     );
 }
 
@@ -297,10 +295,14 @@ export function SchoolContracts() {
 
     const [contracts, setContracts] = useState<ContractDto[]>([]);
     const [loading, setLoading] = useState(true);
-    const [statusFilter, setStatusFilter] = useState<string>("");
+    const [statusInput, setStatusInput] = useState<(typeof FILTER_TABS)[number]["key"]>("");
+    const [statusFilter, setStatusFilter] = useState<(typeof FILTER_TABS)[number]["key"]>("");
+    const [searchInput, setSearchInput] = useState("");
     const [search, setSearch] = useState("");
+    const [filtering, setFiltering] = useState(false);
     const [page, setPage] = useState(1);
     const pageSize = 9;
+    const filterTimerRef = useRef<number | null>(null);
 
     const [showCreate, setShowCreate] = useState(false);
     const [providers, setProviders] = useState<ProviderOption[]>([]);
@@ -350,7 +352,7 @@ export function SchoolContracts() {
     const fetchContracts = useCallback(async () => {
         setLoading(true);
         try {
-            const data = await getSchoolContracts(statusFilter || undefined);
+            const data = await getSchoolContracts();
             setContracts(data);
         } catch (e) {
             console.error(e);
@@ -358,11 +360,17 @@ export function SchoolContracts() {
         } finally {
             setLoading(false);
         }
-    }, [showFeedback, statusFilter]);
+    }, [showFeedback]);
 
     useEffect(() => {
         fetchContracts();
     }, [fetchContracts]);
+
+    useEffect(() => () => {
+        if (filterTimerRef.current !== null) {
+            window.clearTimeout(filterTimerRef.current);
+        }
+    }, []);
 
     useEffect(() => {
         const fetchOptions = async () => {
@@ -515,12 +523,16 @@ export function SchoolContracts() {
     const filteredContracts = useMemo(() => {
         const query = search.trim().toLowerCase();
         return contracts.filter((contract) => {
+            if (statusFilter && contract.status !== statusFilter) {
+                return false;
+            }
+
             if (!query) return true;
             return `${contract.contractName} ${contract.providerName || ""} ${contract.contractNumber || ""}`
                 .toLowerCase()
                 .includes(query);
         });
-    }, [contracts, search]);
+    }, [contracts, search, statusFilter]);
 
     const totalPages = Math.max(1, Math.ceil(filteredContracts.length / pageSize));
     const pagedContracts = filteredContracts.slice((page - 1) * pageSize, page * pageSize);
@@ -531,6 +543,39 @@ export function SchoolContracts() {
         clearPreservedHeight,
         preservedHeightStyle,
     } = usePreservedResultsHeight(isSearchEmptyState);
+
+    const scheduleFilterCommit = useCallback((next: {
+        search: string;
+        status: (typeof FILTER_TABS)[number]["key"];
+    }) => {
+        preserveResultsHeight();
+        setFiltering(true);
+
+        if (filterTimerRef.current !== null) {
+            window.clearTimeout(filterTimerRef.current);
+        }
+
+        filterTimerRef.current = window.setTimeout(() => {
+            setSearch(next.search);
+            setStatusFilter(next.status);
+            setFiltering(false);
+            filterTimerRef.current = null;
+        }, MIN_FILTER_FEEDBACK_MS);
+    }, [preserveResultsHeight]);
+
+    const clearFilters = () => {
+        if (filterTimerRef.current !== null) {
+            window.clearTimeout(filterTimerRef.current);
+            filterTimerRef.current = null;
+        }
+
+        setSearchInput("");
+        setSearch("");
+        setStatusInput("");
+        setStatusFilter("");
+        setFiltering(false);
+        clearPreservedHeight();
+    };
 
     useEffect(() => {
         setPage(1);
@@ -577,150 +622,100 @@ export function SchoolContracts() {
 
                 <div className="flex min-w-0 flex-1 flex-col">
                     <TopNavBar>
-                        <Breadcrumb>
-                            <BreadcrumbList>
-                                <BreadcrumbItem>
-                                    <BreadcrumbLink href="/school/dashboard" className="text-base font-semibold text-[#4c5769]">
-                                        Trang chủ
-                                    </BreadcrumbLink>
-                                </BreadcrumbItem>
-                                <BreadcrumbSeparator className="text-[#cbcad7]">/</BreadcrumbSeparator>
-                                <BreadcrumbItem>
-                                    <BreadcrumbPage className="text-base font-bold text-gray-900">Hợp đồng</BreadcrumbPage>
-                                </BreadcrumbItem>
-                            </BreadcrumbList>
-                        </Breadcrumb>
+                        <div className="flex items-center gap-2 px-2 py-2">
+                            <FilePenLine className={`h-5 w-5 ${SCHOOL_THEME.primaryText}`} />
+                            <h1 className="text-xl font-bold text-gray-900">Hợp đồng</h1>
+                        </div>
                     </TopNavBar>
 
                     <main className="flex-1 space-y-6 px-4 py-6 sm:px-6 lg:px-10 lg:py-8">
-                        <section className="overflow-hidden rounded-[30px] border border-violet-200 bg-[radial-gradient(circle_at_top_left,_rgba(139,92,246,0.18),_transparent_35%),linear-gradient(135deg,_#ffffff_5%,_#f8f4ff_50%,_#eef6ff_100%)] p-6 shadow-soft-lg lg:p-7">
-                            <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
-                                <div className="max-w-3xl">
-                                    <div className="inline-flex items-center gap-2 rounded-full border border-violet-200 bg-white/80 px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.16em] text-violet-700">
-                                        <Layers3 className="h-4 w-4" />
-                                        Hợp đồng cung ứng
-                                    </div>
-                                    <h1 className="mt-4 text-[28px] font-extrabold leading-tight text-gray-900 lg:text-[34px]">
-                                        Theo dõi hợp đồng cung ứng của nhà trường
-                                    </h1>
+                        <section className="space-y-5">
+                            <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
+                                <div>
+                                    <h2 className="text-2xl font-bold text-slate-950">Theo dõi hợp đồng cung ứng</h2>
+                                    <p className="mt-1 text-sm font-semibold text-slate-500">
+                                        Quản lý hợp đồng theo nhà cung cấp, trạng thái ký và thời hạn hiệu lực.
+                                    </p>
                                 </div>
 
-                                <div className="flex w-full max-w-[420px] flex-col gap-3 xl:items-end">
-                                    <button onClick={() => setShowCreate(true)} className="nb-btn nb-btn-purple min-w-[220px] text-sm">
-                                        <Plus className="h-4 w-4" />
-                                        Tạo hợp đồng mới
-                                    </button>
-                                </div>
+                                <button onClick={() => setShowCreate(true)} className={SCHOOL_THEME.primaryButton}>
+                                    <Plus className="h-4 w-4" />
+                                    Tạo hợp đồng mới
+                                </button>
                             </div>
 
-                            <div className="mt-6 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-                                <SummaryCard label="Tổng hợp đồng" value={summary.total} tone="violet" />
+                            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                                <SummaryCard label="Tổng hợp đồng" value={summary.total} tone="school" />
                                 <SummaryCard label="Chờ trường xử lý" value={summary.waitingSchool} tone="amber" />
-                                <SummaryCard label="Chờ NCC" value={summary.waitingProvider} tone="indigo" />
+                                <SummaryCard label="Chờ NCC" value={summary.waitingProvider} tone="cyan" />
                                 <SummaryCard label="Đang hiệu lực" value={summary.active} tone="green" />
                             </div>
                         </section>
 
-                        {(summary.waitingSchool > 0 || summary.expiringSoon > 0 || summary.rejected > 0) && (
-                            <section className="rounded-[24px] border border-amber-200 bg-amber-50 p-5 shadow-soft-sm">
-                                <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-                                    <div className="flex items-start gap-3">
-                                        <div className="rounded-2xl bg-white p-3 text-amber-700 shadow-soft-sm">
-                                            <AlertTriangle className="h-5 w-5" />
-                                        </div>
-                                        <div>
-                                            <h2 className="text-lg font-extrabold text-gray-900">Hạng mục cần lưu ý</h2>
-                                        </div>
-                                    </div>
-                                    <button
-                                        onClick={() => {
-                                            preserveResultsHeight();
-                                            setStatusFilter(summary.waitingSchool > 0 ? "Pending" : summary.rejected > 0 ? "Rejected" : "Active");
-                                        }}
-                                        className="nb-btn nb-btn-outline text-sm"
-                                    >
-                                        Xem ngay
-                                    </button>
-                                </div>
-                            </section>
-                        )}
-
-                        <section className="nb-card-static sticky top-0 z-20 space-y-4 rounded-[24px] bg-white/85 p-4 backdrop-blur-sm">
-                            <div className="flex items-center gap-2 nb-input py-2.5">
-                                <Search className="h-5 w-5 flex-shrink-0 text-[#97A3B6]" />
+                        <section className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                            <label className="relative block w-full lg:max-w-[340px]">
+                                <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
                                 <input
                                     type="text"
-                                    value={search}
+                                    value={searchInput}
                                     onChange={(event) => {
-                                        preserveResultsHeight();
-                                        setSearch(event.target.value);
+                                        const nextSearch = event.target.value;
+                                        setSearchInput(nextSearch);
+                                        scheduleFilterCommit({ search: nextSearch, status: statusInput });
                                     }}
-                                    placeholder="Tìm theo tên hợp đồng, số hợp đồng hoặc nhà cung cấp..."
-                                    className="flex-1 bg-transparent text-sm font-medium text-[#1a1a2e] outline-none placeholder:text-[#97A3B6]"
+                                    placeholder="Tìm hợp đồng..."
+                                    className="h-10 w-full rounded-full border border-slate-200 bg-white pl-11 pr-4 text-sm font-medium text-slate-800 outline-none shadow-soft-xs transition-colors placeholder:text-slate-500 focus:border-blue-200 focus:ring-4 focus:ring-blue-50"
                                 />
-                            </div>
+                            </label>
 
-                            <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                                <div className="nb-tabs w-fit">
-                                    {FILTER_TABS.map((tab) => {
-                                        const isActive = statusFilter === tab.key;
-                                        const count =
-                                            tab.key === ""
-                                                ? contracts.length
-                                                : contracts.filter((contract) => contract.status === tab.key).length;
+                            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+                                <label className="relative block">
+                                    <select
+                                        value={statusInput}
+                                        onChange={(event) => {
+                                            const nextStatus = event.target.value as (typeof FILTER_TABS)[number]["key"];
+                                            setStatusInput(nextStatus);
+                                            scheduleFilterCommit({ search: searchInput, status: nextStatus });
+                                        }}
+                                        className="h-10 min-w-[170px] appearance-none rounded-full border border-slate-200 bg-white py-0 pl-4 pr-10 text-sm font-medium text-slate-700 outline-none shadow-soft-xs transition-colors focus:border-blue-200 focus:ring-4 focus:ring-blue-50"
+                                    >
+                                        {FILTER_TABS.map((tab) => (
+                                            <option key={tab.key || "all"} value={tab.key}>{tab.label}</option>
+                                        ))}
+                                    </select>
+                                    <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-900" />
+                                </label>
 
-                                        return (
-                                            <button key={tab.key} onClick={() => {
-                                                preserveResultsHeight();
-                                                setStatusFilter(tab.key);
-                                            }} className={`nb-tab ${isActive ? "nb-tab-active" : ""}`}>
-                                                {tab.label}
-                                                <span
-                                                    className={`ml-1.5 flex h-5 min-w-[20px] items-center justify-center rounded-full px-1.5 text-xs font-bold ${
-                                                        isActive ? "bg-white/20 text-white" : "bg-[#E5E7EB] text-gray-600"
-                                                    }`}
-                                                >
-                                                    {count}
-                                                </span>
-                                            </button>
-                                        );
-                                    })}
+                                <div className="inline-flex h-10 items-center gap-2 rounded-full border border-gray-200 bg-gray-50 px-3 text-xs font-bold text-[#5b6475]">
+                                    <CalendarRange className={`h-4 w-4 ${SCHOOL_THEME.primaryText}`} />
+                                    {filteredContracts.length} hợp đồng
                                 </div>
 
-                                <div className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-gray-50 px-3 py-2 text-xs font-bold text-[#5b6475]">
-                                    <CalendarRange className="h-4 w-4 text-violet-600" />
-                                    {filteredContracts.length} hợp đồng trong chế độ xem hiện tại
-                                </div>
+                                {filtering ? (
+                                    <div className="inline-flex h-10 items-center gap-2 rounded-full border border-blue-100 bg-white px-3 text-xs font-bold text-[#2563EB] shadow-soft-sm">
+                                        <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-blue-100 border-t-[#2563EB]" />
+                                        Đang lọc
+                                    </div>
+                                ) : null}
                             </div>
                         </section>
 
-                        {loading && (
-                            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
-                                {[1, 2, 3].map((item) => (
-                                    <div key={item} className="nb-skeleton h-[320px] rounded-[26px]" />
-                                ))}
-                            </div>
-                        )}
+                        {loading && <ContractTableSkeleton />}
 
-                        <div ref={resultsRegionRef} style={preservedHeightStyle}>
+                        <div ref={resultsRegionRef} style={preservedHeightStyle} className="relative">
                         {!loading && filteredContracts.length > 0 && (
                             <>
-                                <section className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
-                                    {pagedContracts.map((contract) => (
-                                        <ContractCard
-                                            key={contract.contractId}
-                                            contract={contract}
-                                            onOpen={() => openDetail(contract.contractId)}
-                                            onViewDocument={() => openContractTemplate(contract.contractId)}
-                                            onOpenChat={() => openContractChat(contract)}
-                                            onCancel={() => handleCancel(contract.contractId)}
-                                            cancelling={cancelling === contract.contractId}
-                                        />
-                                    ))}
-                                </section>
+                                <ContractTable
+                                    items={pagedContracts}
+                                    onOpen={(contract) => openDetail(contract.contractId)}
+                                    onViewDocument={(contract) => openContractTemplate(contract.contractId)}
+                                    onOpenChat={openContractChat}
+                                    onCancel={(contract) => handleCancel(contract.contractId)}
+                                    cancelling={cancelling}
+                                />
 
                                 {totalPages > 1 && (
-                                    <div className="flex items-center justify-center gap-3">
+                                    <div className="mt-8 flex items-center justify-center gap-3">
                                         <button
                                             disabled={page <= 1}
                                             onClick={() => setPage((current) => current - 1)}
@@ -744,8 +739,8 @@ export function SchoolContracts() {
                         )}
 
                         {!loading && filteredContracts.length === 0 && (
-                            <section className="rounded-[26px] border border-gray-200 bg-white p-12 text-center shadow-soft-md">
-                                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border border-violet-200 bg-violet-50 text-violet-600 shadow-soft-sm">
+                            <section className="rounded-[8px] border border-gray-200 bg-white p-12 text-center shadow-soft-sm">
+                                <div className={`mx-auto flex h-16 w-16 items-center justify-center rounded-full border ${SCHOOL_THEME.primarySoftBorder} ${SCHOOL_THEME.primarySoftBg} ${SCHOOL_THEME.primaryText} shadow-soft-sm`}>
                                     <FilePenLine className="h-8 w-8" />
                                 </div>
                                 <h2 className="mt-5 text-xl font-extrabold text-gray-900">
@@ -753,17 +748,13 @@ export function SchoolContracts() {
                                 </h2>
                                 <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
                                     {contracts.length === 0 ? (
-                                        <button onClick={() => setShowCreate(true)} className="nb-btn nb-btn-purple text-sm">
+                                        <button onClick={() => setShowCreate(true)} className={SCHOOL_THEME.primaryButton}>
                                             Tạo hợp đồng mới
                                         </button>
                                     ) : (
                                         <button
-                                            onClick={() => {
-                                                setSearch("");
-                                                setStatusFilter("");
-                                                clearPreservedHeight();
-                                            }}
-                                            className="nb-btn nb-btn-outline text-sm"
+                                            onClick={clearFilters}
+                                            className="nb-btn nb-btn-outline text-sm hover:border-blue-200 hover:text-[#2563EB]"
                                         >
                                             Xóa bộ lọc
                                         </button>
@@ -779,16 +770,16 @@ export function SchoolContracts() {
             {showDetail && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => setShowDetail(false)}>
                     <div
-                        className="max-h-[90vh] w-full max-w-[960px] overflow-auto rounded-[28px] border border-gray-200 bg-white shadow-soft-lg"
+                        className="max-h-[90vh] w-full max-w-[960px] overflow-auto rounded-[8px] border border-gray-200 bg-white shadow-soft-lg"
                         onClick={(event) => event.stopPropagation()}
                     >
                         {detailLoading ? (
                             <div className="flex items-center justify-center px-8 py-16 text-base font-semibold text-gray-500">Đang tải chi tiết hợp đồng...</div>
                         ) : selected ? (
                             <>
-                                <div className="border-b border-gray-200 bg-[linear-gradient(135deg,#f8f4ff_0%,#eef6ff_55%,#ffffff_100%)] px-6 py-6 lg:px-8">
-                                    <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
-                                        <div className="max-w-3xl">
+                                <div className="border-b border-gray-200 bg-white px-6 py-6 lg:px-8">
+                                    <div className="flex flex-col gap-4">
+                                        <div>
                                             <div className="flex flex-wrap items-center gap-2">
                                                 <span className={STATUS_BADGE[selected.status] || "nb-badge"}>
                                                     {STATUS_LABELS[selected.status] || selected.status}
@@ -808,48 +799,52 @@ export function SchoolContracts() {
                                                 {selected.contractName}
                                             </h2>
                                         </div>
-
-                                        <div className="flex flex-wrap gap-2 xl:justify-end">
-                                            <button
-                                                onClick={() => {
-                                                    openContractTemplate(selected.contractId);
-                                                }}
-                                                className="nb-btn nb-btn-outline text-sm"
-                                            >
-                                                Xem & ký văn bản
-                                            </button>
-                                            <button onClick={() => openContractChat(selected)} className="nb-btn nb-btn-outline text-sm">
-                                                Chat
-                                            </button>
-                                            {selected.status === "Pending" && (
-                                                <button
-                                                    onClick={() => handleCancel(selected.contractId)}
-                                                    disabled={cancelling === selected.contractId}
-                                                    className="nb-btn nb-btn-red text-sm disabled:opacity-50"
-                                                >
-                                                    {cancelling === selected.contractId ? "Đang hủy..." : "Hủy hợp đồng"}
-                                                </button>
-                                            )}
-                                        </div>
                                     </div>
                                 </div>
 
                                 <div className="space-y-6 px-6 py-6 lg:px-8">
-                                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
-                                        <DetailMetric label="Nhà cung cấp" value={selected.providerName || "Chưa xác định"} icon={<Users2 className="h-4 w-4 text-violet-600" />} />
-                                        <DetailMetric label="Ngày tạo" value={formatDate(selected.createdAt)} icon={<CalendarRange className="h-4 w-4 text-violet-600" />} />
-                                        <DetailMetric label="Hết hạn" value={formatDate(selected.expiresAt)} icon={<CalendarClock className="h-4 w-4 text-violet-600" />} />
-                                        <DetailMetric
-                                            label="Tình trạng ký"
-                                            value={`${selected.schoolSignedAt ? "Trường đã ký" : "Trường chưa ký"} · ${selected.providerSignedAt ? "NCC đã ký" : "NCC chưa ký"}`}
-                                            icon={<Signature className="h-4 w-4 text-violet-600" />}
-                                        />
-                                    </div>
+                                    <section className="rounded-[8px] border border-gray-200 bg-white p-5 shadow-soft-sm">
+                                        <h3 className="text-lg font-extrabold text-gray-900">Thông tin hợp đồng</h3>
+                                        <div className="mt-4 grid gap-x-8 gap-y-1 md:grid-cols-2">
+                                            {[
+                                                {
+                                                    label: "Nhà cung cấp",
+                                                    value: selected.providerName || "Chưa xác định",
+                                                    icon: <Users2 className="h-4 w-4" />,
+                                                },
+                                                {
+                                                    label: "Ngày tạo",
+                                                    value: formatDate(selected.createdAt),
+                                                    icon: <CalendarRange className="h-4 w-4" />,
+                                                },
+                                                {
+                                                    label: "Hết hạn",
+                                                    value: formatDate(selected.expiresAt),
+                                                    icon: <CalendarClock className="h-4 w-4" />,
+                                                },
+                                                {
+                                                    label: "Tình trạng ký",
+                                                    value: `${selected.schoolSignedAt ? "Trường đã ký" : "Trường chưa ký"} · ${selected.providerSignedAt ? "NCC đã ký" : "NCC chưa ký"}`,
+                                                    icon: <Signature className="h-4 w-4" />,
+                                                },
+                                            ].map((item) => (
+                                                <div key={item.label} className="flex items-start gap-3 border-b border-gray-100 py-4 last:border-b-0 md:[&:nth-last-child(-n+2)]:border-b-0">
+                                                    <div className={`mt-0.5 flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full ${SCHOOL_THEME.primarySoftBg} ${SCHOOL_THEME.primaryText}`}>
+                                                        {item.icon}
+                                                    </div>
+                                                    <div className="min-w-0">
+                                                        <p className="text-xs font-extrabold uppercase tracking-[0.12em] text-slate-500">{item.label}</p>
+                                                        <p className="mt-1 break-words text-sm font-bold leading-6 text-gray-900">{item.value}</p>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </section>
 
                                     {(selected.status === "PendingSchoolSign" || selected.status === "Pending") && (
-                                        <section className="rounded-[24px] border border-amber-200 bg-amber-50 p-5 shadow-soft-sm">
+                                        <section className="rounded-[8px] border border-amber-200 bg-amber-50 p-5 shadow-soft-sm">
                                             <div className="flex items-start gap-3">
-                                                <div className="rounded-2xl bg-white p-3 text-amber-700 shadow-soft-sm">
+                                                <div className="rounded-full bg-white p-3 text-amber-700 shadow-soft-sm">
                                                     <ShieldCheck className="h-5 w-5" />
                                                 </div>
                                                 <div>
@@ -860,9 +855,9 @@ export function SchoolContracts() {
                                     )}
 
                                     {selected.rejectionReason && (
-                                        <section className="rounded-[24px] border border-rose-200 bg-rose-50 p-5 shadow-soft-sm">
+                                        <section className="rounded-[8px] border border-rose-200 bg-rose-50 p-5 shadow-soft-sm">
                                             <div className="flex items-start gap-3">
-                                                <div className="rounded-2xl bg-white p-3 text-rose-700 shadow-soft-sm">
+                                                <div className="rounded-full bg-white p-3 text-rose-700 shadow-soft-sm">
                                                     <XCircle className="h-5 w-5" />
                                                 </div>
                                                 <div>
@@ -873,20 +868,24 @@ export function SchoolContracts() {
                                         </section>
                                     )}
 
-                                    <section className="nb-card-static p-0">
+                                    <section className="rounded-[8px] border border-gray-200 bg-white shadow-soft-sm">
                                         <div className="border-b border-gray-200 px-6 py-5">
                                             <h3 className="text-lg font-extrabold text-gray-900">Mẫu đồng phục đính kèm</h3>
                                         </div>
-                                        <div className="grid gap-3 px-6 py-6 md:grid-cols-2">
+                                        <div className="space-y-3 px-6 py-6">
                                             {selected.items.map((item) => (
-                                                <div key={item.itemId} className="rounded-[18px] border border-gray-200 bg-white p-4 shadow-soft-sm">
-                                                    <div className="flex items-start gap-3">
-                                                        <div className="mt-0.5 rounded-2xl bg-violet-50 p-3 text-violet-600 shadow-soft-sm">
-                                                            <ClipboardCheck className="h-5 w-5" />
-                                                        </div>
-                                                        <div>
-                                                            <p className="text-sm font-extrabold text-gray-900">{item.outfitName}</p>
-                                                        </div>
+                                                <div key={item.itemId} className="flex items-center gap-3 rounded-[8px] border border-gray-200 bg-white p-3 shadow-soft-sm">
+                                                    <div className="h-11 w-11 flex-shrink-0 overflow-hidden rounded-[8px] border border-gray-200 bg-slate-50 shadow-soft-xs">
+                                                        {item.mainImageURL ? (
+                                                            <img src={item.mainImageURL} alt={item.outfitName} className="h-full w-full object-cover" />
+                                                        ) : (
+                                                            <div className={`flex h-full w-full items-center justify-center ${SCHOOL_THEME.primarySoftBg} ${SCHOOL_THEME.primaryText}`}>
+                                                                <ClipboardCheck className="h-5 w-5" />
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    <div className="min-w-0">
+                                                        <p className="truncate text-sm font-extrabold text-gray-900">{item.outfitName}</p>
                                                     </div>
                                                 </div>
                                             ))}
@@ -894,6 +893,15 @@ export function SchoolContracts() {
                                     </section>
 
                                     <div className="flex flex-wrap justify-end gap-3 border-t border-gray-200 pt-2">
+                                        {selected.status === "Pending" && (
+                                            <button
+                                                onClick={() => handleCancel(selected.contractId)}
+                                                disabled={cancelling === selected.contractId}
+                                                className="nb-btn nb-btn-red text-sm disabled:opacity-50"
+                                            >
+                                                {cancelling === selected.contractId ? "Đang hủy..." : "Hủy hợp đồng"}
+                                            </button>
+                                        )}
                                         <button onClick={() => setShowDetail(false)} className="nb-btn nb-btn-outline text-sm">
                                             Đóng
                                         </button>
@@ -905,7 +913,7 @@ export function SchoolContracts() {
                                             onClick={() => {
                                                 openContractTemplate(selected.contractId);
                                             }}
-                                            className="nb-btn nb-btn-purple text-sm"
+                                            className={SCHOOL_THEME.primaryButton}
                                         >
                                             Xem & ký hợp đồng
                                         </button>
@@ -926,7 +934,7 @@ export function SchoolContracts() {
                         <div className="border-b border-gray-200 bg-[linear-gradient(135deg,#f8f4ff_0%,#eef6ff_55%,#ffffff_100%)] px-6 py-6 lg:px-8">
                             <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
                                 <div className="max-w-3xl">
-                                    <div className="inline-flex items-center gap-2 rounded-full border border-violet-200 bg-white/80 px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.16em] text-violet-700">
+                                    <div className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-white/80 px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.16em] text-[#2563EB]">
                                         <Plus className="h-4 w-4" />
                                         Contract Setup
                                     </div>
@@ -1075,7 +1083,7 @@ export function SchoolContracts() {
                                 <button onClick={resetCreateForm} className="nb-btn nb-btn-outline text-sm">
                                     Hủy
                                 </button>
-                                <button onClick={handleCreate} disabled={creating} className="nb-btn nb-btn-purple text-sm disabled:opacity-50">
+                                <button onClick={handleCreate} disabled={creating} className={`${SCHOOL_THEME.primaryButton} disabled:opacity-50`}>
                                     {creating ? "Đang tạo..." : "Tạo hợp đồng"}
                                 </button>
                             </div>
@@ -1087,7 +1095,7 @@ export function SchoolContracts() {
             {templateLoading && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50">
                     <div className="flex items-center gap-3 rounded-md border border-gray-200 bg-white px-8 py-5 shadow-soft-md">
-                        <div className="h-5 w-5 animate-spin rounded-full border-[3px] border-violet-600 border-t-transparent" />
+                        <div className="h-5 w-5 animate-spin rounded-full border-[3px] border-[#2563EB] border-t-transparent" />
                         <span className="font-bold text-gray-900">Đang tải hợp đồng...</span>
                     </div>
                 </div>

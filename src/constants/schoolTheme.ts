@@ -1,0 +1,20 @@
+export const SCHOOL_THEME = {
+    primaryText: "text-[#2563EB]",
+    primaryBg: "bg-[#2563EB]",
+    primaryHoverBg: "hover:bg-[#1D4ED8]",
+    primaryBorder: "border-blue-200",
+    primarySoftBg: "bg-blue-50",
+    primarySoftBorder: "border-blue-100",
+    primaryFocus: "focus:border-blue-300 focus:ring-4 focus:ring-blue-50",
+    primaryButton: "inline-flex h-10 items-center justify-center gap-2 rounded-[8px] bg-[#2563EB] px-4 text-sm font-bold text-white shadow-soft-sm transition-colors hover:bg-[#1D4ED8] disabled:cursor-not-allowed disabled:opacity-60",
+    activePill: "border-blue-200 bg-blue-50 text-[#2563EB]",
+    inactivePill: "border-gray-200 bg-white text-[#4c5769] hover:border-blue-200 hover:text-[#2563EB]",
+    hoverPanel: "hover:border-blue-300",
+    spinner: "border-t-[#2563EB]",
+    summary: {
+        school: "border-blue-100 bg-[#DBEAFE] text-[#1D4ED8]",
+        cyan: "border-cyan-100 bg-[#CFFAFE] text-[#0E7490]",
+        mint: "border-emerald-100 bg-[#DCFCE7] text-[#047857]",
+        slate: "border-slate-100 bg-[#F1F5F9] text-[#334155]",
+    },
+} as const;

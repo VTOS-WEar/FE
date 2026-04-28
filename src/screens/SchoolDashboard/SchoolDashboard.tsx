@@ -1,329 +1,531 @@
-import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
-import { useState, useEffect, useCallback } from "react";
+import { type ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
- Breadcrumb,
- BreadcrumbItem,
- BreadcrumbLink,
- BreadcrumbList,
- BreadcrumbPage,
- BreadcrumbSeparator,
-} from "../../components/ui/breadcrumb";
-import { ClipboardCheck, ShoppingCart, Users, Wallet } from "lucide-react";
+    AlertCircle,
+    ArrowRight,
+    CheckCircle2,
+    ClipboardList,
+    FileText,
+    GraduationCap,
+    LayoutDashboard,
+    Loader2,
+    PenLine,
+    Shirt,
+} from "lucide-react";
 import { DashboardSidebar } from "../../components/layout";
 import { TopNavBar } from "../../components/layout/TopNavBar";
+import { SCHOOL_THEME } from "../../constants/schoolTheme";
+import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
 import { useSidebarConfig } from "../../hooks/useSidebarConfig";
+import { getSchoolContracts, type ContractDto } from "../../lib/api/contracts";
 import {
- getSchoolProfile,
- getSemesterPublications,
- type SemesterPublicationDto,
+    getSchoolClassesOverview,
+    getSchoolOutfits,
+    getSchoolProfile,
+    getSemesterPublications,
+    parseContactInfo,
+    type SchoolClassesOverviewDto,
+    type SemesterPublicationDto,
 } from "../../lib/api/schools";
+import { getSchoolTeacherReports, type TeacherReportListItemDto } from "../../lib/api/teachers";
 
-function PublicationWindowCard({
- publication,
- onNavigate,
+function formatNumber(value: number): string {
+    return value.toLocaleString("vi-VN");
+}
+
+function formatDate(iso: string): string {
+    return new Date(iso).toLocaleDateString("vi-VN", {
+        timeZone: "Asia/Ho_Chi_Minh",
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+    });
+}
+
+function getDaysRemaining(iso: string): number {
+    const diff = new Date(iso).getTime() - Date.now();
+    return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+}
+
+function getContractStatusLabel(status: string): string {
+    switch (status) {
+        case "Pending":
+            return "Chờ nhà cung cấp";
+        case "PendingSchoolSign":
+            return "Chờ trường ký";
+        case "PendingProviderSign":
+            return "Chờ NCC ký";
+        case "Active":
+        case "InUse":
+            return "Đang hiệu lực";
+        case "Fulfilled":
+            return "Hoàn tất";
+        case "Expired":
+            return "Hết hạn";
+        case "Cancelled":
+            return "Đã hủy";
+        case "Rejected":
+            return "Từ chối";
+        default:
+            return status;
+    }
+}
+
+function SummaryCard({
+    label,
+    value,
+    note,
+    icon,
+    surfaceClassName,
+    onClick,
 }: {
- publication: SemesterPublicationDto;
- onNavigate: (id: string) => void;
+    label: string;
+    value: number | string;
+    note: string;
+    icon: ReactNode;
+    surfaceClassName: string;
+    onClick?: () => void;
 }) {
- const endDate = new Date(publication.endDate);
- const diff = Math.max(0, endDate.getTime() - Date.now());
- const days = Math.floor(diff / (1000 * 60 * 60 * 24));
- const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
- const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
- const isNearEnd = days <= 7 && diff > 0;
-
- return (
- <div className="nb-card-static p-6">
- <div className="flex items-start justify-between mb-4 gap-4">
- <div>
- <h2 className="font-bold text-gray-900 text-lg truncate">
- {publication.semester} • {publication.academicYear}
- </h2>
- <p className="font-medium text-gray-500 text-sm mt-1">
- Kết thúc vào ngày {formatDate(publication.endDate)}
- </p>
- </div>
- <button
- onClick={() => onNavigate(publication.id)}
- className="nb-btn nb-btn-purple text-sm"
- >
- Quản lý
- </button>
- </div>
-
- <div className="flex items-start gap-6">
- <div className="flex-shrink-0">
- <p className="font-bold text-gray-500 text-xs tracking-wider uppercase mb-3">
- Thời gian còn lại
- </p>
- <div className="flex items-center gap-2">
- {[
- { value: String(days).padStart(2, "0"), label: "Ngày" },
- { value: String(hours).padStart(2, "0"), label: "Giờ" },
- { value: String(minutes).padStart(2, "0"), label: "Phút" },
- ].map((unit, index) => (
- <div key={unit.label} className="flex items-center gap-2">
- {index > 0 && <span className="font-bold text-gray-900 text-2xl">:</span>}
- <div className="text-center">
- <div className="nb-countdown-box">
- <span className="nb-countdown-value">{unit.value}</span>
- </div>
- <p className="nb-countdown-label">{unit.label}</p>
- </div>
- </div>
- ))}
- </div>
- </div>
-
- {isNearEnd && (
- <div className="flex-1 nb-alert nb-alert-warning self-center">
- <div className="w-6 h-6 rounded-full bg-[#F59E0B] flex items-center justify-center flex-shrink-0 mt-px border border-gray-200">
- <svg className="w-3 h-3 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z" /></svg>
- </div>
- <div>
- <p className="font-bold text-amber-800 text-xs leading-tight">Sắp kết thúc</p>
- </div>
- </div>
- )}
- </div>
- </div>
- );
+    const Component = onClick ? "button" : "div";
+    return (
+        <Component
+            type={onClick ? "button" : undefined}
+            onClick={onClick}
+            className={`min-h-[118px] w-full rounded-[8px] border p-5 text-left shadow-soft-sm transition-colors ${surfaceClassName} ${onClick ? "hover:border-blue-300" : ""}`}
+        >
+            <div className="flex h-full items-center gap-4">
+                <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-white text-slate-900 shadow-soft-xs">
+                    {icon}
+                </div>
+                <div className="min-w-0">
+                    <p className="text-sm font-semibold text-slate-700">{label}</p>
+                    <p className="mt-2 text-2xl font-bold leading-tight text-slate-950">{value}</p>
+                    <p className="mt-1 text-xs font-semibold text-slate-600">{note}</p>
+                </div>
+            </div>
+        </Component>
+    );
 }
 
-function formatNumber(n: number): string {
- if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)} triệu`;
- if (n >= 1_000) return n.toLocaleString("vi-VN");
- return String(n);
-}
-
-function formatDate(iso: string) {
- return new Date(iso).toLocaleDateString("vi-VN", {
- timeZone: "Asia/Ho_Chi_Minh",
- day: "2-digit",
- month: "2-digit",
- year: "numeric",
- });
-}
-
-function StatsCard({
- icon,
- iconBg,
- cardTone,
- label,
- value,
- indicator,
- onClick,
+function SectionHeader({
+    label,
+    title,
+    action,
 }: {
- icon: React.ReactNode;
- iconBg: string;
- cardTone?: string;
- label: string;
- value: string;
- indicator?: string;
- onClick?: () => void;
+    label: string;
+    title: string;
+    action?: ReactNode;
 }) {
- return (
- <div
- className={`nb-stat-card border border-gray-200 shadow-soft-sm ${cardTone ?? ""}`}
- style={{ cursor: onClick ? "pointer" : undefined }}
- onClick={onClick}
- >
- <div className="flex items-start justify-between mb-3">
- <p className="nb-stat-label">{label}</p>
- <div className={`nb-stat-icon ${iconBg}`}>
- {icon}
- </div>
- </div>
- <p className="nb-stat-value">{value}</p>
- {indicator && (
- <p className="font-medium text-xs mt-1.5 text-gray-500">
- {indicator}
- </p>
- )}
- </div>
- );
+    return (
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 px-4 py-3">
+            <div>
+                <p className={`text-xs font-bold uppercase tracking-[0.14em] ${SCHOOL_THEME.primaryText}`}>{label}</p>
+                <h2 className="mt-1 text-lg font-extrabold text-slate-950">{title}</h2>
+            </div>
+            {action}
+        </div>
+    );
+}
+
+function PublicationRow({
+    publication,
+    onOpen,
+}: {
+    publication: SemesterPublicationDto;
+    onOpen: (id: string) => void;
+}) {
+    const daysRemaining = getDaysRemaining(publication.endDate);
+    const isNearEnd = daysRemaining <= 7;
+
+    return (
+        <button
+            type="button"
+            onClick={() => onOpen(publication.id)}
+            className="flex w-full flex-col gap-3 border-b border-gray-100 px-4 py-3 text-left transition-colors last:border-b-0 hover:bg-blue-50/70 lg:flex-row lg:items-center lg:justify-between"
+        >
+            <div className="min-w-0">
+                <p className="truncate text-base font-extrabold text-slate-950">
+                    {publication.semester} / {publication.academicYear}
+                </p>
+                <p className="mt-1 line-clamp-1 text-sm font-semibold text-[#4c5769]">
+                    {publication.description || "Theo dõi danh mục đồng phục đang công bố cho phụ huynh."}
+                </p>
+            </div>
+            <div className="flex flex-wrap items-center gap-2 lg:justify-end">
+                <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-700">
+                    {formatDate(publication.startDate)} - {formatDate(publication.endDate)}
+                </span>
+                <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-700">
+                    {publication.outfitCount} đồng phục · {publication.providerCount} NCC
+                </span>
+                <span className={`rounded-full px-3 py-1 text-xs font-bold ${isNearEnd ? "bg-amber-100 text-amber-700" : "bg-blue-100 text-[#2563EB]"}`}>
+                    {daysRemaining} ngày còn lại
+                </span>
+                <ArrowRight className="h-4 w-4 text-slate-700" />
+            </div>
+        </button>
+    );
+}
+
+function WorkItem({
+    icon,
+    title,
+    description,
+    count,
+    tone,
+    onClick,
+}: {
+    icon: ReactNode;
+    title: string;
+    description: string;
+    count: number | string;
+    tone: "blue" | "cyan" | "mint" | "slate";
+    onClick: () => void;
+}) {
+    const toneClass = {
+        blue: "bg-blue-50 text-[#2563EB]",
+        cyan: "bg-cyan-50 text-[#0E7490]",
+        mint: "bg-emerald-50 text-[#047857]",
+        slate: "bg-slate-100 text-slate-700",
+    }[tone];
+
+    return (
+        <button
+            type="button"
+            onClick={onClick}
+            className="flex w-full items-center gap-3 rounded-[8px] border border-gray-200 bg-white px-3 py-2.5 text-left shadow-soft-xs transition-colors hover:border-blue-200 hover:bg-blue-50/60"
+        >
+            <div className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-[8px] ${toneClass}`}>
+                {icon}
+            </div>
+            <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-extrabold text-slate-950">{title}</p>
+                <p className="mt-0.5 line-clamp-1 text-xs font-semibold text-[#4c5769]">{description}</p>
+            </div>
+            <span className="rounded-full border border-blue-100 bg-white px-3 py-1 text-xs font-bold text-[#2563EB]">
+                {count}
+            </span>
+        </button>
+    );
+}
+
+function QuickAction({
+    icon,
+    label,
+    onClick,
+}: {
+    icon: ReactNode;
+    label: string;
+    onClick: () => void;
+}) {
+    return (
+        <button
+            type="button"
+            onClick={onClick}
+            className="inline-flex h-11 items-center justify-center gap-2 rounded-[8px] border border-gray-200 bg-white px-4 text-sm font-bold text-slate-900 shadow-soft-xs transition-colors hover:border-blue-200 hover:text-[#2563EB]"
+        >
+            {icon}
+            {label}
+        </button>
+    );
 }
 
 export const SchoolDashboard = (): JSX.Element => {
- const navigate = useNavigate();
- const sidebarConfig = useSidebarConfig();
- const [isCollapsed, toggle] = useSidebarCollapsed();
- const [schoolName, setSchoolName] = useState("");
- const [loading, setLoading] = useState(true);
- const [activePublications, setActivePublications] = useState<SemesterPublicationDto[]>([]);
- const [draftCount, setDraftCount] = useState(0);
- const [closedCount, setClosedCount] = useState(0);
- const [providerCount, setProviderCount] = useState(0);
- const [outfitCount, setOutfitCount] = useState(0);
+    const navigate = useNavigate();
+    const sidebarConfig = useSidebarConfig();
+    const [isCollapsed, toggle] = useSidebarCollapsed();
+    const [schoolName, setSchoolName] = useState("");
+    const [profileReady, setProfileReady] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [activePublications, setActivePublications] = useState<SemesterPublicationDto[]>([]);
+    const [draftCount, setDraftCount] = useState(0);
+    const [closedCount, setClosedCount] = useState(0);
+    const [providerCount, setProviderCount] = useState(0);
+    const [outfitCount, setOutfitCount] = useState(0);
+    const [schoolOutfitCount, setSchoolOutfitCount] = useState(0);
+    const [contracts, setContracts] = useState<ContractDto[]>([]);
+    const [teacherReports, setTeacherReports] = useState<TeacherReportListItemDto[]>([]);
+    const [classOverview, setClassOverview] = useState<SchoolClassesOverviewDto | null>(null);
 
- const fetchData = useCallback(async () => {
- setLoading(true);
- try {
- const [profile, publicationResponse] = await Promise.all([
- getSchoolProfile(),
- getSemesterPublications(1, 50),
- ]);
+    const fetchData = useCallback(async () => {
+        setLoading(true);
+        try {
+            const [profile, publications, outfits, contractList, reportResponse, classes] = await Promise.all([
+                getSchoolProfile().catch(() => null),
+                getSemesterPublications(1, 50).catch(() => null),
+                getSchoolOutfits().catch(() => null),
+                getSchoolContracts().catch(() => []),
+                getSchoolTeacherReports().catch(() => null),
+                getSchoolClassesOverview().catch(() => null),
+            ]);
 
- setSchoolName(profile.schoolName || "");
- if (profile.schoolName) {
- localStorage.setItem("vtos_org_name", profile.schoolName);
- }
+            if (profile) {
+                const contact = parseContactInfo(profile.contactInfo);
+                const isReady = Boolean(profile.schoolName && contact.email && contact.phone && contact.address);
+                setSchoolName(profile.schoolName || "");
+                setProfileReady(isReady);
+                if (profile.schoolName) {
+                    localStorage.setItem("vtos_org_name", profile.schoolName);
+                }
+            }
 
- const publications = publicationResponse.items || [];
- setActivePublications(publications.filter((item) => item.status === "Active"));
- setDraftCount(publications.filter((item) => item.status === "Draft").length);
- setClosedCount(publications.filter((item) => item.status === "Closed").length);
- setProviderCount(publications.reduce((sum, item) => sum + (item.providerCount || 0), 0));
- setOutfitCount(publications.reduce((sum, item) => sum + (item.outfitCount || 0), 0));
- } catch {
- // Leave dashboard in empty state when APIs are unavailable.
- } finally {
- setLoading(false);
- }
- }, []);
+            const publicationItems = publications?.items || [];
+            setActivePublications(publicationItems.filter((item) => item.status === "Active"));
+            setDraftCount(publicationItems.filter((item) => item.status === "Draft").length);
+            setClosedCount(publicationItems.filter((item) => item.status === "Closed").length);
+            setProviderCount(publicationItems.reduce((sum, item) => sum + (item.providerCount || 0), 0));
+            setOutfitCount(publicationItems.reduce((sum, item) => sum + (item.outfitCount || 0), 0));
 
- useEffect(() => {
- fetchData();
- }, [fetchData]);
+            setSchoolOutfitCount(outfits?.total || outfits?.items.length || 0);
+            setContracts(contractList);
+            setTeacherReports(reportResponse?.items || []);
+            setClassOverview(classes);
+        } finally {
+            setLoading(false);
+        }
+    }, []);
 
- const handleLogout = () => {
- localStorage.removeItem("access_token");
- localStorage.removeItem("user");
- localStorage.removeItem("expires_in");
- sessionStorage.removeItem("access_token");
- sessionStorage.removeItem("user");
- sessionStorage.removeItem("expires_in");
- navigate("/signin", { replace: true });
- };
+    useEffect(() => {
+        fetchData();
+    }, [fetchData]);
 
- return (
- <div className="nb-page flex flex-col">
- <div className="flex flex-1 flex-col lg:flex-row">
- <div className={`${isCollapsed ? "lg:w-16" : "lg:w-[16rem]"} flex-shrink-0 lg:sticky lg:top-0 lg:h-screen transition-all duration-300`}>
- <DashboardSidebar {...sidebarConfig} name={schoolName} isCollapsed={isCollapsed} onToggle={toggle} onLogout={handleLogout} />
- </div>
+    const handleLogout = () => {
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("user");
+        localStorage.removeItem("expires_in");
+        sessionStorage.removeItem("access_token");
+        sessionStorage.removeItem("user");
+        sessionStorage.removeItem("expires_in");
+        navigate("/signin", { replace: true });
+    };
 
- <div className="flex-1 flex flex-col min-w-0">
- <TopNavBar>
- <Breadcrumb>
- <BreadcrumbList>
- <BreadcrumbItem><BreadcrumbLink href="/school/dashboard" className="font-semibold text-[#4c5769] text-base">Trang chủ</BreadcrumbLink></BreadcrumbItem>
- <BreadcrumbSeparator className="text-[#cbcad7]">/</BreadcrumbSeparator>
- <BreadcrumbItem><BreadcrumbPage className="font-bold text-gray-900 text-base">Tổng quan</BreadcrumbPage></BreadcrumbItem>
- </BreadcrumbList>
- </Breadcrumb>
- </TopNavBar>
+    const pendingReportCount = useMemo(
+        () => teacherReports.filter((item) => item.status !== "Reviewed").length,
+        [teacherReports],
+    );
+    const pendingContractCount = useMemo(
+        () => contracts.filter((item) => ["Pending", "PendingSchoolSign", "PendingProviderSign"].includes(item.status)).length,
+        [contracts],
+    );
+    const activeContractCount = useMemo(
+        () => contracts.filter((item) => ["Active", "InUse"].includes(item.status)).length,
+        [contracts],
+    );
+    const latestContract = contracts[0];
+    const studentCount = classOverview?.totalStudents || 0;
+    const classCount = classOverview?.totalClasses || 0;
 
- <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-8 space-y-6 nb-fade-in">
- <div>
- <h1 className="font-extrabold text-gray-900 text-[28px] lg:text-[32px] leading-[1.22]">
- Xin chào, Ban Giám Hiệu
- </h1>
- </div>
+    const readinessItems = [
+        { label: "Hồ sơ trường", ready: profileReady, route: "/school/profile" },
+        { label: "Dữ liệu học sinh", ready: studentCount > 0, route: "/school/students/import" },
+        { label: "Mẫu đồng phục", ready: schoolOutfitCount > 0, route: "/school/uniforms" },
+        { label: "Hợp đồng NCC", ready: activeContractCount > 0, route: "/school/contracts" },
+        { label: "Công bố học kỳ", ready: activePublications.length > 0, route: "/school/semester-publications" },
+    ];
+    const readyCount = readinessItems.filter((item) => item.ready).length;
 
- {loading ? (
- <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
- {[1, 2, 3, 4].map((i) => (
- <div key={i} className="nb-skeleton p-5 h-[120px]" />
- ))}
- </div>
- ) : (
- <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 nb-stagger">
- <StatsCard
- label="Công bố đang hoạt động"
- value={formatNumber(activePublications.length)}
- icon={<ShoppingCart className="w-5 h-5 text-[#4F46E5]" strokeWidth={2.2} />}
- iconBg="bg-[#EEF2FF]"
- cardTone="bg-[#F7F7FE]"
- onClick={() => navigate("/school/semester-publications")}
- />
- <StatsCard
- label="Bản nháp cần hoàn thiện"
- value={formatNumber(draftCount)}
- icon={<Users className="w-5 h-5 text-[#7C3AED]" strokeWidth={2.2} />}
- iconBg="bg-[#F3E8FF]"
- cardTone="bg-[#FAF7FE]"
- onClick={() => navigate("/school/semester-publications")}
- />
- <StatsCard
- label="Nhà cung cấp đã duyệt"
- value={formatNumber(providerCount)}
- icon={<Wallet className="w-5 h-5 text-[#059669]" strokeWidth={2.2} />}
- iconBg="bg-[#ECFDF5]"
- cardTone="bg-[#F5FCF8]"
- onClick={() => navigate("/school/semester-publications")}
- />
- <StatsCard
- label="Mẫu đồng phục công bố"
- value={formatNumber(outfitCount)}
- icon={<ClipboardCheck className="w-5 h-5 text-[#EA580C]" strokeWidth={2.2} />}
- iconBg="bg-[#FFF7ED]"
- cardTone="bg-[#FFF9F4]"
- onClick={() => navigate("/school/semester-publications")}
- />
- </div>
- )}
+    return (
+        <div className="nb-page flex flex-col">
+            <div className="flex flex-1 flex-col lg:flex-row">
+                <div className={`${isCollapsed ? "lg:w-16" : "lg:w-[16rem]"} flex-shrink-0 transition-all duration-300 lg:sticky lg:top-0 lg:h-screen`}>
+                    <DashboardSidebar {...sidebarConfig} name={schoolName} isCollapsed={isCollapsed} onToggle={toggle} onLogout={handleLogout} />
+                </div>
 
- <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
- <div className="lg:col-span-3 space-y-5">
- {activePublications.length > 0 ? (
- activePublications.map((publication) => (
- <PublicationWindowCard
- key={publication.id}
- publication={publication}
- onNavigate={(id) => navigate(`/school/semester-publications/${id}`)}
- />
- ))
- ) : (
- <div className="nb-card-static p-6">
- <div className="text-center py-8">
- <div className="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-3 border border-gray-200 shadow-sm">
- <svg className="w-7 h-7 text-gray-400" viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z" /></svg>
- </div>
- <p className="font-bold text-gray-500 text-base">Chưa có công bố học kỳ đang hoạt động</p>
- <button
- onClick={() => navigate("/school/semester-publications/new")}
- className="mt-4 nb-btn nb-btn-purple"
- >
- Tạo công bố
- </button>
- </div>
- </div>
- )}
- </div>
+                <div className="flex min-w-0 flex-1 flex-col">
+                    <TopNavBar>
+                        <div className="flex items-center gap-2 px-2 py-2">
+                            <LayoutDashboard className={`h-5 w-5 ${SCHOOL_THEME.primaryText}`} />
+                            <h1 className="text-xl font-bold text-gray-900">Tổng quan trường học</h1>
+                        </div>
+                    </TopNavBar>
 
- <div className="lg:col-span-2 nb-card-static p-6">
- <h2 className="font-bold text-gray-900 text-lg mb-5">
- Tổng quan công bố
- </h2>
- <div className="space-y-4">
- <div className="flex items-center justify-between rounded-2xl border border-gray-200 bg-white px-4 py-3">
- <span className="font-semibold text-gray-600 text-sm">Đang hoạt động</span>
- <span className="font-extrabold text-gray-900 text-sm">{activePublications.length}</span>
- </div>
- <div className="flex items-center justify-between rounded-2xl border border-gray-200 bg-white px-4 py-3">
- <span className="font-semibold text-gray-600 text-sm">Bản nháp</span>
- <span className="font-extrabold text-gray-900 text-sm">{draftCount}</span>
- </div>
- <div className="flex items-center justify-between rounded-2xl border border-gray-200 bg-white px-4 py-3">
- <span className="font-semibold text-gray-600 text-sm">Đã khép lại</span>
- <span className="font-extrabold text-gray-900 text-sm">{closedCount}</span>
- </div>
- <button
- onClick={() => navigate("/school/semester-publications")}
- className="w-full nb-btn nb-btn-outline"
- >
- Xem toàn bộ công bố
- </button>
- </div>
- </div>
- </div>
- </main>
- </div>
- </div>
- </div>
- );
+                    <main className="flex-1 space-y-6 px-4 py-6 sm:px-6 lg:px-10 lg:py-8">
+                        <section className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
+                            <div>
+                                <p className={`text-xs font-bold uppercase tracking-[0.16em] ${SCHOOL_THEME.primaryText}`}>Quản lý trường học</p>
+                                <h1 className="mt-1 text-2xl font-bold leading-tight text-slate-950">
+                                    {schoolName || "Tổng quan vận hành"}
+                                </h1>
+                                <p className="mt-1 text-sm font-semibold text-slate-500">
+                                    Theo dõi dữ liệu học sinh, đồng phục, công bố học kỳ và các việc cần xử lý trong một màn hình.
+                                </p>
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                                <QuickAction icon={<Shirt className="h-4 w-4" />} label="Đồng phục" onClick={() => navigate("/school/uniforms")} />
+                                <QuickAction icon={<FileText className="h-4 w-4" />} label="Công bố" onClick={() => navigate("/school/semester-publications")} />
+                                <QuickAction icon={<ClipboardList className="h-4 w-4" />} label="Báo cáo GVCN" onClick={() => navigate("/school/teacher-reports")} />
+                            </div>
+                        </section>
+
+                        {loading ? (
+                            <section className="rounded-[8px] border border-gray-200 bg-white p-10 text-center shadow-soft-sm">
+                                <Loader2 className={`mx-auto mb-3 h-8 w-8 animate-spin ${SCHOOL_THEME.primaryText}`} />
+                                <p className="text-sm font-semibold text-[#4c5769]">Đang tải tổng quan trường học...</p>
+                            </section>
+                        ) : (
+                            <>
+                                <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                                    <SummaryCard
+                                        label="Công bố đang mở"
+                                        value={formatNumber(activePublications.length)}
+                                        note={`${draftCount} bản nháp · ${closedCount} đã đóng`}
+                                        icon={<FileText className="h-5 w-5" />}
+                                        surfaceClassName={SCHOOL_THEME.summary.school}
+                                        onClick={() => navigate("/school/semester-publications")}
+                                    />
+                                    <SummaryCard
+                                        label="Báo cáo chờ xem"
+                                        value={formatNumber(pendingReportCount)}
+                                        note={`${teacherReports.length} báo cáo từ GVCN`}
+                                        icon={<ClipboardList className="h-5 w-5" />}
+                                        surfaceClassName={SCHOOL_THEME.summary.cyan}
+                                        onClick={() => navigate("/school/teacher-reports")}
+                                    />
+                                    <SummaryCard
+                                        label="Hợp đồng hiệu lực"
+                                        value={formatNumber(activeContractCount)}
+                                        note={`${pendingContractCount} hợp đồng cần theo dõi`}
+                                        icon={<PenLine className="h-5 w-5" />}
+                                        surfaceClassName={SCHOOL_THEME.summary.mint}
+                                        onClick={() => navigate("/school/contracts")}
+                                    />
+                                    <SummaryCard
+                                        label="Dữ liệu học sinh"
+                                        value={formatNumber(studentCount)}
+                                        note={`${formatNumber(classCount)} lớp đang quản lý`}
+                                        icon={<GraduationCap className="h-5 w-5" />}
+                                        surfaceClassName={SCHOOL_THEME.summary.slate}
+                                        onClick={() => navigate("/school/students")}
+                                    />
+                                </section>
+
+                                <section className="grid items-start gap-4 lg:grid-cols-12">
+                                    <div className="rounded-[8px] border border-gray-200 bg-white shadow-soft-sm lg:col-span-5">
+                                        <SectionHeader
+                                            label="Vận hành học kỳ"
+                                            title="Công bố đang mở"
+                                            action={
+                                                <button type="button" onClick={() => navigate("/school/semester-publications")} className="nb-btn nb-btn-outline text-sm hover:border-blue-200 hover:text-[#2563EB]">
+                                                    Xem tất cả
+                                                </button>
+                                            }
+                                        />
+                                        {activePublications.length > 0 ? (
+                                            <div>
+                                                {activePublications.slice(0, 4).map((publication) => (
+                                                    <PublicationRow key={publication.id} publication={publication} onOpen={(id) => navigate(`/school/semester-publications/${id}`)} />
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <div className="px-5 py-10 text-center">
+                                                <FileText className={`mx-auto mb-3 h-9 w-9 ${SCHOOL_THEME.primaryText}`} />
+                                                <p className="text-base font-bold text-slate-950">Chưa có công bố học kỳ đang mở</p>
+                                                <p className="mt-1 text-sm font-semibold text-[#4c5769]">Tạo công bố khi đã có dữ liệu học sinh, mẫu đồng phục và nhà cung cấp phù hợp.</p>
+                                                <button type="button" onClick={() => navigate("/school/semester-publications/new")} className={`${SCHOOL_THEME.primaryButton} mt-4`}>
+                                                    Tạo công bố
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <div className="grid gap-4 md:grid-cols-2 lg:col-span-7">
+                                        <div className="rounded-[8px] border border-gray-200 bg-white shadow-soft-sm">
+                                            <SectionHeader label="Cần xử lý" title="Việc ưu tiên" />
+                                            <div className="space-y-2.5 p-4">
+                                                <WorkItem
+                                                    icon={<ClipboardList className="h-5 w-5" />}
+                                                    title="Báo cáo GVCN chờ xem"
+                                                    description="Phản hồi từ giáo viên cần nhà trường xử lý"
+                                                    count={pendingReportCount}
+                                                    tone="blue"
+                                                    onClick={() => navigate("/school/teacher-reports?status=Submitted")}
+                                                />
+                                                <WorkItem
+                                                    icon={<FileText className="h-5 w-5" />}
+                                                    title="Bản nháp công bố"
+                                                    description="Hoàn thiện trước khi phụ huynh đặt đồng phục"
+                                                    count={draftCount}
+                                                    tone="cyan"
+                                                    onClick={() => navigate("/school/semester-publications")}
+                                                />
+                                                <WorkItem
+                                                    icon={<PenLine className="h-5 w-5" />}
+                                                    title="Hợp đồng cần theo dõi"
+                                                    description={latestContract ? getContractStatusLabel(latestContract.status) : "Chưa có hợp đồng gần đây"}
+                                                    count={pendingContractCount}
+                                                    tone="mint"
+                                                    onClick={() => navigate("/school/contracts")}
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="rounded-[8px] border border-gray-200 bg-white shadow-soft-sm">
+                                            <SectionHeader label="Sẵn sàng vận hành" title={`${readyCount}/${readinessItems.length} mục hoàn tất`} />
+                                            <div className="grid gap-2 p-4">
+                                                {readinessItems.map((item) => (
+                                                    <button
+                                                        key={item.label}
+                                                        type="button"
+                                                        onClick={() => navigate(item.route)}
+                                                        className="flex w-full items-center justify-between rounded-[8px] border border-gray-200 bg-white px-3 py-2.5 text-left transition-colors hover:border-blue-200 hover:bg-blue-50/60"
+                                                    >
+                                                        <span className="text-sm font-bold text-slate-900">{item.label}</span>
+                                                        {item.ready ? (
+                                                            <CheckCircle2 className="h-5 w-5 text-emerald-600" />
+                                                        ) : (
+                                                            <AlertCircle className="h-5 w-5 text-amber-500" />
+                                                        )}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+
+                                {/*
+                                <section className="grid gap-4 md:grid-cols-3">
+                                    <div className="rounded-[8px] border border-gray-200 bg-white p-5 shadow-soft-sm">
+                                        <div className="flex items-center gap-3">
+                                            <div className="flex h-11 w-11 items-center justify-center rounded-[8px] bg-blue-50 text-[#2563EB]">
+                                                <Shirt className="h-5 w-5" />
+                                            </div>
+                                            <div>
+                                                <p className="text-sm font-semibold text-[#4c5769]">Mẫu đồng phục của trường</p>
+                                                <p className="text-xl font-extrabold text-slate-950">{formatNumber(schoolOutfitCount)}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="rounded-[8px] border border-gray-200 bg-white p-5 shadow-soft-sm">
+                                        <div className="flex items-center gap-3">
+                                            <div className="flex h-11 w-11 items-center justify-center rounded-[8px] bg-cyan-50 text-[#0E7490]">
+                                                <Users className="h-5 w-5" />
+                                            </div>
+                                            <div>
+                                                <p className="text-sm font-semibold text-[#4c5769]">NCC trong công bố</p>
+                                                <p className="text-xl font-extrabold text-slate-950">{formatNumber(providerCount)}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="rounded-[8px] border border-gray-200 bg-white p-5 shadow-soft-sm">
+                                        <div className="flex items-center gap-3">
+                                            <div className="flex h-11 w-11 items-center justify-center rounded-[8px] bg-emerald-50 text-[#047857]">
+                                                <School className="h-5 w-5" />
+                                            </div>
+                                            <div>
+                                                <p className="text-sm font-semibold text-[#4c5769]">Đồng phục đã công bố</p>
+                                                <p className="text-xl font-extrabold text-slate-950">{formatNumber(outfitCount)}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+                                */}
+                            </>
+                        )}
+                    </main>
+                </div>
+            </div>
+        </div>
+    );
 };
 
 export default SchoolDashboard;

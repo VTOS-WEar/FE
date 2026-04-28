@@ -1,4 +1,3 @@
-import { Badge } from "../../../components/ui/badge";
 import { Button } from "../../../components/ui/button";
 import { Card, CardContent } from "../../../components/ui/card";
 
@@ -10,9 +9,6 @@ export const DataEntrySection = (): JSX.Element => {
                     <h2 className="font-bold text-black text-lg sm:text-xl tracking-[0] leading-[normal]">
                         Tải lên dữ liệu
                     </h2>
-                    <Badge className="bg-[#3c6efd1f] text-[#3c6efd] border-[#3c6efd] hover:bg-[#3c6efd1f] font-semibold text-xs">
-                        Kỳ học mới
-                    </Badge>
                 </div>
 
                 <div className="flex flex-col items-center justify-center rounded-[10px] border-2 border-dashed border-[#cac9d6] py-12 sm:py-[77px] px-4">

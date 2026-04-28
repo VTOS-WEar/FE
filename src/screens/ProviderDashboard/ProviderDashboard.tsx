@@ -3,29 +3,27 @@ import { Link, useNavigate } from "react-router-dom";
 import {
     AlertTriangle,
     ArrowRight,
+    Banknote,
     Building2,
     CheckCircle2,
     ChevronRight,
     ClipboardList,
     FileText,
+    LayoutDashboard,
     Package,
     ShieldCheck,
     Wallet,
 } from "lucide-react";
-import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-} from "../../components/ui/breadcrumb";
 import { DashboardSidebar } from "../../components/layout";
 import { TopNavBar } from "../../components/layout/TopNavBar";
 import { useProviderSidebarConfig } from "../../hooks/useProviderSidebarConfig";
 import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
 import { getProviderComplaints } from "../../lib/api/complaints";
 import { getProviderContracts } from "../../lib/api/contracts";
+import {
+    getProviderRevenue,
+    type ProviderRevenueDto,
+} from "../../lib/api/payments";
 import {
     getProviderDirectOrderStats,
     getProviderProfile,
@@ -36,6 +34,7 @@ import {
 type DashboardData = {
     profile: ProviderProfileDto | null;
     stats: ProviderOrderStatsDto | null;
+    revenue: ProviderRevenueDto | null;
     contractsWaitingOnProvider: number;
     activeContracts: number;
     openComplaints: number;
@@ -46,23 +45,24 @@ function MetricCard({
     label,
     value,
     icon,
-    tone,
+    surfaceClassName,
+    iconClassName,
 }: {
     label: string;
     value: string | number;
-    note?: string;
     icon: React.ReactNode;
-    tone: string;
+    surfaceClassName: string;
+    iconClassName: string;
 }) {
     return (
-        <div className="rounded-[22px] border border-gray-200 bg-white p-5 shadow-soft-sm">
-            <div className="flex items-start justify-between gap-4">
-                <div>
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-gray-400">{label}</p>
-                    <p className="mt-2 text-3xl font-bold text-gray-900">{value}</p>
-                </div>
-                <div className={`flex h-11 w-11 items-center justify-center rounded-2xl border border-white/60 ${tone}`}>
+        <div className={`min-h-[112px] rounded-[8px] border border-white/70 p-5 shadow-soft-sm ${surfaceClassName}`}>
+            <div className="flex h-full items-center gap-4">
+                <div className={`flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-white shadow-soft-xs ${iconClassName}`}>
                     {icon}
+                </div>
+                <div className="min-w-0">
+                    <p className="text-sm font-semibold text-slate-700">{label}</p>
+                    <p className="mt-2 text-2xl font-bold leading-tight text-slate-950">{value}</p>
                 </div>
             </div>
         </div>
@@ -77,7 +77,6 @@ function ActionCard({
     tone,
 }: {
     title: string;
-    description?: string;
     href: string;
     badge?: string;
     icon: React.ReactNode;
@@ -86,11 +85,11 @@ function ActionCard({
     return (
         <Link
             to={href}
-            className="group flex h-full flex-col justify-between rounded-[22px] border border-gray-200 bg-white p-5 shadow-soft-sm transition-colors hover:border-gray-300"
+            className="group flex h-full flex-col justify-between rounded-[8px] border border-gray-200 bg-white p-5 shadow-soft-sm transition-colors hover:border-violet-200"
         >
             <div>
                 <div className="flex items-start justify-between gap-3">
-                    <div className={`flex h-11 w-11 items-center justify-center rounded-2xl ${tone}`}>
+                    <div className={`flex h-11 w-11 items-center justify-center rounded-full ${tone}`}>
                         {icon}
                     </div>
                     {badge ? (
@@ -107,6 +106,34 @@ function ActionCard({
             </div>
         </Link>
     );
+}
+
+function StatusRow({
+    title,
+    value,
+    icon,
+    tone,
+}: {
+    title: string;
+    value: string;
+    icon: React.ReactNode;
+    tone: string;
+}) {
+    return (
+        <div className="flex items-center justify-between gap-4 border-t border-slate-100 py-4 first:border-t-0 first:pt-0 last:pb-0">
+            <div className="flex min-w-0 items-center gap-3">
+                <div className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full ${tone}`}>
+                    {icon}
+                </div>
+                <p className="font-bold text-slate-900">{title}</p>
+            </div>
+            <span className="text-right text-sm font-bold text-slate-600">{value}</span>
+        </div>
+    );
+}
+
+function formatCurrency(value: number) {
+    return `${value.toLocaleString("vi-VN")} ₫`;
 }
 
 function formatStatus(status?: string | null) {
@@ -129,6 +156,7 @@ export const ProviderDashboard = (): JSX.Element => {
     const [data, setData] = useState<DashboardData>({
         profile: null,
         stats: null,
+        revenue: null,
         contractsWaitingOnProvider: 0,
         activeContracts: 0,
         openComplaints: 0,
@@ -138,9 +166,10 @@ export const ProviderDashboard = (): JSX.Element => {
     const fetchData = useCallback(async () => {
         setLoading(true);
         try {
-            const [profile, stats, contracts, complaints] = await Promise.all([
+            const [profile, stats, revenue, contracts, complaints] = await Promise.all([
                 getProviderProfile(),
                 getProviderDirectOrderStats(),
+                getProviderRevenue(),
                 getProviderContracts(),
                 getProviderComplaints(1, 50),
             ]);
@@ -164,6 +193,7 @@ export const ProviderDashboard = (): JSX.Element => {
             setData({
                 profile,
                 stats,
+                revenue,
                 contractsWaitingOnProvider,
                 activeContracts,
                 openComplaints,
@@ -193,28 +223,32 @@ export const ProviderDashboard = (): JSX.Element => {
     const metrics = useMemo(
         () => [
             {
+                label: "Tổng đơn hàng",
+                value: data.stats?.totalOrders ?? 0,
+                surfaceClassName: "bg-blue-100",
+                iconClassName: "text-slate-900",
+                icon: <ClipboardList className="h-6 w-6" />,
+            },
+            {
                 label: "Chờ tiếp nhận",
                 value: data.stats?.paidOrders ?? 0,
-                tone: "bg-amber-50 text-amber-600",
-                icon: <ClipboardList className="h-5 w-5" />,
+                surfaceClassName: "bg-yellow-100",
+                iconClassName: "text-slate-900",
+                icon: <Package className="h-6 w-6" />,
             },
             {
-                label: "Đang sản xuất",
+                label: "Đang xử lý",
                 value: data.stats?.inProgressOrders ?? 0,
-                tone: "bg-violet-50 text-violet-600",
-                icon: <Package className="h-5 w-5" />,
+                surfaceClassName: "bg-orange-100",
+                iconClassName: "text-slate-900",
+                icon: <ShieldCheck className="h-6 w-6" />,
             },
             {
-                label: "Hợp đồng cần xử lý",
-                value: data.contractsWaitingOnProvider,
-                tone: "bg-blue-50 text-blue-600",
-                icon: <FileText className="h-5 w-5" />,
-            },
-            {
-                label: "Khiếu nại mở",
-                value: data.openComplaints + data.inProgressComplaints,
-                tone: "bg-rose-50 text-rose-600",
-                icon: <AlertTriangle className="h-5 w-5" />,
+                label: "Doanh thu đối soát",
+                value: formatCurrency(data.revenue?.totalRevenue ?? 0),
+                surfaceClassName: "bg-lime-200",
+                iconClassName: "text-slate-900",
+                icon: <Banknote className="h-6 w-6" />,
             },
         ],
         [data],
@@ -264,125 +298,134 @@ export const ProviderDashboard = (): JSX.Element => {
 
                 <div className="flex-1 flex flex-col min-w-0">
                     <TopNavBar>
-                        <Breadcrumb>
-                            <BreadcrumbList>
-                                <BreadcrumbItem>
-                                    <BreadcrumbLink href="/provider/dashboard" className="font-semibold text-[#4c5769] text-base">
-                                        Trang chủ
-                                    </BreadcrumbLink>
-                                </BreadcrumbItem>
-                                <BreadcrumbSeparator className="text-[#cbcad7]">/</BreadcrumbSeparator>
-                                <BreadcrumbItem>
-                                    <BreadcrumbPage className="font-bold text-gray-900 text-base">Tổng quan</BreadcrumbPage>
-                                </BreadcrumbItem>
-                            </BreadcrumbList>
-                        </Breadcrumb>
+                        <div className="flex items-center gap-3 px-2 py-2">
+                            <div className="hidden h-10 w-10 items-center justify-center rounded-2xl bg-violet-600 text-white shadow-soft-sm sm:flex">
+                                <LayoutDashboard className="h-5 w-5" />
+                            </div>
+                            <div>
+                                <h1 className="text-xl font-bold leading-none text-gray-900">Tổng quan nhà cung cấp</h1>
+                            </div>
+                        </div>
                     </TopNavBar>
 
                     <main className="flex-1 space-y-6 px-4 py-6 sm:px-6 lg:px-10 lg:py-8">
-                        <section className="overflow-hidden rounded-[24px] border border-slate-900/70 bg-slate-950 px-6 py-6 text-white shadow-soft-sm lg:px-8">
-                            <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
-                                <div className="max-w-3xl">
-                                    <span className="inline-flex items-center rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">
-                                        Vận hành nhà cung cấp
-                                    </span>
-                                    <h1 className="mt-4 text-3xl font-bold leading-tight text-white sm:text-4xl">
-                                        {providerName || "Nhà cung cấp"} đang vận hành {data.stats?.totalOrders ?? 0} đơn hàng trong hệ thống.
-                                    </h1>
+                        <section className="space-y-5">
+                            <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                                <div>
+                                    <h2 className="text-2xl font-bold text-slate-950">Bảng vận hành hôm nay</h2>
                                 </div>
-                                <div className="provider-hero-metrics grid gap-3">
-                                    <div className="rounded-[22px] border border-white/10 bg-white/8 p-4">
-                                        <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-300">Doanh thu</p>
-                                        <p className="mt-2 text-2xl font-bold text-white">
-                                            {(data.stats?.totalRevenue ?? 0).toLocaleString("vi-VN")}
-                                        </p>
-                                    </div>
-                                    <div className="rounded-[22px] border border-white/10 bg-white/8 p-4">
-                                        <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-300">Hợp đồng hiệu lực</p>
-                                        <p className="mt-2 text-2xl font-bold text-white">{data.activeContracts}</p>
-                                    </div>
-                                    <div className="rounded-[22px] border border-white/10 bg-white/8 p-4">
-                                        <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-300">Hồ sơ</p>
-                                        <p className="mt-2 text-2xl font-bold text-white">{formatStatus(data.profile?.status)}</p>
-                                    </div>
+                                <Link
+                                    to="/provider/orders"
+                                    className="nb-btn nb-btn-outline inline-flex w-fit items-center gap-2 text-sm"
+                                >
+                                    Xem đơn hàng
+                                    <ChevronRight className="h-4 w-4" />
+                                </Link>
+                            </div>
+
+                            {loading ? (
+                                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                                    {[1, 2, 3, 4].map((item) => (
+                                        <div key={item} className="nb-skeleton h-[112px] rounded-[8px]" />
+                                    ))}
                                 </div>
+                            ) : (
+                                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                                    {metrics.map((metric) => (
+                                        <MetricCard key={metric.label} {...metric} />
+                                    ))}
+                                </div>
+                            )}
+                        </section>
+
+                        <section className="space-y-4">
+                            <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                                <div>
+                                    <h2 className="text-2xl font-bold text-gray-900">Điều phối nhanh</h2>
+                                </div>
+                                <Link
+                                    to="/provider/orders"
+                                    className="inline-flex w-fit items-center gap-2 text-sm font-bold text-violet-700"
+                                >
+                                    Xem tất cả đơn
+                                    <ChevronRight className="h-4 w-4" />
+                                </Link>
+                            </div>
+
+                            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                                {actionCards.map((card) => (
+                                    <ActionCard key={card.title} {...card} />
+                                ))}
                             </div>
                         </section>
 
-                        {loading ? (
-                            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                                {[1, 2, 3, 4].map((item) => (
-                                    <div key={item} className="nb-skeleton h-[150px] rounded-[26px]" />
-                                ))}
-                            </div>
-                        ) : (
-                            <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                                {metrics.map((metric) => (
-                                    <MetricCard key={metric.label} {...metric} />
-                                ))}
-                            </section>
-                        )}
-
-                        <section className="grid gap-6 xl:grid-cols-[1.6fr_1fr]">
-                            <div className="rounded-[24px] border border-gray-200 bg-white p-6 shadow-soft-sm">
-                                <div className="flex items-center justify-between gap-4">
+                        <section className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
+                            <div className="rounded-[8px] border border-gray-200 bg-white p-6 shadow-soft-sm">
+                                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                                     <div>
-                                        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-gray-400">Việc ưu tiên</p>
-                                        <h2 className="mt-2 text-2xl font-bold text-gray-900">Bảng điều phối hôm nay</h2>
+                                        <h2 className="text-2xl font-bold text-gray-900">Tín hiệu vận hành</h2>
                                     </div>
-                                    <Link
-                                        to="/provider/orders"
-                                        className="inline-flex items-center gap-2 rounded-full border border-gray-200 px-4 py-2 text-sm font-bold text-gray-700 transition-all hover:border-violet-200 hover:text-violet-700"
-                                    >
-                                        Xem tất cả đơn
-                                        <ChevronRight className="h-4 w-4" />
-                                    </Link>
+                                    <span className="inline-flex w-fit items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-bold text-slate-600">
+                                        {data.openComplaints + data.inProgressComplaints} khiếu nại mở
+                                    </span>
                                 </div>
 
-                                <div className="mt-6 grid gap-4 md:grid-cols-2">
-                                    {actionCards.map((card) => (
-                                        <ActionCard key={card.title} {...card} />
-                                    ))}
+                                <div className="mt-6">
+                                    <StatusRow
+                                        title="Hợp đồng cần xử lý"
+                                        value={`${data.contractsWaitingOnProvider} việc`}
+                                        tone="bg-blue-50 text-blue-700"
+                                        icon={<FileText className="h-5 w-5" />}
+                                    />
+                                    <StatusRow
+                                        title="Khiếu nại đang mở"
+                                        value={`${data.openComplaints + data.inProgressComplaints} ticket`}
+                                        tone="bg-rose-50 text-rose-700"
+                                        icon={<AlertTriangle className="h-5 w-5" />}
+                                    />
+                                    <StatusRow
+                                        title="Doanh thu đối soát"
+                                        value={formatCurrency(data.revenue?.totalRevenue ?? 0)}
+                                        tone="bg-emerald-50 text-emerald-700"
+                                        icon={<Banknote className="h-5 w-5" />}
+                                    />
+                                    <StatusRow
+                                        title="Đơn đang xử lý"
+                                        value={`${data.stats?.inProgressOrders ?? 0} đơn`}
+                                        tone="bg-orange-50 text-orange-700"
+                                        icon={<Package className="h-5 w-5" />}
+                                    />
                                 </div>
                             </div>
 
-                            <div className="rounded-[24px] border border-gray-200 bg-white p-6 shadow-soft-sm">
-                                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-gray-400">Trạng thái vận hành</p>
-                                <h2 className="mt-2 text-2xl font-bold text-gray-900">Sẵn sàng giao dịch</h2>
+                            <div className="rounded-[8px] border border-gray-200 bg-white p-6 shadow-soft-sm">
+                                <h2 className="text-2xl font-bold text-gray-900">Sẵn sàng giao dịch</h2>
 
-                                <div className="mt-6 space-y-4">
-                                    <div className="rounded-[22px] border border-emerald-100 bg-emerald-50/70 p-4">
-                                        <div className="flex items-start gap-3">
-                                            <div className="mt-0.5 flex h-10 w-10 items-center justify-center rounded-2xl bg-white text-emerald-600 shadow-soft-sm">
-                                                <CheckCircle2 className="h-5 w-5" />
-                                            </div>
-                                            <div>
-                                                <h3 className="text-base font-bold text-emerald-900">Luồng đơn hàng đang mở</h3>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="rounded-[22px] border border-blue-100 bg-blue-50/70 p-4">
-                                        <div className="flex items-start gap-3">
-                                            <div className="mt-0.5 flex h-10 w-10 items-center justify-center rounded-2xl bg-white text-blue-600 shadow-soft-sm">
-                                                <ShieldCheck className="h-5 w-5" />
-                                            </div>
-                                            <div>
-                                                <h3 className="text-base font-bold text-blue-900">Hồ sơ và hợp đồng</h3>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="rounded-[22px] border border-amber-100 bg-amber-50/80 p-4">
-                                        <div className="flex items-start gap-3">
-                                            <div className="mt-0.5 flex h-10 w-10 items-center justify-center rounded-2xl bg-white text-amber-600 shadow-soft-sm">
-                                                <AlertTriangle className="h-5 w-5" />
-                                            </div>
-                                            <div>
-                                                <h3 className="text-base font-bold text-amber-900">Điểm cần theo dõi</h3>
-                                            </div>
-                                        </div>
-                                    </div>
+                                <div className="mt-6">
+                                    <StatusRow
+                                        title="Luồng đơn hàng"
+                                        value={`${data.stats?.totalOrders ?? 0} đơn`}
+                                        tone="bg-emerald-50 text-emerald-700"
+                                        icon={<CheckCircle2 className="h-5 w-5" />}
+                                    />
+                                    <StatusRow
+                                        title="Hợp đồng hiệu lực"
+                                        value={`${data.activeContracts} hợp đồng`}
+                                        tone="bg-blue-50 text-blue-700"
+                                        icon={<ShieldCheck className="h-5 w-5" />}
+                                    />
+                                    <StatusRow
+                                        title="Hồ sơ nhà cung cấp"
+                                        value={formatStatus(data.profile?.status)}
+                                        tone="bg-violet-50 text-violet-700"
+                                        icon={<Building2 className="h-5 w-5" />}
+                                    />
+                                    <StatusRow
+                                        title="Điểm cần theo dõi"
+                                        value={`${data.contractsWaitingOnProvider} hợp đồng, ${data.openComplaints + data.inProgressComplaints} khiếu nại`}
+                                        tone="bg-amber-50 text-amber-700"
+                                        icon={<AlertTriangle className="h-5 w-5" />}
+                                    />
                                 </div>
                             </div>
                         </section>
