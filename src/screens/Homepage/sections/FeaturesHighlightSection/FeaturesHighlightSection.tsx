@@ -27,7 +27,7 @@ export const FeaturesHighlightSection = (): JSX.Element => {
       id="how-it-works"
       className="nb-section-loud"
     >
-      <div className="mx-auto w-full max-w-[1100px] px-4 md:px-8">
+      <div className="mx-auto w-full max-w-[1280px] px-4 md:px-8 lg:px-10">
         {/* Header */}
         <header className="mb-14 text-center nb-reveal">
           <h2 className="text-3xl font-extrabold leading-[1.15] text-gray-900 md:text-4xl lg:text-[2.75rem]">
