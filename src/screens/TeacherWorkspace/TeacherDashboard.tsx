@@ -166,13 +166,13 @@ export const TeacherDashboard = (): JSX.Element => {
                                                 </p>
 
                                                 <div className="grid gap-3 md:grid-cols-3">
-                                                    <div className="rounded-2xl border border-amber-100 bg-amber-50/70 p-3">
-                                                        <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-amber-700">Liên kết PH</p>
+                                                    <div className="rounded-2xl border border-violet-100 bg-violet-50/70 p-3">
+                                                        <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-violet-700">Liên kết PH</p>
                                                         <p className="mt-2 text-lg font-extrabold text-gray-900">{item.studentCount - item.missingParentLinkCount}/{item.studentCount}</p>
                                                         <div className="mt-2 h-2 rounded-full bg-white/80">
-                                                            <div className="h-2 rounded-full bg-amber-400" style={{ width: `${parentLinkedPercent}%` }} />
+                                                            <div className="h-2 rounded-full bg-violet-400" style={{ width: `${parentLinkedPercent}%` }} />
                                                         </div>
-                                                        <p className="mt-2 text-xs font-semibold text-amber-800">{item.missingParentLinkCount} cần bổ sung</p>
+                                                        <p className="mt-2 text-xs font-semibold text-violet-800">{item.missingParentLinkCount} cần bổ sung</p>
                                                     </div>
                                                     <div className="rounded-2xl border border-amber-100 bg-amber-50/70 p-3">
                                                         <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-amber-700">Đo size</p>
