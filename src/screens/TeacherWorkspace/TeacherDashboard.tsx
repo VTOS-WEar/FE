@@ -100,21 +100,21 @@ export const TeacherDashboard = (): JSX.Element => {
             {!loading && !error && dashboard && (
                 <>
                     <section className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-                        <div className="rounded-[20px] border border-gray-200 bg-white p-5 shadow-soft-sm">
-                            <p className="text-sm font-semibold text-[#6b7280]">Lớp</p>
-                            <p className="mt-2 text-3xl font-extrabold text-gray-900">{classDisplay}</p>
+                        <div className="rounded-[20px] border border-emerald-200 bg-emerald-50/70 p-5 shadow-soft-sm">
+                            <p className="text-sm font-semibold text-emerald-800">Lớp</p>
+                            <p className="mt-2 text-3xl font-extrabold text-emerald-950">{classDisplay}</p>
                         </div>
-                        <div className="rounded-[20px] border border-gray-200 bg-white p-5 shadow-soft-sm">
-                            <p className="text-sm font-semibold text-[#6b7280]">Sĩ số</p>
-                            <p className="mt-2 text-3xl font-extrabold text-gray-900">{dashboard.totalStudents}</p>
+                        <div className="rounded-[20px] border border-violet-200 bg-violet-50/70 p-5 shadow-soft-sm">
+                            <p className="text-sm font-semibold text-violet-800">Sĩ số</p>
+                            <p className="mt-2 text-3xl font-extrabold text-violet-950">{dashboard.totalStudents}</p>
                         </div>
-                        <div className="rounded-[20px] border border-gray-200 bg-white p-5 shadow-soft-sm">
-                            <p className="text-sm font-semibold text-[#6b7280]">Đã đo size</p>
-                            <p className="mt-2 text-3xl font-extrabold text-gray-900">{measuredStudents}</p>
+                        <div className="rounded-[20px] border border-rose-200 bg-rose-50/70 p-5 shadow-soft-sm">
+                            <p className="text-sm font-semibold text-rose-800">Đã đo size</p>
+                            <p className="mt-2 text-3xl font-extrabold text-rose-950">{measuredStudents}</p>
                         </div>
-                        <div className="rounded-[20px] border border-gray-200 bg-white p-5 shadow-soft-sm">
-                            <p className="text-sm font-semibold text-[#6b7280]">Đã đặt đồng phục</p>
-                            <p className="mt-2 text-3xl font-extrabold text-gray-900">{orderedStudents}</p>
+                        <div className="rounded-[20px] border border-sky-200 bg-sky-50/70 p-5 shadow-soft-sm">
+                            <p className="text-sm font-semibold text-sky-800">Đã đặt đồng phục</p>
+                            <p className="mt-2 text-3xl font-extrabold text-sky-950">{orderedStudents}</p>
                         </div>
                     </section>
 
