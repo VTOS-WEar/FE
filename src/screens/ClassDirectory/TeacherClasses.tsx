@@ -53,7 +53,7 @@ export const TeacherClasses = (): JSX.Element => {
                 </div>
             </section>
 
-            {overview && (
+            {overview && overview.classes.length === 0 && (
                 <section className="mt-6 grid gap-4 sm:grid-cols-2">
                     <div className="rounded-[24px] border border-emerald-200 bg-white p-5 shadow-soft-md">
                         <p className="text-sm font-semibold text-[#6b7280]">Tổng lớp</p>
@@ -88,52 +88,64 @@ export const TeacherClasses = (): JSX.Element => {
             )}
 
             {!loading && !error && overview && overview.classes.length > 0 && (
-                <section className="mt-6 grid gap-4 xl:grid-cols-2">
-                    {overview.classes.map((classGroup) => (
-                        <button
-                            key={classGroup.id}
-                            type="button"
-                            onClick={() => navigate(`/teacher/classes/${classGroup.id}`)}
-                            className="group rounded-[24px] border border-gray-200 bg-white p-5 text-left shadow-soft-md transition-all hover:-translate-y-1 hover:border-emerald-300 hover:shadow-soft-lg"
-                        >
-                            <div className="flex items-start justify-between gap-3">
-                                <div>
-                                    <p className="text-xs font-bold uppercase tracking-[0.18em] text-emerald-700">{classGroup.academicYear}</p>
-                                    <h2 className="mt-2 text-2xl font-extrabold text-gray-900">Lớp {classGroup.className}</h2>
+                <section className="mt-6 grid gap-4 xl:grid-cols-[320px_1fr]">
+                    <div className="grid content-start gap-4">
+                        <div className="rounded-[24px] border border-emerald-200 bg-white p-5 shadow-soft-md">
+                            <p className="text-sm font-semibold text-[#6b7280]">Tổng lớp</p>
+                            <p className="mt-2 text-3xl font-extrabold text-gray-900">{overview.totalClasses}</p>
+                        </div>
+                        <div className="rounded-[24px] border border-sky-200 bg-white p-5 shadow-soft-md">
+                            <p className="text-sm font-semibold text-[#6b7280]">Tổng học sinh</p>
+                            <p className="mt-2 text-3xl font-extrabold text-gray-900">{overview.totalStudents}</p>
+                        </div>
+                    </div>
+                    <div className="grid gap-4 xl:grid-cols-2">
+                        {overview.classes.map((classGroup) => (
+                            <button
+                                key={classGroup.id}
+                                type="button"
+                                onClick={() => navigate(`/teacher/classes/${classGroup.id}`)}
+                                className="group rounded-[24px] border border-gray-200 bg-white p-5 text-left shadow-soft-md transition-all hover:-translate-y-1 hover:border-emerald-300 hover:shadow-soft-lg"
+                            >
+                                <div className="flex items-start justify-between gap-3">
+                                    <div>
+                                        <p className="text-xs font-bold uppercase tracking-[0.18em] text-emerald-700">{classGroup.academicYear}</p>
+                                        <h2 className="mt-2 text-2xl font-extrabold text-gray-900">Lớp {classGroup.className}</h2>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div className="mt-5 grid gap-3 sm:grid-cols-3">
-                                <div className="rounded-2xl bg-[#f4fffb] p-4">
-                                    <p className="text-sm font-semibold text-[#6b7280]">Học sinh</p>
-                                    <p className="mt-1 text-xl font-extrabold text-gray-900">{classGroup.studentCount}</p>
+                                <div className="mt-5 grid gap-3 sm:grid-cols-3">
+                                    <div className="rounded-2xl bg-[#f4fffb] p-4">
+                                        <p className="text-sm font-semibold text-[#6b7280]">Học sinh</p>
+                                        <p className="mt-1 text-xl font-extrabold text-gray-900">{classGroup.studentCount}</p>
+                                    </div>
+                                    <div className="rounded-2xl bg-[#eef7ff] p-4">
+                                        <p className="text-sm font-semibold text-[#6b7280]">Đo áo</p>
+                                        <p className="mt-1 text-xl font-extrabold text-gray-900">{classGroup.measurementReadyCount}</p>
+                                    </div>
+                                    <div className="rounded-2xl bg-[#fff8eb] p-4">
+                                        <p className="text-sm font-semibold text-[#6b7280]">PH liên kết</p>
+                                        <p className="mt-1 text-xl font-extrabold text-gray-900">{classGroup.parentLinkedCount}</p>
+                                    </div>
                                 </div>
-                                <div className="rounded-2xl bg-[#eef7ff] p-4">
-                                    <p className="text-sm font-semibold text-[#6b7280]">Đo áo</p>
-                                    <p className="mt-1 text-xl font-extrabold text-gray-900">{classGroup.measurementReadyCount}</p>
-                                </div>
-                                <div className="rounded-2xl bg-[#fff8eb] p-4">
-                                    <p className="text-sm font-semibold text-[#6b7280]">PH liên kết</p>
-                                    <p className="mt-1 text-xl font-extrabold text-gray-900">{classGroup.parentLinkedCount}</p>
-                                </div>
-                            </div>
 
-                            <div className="mt-3 rounded-2xl bg-[#eef6ff] p-4">
-                                <div className="flex items-center gap-2 text-sm font-semibold text-[#4c5769]">
-                                    <ShoppingBag className="h-4 w-4 text-sky-700" />
-                                    <span>Độ phủ đơn hàng</span>
+                                <div className="mt-3 rounded-2xl bg-[#eef6ff] p-4">
+                                    <div className="flex items-center gap-2 text-sm font-semibold text-[#4c5769]">
+                                        <ShoppingBag className="h-4 w-4 text-sky-700" />
+                                        <span>Độ phủ đơn hàng</span>
+                                    </div>
+                                    <p className="mt-1 text-xl font-extrabold text-gray-900">
+                                        {classGroup.orderedStudentCount}/{classGroup.studentCount}
+                                    </p>
                                 </div>
-                                <p className="mt-1 text-xl font-extrabold text-gray-900">
-                                    {classGroup.orderedStudentCount}/{classGroup.studentCount}
-                                </p>
-                            </div>
 
-                            <div className="mt-4 flex items-center gap-2 text-sm font-semibold text-[#4c5769]">
-                                <Users className="h-4 w-4 text-emerald-600" />
-                                <span>{classGroup.homeroomTeacherName || overview.teacherName}</span>
-                            </div>
-                        </button>
-                    ))}
+                                <div className="mt-4 flex items-center gap-2 text-sm font-semibold text-[#4c5769]">
+                                    <Users className="h-4 w-4 text-emerald-600" />
+                                    <span>{classGroup.homeroomTeacherName || overview.teacherName}</span>
+                                </div>
+                            </button>
+                        ))}
+                    </div>
                 </section>
             )}
         </TeacherWorkspaceShell>
