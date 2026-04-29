@@ -118,7 +118,7 @@ export const TeacherDashboard = (): JSX.Element => {
                         </div>
                     </section>
 
-                    <section className="mt-6 grid gap-4 xl:grid-cols-[1.35fr_1fr]">
+                    <section className="mt-6 grid gap-4 xl:grid-cols-[2fr_1fr]">
                         <div className="flex h-full flex-col overflow-hidden rounded-[20px] border border-gray-200 bg-white shadow-soft-sm">
                             <div className="border-b border-gray-200 px-5 py-4">
                                 <div>
