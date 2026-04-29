@@ -46,20 +46,20 @@ export const TeacherDashboard = (): JSX.Element => {
                             Theo dõi lớp, nhắc phụ huynh chưa đặt đồng phục, và giữ luồng trao đổi với phụ huynh trong một không gian nhẹ hơn dashboard quản trị.
                         </p>
                     </div>
-                    <div className="flex flex-wrap gap-3 xl:col-span-1 xl:justify-end">
-                        <button type="button" onClick={() => navigate("/teacher/classes")} className="inline-flex items-center gap-2 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm font-bold text-gray-900 shadow-soft-sm hover:border-emerald-200">
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:col-span-1">
+                        <button type="button" onClick={() => navigate("/teacher/classes")} className="inline-flex w-full items-center gap-2 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm font-bold text-gray-900 shadow-soft-sm hover:border-emerald-200">
                             <Users className="h-4 w-4 text-emerald-700" />
                             Xem lớp chủ nhiệm
                         </button>
-                        <button type="button" onClick={() => navigate("/teacher/reminders")} className="inline-flex items-center gap-2 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm font-bold text-gray-900 shadow-soft-sm hover:border-amber-200">
+                        <button type="button" onClick={() => navigate("/teacher/reminders")} className="inline-flex w-full items-center gap-2 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm font-bold text-gray-900 shadow-soft-sm hover:border-amber-200">
                             <BellRing className="h-4 w-4 text-amber-700" />
                             Nhắc phụ huynh
                         </button>
-                        <button type="button" onClick={() => navigate("/teacher/messages")} className="inline-flex items-center gap-2 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm font-bold text-gray-900 shadow-soft-sm hover:border-sky-200">
+                        <button type="button" onClick={() => navigate("/teacher/messages")} className="inline-flex w-full items-center gap-2 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm font-bold text-gray-900 shadow-soft-sm hover:border-sky-200">
                             <MessageSquare className="h-4 w-4 text-sky-700" />
                             Mở tin nhắn
                         </button>
-                        <button type="button" onClick={() => navigate("/teacher/account")} className="inline-flex items-center gap-2 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm font-bold text-gray-900 shadow-soft-sm hover:border-violet-200">
+                        <button type="button" onClick={() => navigate("/teacher/account")} className="inline-flex w-full items-center gap-2 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm font-bold text-gray-900 shadow-soft-sm hover:border-violet-200">
                             <Settings className="h-4 w-4 text-violet-700" />
                             Cài đặt tài khoản
                         </button>
