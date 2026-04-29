@@ -201,7 +201,7 @@ export const TeacherDashboard = (): JSX.Element => {
                         <div className="space-y-4">
                             <div className="rounded-[20px] border border-gray-200 bg-white p-5 shadow-soft-sm">
                                 <div className="flex flex-col gap-4">
-                                    <div className="flex items-center gap-3">
+                                    <div className="flex items-start gap-3">
                                         <div className="rounded-2xl bg-[#fef6d8] p-3 text-amber-700"><AlertCircle className="h-5 w-5" /></div>
                                         <div>
                                             <p className="text-sm font-semibold text-[#6b7280]">Báo cáo chưa đọc</p>
@@ -219,7 +219,7 @@ export const TeacherDashboard = (): JSX.Element => {
                             </div>
                             <div className="rounded-[20px] border border-gray-200 bg-white p-5 shadow-soft-sm">
                                 <div className="flex flex-col gap-4">
-                                    <div className="flex items-center gap-3">
+                                    <div className="flex items-start gap-3">
                                         <div className="rounded-2xl bg-[#eef7ff] p-3 text-sky-700"><Link2 className="h-5 w-5" /></div>
                                         <div>
                                             <p className="text-sm font-semibold text-[#6b7280]">Việc cần làm hôm nay</p>
