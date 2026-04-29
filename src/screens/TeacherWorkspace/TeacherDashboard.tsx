@@ -199,7 +199,7 @@ export const TeacherDashboard = (): JSX.Element => {
                                 <div className="flex items-center gap-3">
                                     <div className="rounded-2xl bg-[#fef6d8] p-3 text-amber-700"><AlertCircle className="h-5 w-5" /></div>
                                     <div>
-                                        <p className="text-sm font-semibold text-[#6b7280]">Báo cáo đang chờ xem</p>
+                                        <p className="text-sm font-semibold text-[#6b7280]">Báo cáo chưa đọc</p>
                                         <p className="text-2xl font-extrabold text-gray-900">{dashboard.pendingReviewReportCount}</p>
                                     </div>
                                 </div>
@@ -208,12 +208,12 @@ export const TeacherDashboard = (): JSX.Element => {
                                 <div className="flex items-center gap-3">
                                     <div className="rounded-2xl bg-[#eef7ff] p-3 text-sky-700"><Link2 className="h-5 w-5" /></div>
                                     <div>
-                                        <p className="text-sm font-semibold text-[#6b7280]">Cần xử lý hôm nay</p>
+                                        <p className="text-sm font-semibold text-[#6b7280]">Việc cần làm hôm nay</p>
                                         <p className="text-2xl font-extrabold text-gray-900">
                                             {dashboard.missingParentLinkCount + dashboard.missingMeasurementCount + (primaryClass ? primaryClass.studentCount - primaryClass.orderedStudentCount : 0)}
                                         </p>
-                                        <p className="mt-1 text-xs font-semibold uppercase tracking-[0.14em] text-[#6b7280]">
-                                            PH, đo size, và đơn đặt cần theo dõi
+                                        <p className="mt-1 text-xs font-semibold text-[#6b7280]">
+                                            Gồm phụ huynh chưa liên kết, học sinh chưa đo size, và đơn đặt chưa hoàn tất.
                                         </p>
                                     </div>
                                 </div>
