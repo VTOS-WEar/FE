@@ -50,14 +50,15 @@ export function TeacherWorkspaceShell({
     <div className="min-h-screen min-h-[100svh] bg-[#f6f7fb]">
       <div className="relative z-10 mx-auto max-w-[1280px] px-4 py-8 md:py-10 lg:px-8 nb-fade-in">
         {(showBackButton || showIdentityHeader) && (
-          <div className="mb-6 flex flex-col gap-4 border-b border-gray-200 pb-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="min-w-0">
-              <div className="flex flex-wrap items-center gap-3">
+          <div className="mb-6 rounded-2xl border border-gray-200 bg-white/90 p-4 shadow-soft-sm sm:p-5">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+              <div className="min-w-0">
+                <div className="flex flex-wrap items-center gap-3">
                 {showBackButton ? (
                   <button
                     type="button"
                     onClick={handleBack}
-                    className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-4 text-sm font-bold text-gray-700 transition-all hover:border-sky-200 hover:bg-sky-50 hover:text-sky-800"
+                    className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-4 text-sm font-bold text-gray-700 shadow-sm transition-all hover:border-sky-200 hover:bg-sky-50 hover:text-sky-800"
                   >
                     <ArrowLeft className="h-4 w-4" />
                     Quay lại
@@ -65,8 +66,8 @@ export function TeacherWorkspaceShell({
                 ) : null}
 
                 {showIdentityHeader ? (
-                  <>
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-emerald-100 bg-emerald-50">
+                  <div className="flex min-w-0 items-center gap-3">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-emerald-100 bg-emerald-50">
                       <GraduationCap className="h-5 w-5 text-emerald-700" />
                     </div>
                     <div className="min-w-0">
@@ -78,37 +79,38 @@ export function TeacherWorkspaceShell({
                         {user?.email || "Teacher workspace"}
                       </p>
                     </div>
-                  </>
+                  </div>
                 ) : null}
+                </div>
+
+                <nav className="mt-4 flex flex-wrap items-center gap-1 rounded-xl border border-gray-100 bg-[#f7f9fc] p-1 text-xs font-bold">
+                  {breadcrumbs.map((item, index) => (
+                    <span key={`${item.label}-${index}`}>
+                      {item.href ? (
+                        <a href={item.href} className="rounded-lg px-3 py-1.5 text-[#4c5769] transition-colors hover:bg-white hover:text-gray-900">
+                          {item.label}
+                        </a>
+                      ) : (
+                        <span className="rounded-lg bg-white px-3 py-1.5 text-emerald-800 shadow-sm">{item.label}</span>
+                      )}
+                    </span>
+                  ))}
+                </nav>
               </div>
 
-              <nav className="mt-3 flex flex-wrap items-center gap-2 text-xs font-bold">
-                {breadcrumbs.map((item, index) => (
-                  <span key={`${item.label}-${index}`}>
-                    {item.href ? (
-                      <a href={item.href} className="rounded-full bg-[#f4f7fb] px-3 py-1.5 text-[#4c5769] transition-colors hover:bg-[#eaf4ff] hover:text-gray-900">
-                        {item.label}
-                      </a>
-                    ) : (
-                      <span className="rounded-full bg-emerald-50 px-3 py-1.5 text-emerald-800">{item.label}</span>
-                    )}
-                  </span>
-                ))}
-              </nav>
-            </div>
-
-            <div className="flex flex-shrink-0 items-center gap-2">
-              <ClassGroupChatLauncher />
-              <button
-                type="button"
-                onClick={() => navigate("/teacher/account")}
-                className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-3 text-sm font-bold text-gray-700 shadow-sm transition-all hover:-translate-y-[1px] hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-800"
-                aria-label="Hồ sơ giáo viên"
-                title="Hồ sơ giáo viên"
-              >
-                <UserCircle className="h-5 w-5" />
-                <span className="hidden sm:inline">Hồ sơ</span>
-              </button>
+              <div className="flex flex-shrink-0 items-center gap-2 lg:pt-1">
+                <ClassGroupChatLauncher />
+                <button
+                  type="button"
+                  onClick={() => navigate("/teacher/account")}
+                  className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-3 text-sm font-bold text-gray-700 shadow-sm transition-all hover:-translate-y-[1px] hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-800"
+                  aria-label="Hồ sơ giáo viên"
+                  title="Hồ sơ giáo viên"
+                >
+                  <UserCircle className="h-5 w-5" />
+                  <span className="hidden sm:inline">Hồ sơ</span>
+                </button>
+              </div>
             </div>
           </div>
         )}
