@@ -1,10 +1,12 @@
-import { type ReactNode } from "react";
+import { type ReactNode, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { LayoutDashboard, MessageCircle } from "lucide-react";
 import { DashboardSidebar } from "../../components/layout";
 import { TopNavBar } from "../../components/layout/TopNavBar";
 import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
 import { useSidebarConfig } from "../../hooks/useSidebarConfig";
+import { ChatWidget } from "../../components/ChatWidget/ChatWidget";
+import { getTeacherClassesOverview } from "../../lib/api/teachers";
 
 type BreadcrumbItem = {
   label: string;
@@ -24,6 +26,9 @@ export function TeacherWorkspaceShell({
   const { pathname } = useLocation();
   const sidebarConfig = useSidebarConfig();
   const [isCollapsed, toggle] = useSidebarCollapsed();
+  const [chatOpen, setChatOpen] = useState(false);
+  const [defaultClassId, setDefaultClassId] = useState<string>("");
+  const [defaultClassName, setDefaultClassName] = useState<string>("");
 
   const handleLogout = () => {
     localStorage.removeItem("access_token");
@@ -37,6 +42,29 @@ export function TeacherWorkspaceShell({
   };
 
   const currentPageLabel = breadcrumbs[breadcrumbs.length - 1]?.label || "Teacher workspace";
+  const showFloatingChat = pathname !== "/teacher/messages";
+  const chatContextInfo = useMemo(() => ({
+    icon: "🏫",
+    title: defaultClassName ? `Lớp ${defaultClassName}` : "Nhóm lớp chủ nhiệm",
+    status: "Đang hoạt động",
+    statusColor: "#0EA5E9",
+    subtitle: "Trao đổi trực tiếp với phụ huynh trong lớp",
+  }), [defaultClassName]);
+
+  useEffect(() => {
+    let mounted = true;
+    getTeacherClassesOverview()
+      .then((overview) => {
+        if (!mounted || overview.classes.length === 0) return;
+        const firstClass = overview.classes[0];
+        setDefaultClassId(firstClass.id);
+        setDefaultClassName(firstClass.className);
+      })
+      .catch(() => undefined);
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   return (
     <div className="nb-page flex flex-col">
@@ -57,16 +85,25 @@ export function TeacherWorkspaceShell({
           </main>
         </div>
       </div>
-      {pathname !== "/teacher/messages" && (
+      {showFloatingChat && defaultClassId && (
         <button
           type="button"
-          onClick={() => navigate("/teacher/messages")}
+          onClick={() => setChatOpen(true)}
           className="fixed bottom-6 right-6 z-40 inline-flex h-12 w-12 items-center justify-center rounded-full border border-sky-200 bg-sky-500 text-white shadow-soft-md transition-all hover:-translate-y-0.5 hover:bg-sky-600 lg:bottom-8 lg:right-8"
-          aria-label="Mở tin nhắn"
-          title="Mở tin nhắn"
+          aria-label="Mở chat lớp"
+          title="Mở chat lớp"
         >
           <MessageCircle className="h-5 w-5" />
         </button>
+      )}
+      {showFloatingChat && defaultClassId && (
+        <ChatWidget
+          channelType="classgroup"
+          channelId={defaultClassId}
+          isOpen={chatOpen}
+          onClose={() => setChatOpen(false)}
+          contextInfo={chatContextInfo}
+        />
       )}
     </div>
   );
