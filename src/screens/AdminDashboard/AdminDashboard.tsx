@@ -369,26 +369,30 @@ export const AdminDashboard = (): JSX.Element => {
 
                     <main className="flex-1 px-4 py-6 sm:px-6 lg:px-10 lg:py-8 space-y-6 nb-fade-in">
                         <section
-                            className="overflow-hidden rounded-[32px] border px-6 py-6 text-white shadow-soft-lg lg:px-8 lg:py-8"
-                            style={{ borderColor: "#2446A6", background: tone.hero }}
+                            className="overflow-hidden rounded-[24px] border px-6 py-6 shadow-soft-lg lg:px-8 lg:py-7"
+                            style={{ borderColor: tone.line, background: "linear-gradient(135deg, #EEF4FF 0%, #F8FBFF 45%, #EAF8FF 100%)" }}
                         >
                             <div className="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
                                 <div className="max-w-3xl">
-                                    <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[12px] font-black uppercase tracking-[0.12em] text-white">
+                                    <div className="inline-flex items-center gap-2 rounded-full border px-3 py-1 text-[12px] font-black uppercase tracking-[0.12em]" style={{ borderColor: "#CFE0FF", background: "#FFFFFF", color: "#1D4ED8" }}>
                                         Điều hành hệ thống
                                     </div>
-                                    <h1 className="mt-4 text-[34px] font-black leading-tight md:text-[46px]">
+                                    <h1 className="mt-4 text-[34px] font-black leading-tight md:text-[42px]" style={{ color: tone.pageInk }}>
                                         Theo dõi việc cần xử lý trong toàn hệ thống.
                                     </h1>
+                                    <p className="mt-3 max-w-2xl text-sm font-semibold leading-6" style={{ color: tone.muted }}>
+                                        Tổng hợp hàng chờ quan trọng và chuyển nhanh đến đúng khu vực xử lý trong một màn hình.
+                                    </p>
                                 </div>
 
                                 <div className="grid gap-3 sm:grid-cols-2 xl:w-[380px]">
-                                    <div className="rounded-[24px] border border-white/15 bg-white/10 px-4 py-4 backdrop-blur-sm">
-                                        <p className="text-[12px] font-black uppercase tracking-[0.1em] text-white/70">Bộ lọc thời gian</p>
+                                    <div className="rounded-[20px] border px-4 py-4 shadow-soft-sm" style={{ borderColor: "#CFE0FF", background: "#FFFFFF" }}>
+                                        <p className="text-[12px] font-black uppercase tracking-[0.1em]" style={{ color: "#4F6BA6" }}>Bộ lọc thời gian</p>
                                         <select
                                             value={timeRange}
                                             onChange={(event) => setTimeRange(event.target.value as TimeRange)}
-                                            className="mt-3 w-full rounded-2xl border border-white/20 bg-white/10 px-4 py-3 text-[15px] font-bold text-white outline-none"
+                                            className="mt-3 w-full rounded-2xl border px-4 py-3 text-[15px] font-bold outline-none"
+                                            style={{ borderColor: "#D8E5FF", background: "#F7FAFF", color: tone.pageInk }}
                                         >
                                             <option value="Week" style={{ color: tone.pageInk }}>Tuần này</option>
                                             <option value="Month" style={{ color: tone.pageInk }}>Tháng này</option>
@@ -396,9 +400,9 @@ export const AdminDashboard = (): JSX.Element => {
                                             <option value="Year" style={{ color: tone.pageInk }}>Năm nay</option>
                                         </select>
                                     </div>
-                                    <div className="rounded-[24px] border border-white/15 bg-white/10 px-4 py-4 backdrop-blur-sm">
-                                        <p className="text-[12px] font-black uppercase tracking-[0.1em] text-white/70">Mục đang chờ xử lý</p>
-                                        <p className="mt-3 text-[34px] font-black leading-none text-white">
+                                    <div className="rounded-[20px] border px-4 py-4 shadow-soft-sm" style={{ borderColor: "#CFE0FF", background: "#FFFFFF" }}>
+                                        <p className="text-[12px] font-black uppercase tracking-[0.1em]" style={{ color: "#4F6BA6" }}>Mục đang chờ xử lý</p>
+                                        <p className="mt-3 text-[34px] font-black leading-none" style={{ color: tone.pageInk }}>
                                             {fmtNumber(
                                                 queueSummary.approvalCount +
                                                 queueSummary.withdrawalCount +
