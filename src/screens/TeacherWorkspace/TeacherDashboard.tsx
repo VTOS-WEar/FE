@@ -236,7 +236,7 @@ export const TeacherDashboard = (): JSX.Element => {
                                     <button
                                         type="button"
                                         onClick={() => navigate("/teacher/classes")}
-                                        className="w-full rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-xs font-bold text-sky-800 transition-colors hover:bg-sky-100 sm:ml-auto sm:w-auto"
+                                        className="mt-4 w-full rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-xs font-bold text-sky-800 transition-colors hover:bg-sky-100 sm:ml-auto sm:w-auto"
                                     >
                                         Mở danh sách lớp
                                     </button>
