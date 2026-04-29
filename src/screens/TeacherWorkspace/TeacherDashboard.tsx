@@ -21,6 +21,8 @@ export const TeacherDashboard = (): JSX.Element => {
     const primaryClass = dashboard?.classesNeedingAttention[0];
     const measuredStudents = Math.max((dashboard?.totalStudents || 0) - (dashboard?.missingMeasurementCount || 0), 0);
     const orderedStudents = dashboard?.classesNeedingAttention.reduce((sum, item) => sum + item.orderedStudentCount, 0) || 0;
+    const missingOrdersCount = Math.max((dashboard?.totalStudents || 0) - orderedStudents, 0);
+    const todayTasksCount = (dashboard?.missingParentLinkCount || 0) + (dashboard?.missingMeasurementCount || 0) + missingOrdersCount;
     const handleLogout = () => {
         setIsLoggingOut(true);
         setTimeout(() => {
@@ -210,11 +212,13 @@ export const TeacherDashboard = (): JSX.Element => {
                                     <div>
                                         <p className="text-sm font-semibold text-[#6b7280]">Việc cần làm hôm nay</p>
                                         <p className="text-2xl font-extrabold text-gray-900">
-                                            {dashboard.missingParentLinkCount + dashboard.missingMeasurementCount + (primaryClass ? primaryClass.studentCount - primaryClass.orderedStudentCount : 0)}
+                                            {todayTasksCount}
                                         </p>
-                                        <p className="mt-1 text-xs font-semibold text-[#6b7280]">
-                                            Gồm phụ huynh chưa liên kết, học sinh chưa đo size, và đơn đặt chưa hoàn tất.
-                                        </p>
+                                        <div className="mt-2 space-y-1 text-xs font-semibold text-[#4c5769]">
+                                            <p>Phụ huynh chưa liên kết: {dashboard.missingParentLinkCount}</p>
+                                            <p>Học sinh chưa đo size: {dashboard.missingMeasurementCount}</p>
+                                            <p>Học sinh chưa đặt đồng phục: {missingOrdersCount}</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
