@@ -58,23 +58,23 @@ export const TeacherDashboard = (): JSX.Element => {
                         </p>
                     </div>
                     <div className="grid auto-rows-fr grid-cols-1 gap-3 sm:grid-cols-2 xl:col-span-1">
-                        <button type="button" onClick={() => navigate("/teacher/classes")} className="inline-flex h-full w-full items-center gap-2 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm font-bold text-gray-900 shadow-soft-sm hover:border-emerald-200">
+                        <button type="button" onClick={() => navigate("/teacher/classes")} className="inline-flex h-full w-full items-center justify-center gap-2 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm font-bold text-gray-900 shadow-soft-sm transition-all hover:-translate-y-0.5 hover:border-emerald-200">
                             <Users className="h-4 w-4 text-emerald-700" />
                             Xem lớp chủ nhiệm
                         </button>
-                        <button type="button" onClick={() => navigate("/teacher/reminders")} className="inline-flex h-full w-full items-center gap-2 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm font-bold text-gray-900 shadow-soft-sm hover:border-amber-200">
+                        <button type="button" onClick={() => navigate("/teacher/reminders")} className="inline-flex h-full w-full items-center justify-center gap-2 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm font-bold text-gray-900 shadow-soft-sm transition-all hover:-translate-y-0.5 hover:border-amber-200">
                             <BellRing className="h-4 w-4 text-amber-700" />
                             Nhắc phụ huynh
                         </button>
-                        <button type="button" onClick={() => navigate("/teacher/messages")} className="inline-flex h-full w-full items-center gap-2 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm font-bold text-gray-900 shadow-soft-sm hover:border-sky-200">
+                        <button type="button" onClick={() => navigate("/teacher/messages")} className="inline-flex h-full w-full items-center justify-center gap-2 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm font-bold text-gray-900 shadow-soft-sm transition-all hover:-translate-y-0.5 hover:border-sky-200">
                             <MessageSquare className="h-4 w-4 text-sky-700" />
                             Mở tin nhắn
                         </button>
-                        <button type="button" onClick={() => navigate("/teacher/account")} className="inline-flex h-full w-full items-center gap-2 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm font-bold text-gray-900 shadow-soft-sm hover:border-violet-200">
+                        <button type="button" onClick={() => navigate("/teacher/account")} className="inline-flex h-full w-full items-center justify-center gap-2 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm font-bold text-gray-900 shadow-soft-sm transition-all hover:-translate-y-0.5 hover:border-violet-200">
                             <Settings className="h-4 w-4 text-violet-700" />
                             Cài đặt tài khoản
                         </button>
-                        <button type="button" onClick={handleLogout} className="inline-flex h-full w-full items-center gap-2 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-bold text-red-800 shadow-soft-sm transition-all hover:border-red-300 hover:bg-red-100">
+                        <button type="button" onClick={handleLogout} className="inline-flex h-full w-full items-center justify-center gap-2 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-bold text-red-800 shadow-soft-sm transition-all hover:-translate-y-0.5 hover:border-red-300 hover:bg-red-100 sm:col-span-2">
                             <LogOut className={`h-4 w-4 ${isLoggingOut ? "animate-spin" : ""}`} />
                             {isLoggingOut ? "Đang xuất..." : "Đăng xuất"}
                         </button>
