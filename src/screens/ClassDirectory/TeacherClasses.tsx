@@ -114,7 +114,7 @@ export const TeacherClasses = (): JSX.Element => {
                                     </div>
                                 </div>
 
-                                <div className="mt-5 grid gap-3 sm:grid-cols-3">
+                                <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                                     <div className="rounded-2xl bg-[#f4fffb] p-4">
                                         <p className="text-sm font-semibold text-[#6b7280]">Học sinh</p>
                                         <p className="mt-1 text-xl font-extrabold text-gray-900">{classGroup.studentCount}</p>
@@ -127,16 +127,15 @@ export const TeacherClasses = (): JSX.Element => {
                                         <p className="text-sm font-semibold text-[#6b7280]">PH liên kết</p>
                                         <p className="mt-1 text-xl font-extrabold text-gray-900">{classGroup.parentLinkedCount}</p>
                                     </div>
-                                </div>
-
-                                <div className="mt-3 rounded-2xl bg-[#eef6ff] p-4">
-                                    <div className="flex items-center gap-2 text-sm font-semibold text-[#4c5769]">
-                                        <ShoppingBag className="h-4 w-4 text-sky-700" />
-                                        <span>Độ phủ đơn hàng</span>
+                                    <div className="rounded-2xl bg-[#eef6ff] p-4">
+                                        <div className="flex items-center gap-2 text-sm font-semibold text-[#4c5769]">
+                                            <ShoppingBag className="h-4 w-4 text-sky-700" />
+                                            <span>Độ phủ đơn hàng</span>
+                                        </div>
+                                        <p className="mt-1 text-xl font-extrabold text-gray-900">
+                                            {classGroup.orderedStudentCount}/{classGroup.studentCount}
+                                        </p>
                                     </div>
-                                    <p className="mt-1 text-xl font-extrabold text-gray-900">
-                                        {classGroup.orderedStudentCount}/{classGroup.studentCount}
-                                    </p>
                                 </div>
 
                                 <div className="mt-4 flex items-center gap-2 text-sm font-semibold text-[#4c5769]">
