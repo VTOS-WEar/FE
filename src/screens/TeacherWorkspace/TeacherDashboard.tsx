@@ -200,28 +200,46 @@ export const TeacherDashboard = (): JSX.Element => {
 
                         <div className="grid h-full gap-4 xl:grid-rows-2">
                             <div className="flex h-full rounded-[20px] border border-gray-200 bg-white p-5 shadow-soft-sm">
-                                <div className="flex items-center gap-3">
-                                    <div className="rounded-2xl bg-[#fef6d8] p-3 text-amber-700"><AlertCircle className="h-5 w-5" /></div>
-                                    <div>
-                                        <p className="text-sm font-semibold text-[#6b7280]">Báo cáo chưa đọc</p>
-                                        <p className="text-2xl font-extrabold text-gray-900">{dashboard.pendingReviewReportCount}</p>
+                                <div className="flex items-center justify-between gap-3">
+                                    <div className="flex items-center gap-3">
+                                        <div className="rounded-2xl bg-[#fef6d8] p-3 text-amber-700"><AlertCircle className="h-5 w-5" /></div>
+                                        <div>
+                                            <p className="text-sm font-semibold text-[#6b7280]">Báo cáo chưa đọc</p>
+                                            <p className="text-2xl font-extrabold text-gray-900">{dashboard.pendingReviewReportCount}</p>
+                                        </div>
                                     </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => navigate("/teacher/reports")}
+                                        className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-bold text-amber-800 transition-colors hover:bg-amber-100"
+                                    >
+                                        Xem báo cáo
+                                    </button>
                                 </div>
                             </div>
                             <div className="flex h-full rounded-[20px] border border-gray-200 bg-white p-5 shadow-soft-sm">
-                                <div className="flex items-center gap-3">
-                                    <div className="rounded-2xl bg-[#eef7ff] p-3 text-sky-700"><Link2 className="h-5 w-5" /></div>
-                                    <div>
-                                        <p className="text-sm font-semibold text-[#6b7280]">Việc cần làm hôm nay</p>
-                                        <p className="text-2xl font-extrabold text-gray-900">
-                                            {todayTasksCount}
-                                        </p>
-                                        <div className="mt-2 space-y-1 text-xs font-semibold text-[#4c5769]">
-                                            <p>Phụ huynh chưa liên kết: {dashboard.missingParentLinkCount}</p>
-                                            <p>Học sinh chưa đo size: {dashboard.missingMeasurementCount}</p>
-                                            <p>Học sinh chưa đặt đồng phục: {missingOrdersCount}</p>
+                                <div className="flex w-full items-center justify-between gap-3">
+                                    <div className="flex items-center gap-3">
+                                        <div className="rounded-2xl bg-[#eef7ff] p-3 text-sky-700"><Link2 className="h-5 w-5" /></div>
+                                        <div>
+                                            <p className="text-sm font-semibold text-[#6b7280]">Việc cần làm hôm nay</p>
+                                            <p className="text-2xl font-extrabold text-gray-900">
+                                                {todayTasksCount}
+                                            </p>
+                                            <div className="mt-2 space-y-1 text-xs font-semibold text-[#4c5769]">
+                                                <p>Phụ huynh chưa liên kết: {dashboard.missingParentLinkCount}</p>
+                                                <p>Học sinh chưa đo size: {dashboard.missingMeasurementCount}</p>
+                                                <p>Học sinh chưa đặt đồng phục: {missingOrdersCount}</p>
+                                            </div>
                                         </div>
                                     </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => navigate("/teacher/classes")}
+                                        className="rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-xs font-bold text-sky-800 transition-colors hover:bg-sky-100"
+                                    >
+                                        Mở danh sách lớp
+                                    </button>
                                 </div>
                             </div>
                         </div>
