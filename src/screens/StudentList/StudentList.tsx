@@ -1,5 +1,5 @@
 import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
     Breadcrumb,
@@ -33,6 +33,8 @@ type StudentFormData = {
     gender: string;
     parentPhone: string;
 };
+
+const MIN_PAGE_FETCH_FEEDBACK_MS = 700;
 
 const EMPTY_FORM: StudentFormData = {
     fullName: "", dateOfBirth: "", classGroupId: "", grade: "", gender: "Nam",
@@ -235,6 +237,8 @@ export const StudentListV2 = (): JSX.Element => {
     const [students, setStudents] = useState<StudentListItem[]>([]);
     const [totalCount, setTotalCount] = useState(0);
     const [loading, setLoading] = useState(true);
+    const [fetchingStudents, setFetchingStudents] = useState(false);
+    const [filtering, setFiltering] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     const [search, setSearch] = useState("");
@@ -259,6 +263,9 @@ export const StudentListV2 = (): JSX.Element => {
     const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
     const [availableGrades, setAvailableGrades] = useState<string[]>([]);
     const [classOptions, setClassOptions] = useState<ClassOption[]>([]);
+    const hasLoadedStudentsRef = useRef(false);
+    const fetchStartedAtRef = useRef(0);
+    const fetchSequenceRef = useRef(0);
 
     // Sorting state
     const [sortField, setSortField] = useState<string>("fullName");
@@ -318,18 +325,48 @@ export const StudentListV2 = (): JSX.Element => {
     }, []);
 
     const fetchStudents = useCallback(async () => {
-        setLoading(true); setError(null);
+        const sequence = fetchSequenceRef.current + 1;
+        fetchSequenceRef.current = sequence;
+        const isInitialFetch = !hasLoadedStudentsRef.current;
+        fetchStartedAtRef.current = Date.now();
+        if (isInitialFetch) {
+            setLoading(true);
+        } else {
+            setFetchingStudents(true);
+        }
+        setError(null);
         try {
             const result = await getSchoolStudents({ page, pageSize, search: search || undefined, grade: gradeFilter !== "all" ? gradeFilter : undefined, measurementStatus: measurementFilter !== "all" ? measurementFilter : undefined, parentLinkStatus: parentFilter !== "all" ? parentFilter : undefined });
+            if (fetchSequenceRef.current !== sequence) return;
             setStudents(result.items); setTotalCount(result.totalCount);
-        } catch (err: unknown) { setError(err instanceof Error ? err.message : "Không thể tải danh sách"); setStudents([]); setTotalCount(0); }
-        finally { setLoading(false); }
+            hasLoadedStudentsRef.current = true;
+        } catch (err: unknown) { if (fetchSequenceRef.current !== sequence) return; setError(err instanceof Error ? err.message : "Không thể tải danh sách"); if (isInitialFetch) { setStudents([]); setTotalCount(0); } }
+        finally {
+            const elapsed = Date.now() - fetchStartedAtRef.current;
+            const settle = () => {
+                if (fetchSequenceRef.current !== sequence) return;
+                setLoading(false);
+                setFetchingStudents(false);
+            };
+            if (!isInitialFetch && elapsed < MIN_PAGE_FETCH_FEEDBACK_MS) {
+                window.setTimeout(settle, MIN_PAGE_FETCH_FEEDBACK_MS - elapsed);
+            } else {
+                settle();
+            }
+        }
     }, [page, pageSize, search, gradeFilter, measurementFilter, parentFilter]);
 
     useEffect(() => { fetchStudents(); }, [fetchStudents]);
 
     const [searchInput, setSearchInput] = useState("");
-    useEffect(() => { const t = setTimeout(() => { setSearch(searchInput); setPage(1); }, 400); return () => clearTimeout(t); }, [searchInput]);
+    useEffect(() => {
+        const t = window.setTimeout(() => {
+            setSearch(searchInput);
+            setPage(1);
+            setFiltering(false);
+        }, 400);
+        return () => window.clearTimeout(t);
+    }, [searchInput]);
 
     const gradeOptions = useMemo(() => ["all", ...availableGrades.filter(Boolean)], [availableGrades]);
     const allowedClassOptions = useMemo(
@@ -377,6 +414,7 @@ export const StudentListV2 = (): JSX.Element => {
     };
 
     const totalPages = Math.ceil(totalCount / pageSize);
+    const isInitialLoading = loading && students.length === 0;
 
     // Filter dropdown component
     const FilterDropdown = ({ label, value, options, isOpen, onToggle, onSelect }: { label: string; value: string; options: { value: string; label: string }[]; isOpen: boolean; onToggle: () => void; onSelect: (v: string) => void }) => (
@@ -437,7 +475,7 @@ export const StudentListV2 = (): JSX.Element => {
                         <div className="nb-card-static p-4 space-y-4">
                             <div className="flex items-center gap-2.5 nb-input py-2.5">
                                 <svg className="w-5 h-5 text-[#97a3b6] flex-shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" /></svg>
-                                <input type="text" value={searchInput} onChange={(e) => setSearchInput(e.target.value)} placeholder="Tìm kiếm theo tên, mã học sinh hoặc lớp..." className="flex-1 bg-transparent outline-none font-medium text-sm text-[#4c5769] placeholder:text-[#97a3b6]" />
+                                <input type="text" value={searchInput} onChange={(e) => { setFiltering(true); setSearchInput(e.target.value); }} placeholder="Tìm kiếm theo tên, mã học sinh hoặc lớp..." className="flex-1 bg-transparent outline-none font-medium text-sm text-[#4c5769] placeholder:text-[#97a3b6]" />
                             </div>
                             <div className="flex flex-wrap items-center gap-3">
                                 <div className="flex flex-wrap items-center gap-2">
@@ -466,11 +504,17 @@ export const StudentListV2 = (): JSX.Element => {
                                 </div>
                                 <FilterDropdown label="Đo ảo" value={measurementFilter} isOpen={showMeasurementDropdown} onToggle={() => { setShowMeasurementDropdown(!showMeasurementDropdown); setShowParentDropdown(false); }} onSelect={(v) => { setMeasurementFilter(v); setShowMeasurementDropdown(false); setPage(1); }} options={[{ value: "all", label: "Tất cả" }, { value: "updated", label: "Đã cập nhật" }, { value: "missing", label: "Thiếu số đo" }]} />
                                 <FilterDropdown label="Liên kết PH" value={parentFilter} isOpen={showParentDropdown} onToggle={() => { setShowParentDropdown(!showParentDropdown); setShowMeasurementDropdown(false); }} onSelect={(v) => { setParentFilter(v); setShowParentDropdown(false); setPage(1); }} options={[{ value: "all", label: "Tất cả" }, { value: "linked", label: "Đã liên kết" }, { value: "unlinked", label: "Chưa liên kết" }]} />
+                                {(fetchingStudents || filtering) && (
+                                    <div className="inline-flex h-10 items-center gap-2 rounded-full border border-violet-100 bg-white px-3 text-xs font-bold text-violet-700 shadow-soft-sm">
+                                        <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-violet-100 border-t-violet-700" />
+                                        Đang lọc
+                                    </div>
+                                )}
                             </div>
                         </div>
 
                         {/* Student Table */}
-                        <div className="nb-card-static overflow-hidden">
+                        <div className="nb-card-static relative overflow-hidden">
                             {/* Table Header */}
                             <div className="bg-violet-50 border-b border-gray-200">
                                 <div className="hidden lg:grid grid-cols-[2fr_0.8fr_0.7fr_1.2fr_1.8fr_60px] items-center px-6 py-3.5 gap-4">
@@ -487,7 +531,7 @@ export const StudentListV2 = (): JSX.Element => {
                             </div>
 
                             {/* Loading */}
-                            {loading && (
+                            {isInitialLoading && (
                                 <div className="px-6 py-12 text-center">
                                     <div className="w-8 h-8 border-4 border-gray-200 border-t-[#6938ef] rounded-full animate-spin mx-auto mb-3" />
                                     <p className="font-medium text-[#97a3b6] text-sm">Đang tải danh sách học sinh...</p>
@@ -495,7 +539,7 @@ export const StudentListV2 = (): JSX.Element => {
                             )}
 
                             {/* Error */}
-                            {!loading && error && (
+                            {!isInitialLoading && error && students.length === 0 && (
                                 <div className="px-6 py-12 text-center">
                                     <div className="w-14 h-14 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-3 border border-gray-200 shadow-sm">
                                         <svg className="w-7 h-7 text-red-500" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" /></svg>
@@ -506,7 +550,7 @@ export const StudentListV2 = (): JSX.Element => {
                             )}
 
                             {/* Empty */}
-                            {!loading && !error && students.length === 0 && (
+                            {!isInitialLoading && !error && students.length === 0 && (
                                 <div className="px-6 py-12 text-center">
                                     <div className="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-3 border border-gray-200 shadow-sm">
                                         <svg className="w-7 h-7 text-gray-400" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" /></svg>
@@ -521,7 +565,7 @@ export const StudentListV2 = (): JSX.Element => {
                             )}
 
                             {/* Rows */}
-                            {!loading && !error && students.length > 0 && (
+                            {!isInitialLoading && students.length > 0 && (
                                 <div className="divide-y divide-[#E5E7EB]">
                                     {sortedStudents.map((student) => (
                                         <div key={student.id} className="grid grid-cols-1 lg:grid-cols-[2fr_0.8fr_0.7fr_1.2fr_1.8fr_60px] items-center px-6 py-4 gap-4 hover:bg-[#FFF5EB] transition-colors">
@@ -590,9 +634,9 @@ export const StudentListV2 = (): JSX.Element => {
                             <p className="font-medium text-[#97a3b6] text-sm">Hiển thị {students.length} / {totalCount} học sinh</p>
                             {totalPages > 1 && (
                                 <div className="flex items-center gap-2">
-                                    <button onClick={() => setPage(Math.max(1, page - 1))} disabled={page === 1} className="nb-btn nb-btn-sm nb-btn-outline disabled:opacity-40">←</button>
+                                    <button onClick={() => setPage(Math.max(1, page - 1))} disabled={page === 1 || fetchingStudents} className="nb-btn nb-btn-sm nb-btn-outline disabled:opacity-40">←</button>
                                     <span className="font-semibold text-gray-900 text-sm">Trang {page} / {totalPages}</span>
-                                    <button onClick={() => setPage(Math.min(totalPages, page + 1))} disabled={page === totalPages} className="nb-btn nb-btn-sm nb-btn-outline disabled:opacity-40">→</button>
+                                    <button onClick={() => setPage(Math.min(totalPages, page + 1))} disabled={page === totalPages || fetchingStudents} className="nb-btn nb-btn-sm nb-btn-outline disabled:opacity-40">→</button>
                                 </div>
                             )}
                         </div>

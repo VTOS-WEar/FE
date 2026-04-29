@@ -828,6 +828,13 @@ export const UniformManagement = (): JSX.Element => {
                                         </select>
                                         <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-900" />
                                     </label>
+
+                                    {filtering ? (
+                                        <div className="inline-flex h-10 items-center gap-2 rounded-full border border-blue-100 bg-white px-3 text-xs font-bold text-[#2563EB] shadow-soft-sm">
+                                            <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-blue-100 border-t-[#2563EB]" />
+                                            Đang lọc
+                                        </div>
+                                    ) : null}
                                 </div>
                             </div>
 
@@ -864,12 +871,6 @@ export const UniformManagement = (): JSX.Element => {
                                 ) : (
                                     <EmptyState onCreate={openCreate} />
                                 )}
-                                {filtering ? (
-                                    <div className="absolute right-4 top-4 inline-flex items-center gap-2 rounded-full border border-blue-100 bg-white/90 px-3 py-1.5 text-xs font-bold text-[#2563EB] shadow-soft-sm backdrop-blur">
-                                        <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-blue-100 border-t-[#2563EB]" />
-                                        Đang lọc
-                                    </div>
-                                ) : null}
                             </div>
                         </section>
                     </main>

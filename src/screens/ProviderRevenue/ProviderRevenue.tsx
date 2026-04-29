@@ -142,6 +142,7 @@ const DATE_SORT_OPTIONS = [
 ];
 
 const MIN_PAGE_FETCH_FEEDBACK_MS = 700;
+const MIN_FILTER_COMMIT_MS = 450;
 
 function formatDateParam(value: Date) {
     const year = value.getFullYear();
@@ -201,13 +202,16 @@ export default function ProviderRevenue() {
     const [page, setPage] = useState(1);
     const [status, setStatus] = useState("");
     const [searchTerm, setSearchTerm] = useState("");
+    const [searchInput, setSearchInput] = useState("");
     const [dateRange, setDateRange] = useState("all");
     const [loading, setLoading] = useState(true);
     const [fetchingOrders, setFetchingOrders] = useState(false);
+    const [filtering, setFiltering] = useState(false);
     const [exporting, setExporting] = useState(false);
     const hasLoadedOrdersRef = useRef(false);
     const fetchStartedAtRef = useRef(0);
     const fetchSequenceRef = useRef(0);
+    const filterTimerRef = useRef<ReturnType<typeof window.setTimeout> | null>(null);
 
     const dateFilters = useMemo(() => {
         const now = new Date();
@@ -278,6 +282,14 @@ export default function ProviderRevenue() {
     useEffect(() => {
         fetchData();
     }, [fetchData]);
+
+    useEffect(() => {
+        return () => {
+            if (filterTimerRef.current) {
+                window.clearTimeout(filterTimerRef.current);
+            }
+        };
+    }, []);
 
     const handleLogout = () => {
         localStorage.removeItem("access_token");
@@ -350,6 +362,23 @@ export default function ProviderRevenue() {
     const receivedStatus = RECEIVED_STATUS_OPTIONS.some((item) => item.value === status) ? status : "";
     const isFilteredEmptyState = !loading && !!status && orders.length === 0;
     const { preserveResultsHeight, preservedHeightStyle, resultsRegionRef } = usePreservedResultsHeight(isFilteredEmptyState);
+
+    const scheduleSearchCommit = useCallback(
+        (nextSearch: string) => {
+            preserveResultsHeight();
+            setFiltering(true);
+            if (filterTimerRef.current) {
+                window.clearTimeout(filterTimerRef.current);
+            }
+            filterTimerRef.current = window.setTimeout(() => {
+                setSearchTerm(nextSearch);
+                setPage(1);
+                setFiltering(false);
+                filterTimerRef.current = null;
+            }, MIN_FILTER_COMMIT_MS);
+        },
+        [preserveResultsHeight],
+    );
 
     const handleStatusChange = (nextStatus: string) => {
         preserveResultsHeight();
@@ -587,11 +616,11 @@ export default function ProviderRevenue() {
                                     <label className="relative block w-full lg:max-w-[300px]">
                                         <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
                                         <input
-                                            value={searchTerm}
+                                            value={searchInput}
                                             onChange={(event) => {
-                                                preserveResultsHeight();
-                                                setSearchTerm(event.target.value);
-                                                setPage(1);
+                                                const nextSearch = event.target.value;
+                                                setSearchInput(nextSearch);
+                                                scheduleSearchCommit(nextSearch);
                                             }}
                                             placeholder="Search..."
                                             className="h-10 w-full rounded-full border border-slate-200 bg-white pl-11 pr-4 text-sm font-medium text-slate-800 outline-none shadow-soft-xs transition-colors placeholder:text-slate-500 focus:border-violet-200 focus:ring-4 focus:ring-violet-50"
@@ -641,6 +670,13 @@ export default function ProviderRevenue() {
                                             </select>
                                             <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-900" />
                                         </label>
+
+                                        {fetchingOrders || filtering ? (
+                                            <div className="inline-flex h-10 items-center gap-2 rounded-full border border-violet-100 bg-white px-3 text-xs font-bold text-violet-700 shadow-soft-sm">
+                                                <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-violet-100 border-t-violet-700" />
+                                                Đang lọc
+                                            </div>
+                                        ) : null}
                                     </div>
                                 </div>
 
@@ -658,12 +694,6 @@ export default function ProviderRevenue() {
                                         />
                                     )}
 
-                                    {fetchingOrders ? (
-                                        <div className="absolute right-4 top-4 inline-flex items-center gap-2 rounded-full border border-violet-100 bg-white/90 px-3 py-1.5 text-xs font-bold text-violet-700 shadow-soft-sm backdrop-blur">
-                                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                                            Đang tải
-                                        </div>
-                                    ) : null}
                                 </div>
 
                                 {totalPages > 1 ? (

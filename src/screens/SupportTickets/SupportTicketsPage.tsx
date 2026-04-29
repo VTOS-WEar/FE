@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AlertCircle, CheckCircle2, ChevronDown, Clock3, Eye, LifeBuoy, MessageSquare, Plus, SearchCheck, X, XCircle } from "lucide-react";
 import { DashboardSidebar } from "../../components/layout";
 import { TopNavBar } from "../../components/layout/TopNavBar";
@@ -10,6 +10,7 @@ import { createSupportTicket, getMySupportTickets, type SupportTicketDto, type S
 import { TeacherWorkspaceShell } from "../TeacherWorkspace/TeacherWorkspaceShell";
 
 type RoleMode = "Parent" | "Provider" | "School" | "HomeroomTeacher";
+const MIN_PAGE_FETCH_FEEDBACK_MS = 700;
 
 const statusMeta: Record<string, { label: string; className: string; icon: typeof AlertCircle }> = {
     Open: { label: "Đang mở", className: "bg-rose-50 text-rose-700 border-rose-100", icon: AlertCircle },
@@ -97,25 +98,49 @@ function SupportTicketsPanel({ role }: { role: RoleMode }): JSX.Element {
     const [page, setPage] = useState(1);
     const [selected, setSelected] = useState<SupportTicketDto | null>(null);
     const [loading, setLoading] = useState(true);
+    const [fetchingTickets, setFetchingTickets] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [form, setForm] = useState({ title: "", category: "General", description: "" });
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const hasLoadedTicketsRef = useRef(false);
+    const fetchStartedAtRef = useRef(0);
+    const fetchSequenceRef = useRef(0);
 
     const load = useCallback(async () => {
-        setLoading(true);
+        const isInitialLoad = !hasLoadedTicketsRef.current;
+        const fetchSequence = fetchSequenceRef.current + 1;
+        fetchSequenceRef.current = fetchSequence;
+        setLoading(isInitialLoad);
+        setFetchingTickets(!isInitialLoad);
+        fetchStartedAtRef.current = Date.now();
         setError(null);
         try {
             const result = await getMySupportTickets({ page, pageSize: PROVIDER_LIST_PAGE_SIZE, status: status || undefined });
+            if (fetchSequence !== fetchSequenceRef.current) return;
             setData(result);
             setSelected((current) => {
                 if (!current) return null;
                 return result.items.find((item) => item.id === current.id) ?? null;
             });
         } catch (err) {
+            if (fetchSequence !== fetchSequenceRef.current) return;
             setError(err instanceof Error ? err.message : "Không thể tải danh sách hỗ trợ.");
         } finally {
-            setLoading(false);
+            const elapsed = Date.now() - fetchStartedAtRef.current;
+            const finish = () => {
+                if (fetchSequence !== fetchSequenceRef.current) return;
+                hasLoadedTicketsRef.current = true;
+                setLoading(false);
+                setFetchingTickets(false);
+            };
+
+            if (!isInitialLoad && elapsed < MIN_PAGE_FETCH_FEEDBACK_MS) {
+                window.setTimeout(finish, MIN_PAGE_FETCH_FEEDBACK_MS - elapsed);
+                return;
+            }
+
+            finish();
         }
     }, [page, status]);
 
@@ -263,6 +288,12 @@ function SupportTicketsPanel({ role }: { role: RoleMode }): JSX.Element {
                                 </select>
                                 <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
                             </div>
+                            {fetchingTickets ? (
+                                <div className="inline-flex h-10 items-center gap-2 rounded-xl border border-sky-100 bg-white px-3 text-xs font-bold text-sky-700 shadow-soft-sm">
+                                    <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-sky-100 border-t-sky-700" />
+                                    Đang lọc
+                                </div>
+                            ) : null}
                             <button
                                 type="button"
                                 onClick={() => setIsCreateModalOpen(true)}
@@ -293,11 +324,11 @@ function SupportTicketsPanel({ role }: { role: RoleMode }): JSX.Element {
                         )}
                         {totalPages > 1 ? (
                             <div className="mt-4 flex items-center justify-center gap-3">
-                                <button disabled={page <= 1} onClick={() => setPage((current) => current - 1)} className="nb-btn nb-btn-outline nb-btn-sm text-sm">
+                                <button disabled={page <= 1 || fetchingTickets} onClick={() => setPage((current) => current - 1)} className="nb-btn nb-btn-outline nb-btn-sm text-sm">
                                     ← Trước
                                 </button>
                                 <span className="text-sm font-bold text-gray-500">{page}/{totalPages}</span>
-                                <button disabled={page >= totalPages} onClick={() => setPage((current) => current + 1)} className="nb-btn nb-btn-outline nb-btn-sm text-sm">
+                                <button disabled={page >= totalPages || fetchingTickets} onClick={() => setPage((current) => current + 1)} className="nb-btn nb-btn-outline nb-btn-sm text-sm">
                                     Sau →
                                 </button>
                             </div>

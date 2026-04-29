@@ -1,4 +1,4 @@
-import { type ReactNode, useEffect, useState } from "react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowRight, BookOpenCheck, FolderTree, GraduationCap, Upload, UsersRound } from "lucide-react";
 import { DashboardSidebar } from "../../components/layout";
@@ -7,6 +7,8 @@ import { SCHOOL_THEME } from "../../constants/schoolTheme";
 import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
 import { useSidebarConfig } from "../../hooks/useSidebarConfig";
 import { getSchoolClassesOverview, getSchoolProfile, type SchoolClassesOverviewDto } from "../../lib/api/schools";
+
+const MIN_FILTER_FEEDBACK_MS = 450;
 
 function StatCard({
     label,
@@ -48,7 +50,10 @@ export const SchoolClassDirectory = (): JSX.Element => {
     const [overview, setOverview] = useState<SchoolClassesOverviewDto | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [selectedGradeInput, setSelectedGradeInput] = useState<string>("all");
     const [selectedGrade, setSelectedGrade] = useState<string>("all");
+    const [filtering, setFiltering] = useState(false);
+    const filterTimerRef = useRef<ReturnType<typeof window.setTimeout> | null>(null);
 
     useEffect(() => {
         getSchoolProfile().then((profile) => setSchoolName(profile.schoolName || "")).catch(() => {});
@@ -57,6 +62,27 @@ export const SchoolClassDirectory = (): JSX.Element => {
             .catch((err: unknown) => setError(err instanceof Error ? err.message : "Không thể tải danh sách lớp"))
             .finally(() => setLoading(false));
     }, []);
+
+    useEffect(() => {
+        return () => {
+            if (filterTimerRef.current) {
+                window.clearTimeout(filterTimerRef.current);
+            }
+        };
+    }, []);
+
+    const scheduleGradeFilter = (nextGrade: string) => {
+        setSelectedGradeInput(nextGrade);
+        setFiltering(true);
+        if (filterTimerRef.current) {
+            window.clearTimeout(filterTimerRef.current);
+        }
+        filterTimerRef.current = window.setTimeout(() => {
+            setSelectedGrade(nextGrade);
+            setFiltering(false);
+            filterTimerRef.current = null;
+        }, MIN_FILTER_FEEDBACK_MS);
+    };
 
     const handleLogout = () => {
         localStorage.removeItem("access_token");
@@ -119,9 +145,9 @@ export const SchoolClassDirectory = (): JSX.Element => {
                                     <span className="text-sm font-semibold text-[#4c5769]">Khối:</span>
                                     <button
                                         type="button"
-                                        onClick={() => setSelectedGrade("all")}
+                                        onClick={() => scheduleGradeFilter("all")}
                                         className={`rounded-full border px-3 py-2 text-sm font-semibold transition-colors ${
-                                            selectedGrade === "all"
+                                            selectedGradeInput === "all"
                                                 ? SCHOOL_THEME.activePill
                                                 : SCHOOL_THEME.inactivePill
                                         }`}
@@ -132,9 +158,9 @@ export const SchoolClassDirectory = (): JSX.Element => {
                                         <button
                                             key={grade.grade}
                                             type="button"
-                                            onClick={() => setSelectedGrade(grade.grade)}
+                                            onClick={() => scheduleGradeFilter(grade.grade)}
                                             className={`rounded-full border px-3 py-2 text-sm font-semibold transition-colors ${
-                                                selectedGrade === grade.grade
+                                                selectedGradeInput === grade.grade
                                                     ? SCHOOL_THEME.activePill
                                                     : SCHOOL_THEME.inactivePill
                                             }`}
@@ -142,6 +168,12 @@ export const SchoolClassDirectory = (): JSX.Element => {
                                             Khối {grade.grade}
                                         </button>
                                     ))}
+                                    {filtering ? (
+                                        <div className="inline-flex h-10 items-center gap-2 rounded-full border border-blue-100 bg-white px-3 text-xs font-bold text-[#2563EB] shadow-soft-sm">
+                                            <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-blue-100 border-t-[#2563EB]" />
+                                            Đang lọc
+                                        </div>
+                                    ) : null}
                                 </div>
                             </section>
                         )}

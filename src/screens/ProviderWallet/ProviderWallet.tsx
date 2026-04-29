@@ -4,7 +4,6 @@ import {
     Banknote,
     Clock3,
     ExternalLink,
-    Landmark,
     Loader2,
     WalletCards,
 } from "lucide-react";
@@ -14,6 +13,7 @@ import { PROVIDER_LIST_PAGE_SIZE, ProviderDataTable, type ProviderDataTableColum
 import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
 import { useProviderSidebarConfig } from "../../hooks/useProviderSidebarConfig";
 import {
+    getProviderRevenue,
     getProviderWallet,
     getProviderWalletTransactions,
     getProviderWithdrawalRequests,
@@ -182,6 +182,7 @@ export default function ProviderWallet() {
     const [withdrawalTotal, setWithdrawalTotal] = useState(0);
     const [pendingWithdrawal, setPendingWithdrawal] = useState<ProviderWithdrawalRequestDto | undefined>();
     const [pendingWithdrawalAmount, setPendingWithdrawalAmount] = useState(0);
+    const [pendingSettlementAmount, setPendingSettlementAmount] = useState(0);
     const [page, setPage] = useState(1);
     const [withdrawalPage, setWithdrawalPage] = useState(1);
     const [loading, setLoading] = useState(true);
@@ -198,9 +199,10 @@ export default function ProviderWallet() {
     const fetchData = useCallback(async () => {
         setLoading(true);
         try {
-            const [profile, currentWallet, tx, withdrawalRes, pendingWithdrawalRes] = await Promise.all([
+            const [profile, currentWallet, revenue, tx, withdrawalRes, pendingWithdrawalRes] = await Promise.all([
                 getProviderProfile(),
                 getProviderWallet(),
+                getProviderRevenue(),
                 getProviderWalletTransactions(page, PROVIDER_LIST_PAGE_SIZE),
                 getProviderWithdrawalRequests(withdrawalPage, PROVIDER_LIST_PAGE_SIZE),
                 getProviderWithdrawalRequests(1, PROVIDER_LIST_PAGE_SIZE, "Pending"),
@@ -213,6 +215,7 @@ export default function ProviderWallet() {
             setWithdrawalTotal(withdrawalRes.total ?? 0);
             setPendingWithdrawal(pendingWithdrawalRes.items?.[0]);
             setPendingWithdrawalAmount((pendingWithdrawalRes.items ?? []).reduce((total, item) => total + item.amount, 0));
+            setPendingSettlementAmount(revenue.pendingAmount ?? 0);
             setBankForm({
                 bankCode: currentWallet.bankCode || "",
                 bankName: currentWallet.bankName || "",
@@ -254,6 +257,13 @@ export default function ProviderWallet() {
                 iconClassName: "text-slate-900",
             },
             {
+                label: "Số dư chưa tất toán",
+                value: fmt(pendingSettlementAmount),
+                icon: <Banknote className="h-5 w-5" />,
+                surfaceClassName: "bg-sky-100",
+                iconClassName: "text-slate-900",
+            },
+            {
                 label: "Đang chờ rút",
                 value: fmt(pendingWithdrawalAmount),
                 icon: <Clock3 className="h-5 w-5" />,
@@ -267,15 +277,8 @@ export default function ProviderWallet() {
                 surfaceClassName: "bg-teal-100",
                 iconClassName: "text-slate-900",
             },
-            {
-                label: "Ngân hàng",
-                value: wallet?.bankName || (isBankReady ? "Sẵn sàng" : "Chưa đủ"),
-                icon: <Landmark className="h-5 w-5" />,
-                surfaceClassName: "bg-blue-100",
-                iconClassName: "text-slate-900",
-            },
         ],
-        [isBankReady, pendingWithdrawal, pendingWithdrawalAmount, wallet, withdrawalTotal],
+        [pendingSettlementAmount, pendingWithdrawal, pendingWithdrawalAmount, wallet, withdrawalTotal],
     );
 
     const withdrawalColumns: ProviderDataTableColumn<ProviderWithdrawalRequestDto>[] = [

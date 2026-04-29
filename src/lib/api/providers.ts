@@ -113,6 +113,52 @@ export type ProviderOrderMonthlyMetricDto = {
     completedRevenue: number;
 };
 
+export type ProviderCatalogItemDto = {
+    catalogItemId?: string | null;
+    contractItemId: string;
+    outfitId: string;
+    outfitName: string;
+    outfitImageUrl?: string | null;
+    schoolMaterialType?: string | null;
+    contractPricePerUnit: number;
+    displayName: string;
+    shortDescription?: string | null;
+    materialDetails?: string | null;
+    publicationPrice?: number | null;
+    postDeadlinePrice?: number | null;
+    status: string;
+};
+
+export type ProviderCatalogPublicationDto = {
+    semesterPublicationProviderId: string;
+    semesterPublicationId: string;
+    schoolId: string;
+    schoolName: string;
+    semester: string;
+    academicYear: string;
+    startDate: string;
+    endDate: string;
+    publicationStatus: string;
+    providerStatus: string;
+    contractId?: string | null;
+    contractName?: string | null;
+    contractNumber?: string | null;
+    items: ProviderCatalogItemDto[];
+};
+
+export type ProviderCatalogResponse = {
+    publications: ProviderCatalogPublicationDto[];
+};
+
+export type UpsertProviderCatalogItemRequest = {
+    displayName?: string | null;
+    shortDescription?: string | null;
+    materialDetails?: string | null;
+    publicationPrice: number;
+    postDeadlinePrice: number;
+    status: string;
+};
+
 export async function getProviderDirectOrders(
     page = 1,
     pageSize = 10,
@@ -149,6 +195,28 @@ export async function getProviderDirectOrderStats(): Promise<ProviderOrderStatsD
         auth: true,
     });
     return unwrapResult(result);
+}
+
+export async function getProviderCatalog(): Promise<ProviderCatalogResponse> {
+    return api<ProviderCatalogResponse>(endpoints.providers.catalog, {
+        method: "GET",
+        auth: true,
+    });
+}
+
+export async function upsertProviderCatalogItem(
+    semesterPublicationProviderId: string,
+    outfitId: string,
+    payload: UpsertProviderCatalogItemRequest,
+): Promise<ProviderCatalogItemDto> {
+    return api<ProviderCatalogItemDto>(
+        `${endpoints.providers.catalog}/${semesterPublicationProviderId}/items/${outfitId}`,
+        {
+            method: "PUT",
+            auth: true,
+            body: JSON.stringify(payload),
+        },
+    );
 }
 
 async function putOrderAction<T = void>(path: string, body?: unknown): Promise<T> {

@@ -41,6 +41,7 @@ const STATUS_FILTER_OPTIONS = [
 ];
 
 const MIN_PAGE_FETCH_FEEDBACK_MS = 700;
+const MIN_FILTER_COMMIT_MS = 450;
 
 function formatDateTime(value: string) {
     return new Date(value).toLocaleString("vi-VN");
@@ -93,6 +94,8 @@ export function ProviderComplaints() {
     const [fetchingComplaints, setFetchingComplaints] = useState(false);
     const [statusFilter, setStatusFilter] = useState("");
     const [searchTerm, setSearchTerm] = useState("");
+    const [searchInput, setSearchInput] = useState("");
+    const [filtering, setFiltering] = useState(false);
     const [page, setPage] = useState(1);
     const [total, setTotal] = useState(0);
     const [detail, setDetail] = useState<ComplaintDetailDto | null>(null);
@@ -106,6 +109,7 @@ export function ProviderComplaints() {
     const hasLoadedComplaintsRef = useRef(false);
     const fetchStartedAtRef = useRef(0);
     const fetchSequenceRef = useRef(0);
+    const filterTimerRef = useRef<ReturnType<typeof window.setTimeout> | null>(null);
 
     const fetchComplaints = useCallback(async () => {
         const isInitialLoad = !hasLoadedComplaintsRef.current;
@@ -141,6 +145,14 @@ export function ProviderComplaints() {
     useEffect(() => {
         fetchComplaints();
     }, [fetchComplaints]);
+
+    useEffect(() => {
+        return () => {
+            if (filterTimerRef.current) {
+                window.clearTimeout(filterTimerRef.current);
+            }
+        };
+    }, []);
 
     const openDetail = async (id: string) => {
         setDetailLoading(true);
@@ -213,6 +225,23 @@ export function ProviderComplaints() {
     const isFilteredEmptyState = !loading && (!!statusFilter || !!searchTerm.trim()) && displayedComplaints.length === 0;
     const { preserveResultsHeight, preservedHeightStyle, resultsRegionRef } = usePreservedResultsHeight(isFilteredEmptyState);
 
+    const scheduleSearchCommit = useCallback(
+        (nextSearch: string) => {
+            preserveResultsHeight();
+            setFiltering(true);
+            if (filterTimerRef.current) {
+                window.clearTimeout(filterTimerRef.current);
+            }
+            filterTimerRef.current = window.setTimeout(() => {
+                setSearchTerm(nextSearch);
+                setPage(1);
+                setFiltering(false);
+                filterTimerRef.current = null;
+            }, MIN_FILTER_COMMIT_MS);
+        },
+        [preserveResultsHeight],
+    );
+
     const handleStatusChange = (nextStatus: string) => {
         preserveResultsHeight();
         setStatusFilter(nextStatus);
@@ -222,6 +251,7 @@ export function ProviderComplaints() {
     const handleSummaryCardClick = (nextStatus: string) => {
         preserveResultsHeight();
         setStatusFilter(nextStatus);
+        setSearchInput("");
         setSearchTerm("");
         setPage(1);
     };
@@ -393,10 +423,11 @@ export function ProviderComplaints() {
                             <label className="relative block w-full lg:max-w-[300px]">
                                 <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
                                 <input
-                                    value={searchTerm}
+                                    value={searchInput}
                                     onChange={(event) => {
-                                        preserveResultsHeight();
-                                        setSearchTerm(event.target.value);
+                                        const nextSearch = event.target.value;
+                                        setSearchInput(nextSearch);
+                                        scheduleSearchCommit(nextSearch);
                                     }}
                                     placeholder="Search..."
                                     className="h-10 w-full rounded-full border border-slate-200 bg-white pl-11 pr-4 text-sm font-medium text-slate-800 outline-none shadow-soft-xs transition-colors placeholder:text-slate-500 focus:border-violet-200 focus:ring-4 focus:ring-violet-50"
@@ -416,6 +447,13 @@ export function ProviderComplaints() {
                                     </select>
                                     <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-900" />
                                 </label>
+
+                                {fetchingComplaints || filtering ? (
+                                    <div className="inline-flex h-10 items-center gap-2 rounded-full border border-violet-100 bg-white px-3 text-xs font-bold text-violet-700 shadow-soft-sm">
+                                        <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-violet-100 border-t-violet-700" />
+                                        Đang lọc
+                                    </div>
+                                ) : null}
                             </div>
                         </section>
 
@@ -440,13 +478,6 @@ export function ProviderComplaints() {
                                 onRowClick={(complaint) => openDetail(complaint.complaintId)}
                             />
                         )}
-
-                        {fetchingComplaints ? (
-                            <div className="absolute right-4 top-4 inline-flex items-center gap-2 rounded-full border border-violet-100 bg-white/90 px-3 py-1.5 text-xs font-bold text-violet-700 shadow-soft-sm backdrop-blur">
-                                <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                                Đang tải
-                            </div>
-                        ) : null}
 
                         {totalPages > 1 ? (
                             <div className="flex items-center justify-center gap-3">

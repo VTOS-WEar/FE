@@ -1,4 +1,4 @@
-import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { CheckCircle2, ChevronDown, ClipboardList, Clock3, FileText, Inbox, Loader2, Search } from "lucide-react";
 import { DashboardSidebar } from "../../components/layout";
@@ -15,6 +15,7 @@ import {
 } from "../../lib/api/teachers";
 
 const MIN_FILTER_FETCH_FEEDBACK_MS = 700;
+const MIN_FILTER_COMMIT_MS = 450;
 
 function formatReportType(reportType: string) {
     switch (reportType) {
@@ -74,17 +75,28 @@ export const SchoolTeacherReports = (): JSX.Element => {
     const [status, setStatus] = useState(searchParams.get("status") || "");
     const [classGroupId, setClassGroupId] = useState(searchParams.get("classGroupId") || "");
     const [searchTerm, setSearchTerm] = useState("");
+    const [searchInput, setSearchInput] = useState("");
+    const [filtering, setFiltering] = useState(false);
     const [selectedReport, setSelectedReport] = useState<TeacherReportListItemDto | null>(null);
     const [reviewNote, setReviewNote] = useState("");
     const [submitting, setSubmitting] = useState(false);
     const hasLoadedReportsRef = useRef(false);
     const fetchStartedAtRef = useRef(0);
     const fetchSequenceRef = useRef(0);
+    const filterTimerRef = useRef<ReturnType<typeof window.setTimeout> | null>(null);
 
     useEffect(() => {
         getSchoolClassesOverview()
             .then((overview) => setClassOptions(overview.grades.flatMap((group) => group.classes.map((item) => ({ id: item.id, className: item.className })))))
             .catch(() => undefined);
+    }, []);
+
+    useEffect(() => {
+        return () => {
+            if (filterTimerRef.current) {
+                window.clearTimeout(filterTimerRef.current);
+            }
+        };
     }, []);
 
     useEffect(() => {
@@ -170,6 +182,22 @@ export const SchoolTeacherReports = (): JSX.Element => {
     const isFilteredEmptyState = !loading && !error && hasActiveFilters && displayedReports.length === 0;
     const { preserveResultsHeight, preservedHeightStyle, resultsRegionRef } = usePreservedResultsHeight(isFilteredEmptyState);
 
+    const scheduleSearchCommit = useCallback(
+        (nextSearch: string) => {
+            preserveResultsHeight();
+            setFiltering(true);
+            if (filterTimerRef.current) {
+                window.clearTimeout(filterTimerRef.current);
+            }
+            filterTimerRef.current = window.setTimeout(() => {
+                setSearchTerm(nextSearch);
+                setFiltering(false);
+                filterTimerRef.current = null;
+            }, MIN_FILTER_COMMIT_MS);
+        },
+        [preserveResultsHeight],
+    );
+
     const handleReviewSubmit = async () => {
         if (!selectedReport || selectedReport.status === "Reviewed") {
             return;
@@ -227,10 +255,11 @@ export const SchoolTeacherReports = (): JSX.Element => {
                             <label className="relative block w-full lg:max-w-[320px]">
                                 <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
                                 <input
-                                    value={searchTerm}
+                                    value={searchInput}
                                     onChange={(event) => {
-                                        preserveResultsHeight();
-                                        setSearchTerm(event.target.value);
+                                        const nextSearch = event.target.value;
+                                        setSearchInput(nextSearch);
+                                        scheduleSearchCommit(nextSearch);
                                     }}
                                     placeholder="Tìm báo cáo..."
                                     className="h-10 w-full rounded-full border border-slate-200 bg-white pl-11 pr-4 text-sm font-medium text-slate-800 outline-none shadow-soft-xs transition-colors placeholder:text-slate-500 focus:border-blue-200 focus:ring-4 focus:ring-blue-50"
@@ -270,6 +299,13 @@ export const SchoolTeacherReports = (): JSX.Element => {
                                     </select>
                                     <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-900" />
                                 </label>
+
+                                {fetchingReports || filtering ? (
+                                    <div className="inline-flex h-10 items-center gap-2 rounded-full border border-blue-100 bg-white px-3 text-xs font-bold text-[#2563EB] shadow-soft-sm">
+                                        <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-blue-100 border-t-[#2563EB]" />
+                                        Đang lọc
+                                    </div>
+                                ) : null}
                             </div>
                         </section>
 
@@ -394,12 +430,6 @@ export const SchoolTeacherReports = (): JSX.Element => {
                                     )}
                                 </div>
 
-                                {fetchingReports ? (
-                                    <div className="absolute right-4 top-4 inline-flex items-center gap-2 rounded-full border border-blue-100 bg-white/90 px-3 py-1.5 text-xs font-bold text-[#2563EB] shadow-soft-sm backdrop-blur">
-                                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                                        Đang tải
-                                    </div>
-                                ) : null}
                             </section>
                         )}
                     </main>

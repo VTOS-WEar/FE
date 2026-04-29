@@ -141,7 +141,7 @@ function PublicationRow({
         <button
             type="button"
             onClick={() => onOpen(publication.id)}
-            className="flex w-full flex-col gap-3 border-b border-gray-100 px-4 py-3 text-left transition-colors last:border-b-0 hover:bg-blue-50/70 lg:flex-row lg:items-center lg:justify-between"
+            className="grid w-full gap-3 border-b border-gray-100 px-4 py-3 text-left transition-colors last:border-b-0 hover:bg-blue-50/70 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center"
         >
             <div className="min-w-0">
                 <p className="truncate text-base font-extrabold text-slate-950">
@@ -151,17 +151,19 @@ function PublicationRow({
                     {publication.description || "Theo dõi danh mục đồng phục đang công bố cho phụ huynh."}
                 </p>
             </div>
-            <div className="flex flex-wrap items-center gap-2 lg:justify-end">
-                <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-700">
+            <div className="grid gap-2 lg:w-[296px] lg:flex-none lg:justify-items-end">
+                <span className="w-fit whitespace-nowrap rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-700">
                     {formatDate(publication.startDate)} - {formatDate(publication.endDate)}
                 </span>
-                <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-700">
-                    {publication.outfitCount} đồng phục · {publication.providerCount} NCC
-                </span>
-                <span className={`rounded-full px-3 py-1 text-xs font-bold ${isNearEnd ? "bg-amber-100 text-amber-700" : "bg-blue-100 text-[#2563EB]"}`}>
-                    {daysRemaining} ngày còn lại
-                </span>
-                <ArrowRight className="h-4 w-4 text-slate-700" />
+                <div className="grid w-full grid-cols-[minmax(0,1fr)_116px_16px] items-center gap-2">
+                    <span className="justify-self-end whitespace-nowrap rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-700">
+                        {publication.outfitCount} đồng phục · {publication.providerCount} NCC
+                    </span>
+                    <span className={`whitespace-nowrap rounded-full px-3 py-1 text-center text-xs font-bold ${isNearEnd ? "bg-amber-100 text-amber-700" : "bg-blue-100 text-[#2563EB]"}`}>
+                        {daysRemaining} ngày còn lại
+                    </span>
+                    <ArrowRight className="h-4 w-4 text-slate-700" />
+                </div>
             </div>
         </button>
     );
@@ -460,7 +462,7 @@ export const SchoolDashboard = (): JSX.Element => {
                                         </div>
 
                                         <div className="rounded-[8px] border border-gray-200 bg-white shadow-soft-sm">
-                                            <SectionHeader label="Sẵn sàng vận hành" title={`${readyCount}/${readinessItems.length} mục hoàn tất`} />
+                                            <SectionHeader label="Hoàn thiện thông tin" title={`${readyCount}/${readinessItems.length} mục hoàn tất`} />
                                             <div className="grid gap-2 p-4">
                                                 {readinessItems.map((item) => (
                                                     <button

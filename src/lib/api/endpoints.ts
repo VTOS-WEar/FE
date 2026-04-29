@@ -88,6 +88,7 @@ export const endpoints = {
     providers: {
         me: "/api/providers/me",
         contracts: "/api/providers/me/contracts",
+        catalog: "/api/providers/me/catalog",
         directOrders: "/api/providers/me/orders",
         directOrderStats: "/api/providers/me/order-stats",
     },

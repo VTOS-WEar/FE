@@ -400,7 +400,7 @@ export const SemesterPublicationDetail = (): JSX.Element => {
                                             ) : null}
                                             {publication.status === "Active" ? (
                                                 <button onClick={handleClose} className="nb-btn nb-btn-outline text-sm hover:border-blue-200 hover:text-[#2563EB]">
-                                                    Đóng đợt mở bán
+                                                    Đánh dấu hết hạn học kỳ
                                                 </button>
                                             ) : null}
                                         </div>

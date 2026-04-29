@@ -19,10 +19,10 @@ const showcaseImages = [
 
 export const ProductShowcaseSection = (): JSX.Element => {
   return (
-    <section className="nb-section-calm">
+    <section className="nb-section-calm py-10 lg:py-12">
       <div className="mx-auto w-full max-w-[1400px] px-4 md:px-8 lg:px-12">
         {/* Header */}
-        <header className="mx-auto max-w-[700px] text-center mb-14 nb-reveal">
+        <header className="mx-auto mb-7 max-w-[700px] text-center nb-reveal lg:mb-8">
           <h2 className="text-3xl font-extrabold leading-[1.15] text-gray-900 md:text-4xl">
             Kết quả thực tế
           </h2>
@@ -32,7 +32,7 @@ export const ProductShowcaseSection = (): JSX.Element => {
         </header>
 
         {/* Before/After Images */}
-        <div className="mx-auto mt-12 grid w-fit grid-cols-2 gap-8 md:gap-12">
+        <div className="mx-auto grid w-fit grid-cols-2 gap-6 md:gap-8">
           {showcaseImages.map((image) => (
             <div
               key={image.id}
@@ -56,7 +56,7 @@ export const ProductShowcaseSection = (): JSX.Element => {
         </div>
 
         {/* Category badges (support accent — cyan) */}
-        <div className="mt-12 flex flex-wrap items-center justify-center gap-3 nb-reveal">
+        <div className="mt-7 flex flex-wrap items-center justify-center gap-3 nb-reveal lg:mt-8">
           <span className="text-sm font-bold text-gray-500 uppercase tracking-wider">Hỗ trợ:</span>
           {categories.map((cat) => (
             <span

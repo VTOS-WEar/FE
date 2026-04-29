@@ -470,7 +470,7 @@ export const SemesterPublicationWorkspace = (): JSX.Element => {
                                     )}
                                     {publication?.status === "Active" && (
                                         <button onClick={handleClose} className="nb-btn nb-btn-outline text-sm">
-                                            Đóng đợt mở bán
+                                            Đánh dấu hết hạn học kỳ
                                         </button>
                                     )}
                                 </div>

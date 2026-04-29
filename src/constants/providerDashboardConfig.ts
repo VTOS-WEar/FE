@@ -95,6 +95,18 @@ export const PROVIDER_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, "isCollapsed" 
                         },
                     ],
                 },
+                {
+                    icon: ClipboardList,
+                    label: "Catalog cung ứng",
+                    href: "/provider/catalog",
+                    children: [
+                        {
+                            icon: ClipboardList,
+                            label: "Giá và chất liệu",
+                            href: "/provider/catalog",
+                        },
+                    ],
+                },
             ],
         },
         {

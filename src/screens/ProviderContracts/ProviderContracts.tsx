@@ -1,8 +1,11 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
     AlertTriangle,
+    CalendarClock,
+    CalendarRange,
     CheckCircle2,
     ChevronDown,
+    ClipboardCheck,
     Eye,
     FileSignature,
     FileText,
@@ -10,6 +13,8 @@ import {
     MessageSquare,
     Search,
     ShieldCheck,
+    Signature,
+    Users2,
     XCircle,
 } from "lucide-react";
 import { DashboardSidebar } from "../../components/layout";
@@ -52,6 +57,8 @@ const STATUS_FILTER_OPTIONS = [
     { value: "Fulfilled", label: "Hoàn thành" },
     { value: "Rejected,Expired,Cancelled", label: "Có vấn đề" },
 ];
+
+const MIN_FILTER_FEEDBACK_MS = 450;
 
 function formatDate(value?: string | null) {
     return value ? new Date(value).toLocaleDateString("vi-VN") : "Chưa có";
@@ -107,7 +114,10 @@ export function ProviderContracts() {
     const [contracts, setContracts] = useState<ContractDto[]>([]);
     const [loading, setLoading] = useState(true);
     const [statusFilter, setStatusFilter] = useState("");
+    const [statusInput, setStatusInput] = useState("");
     const [searchTerm, setSearchTerm] = useState("");
+    const [searchInput, setSearchInput] = useState("");
+    const [filtering, setFiltering] = useState(false);
     const [page, setPage] = useState(1);
     const [selected, setSelected] = useState<ContractDto | null>(null);
     const [showDetail, setShowDetail] = useState(false);
@@ -121,6 +131,7 @@ export function ProviderContracts() {
     const [chatOpen, setChatOpen] = useState(false);
     const [chatContractId, setChatContractId] = useState("");
     const [chatContext, setChatContext] = useState<ChatContextInfo | undefined>();
+    const filterTimerRef = useRef<ReturnType<typeof window.setTimeout> | null>(null);
 
     const fetchContracts = useCallback(async () => {
         setLoading(true);
@@ -137,6 +148,14 @@ export function ProviderContracts() {
     useEffect(() => {
         fetchContracts();
     }, [fetchContracts]);
+
+    useEffect(() => {
+        return () => {
+            if (filterTimerRef.current) {
+                window.clearTimeout(filterTimerRef.current);
+            }
+        };
+    }, []);
 
     const openDetail = async (id: string, options?: { reject?: boolean }) => {
         try {
@@ -295,17 +314,33 @@ export function ProviderContracts() {
     const isFilteredEmptyState = !loading && (!!statusFilter || !!searchTerm.trim()) && pagedContracts.length === 0;
     const { preserveResultsHeight, preservedHeightStyle, resultsRegionRef } = usePreservedResultsHeight(isFilteredEmptyState);
 
+    const scheduleFilterCommit = useCallback(
+        (next: { search: string; status: string }) => {
+            preserveResultsHeight();
+            setFiltering(true);
+            if (filterTimerRef.current) {
+                window.clearTimeout(filterTimerRef.current);
+            }
+            filterTimerRef.current = window.setTimeout(() => {
+                setSearchTerm(next.search);
+                setStatusFilter(next.status);
+                setPage(1);
+                setFiltering(false);
+                filterTimerRef.current = null;
+            }, MIN_FILTER_FEEDBACK_MS);
+        },
+        [preserveResultsHeight],
+    );
+
     const handleStatusChange = (nextStatus: string) => {
-        preserveResultsHeight();
-        setStatusFilter(nextStatus);
-        setPage(1);
+        setStatusInput(nextStatus);
+        scheduleFilterCommit({ search: searchInput, status: nextStatus });
     };
 
     const handleSummaryCardClick = (nextStatus: string) => {
-        preserveResultsHeight();
-        setStatusFilter(nextStatus);
-        setSearchTerm("");
-        setPage(1);
+        setStatusInput(nextStatus);
+        setSearchInput("");
+        scheduleFilterCommit({ search: "", status: nextStatus });
     };
 
     const statusSummaryCards = useMemo(
@@ -461,10 +496,6 @@ export function ProviderContracts() {
         },
     ];
 
-    useEffect(() => {
-        setPage(1);
-    }, [searchTerm, statusFilter]);
-
     return (
         <div className="nb-page flex flex-col">
             <div className="flex flex-1 flex-col lg:flex-row">
@@ -500,7 +531,7 @@ export function ProviderContracts() {
                                     <StatusSummaryCard
                                         key={card.label}
                                         {...card}
-                                        active={statusFilter === card.filterValue}
+                                        active={statusInput === card.filterValue}
                                         onClick={() => handleSummaryCardClick(card.filterValue)}
                                     />
                                 ))}
@@ -511,10 +542,11 @@ export function ProviderContracts() {
                             <label className="relative block w-full lg:max-w-[300px]">
                                 <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
                                 <input
-                                    value={searchTerm}
+                                    value={searchInput}
                                     onChange={(event) => {
-                                        preserveResultsHeight();
-                                        setSearchTerm(event.target.value);
+                                        const nextSearch = event.target.value;
+                                        setSearchInput(nextSearch);
+                                        scheduleFilterCommit({ search: nextSearch, status: statusInput });
                                     }}
                                     placeholder="Search..."
                                     className="h-10 w-full rounded-full border border-slate-200 bg-white pl-11 pr-4 text-sm font-medium text-slate-800 outline-none shadow-soft-xs transition-colors placeholder:text-slate-500 focus:border-violet-200 focus:ring-4 focus:ring-violet-50"
@@ -522,9 +554,15 @@ export function ProviderContracts() {
                             </label>
 
                             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+                                {filtering ? (
+                                    <div className="inline-flex h-10 items-center gap-2 rounded-full border border-violet-100 bg-white px-3 text-xs font-bold text-violet-700 shadow-soft-xs">
+                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                        Đang lọc
+                                    </div>
+                                ) : null}
                                 <label className="relative block">
                                     <select
-                                        value={statusFilter}
+                                        value={statusInput}
                                         onChange={(event) => handleStatusChange(event.target.value)}
                                         className="h-10 min-w-[178px] appearance-none rounded-full border border-slate-200 bg-white py-0 pl-4 pr-10 text-sm font-medium text-slate-700 outline-none shadow-soft-xs transition-colors focus:border-violet-200 focus:ring-4 focus:ring-violet-50"
                                     >
@@ -573,18 +611,44 @@ export function ProviderContracts() {
                         </div>
 
                         {showDetail && selected ? (
-                            <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/50 p-4">
-                                <div className="w-full max-w-[760px] max-h-[88vh] overflow-auto rounded-[28px] border border-gray-200 bg-white p-6 shadow-soft-xl">
-                                    <div className="flex flex-col gap-4 border-b border-gray-100 pb-5 sm:flex-row sm:items-start sm:justify-between">
-                                        <div>
-                                            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-400">Vùng xử lý hợp đồng</p>
-                                            <h2 className="mt-2 text-2xl font-bold text-gray-900">{selected.contractName}</h2>
-                                            <p className="mt-2 text-sm font-medium text-gray-500">
-                                                Trường: {selected.schoolName || "Chưa xác định"} · Hạn {formatDate(selected.expiresAt)}
-                                            </p>
+                            <div
+                                className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+                                onClick={() => {
+                                    setShowDetail(false);
+                                    setSelected(null);
+                                    setError("");
+                                    setShowReject(false);
+                                    setRejectReason("");
+                                }}
+                            >
+                                <div
+                                    className="max-h-[90vh] w-full max-w-[960px] overflow-auto rounded-[8px] border border-gray-200 bg-white shadow-soft-lg"
+                                    onClick={(event) => event.stopPropagation()}
+                                >
+                                    <div className="border-b border-gray-200 bg-white px-6 py-6 lg:px-8">
+                                        <div className="flex flex-col gap-4">
+                                            <div>
+                                                <div className="flex flex-wrap items-center gap-2">
+                                                    <span className={STATUS_MAP[selected.status]?.badge || "nb-badge"}>{STATUS_MAP[selected.status]?.label || selected.status}</span>
+                                                    {selected.schoolSignedAt ? (
+                                                        <span className="rounded-full border border-emerald-200 bg-white px-3 py-1 text-xs font-extrabold text-emerald-700 shadow-soft-sm">
+                                                            Trường đã ký
+                                                        </span>
+                                                    ) : null}
+                                                    {selected.providerSignedAt ? (
+                                                        <span className="rounded-full border border-indigo-200 bg-white px-3 py-1 text-xs font-extrabold text-indigo-700 shadow-soft-sm">
+                                                            NCC đã ký
+                                                        </span>
+                                                    ) : null}
+                                                </div>
+                                                <h2 className="mt-4 text-[26px] font-extrabold leading-tight text-gray-900 lg:text-[32px]">
+                                                    {selected.contractName}
+                                                </h2>
+                                            </div>
                                         </div>
-                                        <span className={STATUS_MAP[selected.status]?.badge || "nb-badge"}>{STATUS_MAP[selected.status]?.label || selected.status}</span>
                                     </div>
+
+                                    <div className="space-y-6 px-6 py-6 lg:px-8">
 
                                     {error ? (
                                         <div className="mt-5 rounded-[18px] border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700">
@@ -592,93 +656,136 @@ export function ProviderContracts() {
                                         </div>
                                     ) : null}
 
-                                    <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-                                        <div className="rounded-[18px] border border-gray-200 bg-slate-50 p-4">
-                                            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-gray-400">Ngày tạo</p>
-                                            <p className="mt-2 text-sm font-semibold text-gray-900">{formatDate(selected.createdAt)}</p>
-                                        </div>
-                                        <div className="rounded-[18px] border border-gray-200 bg-slate-50 p-4">
-                                            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-gray-400">Ngày duyệt</p>
-                                            <p className="mt-2 text-sm font-semibold text-gray-900">{formatDate(selected.approvedAt)}</p>
-                                        </div>
-                                        <div className="rounded-[18px] border border-gray-200 bg-slate-50 p-4">
-                                            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-gray-400">Trường ký</p>
-                                            <p className="mt-2 text-sm font-semibold text-gray-900">{selected.schoolSignedAt ? formatDate(selected.schoolSignedAt) : "Chưa ký"}</p>
-                                        </div>
-                                        <div className="rounded-[18px] border border-gray-200 bg-slate-50 p-4">
-                                            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-gray-400">Bạn ký</p>
-                                            <p className="mt-2 text-sm font-semibold text-gray-900">{selected.providerSignedAt ? formatDate(selected.providerSignedAt) : "Chưa ký"}</p>
-                                        </div>
-                                    </div>
-
-                                    <div className="mt-6">
-                                        <h3 className="text-lg font-bold text-gray-900">Danh mục mẫu trong hợp đồng</h3>
-                                        <div className="mt-4 space-y-3">
-                                            {selected.items.map((item) => (
-                                                <div key={item.itemId} className="rounded-[20px] border border-gray-200 bg-white p-4 shadow-soft-xs">
-                                                    <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                                                        <div>
-                                                            <h4 className="text-base font-semibold text-gray-900">{item.outfitName}</h4>
-                                                            <p className="mt-1 text-sm font-medium text-gray-500">
-                                                                Số lượng đề xuất: {item.minQuantity ?? 0} - {item.maxQuantity ?? 0}
-                                                            </p>
-                                                        </div>
-                                                        {selected.status === "Pending" ? (
-                                                            <div className="w-full md:w-[240px]">
-                                                                <label className="block text-[10px] font-semibold uppercase tracking-[0.16em] text-gray-400">Giá / sản phẩm</label>
-                                                                <input
-                                                                    type="number"
-                                                                    min="0"
-                                                                    step="1000"
-                                                                    value={pricingDraft[item.itemId] ?? ""}
-                                                                    onChange={(event) =>
-                                                                        setPricingDraft((current) => ({
-                                                                            ...current,
-                                                                            [item.itemId]: event.target.value,
-                                                                        }))
-                                                                    }
-                                                                    className="nb-input mt-2 w-full"
-                                                                />
-                                                            </div>
-                                                        ) : (
-                                                            <div className="rounded-[16px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-gray-900">
-                                                                Giá chốt: {(item.pricePerUnit ?? 0).toLocaleString("vi-VN")} ₫
-                                                            </div>
-                                                        )}
+                                    <section className="rounded-[8px] border border-gray-200 bg-white p-5 shadow-soft-sm">
+                                        <h3 className="text-lg font-extrabold text-gray-900">Thông tin hợp đồng</h3>
+                                        <div className="mt-4 grid gap-x-8 gap-y-1 md:grid-cols-2">
+                                            {[
+                                                {
+                                                    label: "Trường",
+                                                    value: selected.schoolName || "Chưa xác định",
+                                                    icon: <Users2 className="h-4 w-4" />,
+                                                },
+                                                {
+                                                    label: "Ngày tạo",
+                                                    value: formatDate(selected.createdAt),
+                                                    icon: <CalendarRange className="h-4 w-4" />,
+                                                },
+                                                {
+                                                    label: "Hết hạn",
+                                                    value: formatDate(selected.expiresAt),
+                                                    icon: <CalendarClock className="h-4 w-4" />,
+                                                },
+                                                {
+                                                    label: "Tình trạng ký",
+                                                    value: `${selected.schoolSignedAt ? "Trường đã ký" : "Trường chưa ký"} · ${selected.providerSignedAt ? "NCC đã ký" : "NCC chưa ký"}`,
+                                                    icon: <Signature className="h-4 w-4" />,
+                                                },
+                                            ].map((item) => (
+                                                <div key={item.label} className="flex items-start gap-3 border-b border-gray-100 py-4 last:border-b-0 md:[&:nth-last-child(-n+2)]:border-b-0">
+                                                    <div className="mt-0.5 flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-violet-50 text-violet-700">
+                                                        {item.icon}
+                                                    </div>
+                                                    <div className="min-w-0">
+                                                        <p className="text-xs font-extrabold uppercase tracking-[0.12em] text-slate-500">{item.label}</p>
+                                                        <p className="mt-1 break-words text-sm font-bold leading-6 text-gray-900">{item.value}</p>
                                                     </div>
                                                 </div>
                                             ))}
                                         </div>
-                                    </div>
+                                    </section>
+
+                                    <section className="rounded-[8px] border border-gray-200 bg-white shadow-soft-sm">
+                                        <div className="border-b border-gray-200 px-6 py-5">
+                                            <h3 className="text-lg font-extrabold text-gray-900">Mẫu đồng phục đính kèm</h3>
+                                        </div>
+                                        <div className="space-y-3 px-6 py-6">
+                                            {selected.items.map((item) => (
+                                                <div key={item.itemId} className="flex flex-col gap-3 rounded-[8px] border border-gray-200 bg-white p-3 shadow-soft-sm md:flex-row md:items-center md:justify-between">
+                                                    <div className="flex min-w-0 items-center gap-3">
+                                                        <div className="h-11 w-11 flex-shrink-0 overflow-hidden rounded-[8px] border border-gray-200 bg-slate-50 shadow-soft-xs">
+                                                            {item.mainImageURL ? (
+                                                                <img src={item.mainImageURL} alt={item.outfitName} className="h-full w-full object-cover" />
+                                                            ) : (
+                                                                <div className="flex h-full w-full items-center justify-center bg-violet-50 text-violet-700">
+                                                                    <ClipboardCheck className="h-5 w-5" />
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                        <div className="min-w-0">
+                                                            <p className="truncate text-sm font-extrabold text-gray-900">{item.outfitName}</p>
+                                                            <p className="mt-1 text-xs font-semibold text-gray-500">
+                                                                Giá và chất liệu quản lý tại Catalog cung ứng
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    {selected.status === "Pending" ? (
+                                                        <div className="w-full md:w-[240px]">
+                                                            <label className="block text-[10px] font-semibold uppercase tracking-[0.16em] text-gray-400">Giá / sản phẩm</label>
+                                                            <input
+                                                                type="number"
+                                                                min="0"
+                                                                step="1000"
+                                                                value={pricingDraft[item.itemId] ?? ""}
+                                                                onChange={(event) =>
+                                                                    setPricingDraft((current) => ({
+                                                                        ...current,
+                                                                        [item.itemId]: event.target.value,
+                                                                    }))
+                                                                }
+                                                                className="nb-input mt-2 w-full"
+                                                            />
+                                                        </div>
+                                                    ) : (
+                                                        <div className="whitespace-nowrap rounded-[8px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-extrabold text-gray-900">
+                                                            Giá chốt: {(item.pricePerUnit ?? 0).toLocaleString("vi-VN")} ₫
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </section>
 
                                     {selected.rejectionReason ? (
-                                        <div className="mt-5 rounded-[18px] border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700">
-                                            Lý do từ chối trước đó: {selected.rejectionReason}
-                                        </div>
+                                        <section className="rounded-[8px] border border-rose-200 bg-rose-50 p-5 shadow-soft-sm">
+                                            <div className="flex items-start gap-3">
+                                                <div className="rounded-full bg-white p-3 text-rose-700 shadow-soft-sm">
+                                                    <XCircle className="h-5 w-5" />
+                                                </div>
+                                                <div>
+                                                    <h3 className="text-lg font-extrabold text-gray-900">Lý do từ chối</h3>
+                                                    <p className="mt-1 text-sm font-medium leading-6 text-rose-700">{selected.rejectionReason}</p>
+                                                </div>
+                                            </div>
+                                        </section>
                                     ) : null}
 
                                     {selected.status === "Pending" && !showReject ? (
-                                        <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                                            <button onClick={() => { setShowReject(true); setError(""); }} className="nb-btn nb-btn-red">
-                                                Từ chối
-                                            </button>
-                                            <button onClick={handleSavePricing} disabled={actionLoading} className="nb-btn nb-btn-outline">
-                                                {actionLoading ? "Đang lưu..." : "Lưu giá"}
-                                            </button>
-                                            <button
-                                                onClick={() => {
-                                                    openContractTemplate(selected.contractId);
-                                                    setShowDetail(false);
-                                                    setSelected(null);
-                                                }}
-                                                className="nb-btn border-gray-200 bg-violet-50"
-                                            >
-                                                Xem hợp đồng
-                                            </button>
-                                            <button onClick={handleApprove} disabled={actionLoading} className="nb-btn nb-btn-green">
-                                                {actionLoading ? "Đang xử lý..." : "Duyệt hợp đồng"}
-                                            </button>
-                                        </div>
+                                        <section className="rounded-[8px] border border-amber-200 bg-amber-50 p-5 shadow-soft-sm">
+                                            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                                                <div className="flex items-start gap-3">
+                                                    <div className="rounded-full bg-white p-3 text-amber-700 shadow-soft-sm">
+                                                        <ShieldCheck className="h-5 w-5" />
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="text-lg font-extrabold text-gray-900">Thao tác của nhà cung cấp</h3>
+                                                        <p className="mt-1 text-sm font-semibold text-amber-800">
+                                                            Kiểm tra giá trước khi duyệt hoặc từ chối hợp đồng.
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div className="grid w-full gap-3 sm:grid-cols-3 md:w-auto">
+                                                    <button onClick={() => { setShowReject(true); setError(""); }} className="nb-btn nb-btn-red text-sm">
+                                                        Từ chối
+                                                    </button>
+                                                    <button onClick={handleSavePricing} disabled={actionLoading} className="nb-btn nb-btn-outline text-sm">
+                                                        {actionLoading ? "Đang lưu..." : "Lưu giá"}
+                                                    </button>
+                                                    <button onClick={handleApprove} disabled={actionLoading} className="nb-btn nb-btn-green text-sm">
+                                                        {actionLoading ? "Đang xử lý..." : "Duyệt hợp đồng"}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </section>
                                     ) : null}
 
                                     {showReject ? (
@@ -701,7 +808,7 @@ export function ProviderContracts() {
                                         </div>
                                     ) : null}
 
-                                    <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+                                    <div className="flex flex-wrap justify-end gap-3 border-t border-gray-200 pt-2">
                                         <button
                                             onClick={() => {
                                                 setShowDetail(false);
@@ -710,16 +817,28 @@ export function ProviderContracts() {
                                                 setShowReject(false);
                                                 setRejectReason("");
                                             }}
-                                            className="nb-btn nb-btn-outline flex-1"
+                                            className="nb-btn nb-btn-outline text-sm"
                                         >
                                             Đóng
                                         </button>
-                                        <button onClick={() => openContractChat(selected)} className="nb-btn nb-btn-purple flex-1">
-                                            Chat với trường
+                                        <button onClick={() => openContractChat(selected)} className="nb-btn nb-btn-outline text-sm">
+                                            <MessageSquare className="h-4 w-4" />
+                                            Chat
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                openContractTemplate(selected.contractId);
+                                                setShowDetail(false);
+                                                setSelected(null);
+                                            }}
+                                            className="nb-btn nb-btn-purple text-sm"
+                                        >
+                                            Xem & ký hợp đồng
                                         </button>
                                     </div>
                                 </div>
                             </div>
+                        </div>
                         ) : null}
 
                         <ChatWidget

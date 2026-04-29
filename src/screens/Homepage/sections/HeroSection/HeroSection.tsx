@@ -5,7 +5,7 @@ export function HeroSection() {
   const navigate = useNavigate();
 
   return (
-    <section className="relative w-full overflow-hidden py-10 lg:py-14">
+    <section className="relative w-full overflow-hidden pt-8 pb-4 lg:pt-10 lg:pb-6">
       <div className="mx-auto grid w-full max-w-[1400px] grid-cols-1 items-center gap-8 px-6 md:grid-cols-[1.1fr_0.9fr] md:gap-8 lg:px-12">
 
         {/* Left — Branding + Copy */}

@@ -1,15 +1,14 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { type ReactNode, useCallback, useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
     AlertTriangle,
     ArrowRight,
     Banknote,
-    Building2,
     CheckCircle2,
-    ChevronRight,
     ClipboardList,
     FileText,
     LayoutDashboard,
+    Loader2,
     Package,
     ShieldCheck,
     Wallet,
@@ -41,95 +40,140 @@ type DashboardData = {
     inProgressComplaints: number;
 };
 
-function MetricCard({
+const PROVIDER_THEME = {
+    primaryText: "text-violet-700",
+    summary: {
+        orders: "border-violet-100 bg-violet-100",
+        paid: "border-amber-100 bg-amber-100",
+        production: "border-orange-100 bg-orange-100",
+        revenue: "border-emerald-100 bg-emerald-100",
+    },
+} as const;
+
+function SummaryCard({
     label,
     value,
+    note,
     icon,
     surfaceClassName,
-    iconClassName,
+    onClick,
 }: {
     label: string;
     value: string | number;
-    icon: React.ReactNode;
+    note: string;
+    icon: ReactNode;
     surfaceClassName: string;
-    iconClassName: string;
+    onClick?: () => void;
 }) {
+    const Component = onClick ? "button" : "div";
+
     return (
-        <div className={`min-h-[112px] rounded-[8px] border border-white/70 p-5 shadow-soft-sm ${surfaceClassName}`}>
+        <Component
+            type={onClick ? "button" : undefined}
+            onClick={onClick}
+            className={`min-h-[118px] w-full rounded-[8px] border p-5 text-left shadow-soft-sm transition-colors ${surfaceClassName} ${onClick ? "hover:border-violet-300" : ""}`}
+        >
             <div className="flex h-full items-center gap-4">
-                <div className={`flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-white shadow-soft-xs ${iconClassName}`}>
+                <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-white text-slate-900 shadow-soft-xs">
                     {icon}
                 </div>
                 <div className="min-w-0">
                     <p className="text-sm font-semibold text-slate-700">{label}</p>
                     <p className="mt-2 text-2xl font-bold leading-tight text-slate-950">{value}</p>
+                    <p className="mt-1 text-xs font-semibold text-slate-600">{note}</p>
                 </div>
             </div>
-        </div>
+        </Component>
     );
 }
 
-function ActionCard({
+function SectionHeader({
+    label,
     title,
-    href,
-    badge,
-    icon,
-    tone,
+    action,
 }: {
+    label: string;
     title: string;
-    href: string;
-    badge?: string;
-    icon: React.ReactNode;
-    tone: string;
+    action?: ReactNode;
 }) {
     return (
-        <Link
-            to={href}
-            className="group flex h-full flex-col justify-between rounded-[8px] border border-gray-200 bg-white p-5 shadow-soft-sm transition-colors hover:border-violet-200"
-        >
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 px-4 py-3">
             <div>
-                <div className="flex items-start justify-between gap-3">
-                    <div className={`flex h-11 w-11 items-center justify-center rounded-full ${tone}`}>
-                        {icon}
-                    </div>
-                    {badge ? (
-                        <span className="inline-flex items-center rounded-full border border-violet-200 bg-violet-50 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-violet-700">
-                            {badge}
-                        </span>
-                    ) : null}
-                </div>
-                <h3 className="mt-5 text-lg font-bold text-gray-900">{title}</h3>
+                <p className={`text-xs font-bold uppercase tracking-[0.14em] ${PROVIDER_THEME.primaryText}`}>{label}</p>
+                <h2 className="mt-1 text-lg font-extrabold text-slate-950">{title}</h2>
             </div>
-            <div className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-violet-700">
-                Mở khu vực này
-                <ArrowRight className="h-4 w-4" />
-            </div>
-        </Link>
+            {action}
+        </div>
     );
 }
 
-function StatusRow({
-    title,
-    value,
+function WorkItem({
     icon,
     tone,
+    title,
+    description,
+    count,
+    onClick,
 }: {
+    icon: ReactNode;
+    tone: "violet" | "amber" | "orange" | "emerald" | "rose" | "slate";
     title: string;
-    value: string;
-    icon: React.ReactNode;
-    tone: string;
+    description: string;
+    count: number | string;
+    onClick: () => void;
+}) {
+    const toneClass = {
+        violet: "bg-violet-50 text-violet-700",
+        amber: "bg-amber-50 text-amber-700",
+        orange: "bg-orange-50 text-orange-700",
+        emerald: "bg-emerald-50 text-emerald-700",
+        rose: "bg-rose-50 text-rose-700",
+        slate: "bg-slate-100 text-slate-700",
+    }[tone];
+
+    return (
+        <button
+            type="button"
+            onClick={onClick}
+            className="flex w-full items-center gap-3 rounded-[8px] border border-gray-200 bg-white px-3 py-2.5 text-left shadow-soft-xs transition-colors hover:border-violet-200 hover:bg-violet-50/60"
+        >
+            <div className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-[8px] ${toneClass}`}>
+                {icon}
+            </div>
+            <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-extrabold text-slate-950">{title}</p>
+                <p className="mt-0.5 line-clamp-1 text-xs font-semibold text-[#4c5769]">{description}</p>
+            </div>
+            <span className="rounded-full border border-violet-100 bg-white px-3 py-1 text-xs font-bold text-violet-700">
+                {count}
+            </span>
+        </button>
+    );
+}
+
+function QuickAction({
+    icon,
+    label,
+    onClick,
+}: {
+    icon: ReactNode;
+    label: string;
+    onClick: () => void;
 }) {
     return (
-        <div className="flex items-center justify-between gap-4 border-t border-slate-100 py-4 first:border-t-0 first:pt-0 last:pb-0">
-            <div className="flex min-w-0 items-center gap-3">
-                <div className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full ${tone}`}>
-                    {icon}
-                </div>
-                <p className="font-bold text-slate-900">{title}</p>
-            </div>
-            <span className="text-right text-sm font-bold text-slate-600">{value}</span>
-        </div>
+        <button
+            type="button"
+            onClick={onClick}
+            className="inline-flex h-11 items-center justify-center gap-2 rounded-[8px] border border-gray-200 bg-white px-4 text-sm font-bold text-slate-900 shadow-soft-xs transition-colors hover:border-violet-200 hover:text-violet-700"
+        >
+            {icon}
+            {label}
+        </button>
     );
+}
+
+function formatNumber(value: number) {
+    return value.toLocaleString("vi-VN");
 }
 
 function formatCurrency(value: number) {
@@ -220,68 +264,90 @@ export const ProviderDashboard = (): JSX.Element => {
         navigate("/signin", { replace: true });
     };
 
+    const openIssueCount = data.openComplaints + data.inProgressComplaints;
+    const profileApproved = data.profile?.status === "Approved";
+
     const metrics = useMemo(
         () => [
             {
                 label: "Tổng đơn hàng",
-                value: data.stats?.totalOrders ?? 0,
-                surfaceClassName: "bg-blue-100",
-                iconClassName: "text-slate-900",
+                value: formatNumber(data.stats?.totalOrders ?? 0),
+                note: `${formatNumber(data.stats?.pendingOrders ?? 0)} đơn mới | ${formatNumber(data.stats?.completedShipmentOrders ?? 0)} đã giao`,
+                surfaceClassName: PROVIDER_THEME.summary.orders,
                 icon: <ClipboardList className="h-6 w-6" />,
+                onClick: () => navigate("/provider/orders"),
             },
             {
                 label: "Chờ tiếp nhận",
-                value: data.stats?.paidOrders ?? 0,
-                surfaceClassName: "bg-yellow-100",
-                iconClassName: "text-slate-900",
+                value: formatNumber(data.stats?.paidOrders ?? 0),
+                note: "Đơn đã thanh toán cần xác nhận",
+                surfaceClassName: PROVIDER_THEME.summary.paid,
                 icon: <Package className="h-6 w-6" />,
+                onClick: () => navigate("/provider/orders"),
             },
             {
                 label: "Đang xử lý",
-                value: data.stats?.inProgressOrders ?? 0,
-                surfaceClassName: "bg-orange-100",
-                iconClassName: "text-slate-900",
+                value: formatNumber(data.stats?.inProgressOrders ?? 0),
+                note: "Sản xuất, đóng gói hoặc giao hàng",
+                surfaceClassName: PROVIDER_THEME.summary.production,
                 icon: <ShieldCheck className="h-6 w-6" />,
+                onClick: () => navigate("/provider/orders"),
             },
             {
                 label: "Doanh thu đối soát",
                 value: formatCurrency(data.revenue?.totalRevenue ?? 0),
-                surfaceClassName: "bg-lime-200",
-                iconClassName: "text-slate-900",
+                note: `${formatNumber(data.activeContracts)} hợp đồng hiệu lực`,
+                surfaceClassName: PROVIDER_THEME.summary.revenue,
                 icon: <Banknote className="h-6 w-6" />,
+                onClick: () => navigate("/provider/revenue"),
             },
         ],
-        [data],
+        [data, navigate],
     );
 
-    const actionCards = [
+    const priorityItems = [
         {
-            title: "Đi tới hàng chờ sản xuất",
-            href: "/provider/orders",
-            badge: data.stats?.paidOrders ? `${data.stats.paidOrders} đơn chờ` : undefined,
-            tone: "bg-amber-50 text-amber-600 border border-amber-100",
+            title: "Đơn chờ tiếp nhận",
+            description: "Xác nhận đơn đã thanh toán để bắt đầu sản xuất",
+            count: data.stats?.paidOrders ?? 0,
+            tone: "amber" as const,
             icon: <ClipboardList className="h-5 w-5" />,
+            onClick: () => navigate("/provider/orders"),
         },
         {
-            title: "Kiểm tra hợp đồng với trường",
-            href: "/provider/contracts",
-            badge: data.contractsWaitingOnProvider ? `${data.contractsWaitingOnProvider} việc cần làm` : undefined,
-            tone: "bg-blue-50 text-blue-600 border border-blue-100",
+            title: "Hợp đồng cần xử lý",
+            description: "Theo dõi hợp đồng đang chờ nhà cung cấp ký",
+            count: data.contractsWaitingOnProvider,
+            tone: "violet" as const,
             icon: <FileText className="h-5 w-5" />,
+            onClick: () => navigate("/provider/contracts"),
         },
         {
-            title: "Theo dõi dòng tiền",
-            href: "/provider/wallet",
-            tone: "bg-emerald-50 text-emerald-600 border border-emerald-100",
+            title: "Khiếu nại đang mở",
+            description: "Ticket phụ huynh hoặc trường cần phản hồi",
+            count: openIssueCount,
+            tone: "rose" as const,
+            icon: <AlertTriangle className="h-5 w-5" />,
+            onClick: () => navigate("/provider/complaints"),
+        },
+        {
+            title: "Doanh thu đối soát",
+            description: "Kiểm tra ví và dòng tiền theo đơn hàng",
+            count: formatCurrency(data.revenue?.totalRevenue ?? 0),
+            tone: "emerald" as const,
             icon: <Wallet className="h-5 w-5" />,
-        },
-        {
-            title: "Cập nhật hồ sơ vận hành",
-            href: "/provider/profile",
-            tone: "bg-violet-50 text-violet-600 border border-violet-100",
-            icon: <Building2 className="h-5 w-5" />,
+            onClick: () => navigate("/provider/wallet"),
         },
     ];
+
+    const readinessItems = [
+        { label: "Hồ sơ nhà cung cấp", ready: profileApproved, route: "/provider/profile" },
+        { label: "Hợp đồng hiệu lực", ready: data.activeContracts > 0, route: "/provider/contracts" },
+        { label: "Luồng đơn hàng", ready: (data.stats?.totalOrders ?? 0) > 0, route: "/provider/orders" },
+        { label: "Dòng tiền đối soát", ready: (data.revenue?.totalRevenue ?? 0) > 0, route: "/provider/revenue" },
+        { label: "Không có khiếu nại mở", ready: openIssueCount === 0, route: "/provider/complaints" },
+    ];
+    const readyCount = readinessItems.filter((item) => item.ready).length;
 
     return (
         <div className="nb-page flex flex-col">
@@ -296,139 +362,131 @@ export const ProviderDashboard = (): JSX.Element => {
                     />
                 </div>
 
-                <div className="flex-1 flex flex-col min-w-0">
+                <div className="flex min-w-0 flex-1 flex-col">
                     <TopNavBar>
-                        <div className="flex items-center gap-3 px-2 py-2">
-                            <div className="hidden h-10 w-10 items-center justify-center rounded-2xl bg-violet-600 text-white shadow-soft-sm sm:flex">
-                                <LayoutDashboard className="h-5 w-5" />
-                            </div>
-                            <div>
-                                <h1 className="text-xl font-bold leading-none text-gray-900">Tổng quan nhà cung cấp</h1>
-                            </div>
+                        <div className="flex items-center gap-2 px-2 py-2">
+                            <LayoutDashboard className={`h-5 w-5 ${PROVIDER_THEME.primaryText}`} />
+                            <h1 className="text-xl font-bold text-gray-900">Tổng quan nhà cung cấp</h1>
                         </div>
                     </TopNavBar>
 
                     <main className="flex-1 space-y-6 px-4 py-6 sm:px-6 lg:px-10 lg:py-8">
-                        <section className="space-y-5">
-                            <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-                                <div>
-                                    <h2 className="text-2xl font-bold text-slate-950">Bảng vận hành hôm nay</h2>
-                                </div>
-                                <Link
-                                    to="/provider/orders"
-                                    className="nb-btn nb-btn-outline inline-flex w-fit items-center gap-2 text-sm"
-                                >
-                                    Xem đơn hàng
-                                    <ChevronRight className="h-4 w-4" />
-                                </Link>
+                        <section className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
+                            <div>
+                                <p className={`text-xs font-bold uppercase tracking-[0.16em] ${PROVIDER_THEME.primaryText}`}>Vận hành nhà cung cấp</p>
+                                <h1 className="mt-1 text-2xl font-bold leading-tight text-slate-950">
+                                    {providerName || "Bảng điều phối hôm nay"}
+                                </h1>
+                                <p className="mt-1 text-sm font-semibold text-slate-500">
+                                    Theo dõi đơn hàng, hợp đồng, khiếu nại và dòng tiền đối soát trong một màn hình.
+                                </p>
                             </div>
+                            <div className="flex flex-wrap gap-2">
+                                <QuickAction icon={<Package className="h-4 w-4" />} label="Đơn hàng" onClick={() => navigate("/provider/orders")} />
+                                <QuickAction icon={<FileText className="h-4 w-4" />} label="Hợp đồng" onClick={() => navigate("/provider/contracts")} />
+                                <QuickAction icon={<Wallet className="h-4 w-4" />} label="Ví NCC" onClick={() => navigate("/provider/wallet")} />
+                            </div>
+                        </section>
 
-                            {loading ? (
-                                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                                    {[1, 2, 3, 4].map((item) => (
-                                        <div key={item} className="nb-skeleton h-[112px] rounded-[8px]" />
-                                    ))}
-                                </div>
-                            ) : (
-                                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                        {loading ? (
+                            <section className="rounded-[8px] border border-gray-200 bg-white p-10 text-center shadow-soft-sm">
+                                <Loader2 className={`mx-auto mb-3 h-8 w-8 animate-spin ${PROVIDER_THEME.primaryText}`} />
+                                <p className="text-sm font-semibold text-[#4c5769]">Đang tải tổng quan nhà cung cấp...</p>
+                            </section>
+                        ) : (
+                            <>
+                                <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
                                     {metrics.map((metric) => (
-                                        <MetricCard key={metric.label} {...metric} />
+                                        <SummaryCard key={metric.label} {...metric} />
                                     ))}
-                                </div>
-                            )}
-                        </section>
+                                </section>
 
-                        <section className="space-y-4">
-                            <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-                                <div>
-                                    <h2 className="text-2xl font-bold text-gray-900">Điều phối nhanh</h2>
-                                </div>
-                                <Link
-                                    to="/provider/orders"
-                                    className="inline-flex w-fit items-center gap-2 text-sm font-bold text-violet-700"
-                                >
-                                    Xem tất cả đơn
-                                    <ChevronRight className="h-4 w-4" />
-                                </Link>
-                            </div>
-
-                            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-                                {actionCards.map((card) => (
-                                    <ActionCard key={card.title} {...card} />
-                                ))}
-                            </div>
-                        </section>
-
-                        <section className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
-                            <div className="rounded-[8px] border border-gray-200 bg-white p-6 shadow-soft-sm">
-                                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                                    <div>
-                                        <h2 className="text-2xl font-bold text-gray-900">Tín hiệu vận hành</h2>
+                                <section className="grid items-start gap-4 lg:grid-cols-12">
+                                    <div className="rounded-[8px] border border-gray-200 bg-white shadow-soft-sm lg:col-span-5">
+                                        <SectionHeader
+                                            label="Điều phối đơn hàng"
+                                            title="Việc ưu tiên"
+                                            action={
+                                                <button type="button" onClick={() => navigate("/provider/orders")} className="nb-btn nb-btn-outline text-sm hover:border-violet-200 hover:text-violet-700">
+                                                    Xem tất cả
+                                                </button>
+                                            }
+                                        />
+                                        <div className="space-y-2.5 p-4">
+                                            {priorityItems.map((item) => (
+                                                <WorkItem key={item.title} {...item} />
+                                            ))}
+                                        </div>
                                     </div>
-                                    <span className="inline-flex w-fit items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-bold text-slate-600">
-                                        {data.openComplaints + data.inProgressComplaints} khiếu nại mở
-                                    </span>
-                                </div>
 
-                                <div className="mt-6">
-                                    <StatusRow
-                                        title="Hợp đồng cần xử lý"
-                                        value={`${data.contractsWaitingOnProvider} việc`}
-                                        tone="bg-blue-50 text-blue-700"
-                                        icon={<FileText className="h-5 w-5" />}
-                                    />
-                                    <StatusRow
-                                        title="Khiếu nại đang mở"
-                                        value={`${data.openComplaints + data.inProgressComplaints} ticket`}
-                                        tone="bg-rose-50 text-rose-700"
-                                        icon={<AlertTriangle className="h-5 w-5" />}
-                                    />
-                                    <StatusRow
-                                        title="Doanh thu đối soát"
-                                        value={formatCurrency(data.revenue?.totalRevenue ?? 0)}
-                                        tone="bg-emerald-50 text-emerald-700"
-                                        icon={<Banknote className="h-5 w-5" />}
-                                    />
-                                    <StatusRow
-                                        title="Đơn đang xử lý"
-                                        value={`${data.stats?.inProgressOrders ?? 0} đơn`}
-                                        tone="bg-orange-50 text-orange-700"
-                                        icon={<Package className="h-5 w-5" />}
-                                    />
-                                </div>
-                            </div>
+                                    <div className="grid gap-4 md:grid-cols-2 lg:col-span-7">
+                                        <div className="rounded-[8px] border border-gray-200 bg-white shadow-soft-sm">
+                                            <SectionHeader
+                                                label="Tín hiệu vận hành"
+                                                title={`${openIssueCount} khiếu nại mở`}
+                                                action={
+                                                    <button type="button" onClick={() => navigate("/provider/complaints")} className="inline-flex items-center gap-2 text-sm font-bold text-violet-700">
+                                                        Mở
+                                                        <ArrowRight className="h-4 w-4" />
+                                                    </button>
+                                                }
+                                            />
+                                            <div className="space-y-2.5 p-4">
+                                                <WorkItem
+                                                    icon={<FileText className="h-5 w-5" />}
+                                                    title="Hợp đồng cần xử lý"
+                                                    description="Đang chờ phản hồi hoặc chữ ký nhà cung cấp"
+                                                    count={data.contractsWaitingOnProvider}
+                                                    tone="violet"
+                                                    onClick={() => navigate("/provider/contracts")}
+                                                />
+                                                <WorkItem
+                                                    icon={<AlertTriangle className="h-5 w-5" />}
+                                                    title="Khiếu nại đang mở"
+                                                    description="Cần kiểm tra phản hồi với phụ huynh hoặc trường"
+                                                    count={openIssueCount}
+                                                    tone="rose"
+                                                    onClick={() => navigate("/provider/complaints")}
+                                                />
+                                                <WorkItem
+                                                    icon={<Package className="h-5 w-5" />}
+                                                    title="Đơn đang xử lý"
+                                                    description="Đơn đã nhận, đang sản xuất hoặc chờ giao"
+                                                    count={data.stats?.inProgressOrders ?? 0}
+                                                    tone="orange"
+                                                    onClick={() => navigate("/provider/orders")}
+                                                />
+                                            </div>
+                                        </div>
 
-                            <div className="rounded-[8px] border border-gray-200 bg-white p-6 shadow-soft-sm">
-                                <h2 className="text-2xl font-bold text-gray-900">Sẵn sàng giao dịch</h2>
-
-                                <div className="mt-6">
-                                    <StatusRow
-                                        title="Luồng đơn hàng"
-                                        value={`${data.stats?.totalOrders ?? 0} đơn`}
-                                        tone="bg-emerald-50 text-emerald-700"
-                                        icon={<CheckCircle2 className="h-5 w-5" />}
-                                    />
-                                    <StatusRow
-                                        title="Hợp đồng hiệu lực"
-                                        value={`${data.activeContracts} hợp đồng`}
-                                        tone="bg-blue-50 text-blue-700"
-                                        icon={<ShieldCheck className="h-5 w-5" />}
-                                    />
-                                    <StatusRow
-                                        title="Hồ sơ nhà cung cấp"
-                                        value={formatStatus(data.profile?.status)}
-                                        tone="bg-violet-50 text-violet-700"
-                                        icon={<Building2 className="h-5 w-5" />}
-                                    />
-                                    <StatusRow
-                                        title="Điểm cần theo dõi"
-                                        value={`${data.contractsWaitingOnProvider} hợp đồng, ${data.openComplaints + data.inProgressComplaints} khiếu nại`}
-                                        tone="bg-amber-50 text-amber-700"
-                                        icon={<AlertTriangle className="h-5 w-5" />}
-                                    />
-                                </div>
-                            </div>
-                        </section>
+                                        <div className="rounded-[8px] border border-gray-200 bg-white shadow-soft-sm">
+                                            <SectionHeader label="Hoàn thiện thông tin" title={`${readyCount}/${readinessItems.length} mục hoàn tất`} />
+                                            <div className="grid gap-2 p-4">
+                                                {readinessItems.map((item) => (
+                                                    <button
+                                                        key={item.label}
+                                                        type="button"
+                                                        onClick={() => navigate(item.route)}
+                                                        className="flex w-full items-center justify-between rounded-[8px] border border-gray-200 bg-white px-3 py-2.5 text-left transition-colors hover:border-violet-200 hover:bg-violet-50/60"
+                                                    >
+                                                        <span className="text-sm font-bold text-slate-900">{item.label}</span>
+                                                        {item.ready ? (
+                                                            <CheckCircle2 className="h-5 w-5 text-emerald-600" />
+                                                        ) : (
+                                                            <AlertTriangle className="h-5 w-5 text-amber-500" />
+                                                        )}
+                                                    </button>
+                                                ))}
+                                                <div className="rounded-[8px] border border-slate-100 bg-slate-50 px-3 py-2.5">
+                                                    <p className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Trạng thái hồ sơ</p>
+                                                    <p className="mt-1 text-sm font-extrabold text-slate-950">{formatStatus(data.profile?.status)}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+                            </>
+                        )}
                     </main>
                 </div>
             </div>
