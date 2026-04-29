@@ -88,7 +88,7 @@ export const TeacherClasses = (): JSX.Element => {
             )}
 
             {!loading && !error && overview && overview.classes.length > 0 && (
-                <section className="mt-6 grid gap-4 xl:grid-cols-2">
+                <section className="mt-6 grid gap-4 xl:grid-cols-[1fr_2fr]">
                     <div className="grid gap-4 xl:grid-rows-2">
                         <div className="rounded-[24px] border border-emerald-200 bg-white p-5 shadow-soft-md">
                             <p className="text-sm font-semibold text-[#6b7280]">Tổng lớp</p>
