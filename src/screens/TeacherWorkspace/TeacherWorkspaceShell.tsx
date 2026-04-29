@@ -83,11 +83,11 @@ export function TeacherWorkspaceShell({
                 ) : null}
                 </div>
 
-                <nav className="mt-4 flex flex-wrap items-center gap-1 rounded-xl border border-gray-100 bg-[#f7f9fc] p-1 text-xs font-bold">
+                <nav className="mt-4 flex flex-wrap items-center gap-1 text-xs font-bold">
                   {breadcrumbs.map((item, index) => (
                     <span key={`${item.label}-${index}`}>
                       {item.href ? (
-                        <a href={item.href} className="rounded-lg px-3 py-1.5 text-[#4c5769] transition-colors hover:bg-white hover:text-gray-900">
+                        <a href={item.href} className="rounded-lg px-3 py-1.5 text-[#4c5769] transition-colors hover:bg-[#f3f6fb] hover:text-gray-900">
                           {item.label}
                         </a>
                       ) : (
