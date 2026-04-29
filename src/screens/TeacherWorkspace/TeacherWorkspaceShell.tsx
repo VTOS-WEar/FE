@@ -1,7 +1,11 @@
 import { type ReactNode, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, GraduationCap, UserCircle } from "lucide-react";
+import { ArrowLeft, GraduationCap, LayoutDashboard, UserCircle } from "lucide-react";
 import { ClassGroupChatLauncher } from "../../components/ChatWidget/ClassGroupChatLauncher";
+import { DashboardSidebar } from "../../components/layout";
+import { TopNavBar } from "../../components/layout/TopNavBar";
+import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
+import { useSidebarConfig } from "../../hooks/useSidebarConfig";
 
 type BreadcrumbItem = {
   label: string;
@@ -27,6 +31,8 @@ export function TeacherWorkspaceShell({
   showIdentityHeader = true,
 }: TeacherWorkspaceShellProps): JSX.Element {
   const navigate = useNavigate();
+  const sidebarConfig = useSidebarConfig();
+  const [isCollapsed, toggle] = useSidebarCollapsed();
 
   const user = useMemo<StoredUser | null>(() => {
     try {
@@ -46,14 +52,39 @@ export function TeacherWorkspaceShell({
     navigate("/teacher/dashboard");
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("user");
+    localStorage.removeItem("expires_in");
+    localStorage.removeItem("vtos_org_name");
+    sessionStorage.removeItem("access_token");
+    sessionStorage.removeItem("user");
+    sessionStorage.removeItem("expires_in");
+    navigate("/signin", { replace: true });
+  };
+
+  const currentPageLabel = breadcrumbs[breadcrumbs.length - 1]?.label || "Teacher workspace";
+
   return (
-    <div className="min-h-screen min-h-[100svh] bg-[#f6f7fb]">
-      <div className="relative z-10 mx-auto max-w-[1280px] px-4 py-8 md:py-10 lg:px-8 nb-fade-in">
-        {(showBackButton || showIdentityHeader) && (
-          <div className="mb-6 rounded-2xl border border-gray-200 bg-white/90 p-4 shadow-soft-sm sm:p-5">
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-              <div className="min-w-0">
-                <div className="flex flex-wrap items-center gap-3">
+    <div className="nb-page flex flex-col">
+      <div className="flex flex-1 flex-col lg:flex-row">
+        <div className={`${isCollapsed ? "lg:w-16" : "lg:w-[16rem]"} flex-shrink-0 transition-all duration-300 lg:sticky lg:top-0 lg:h-screen`}>
+          <DashboardSidebar {...sidebarConfig} name="Teacher workspace" isCollapsed={isCollapsed} onToggle={toggle} onLogout={handleLogout} />
+        </div>
+        <div className="flex min-w-0 flex-1 flex-col">
+          <TopNavBar>
+            <div className="flex items-center gap-2 px-2 py-2">
+              <LayoutDashboard className="h-5 w-5 text-[#2563EB]" />
+              <h1 className="text-xl font-bold text-gray-900">{currentPageLabel}</h1>
+            </div>
+          </TopNavBar>
+
+          <main className="flex-1 px-4 py-6 sm:px-6 lg:px-10 lg:py-8">
+            {(showBackButton || showIdentityHeader) && (
+              <section className="mb-6 rounded-2xl border border-gray-200 bg-white/90 p-4 shadow-soft-sm sm:p-5">
+                <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-3">
                 {showBackButton ? (
                   <button
                     type="button"
@@ -81,41 +112,43 @@ export function TeacherWorkspaceShell({
                     </div>
                   </div>
                 ) : null}
+                    </div>
+
+                    <nav className="mt-4 inline-flex flex-wrap items-center gap-1 rounded-xl border border-gray-100 bg-[#f7f9fc] p-1 text-xs font-bold">
+                      {breadcrumbs.map((item, index) => (
+                        <span key={`${item.label}-${index}`}>
+                          {item.href ? (
+                            <a href={item.href} className="rounded-lg px-3 py-1.5 text-[#4c5769] transition-colors hover:bg-[#f3f6fb] hover:text-gray-900">
+                              {item.label}
+                            </a>
+                          ) : (
+                            <span className="rounded-lg bg-white px-3 py-1.5 text-emerald-800 shadow-sm">{item.label}</span>
+                          )}
+                        </span>
+                      ))}
+                    </nav>
+                  </div>
+
+                  <div className="flex flex-shrink-0 items-center gap-2 lg:pt-1">
+                    <ClassGroupChatLauncher />
+                    <button
+                      type="button"
+                      onClick={() => navigate("/teacher/account")}
+                      className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-3 text-sm font-bold text-gray-700 shadow-sm transition-all hover:-translate-y-[1px] hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-800"
+                      aria-label="Hồ sơ giáo viên"
+                      title="Hồ sơ giáo viên"
+                    >
+                      <UserCircle className="h-5 w-5" />
+                      <span className="hidden sm:inline">Hồ sơ</span>
+                    </button>
+                  </div>
                 </div>
+              </section>
+            )}
 
-                <nav className="mt-4 inline-flex flex-wrap items-center gap-1 rounded-xl border border-gray-100 bg-[#f7f9fc] p-1 text-xs font-bold">
-                  {breadcrumbs.map((item, index) => (
-                    <span key={`${item.label}-${index}`}>
-                      {item.href ? (
-                        <a href={item.href} className="rounded-lg px-3 py-1.5 text-[#4c5769] transition-colors hover:bg-[#f3f6fb] hover:text-gray-900">
-                          {item.label}
-                        </a>
-                      ) : (
-                        <span className="rounded-lg bg-white px-3 py-1.5 text-emerald-800 shadow-sm">{item.label}</span>
-                      )}
-                    </span>
-                  ))}
-                </nav>
-              </div>
-
-              <div className="flex flex-shrink-0 items-center gap-2 lg:pt-1">
-                <ClassGroupChatLauncher />
-                <button
-                  type="button"
-                  onClick={() => navigate("/teacher/account")}
-                  className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-3 text-sm font-bold text-gray-700 shadow-sm transition-all hover:-translate-y-[1px] hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-800"
-                  aria-label="Hồ sơ giáo viên"
-                  title="Hồ sơ giáo viên"
-                >
-                  <UserCircle className="h-5 w-5" />
-                  <span className="hidden sm:inline">Hồ sơ</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        <div className="min-w-0">{children}</div>
+            <div className="min-w-0">{children}</div>
+          </main>
+        </div>
       </div>
     </div>
   );
