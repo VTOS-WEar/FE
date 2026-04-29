@@ -33,8 +33,8 @@ export const TeacherDashboard = (): JSX.Element => {
             showIdentityHeader={false}
         >
             <section className="rounded-[24px] border border-gray-200 bg-white p-6 shadow-soft-sm">
-                <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
-                    <div>
+                <div className="grid gap-4 xl:grid-cols-3 xl:items-end">
+                    <div className="xl:col-span-2">
                         <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-white/80 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-emerald-700">
                             <GraduationCap className="h-4 w-4" />
                             Homeroom teacher workspace
@@ -46,7 +46,7 @@ export const TeacherDashboard = (): JSX.Element => {
                             Theo dõi lớp, nhắc phụ huynh chưa đặt đồng phục, và giữ luồng trao đổi với phụ huynh trong một không gian nhẹ hơn dashboard quản trị.
                         </p>
                     </div>
-                    <div className="flex flex-wrap gap-3">
+                    <div className="flex flex-wrap gap-3 xl:col-span-1 xl:justify-end">
                         <button type="button" onClick={() => navigate("/teacher/classes")} className="inline-flex items-center gap-2 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm font-bold text-gray-900 shadow-soft-sm hover:border-emerald-200">
                             <Users className="h-4 w-4 text-emerald-700" />
                             Xem lớp chủ nhiệm
