@@ -88,8 +88,8 @@ export const TeacherClasses = (): JSX.Element => {
             )}
 
             {!loading && !error && overview && overview.classes.length > 0 && (
-                <section className="mt-6 grid gap-4 xl:grid-cols-[320px_1fr]">
-                    <div className="grid content-start gap-4">
+                <section className="mt-6 grid gap-4 xl:grid-cols-2">
+                    <div className="grid gap-4 xl:grid-rows-2">
                         <div className="rounded-[24px] border border-emerald-200 bg-white p-5 shadow-soft-md">
                             <p className="text-sm font-semibold text-[#6b7280]">Tổng lớp</p>
                             <p className="mt-2 text-3xl font-extrabold text-gray-900">{overview.totalClasses}</p>
@@ -99,7 +99,7 @@ export const TeacherClasses = (): JSX.Element => {
                             <p className="mt-2 text-3xl font-extrabold text-gray-900">{overview.totalStudents}</p>
                         </div>
                     </div>
-                    <div className="grid gap-4 xl:grid-cols-2">
+                    <div className="grid gap-4">
                         {overview.classes.map((classGroup) => (
                             <button
                                 key={classGroup.id}
