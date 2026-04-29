@@ -44,7 +44,7 @@ export const TeacherDashboard = (): JSX.Element => {
             showIdentityHeader={false}
         >
             <section className="rounded-[24px] border border-gray-200 bg-white p-6 shadow-soft-sm">
-                <div className="grid gap-4 xl:grid-cols-3 xl:items-end">
+                <div className="grid gap-4 xl:grid-cols-3 xl:items-center">
                     <div className="xl:col-span-2">
                         <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-white/80 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-emerald-700">
                             <GraduationCap className="h-4 w-4" />
@@ -58,25 +58,25 @@ export const TeacherDashboard = (): JSX.Element => {
                         </p>
                     </div>
                     <div className="grid auto-rows-fr grid-cols-1 gap-3 sm:grid-cols-2 xl:col-span-1">
-                        <button type="button" onClick={() => navigate("/teacher/classes")} className="inline-flex h-full w-full items-center justify-center gap-2 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm font-bold text-gray-900 shadow-soft-sm transition-all hover:-translate-y-0.5 hover:border-emerald-200">
+                        <button type="button" onClick={() => navigate("/teacher/classes")} className="inline-flex h-full w-full flex-col items-center justify-center gap-1.5 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-center text-sm font-bold text-gray-900 shadow-soft-sm transition-all hover:-translate-y-0.5 hover:border-emerald-200">
                             <Users className="h-4 w-4 text-emerald-700" />
-                            Xem lớp chủ nhiệm
+                            <span className="leading-tight">Xem lớp chủ nhiệm</span>
                         </button>
-                        <button type="button" onClick={() => navigate("/teacher/reminders")} className="inline-flex h-full w-full items-center justify-center gap-2 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm font-bold text-gray-900 shadow-soft-sm transition-all hover:-translate-y-0.5 hover:border-amber-200">
+                        <button type="button" onClick={() => navigate("/teacher/reminders")} className="inline-flex h-full w-full flex-col items-center justify-center gap-1.5 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-center text-sm font-bold text-gray-900 shadow-soft-sm transition-all hover:-translate-y-0.5 hover:border-amber-200">
                             <BellRing className="h-4 w-4 text-amber-700" />
-                            Nhắc phụ huynh
+                            <span className="leading-tight">Nhắc phụ huynh</span>
                         </button>
-                        <button type="button" onClick={() => navigate("/teacher/messages")} className="inline-flex h-full w-full items-center justify-center gap-2 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm font-bold text-gray-900 shadow-soft-sm transition-all hover:-translate-y-0.5 hover:border-sky-200">
+                        <button type="button" onClick={() => navigate("/teacher/messages")} className="inline-flex h-full w-full flex-col items-center justify-center gap-1.5 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-center text-sm font-bold text-gray-900 shadow-soft-sm transition-all hover:-translate-y-0.5 hover:border-sky-200">
                             <MessageSquare className="h-4 w-4 text-sky-700" />
-                            Mở tin nhắn
+                            <span className="leading-tight">Mở tin nhắn</span>
                         </button>
-                        <button type="button" onClick={() => navigate("/teacher/account")} className="inline-flex h-full w-full items-center justify-center gap-2 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm font-bold text-gray-900 shadow-soft-sm transition-all hover:-translate-y-0.5 hover:border-violet-200">
+                        <button type="button" onClick={() => navigate("/teacher/account")} className="inline-flex h-full w-full flex-col items-center justify-center gap-1.5 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-center text-sm font-bold text-gray-900 shadow-soft-sm transition-all hover:-translate-y-0.5 hover:border-violet-200">
                             <Settings className="h-4 w-4 text-violet-700" />
-                            Cài đặt tài khoản
+                            <span className="leading-tight">Cài đặt tài khoản</span>
                         </button>
-                        <button type="button" onClick={handleLogout} className="inline-flex h-full w-full items-center justify-center gap-2 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-bold text-red-800 shadow-soft-sm transition-all hover:-translate-y-0.5 hover:border-red-300 hover:bg-red-100 sm:col-span-2">
+                        <button type="button" onClick={handleLogout} className="inline-flex h-full w-full flex-col items-center justify-center gap-1.5 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-center text-sm font-bold text-red-800 shadow-soft-sm transition-all hover:-translate-y-0.5 hover:border-red-300 hover:bg-red-100 sm:col-span-2">
                             <LogOut className={`h-4 w-4 ${isLoggingOut ? "animate-spin" : ""}`} />
-                            {isLoggingOut ? "Đang xuất..." : "Đăng xuất"}
+                            <span className="leading-tight">{isLoggingOut ? "Đang xuất..." : "Đăng xuất"}</span>
                         </button>
                     </div>
                 </div>
