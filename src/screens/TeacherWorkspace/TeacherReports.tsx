@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { ChevronDown } from "lucide-react";
 import { getTeacherClassesOverview, getTeacherReports, type TeacherReportListItemDto } from "../../lib/api/teachers";
 import { TeacherWorkspaceShell } from "./TeacherWorkspaceShell";
 
@@ -54,29 +55,38 @@ export const TeacherReports = (): JSX.Element => {
                 <div className="grid gap-3 md:grid-cols-3">
                     <label className="text-sm font-semibold text-[#4c5769]">
                         Lớp
-                        <select value={classGroupId} onChange={(e) => setClassGroupId(e.target.value)} className="mt-2 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 font-semibold text-gray-900 outline-none focus:border-emerald-300">
-                            <option value="">Tất cả lớp</option>
-                            {classOptions.map((item) => (
-                                <option key={item.id} value={item.id}>Lớp {item.className}</option>
-                            ))}
-                        </select>
+                        <div className="relative mt-2">
+                            <select value={classGroupId} onChange={(e) => setClassGroupId(e.target.value)} className="w-full appearance-none rounded-2xl border border-gray-200 bg-white px-4 py-3 pr-11 font-semibold text-gray-900 outline-none focus:border-emerald-300">
+                                <option value="">Tất cả lớp</option>
+                                {classOptions.map((item) => (
+                                    <option key={item.id} value={item.id}>Lớp {item.className}</option>
+                                ))}
+                            </select>
+                            <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
+                        </div>
                     </label>
                     <label className="text-sm font-semibold text-[#4c5769]">
                         Trạng thái
-                        <select value={status} onChange={(e) => setStatus(e.target.value)} className="mt-2 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 font-semibold text-gray-900 outline-none focus:border-emerald-300">
-                            <option value="">Tất cả</option>
-                            <option value="Submitted">Đang chờ xem</option>
-                            <option value="Reviewed">Đã xem</option>
-                        </select>
+                        <div className="relative mt-2">
+                            <select value={status} onChange={(e) => setStatus(e.target.value)} className="w-full appearance-none rounded-2xl border border-gray-200 bg-white px-4 py-3 pr-11 font-semibold text-gray-900 outline-none focus:border-emerald-300">
+                                <option value="">Tất cả</option>
+                                <option value="Submitted">Đang chờ xem</option>
+                                <option value="Reviewed">Đã xem</option>
+                            </select>
+                            <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
+                        </div>
                     </label>
                     <label className="text-sm font-semibold text-[#4c5769]">
                         Loại báo cáo
-                        <select value={reportType} onChange={(e) => setReportType(e.target.value)} className="mt-2 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 font-semibold text-gray-900 outline-none focus:border-emerald-300">
-                            <option value="">Tất cả</option>
-                            <option value="General">Tổng hợp</option>
-                            <option value="OrderCoverage">Độ phủ đơn hàng</option>
-                            <option value="QualityIssue">Vấn đề chất lượng</option>
-                        </select>
+                        <div className="relative mt-2">
+                            <select value={reportType} onChange={(e) => setReportType(e.target.value)} className="w-full appearance-none rounded-2xl border border-gray-200 bg-white px-4 py-3 pr-11 font-semibold text-gray-900 outline-none focus:border-emerald-300">
+                                <option value="">Tất cả</option>
+                                <option value="General">Tổng hợp</option>
+                                <option value="OrderCoverage">Độ phủ đơn hàng</option>
+                                <option value="QualityIssue">Vấn đề chất lượng</option>
+                            </select>
+                            <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
+                        </div>
                     </label>
                 </div>
             </section>
