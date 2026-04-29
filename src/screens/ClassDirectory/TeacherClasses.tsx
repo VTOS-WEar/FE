@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { BellRing, BookOpenCheck, ClipboardList, GraduationCap, MessageSquare, ShoppingBag, Users } from "lucide-react";
 import { getTeacherClassesOverview } from "../../lib/api/teachers";
@@ -17,6 +17,15 @@ export const TeacherClasses = (): JSX.Element => {
             .catch((err: unknown) => setError(err instanceof Error ? err.message : "Không thể tải danh sách lớp"))
             .finally(() => setLoading(false));
     }, []);
+
+    const sortedClasses = useMemo(() => {
+        if (!overview) return [];
+        return [...overview.classes].sort((a, b) => {
+            const aPending = (a.studentCount - a.parentLinkedCount) + (a.studentCount - a.measurementReadyCount) + (a.studentCount - a.orderedStudentCount);
+            const bPending = (b.studentCount - b.parentLinkedCount) + (b.studentCount - b.measurementReadyCount) + (b.studentCount - b.orderedStudentCount);
+            return bPending - aPending;
+        });
+    }, [overview]);
 
     return (
         <TeacherWorkspaceShell breadcrumbs={[{ label: "Teacher workspace", href: "/teacher/dashboard" }, { label: "Lớp chủ nhiệm" }]}>
@@ -100,11 +109,17 @@ export const TeacherClasses = (): JSX.Element => {
                         </div>
                     </div>
                     <div className="grid gap-4">
-                        {overview.classes.map((classGroup) => (
-                            <button
+                        {sortedClasses.map((classGroup) => {
+                            const pendingParentLink = classGroup.studentCount - classGroup.parentLinkedCount;
+                            const pendingMeasurement = classGroup.studentCount - classGroup.measurementReadyCount;
+                            const pendingOrders = classGroup.studentCount - classGroup.orderedStudentCount;
+                            const pendingTotal = pendingParentLink + pendingMeasurement + pendingOrders;
+                            const urgentThreshold = Math.ceil(classGroup.studentCount * 0.9);
+                            const isUrgent = pendingTotal >= urgentThreshold;
+
+                            return (
+                            <div
                                 key={classGroup.id}
-                                type="button"
-                                onClick={() => navigate(`/teacher/classes/${classGroup.id}`)}
                                 className="group rounded-[24px] border border-gray-200 bg-white p-5 text-left shadow-soft-md transition-all hover:-translate-y-1 hover:border-emerald-300 hover:shadow-soft-lg"
                             >
                                 <div className="flex items-start justify-between gap-3">
@@ -112,6 +127,11 @@ export const TeacherClasses = (): JSX.Element => {
                                         <p className="text-xs font-bold uppercase tracking-[0.18em] text-emerald-700">{classGroup.academicYear}</p>
                                         <h2 className="mt-2 text-2xl font-extrabold text-gray-900">Lớp {classGroup.className}</h2>
                                     </div>
+                                    {isUrgent && (
+                                        <span className="rounded-full bg-rose-50 px-3 py-1 text-xs font-bold text-rose-700">
+                                            Cần theo sát
+                                        </span>
+                                    )}
                                 </div>
 
                                 <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
@@ -138,12 +158,36 @@ export const TeacherClasses = (): JSX.Element => {
                                     </div>
                                 </div>
 
+                                <div className="mt-4 grid gap-2 sm:grid-cols-3">
+                                    <button
+                                        type="button"
+                                        onClick={() => navigate(`/teacher/classes/${classGroup.id}`)}
+                                        className="rounded-xl border border-gray-200 bg-white px-3 py-2 text-xs font-bold text-gray-800 transition-colors hover:border-emerald-200 hover:bg-emerald-50"
+                                    >
+                                        Xem chi tiết lớp
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => navigate(`/teacher/classes/${classGroup.id}`)}
+                                        className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-bold text-amber-800 transition-colors hover:bg-amber-100"
+                                    >
+                                        Học sinh chưa đo size
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => navigate(`/teacher/reminders?classGroupId=${classGroup.id}`)}
+                                        className="rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-xs font-bold text-sky-800 transition-colors hover:bg-sky-100"
+                                    >
+                                        Nhắc phụ huynh lớp này
+                                    </button>
+                                </div>
+
                                 <div className="mt-4 flex items-center gap-2 text-sm font-semibold text-[#4c5769]">
                                     <Users className="h-4 w-4 text-emerald-600" />
                                     <span>{classGroup.homeroomTeacherName || overview.teacherName}</span>
                                 </div>
-                            </button>
-                        ))}
+                            </div>
+                        )})}
                     </div>
                 </section>
             )}
