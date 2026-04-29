@@ -1,4 +1,4 @@
-import { ClipboardList, GraduationCap, LayoutDashboard, LifeBuoy } from "lucide-react";
+import { BellRing, ClipboardList, GraduationCap, LayoutDashboard, LifeBuoy, MessageSquare, UserCircle } from "lucide-react";
 import type { DashboardSidebarProps } from "../components/layout";
 
 export const TEACHER_DASHBOARD_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, "isCollapsed" | "onToggle"> = {
@@ -27,9 +27,24 @@ export const TEACHER_DASHBOARD_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, "isCo
                     href: "/teacher/reports",
                 },
                 {
+                    icon: BellRing,
+                    label: "Nhắc phụ huynh",
+                    href: "/teacher/reminders",
+                },
+                {
+                    icon: MessageSquare,
+                    label: "Tin nhắn",
+                    href: "/teacher/messages",
+                },
+                {
                     icon: LifeBuoy,
                     label: "Hỗ trợ Admin",
                     href: "/teacher/support",
+                },
+                {
+                    icon: UserCircle,
+                    label: "Tài khoản",
+                    href: "/teacher/account",
                 },
             ],
         },
