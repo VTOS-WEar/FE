@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { ChevronDown } from "lucide-react";
-import { getTeacherClassesOverview, getTeacherReports, type TeacherReportListItemDto } from "../../lib/api/teachers";
+import { useSearchParams } from "react-router-dom";
+import { ChevronDown, X } from "lucide-react";
+import { getTeacherClassesOverview, getTeacherReports, submitTeacherReport, type TeacherReportListItemDto } from "../../lib/api/teachers";
 import { TeacherWorkspaceShell } from "./TeacherWorkspaceShell";
 
 export const TeacherReports = (): JSX.Element => {
-    const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const [reports, setReports] = useState<TeacherReportListItemDto[]>([]);
     const [classOptions, setClassOptions] = useState<{ id: string; className: string }[]>([]);
@@ -14,14 +13,32 @@ export const TeacherReports = (): JSX.Element => {
     const [classGroupId, setClassGroupId] = useState(searchParams.get("classGroupId") || "");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const [newClassGroupId, setNewClassGroupId] = useState(searchParams.get("classGroupId") || "");
+    const [newReportType, setNewReportType] = useState("General");
+    const [newTitle, setNewTitle] = useState("");
+    const [newContent, setNewContent] = useState("");
+    const [newError, setNewError] = useState<string | null>(null);
+    const [saving, setSaving] = useState(false);
 
     useEffect(() => {
         getTeacherClassesOverview()
             .then((overview) => setClassOptions(overview.classes.map((item) => ({ id: item.id, className: item.className }))))
+            .then(() => {
+                if (!newClassGroupId && classOptions.length > 0) {
+                    setNewClassGroupId(classOptions[0].id);
+                }
+            })
             .catch(() => undefined);
     }, []);
 
     useEffect(() => {
+        if (!newClassGroupId && classOptions.length > 0) {
+            setNewClassGroupId(classOptions[0].id);
+        }
+    }, [classOptions, newClassGroupId]);
+
+    const loadReports = () => {
         setLoading(true);
         setError(null);
         getTeacherReports({
@@ -32,7 +49,51 @@ export const TeacherReports = (): JSX.Element => {
             .then((response) => setReports(response.items))
             .catch((err: unknown) => setError(err instanceof Error ? err.message : "Không thể tải báo cáo"))
             .finally(() => setLoading(false));
+    };
+
+    useEffect(() => {
+        loadReports();
     }, [classGroupId, reportType, status]);
+
+    const closeCreateModal = () => {
+        setIsCreateModalOpen(false);
+        setNewError(null);
+        setNewTitle("");
+        setNewContent("");
+        setNewReportType("General");
+    };
+
+    const handleCreateReport = async () => {
+        setNewError(null);
+        if (!newClassGroupId) {
+            setNewError("Vui lòng chọn lớp cần báo cáo.");
+            return;
+        }
+        if (newTitle.trim().length < 5) {
+            setNewError("Tiêu đề báo cáo phải dài ít nhất 5 ký tự.");
+            return;
+        }
+        if (newContent.trim().length < 10) {
+            setNewError("Nội dung báo cáo phải dài ít nhất 10 ký tự.");
+            return;
+        }
+
+        try {
+            setSaving(true);
+            await submitTeacherReport({
+                classGroupId: newClassGroupId,
+                reportType: newReportType,
+                title: newTitle.trim(),
+                content: newContent.trim(),
+            });
+            closeCreateModal();
+            loadReports();
+        } catch (err: unknown) {
+            setNewError(err instanceof Error ? err.message : "Không thể gửi báo cáo");
+        } finally {
+            setSaving(false);
+        }
+    };
 
     return (
         <TeacherWorkspaceShell breadcrumbs={[{ label: "Teacher workspace", href: "/teacher/dashboard" }, { label: "Báo cáo" }]}>
@@ -45,7 +106,7 @@ export const TeacherReports = (): JSX.Element => {
                             Theo dõi các báo cáo đã gửi cho nhà trường, trạng thái xử lý, và ghi chú phản hồi để không bỏ sót việc cần theo.
                         </p>
                     </div>
-                    <button type="button" onClick={() => navigate("/teacher/reports/new")} className="inline-flex items-center gap-2 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm font-bold text-gray-900 shadow-soft-sm hover:border-sky-200">
+                    <button type="button" onClick={() => setIsCreateModalOpen(true)} className="inline-flex items-center gap-2 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm font-bold text-gray-900 shadow-soft-sm hover:border-sky-200">
                         Tạo báo cáo mới
                     </button>
                 </div>
@@ -140,6 +201,70 @@ export const TeacherReports = (): JSX.Element => {
                         ))}
                     </div>
                 </section>
+            )}
+
+            {isCreateModalOpen && (
+                <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/45 p-4">
+                    <div className="w-full max-w-2xl rounded-2xl border border-gray-200 bg-white shadow-soft-lg">
+                        <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4">
+                            <div>
+                                <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-emerald-700">Teacher reports</p>
+                                <h2 className="text-xl font-extrabold text-gray-900">Tạo báo cáo mới</h2>
+                            </div>
+                            <button type="button" onClick={closeCreateModal} className="rounded-lg border border-gray-200 p-2 text-gray-600 transition-colors hover:bg-gray-50" aria-label="Đóng">
+                                <X className="h-4 w-4" />
+                            </button>
+                        </div>
+                        <div className="space-y-4 px-5 py-5">
+                            <div className="grid gap-4 md:grid-cols-2">
+                                <label className="text-sm font-semibold text-[#4c5769]">
+                                    Lớp
+                                    <div className="relative mt-2">
+                                        <select value={newClassGroupId} onChange={(e) => setNewClassGroupId(e.target.value)} className="w-full appearance-none rounded-2xl border border-gray-200 bg-white px-4 py-3 pr-11 font-semibold text-gray-900 outline-none focus:border-emerald-300">
+                                            <option value="">Chọn lớp</option>
+                                            {classOptions.map((item) => (
+                                                <option key={item.id} value={item.id}>Lớp {item.className}</option>
+                                            ))}
+                                        </select>
+                                        <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
+                                    </div>
+                                </label>
+                                <label className="text-sm font-semibold text-[#4c5769]">
+                                    Loại báo cáo
+                                    <div className="relative mt-2">
+                                        <select value={newReportType} onChange={(e) => setNewReportType(e.target.value)} className="w-full appearance-none rounded-2xl border border-gray-200 bg-white px-4 py-3 pr-11 font-semibold text-gray-900 outline-none focus:border-emerald-300">
+                                            <option value="General">Tổng hợp</option>
+                                            <option value="OrderCoverage">Độ phủ đơn hàng</option>
+                                            <option value="QualityIssue">Vấn đề chất lượng</option>
+                                        </select>
+                                        <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
+                                    </div>
+                                </label>
+                            </div>
+                            <label className="block text-sm font-semibold text-[#4c5769]">
+                                Tiêu đề
+                                <input value={newTitle} onChange={(e) => setNewTitle(e.target.value)} className="mt-2 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 font-semibold text-gray-900 outline-none focus:border-emerald-300" placeholder="Ví dụ: Lớp 10A6 còn nhiều học sinh chưa đặt đồng phục" />
+                            </label>
+                            <label className="block text-sm font-semibold text-[#4c5769]">
+                                Nội dung
+                                <textarea value={newContent} onChange={(e) => setNewContent(e.target.value)} rows={6} className="mt-2 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 font-semibold text-gray-900 outline-none focus:border-emerald-300" placeholder="Mô tả rõ tình hình, số học sinh ảnh hưởng và hỗ trợ cần từ nhà trường." />
+                            </label>
+                            {newError && (
+                                <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-bold text-red-700">
+                                    {newError}
+                                </div>
+                            )}
+                        </div>
+                        <div className="flex flex-col-reverse gap-3 border-t border-gray-100 px-5 py-4 sm:flex-row sm:justify-end">
+                            <button type="button" onClick={closeCreateModal} className="rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm font-bold text-gray-900 shadow-soft-sm transition-all hover:-translate-y-0.5">
+                                Hủy
+                            </button>
+                            <button type="button" onClick={handleCreateReport} disabled={saving} className="rounded-2xl border border-emerald-200 bg-emerald-600 px-5 py-3 text-sm font-bold text-white shadow-soft-sm transition-all hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60">
+                                {saving ? "Đang gửi..." : "Gửi báo cáo"}
+                            </button>
+                        </div>
+                    </div>
+                </div>
             )}
         </TeacherWorkspaceShell>
     );
