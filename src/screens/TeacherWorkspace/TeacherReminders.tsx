@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { BellRing, Send } from "lucide-react";
+import { BellRing, ChevronDown, Send } from "lucide-react";
 import {
     getTeacherClassesOverview,
     getTeacherReminderCandidates,
@@ -105,12 +105,15 @@ export const TeacherReminders = (): JSX.Element => {
                     </div>
                     <label className="text-sm font-semibold text-[#4c5769]">
                         Lớp
-                        <select value={classGroupId} onChange={(event) => setClassGroupId(event.target.value)} className="mt-2 w-full min-w-[220px] rounded-2xl border border-gray-200 bg-white px-4 py-3 font-semibold text-gray-900 outline-none focus:border-amber-300">
-                            {classOptions.length === 0 && <option value="">Chưa có lớp</option>}
-                            {classOptions.map((item) => (
-                                <option key={item.id} value={item.id}>Lớp {item.className}</option>
-                            ))}
-                        </select>
+                        <div className="relative mt-2">
+                            <select value={classGroupId} onChange={(event) => setClassGroupId(event.target.value)} className="w-full min-w-[220px] appearance-none rounded-2xl border border-gray-200 bg-white px-4 py-3 pr-11 font-semibold text-gray-900 outline-none focus:border-amber-300">
+                                {classOptions.length === 0 && <option value="">Chưa có lớp</option>}
+                                {classOptions.map((item) => (
+                                    <option key={item.id} value={item.id}>Lớp {item.className}</option>
+                                ))}
+                            </select>
+                            <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
+                        </div>
                     </label>
                 </div>
             </section>
