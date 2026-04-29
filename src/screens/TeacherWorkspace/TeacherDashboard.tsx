@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { AlertCircle, BellRing, GraduationCap, Link2, MessageSquare, Settings, Users } from "lucide-react";
+import { AlertCircle, BellRing, GraduationCap, Link2, LogOut, MessageSquare, Settings, Users } from "lucide-react";
 import { getTeacherDashboard, type TeacherDashboardDto } from "../../lib/api/teachers";
 import { TeacherWorkspaceShell } from "./TeacherWorkspaceShell";
 
@@ -9,6 +9,7 @@ export const TeacherDashboard = (): JSX.Element => {
     const [dashboard, setDashboard] = useState<TeacherDashboardDto | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [isLoggingOut, setIsLoggingOut] = useState(false);
 
     useEffect(() => {
         getTeacherDashboard()
@@ -20,6 +21,16 @@ export const TeacherDashboard = (): JSX.Element => {
     const primaryClass = dashboard?.classesNeedingAttention[0];
     const measuredStudents = Math.max((dashboard?.totalStudents || 0) - (dashboard?.missingMeasurementCount || 0), 0);
     const orderedStudents = dashboard?.classesNeedingAttention.reduce((sum, item) => sum + item.orderedStudentCount, 0) || 0;
+    const handleLogout = () => {
+        setIsLoggingOut(true);
+        setTimeout(() => {
+            ["access_token", "user", "expires_in"].forEach((key) => {
+                localStorage.removeItem(key);
+                sessionStorage.removeItem(key);
+            });
+            navigate("/signin", { replace: true });
+        }, 300);
+    };
     const classDisplay = dashboard
         ? dashboard.totalClasses <= 1
             ? (primaryClass?.className || "Chưa gán lớp")
@@ -62,6 +73,10 @@ export const TeacherDashboard = (): JSX.Element => {
                         <button type="button" onClick={() => navigate("/teacher/account")} className="inline-flex h-full w-full items-center gap-2 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm font-bold text-gray-900 shadow-soft-sm hover:border-violet-200">
                             <Settings className="h-4 w-4 text-violet-700" />
                             Cài đặt tài khoản
+                        </button>
+                        <button type="button" onClick={handleLogout} className="inline-flex h-full w-full items-center gap-2 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-bold text-red-800 shadow-soft-sm transition-all hover:border-red-300 hover:bg-red-100">
+                            <LogOut className={`h-4 w-4 ${isLoggingOut ? "animate-spin" : ""}`} />
+                            {isLoggingOut ? "Đang xuất..." : "Đăng xuất"}
                         </button>
                     </div>
                 </div>
