@@ -200,7 +200,7 @@ export const TeacherDashboard = (): JSX.Element => {
 
                         <div className="space-y-4">
                             <div className="rounded-[20px] border border-gray-200 bg-white p-5 shadow-soft-sm">
-                                <div className="flex flex-col gap-4">
+                                <div className="flex items-start justify-between gap-3">
                                     <div className="flex items-start gap-3">
                                         <div className="rounded-2xl bg-[#fef6d8] p-3 text-amber-700"><AlertCircle className="h-5 w-5" /></div>
                                         <div>
@@ -211,7 +211,7 @@ export const TeacherDashboard = (): JSX.Element => {
                                     <button
                                         type="button"
                                         onClick={() => navigate("/teacher/reports")}
-                                        className="w-full rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-bold text-amber-800 transition-colors hover:bg-amber-100 sm:ml-auto sm:w-auto"
+                                        className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-bold text-amber-800 transition-colors hover:bg-amber-100"
                                     >
                                         Xem báo cáo
                                     </button>
