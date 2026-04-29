@@ -393,7 +393,7 @@ export const AdminDashboard = (): JSX.Element => {
                                             <select
                                                 value={timeRange}
                                                 onChange={(event) => setTimeRange(event.target.value as TimeRange)}
-                                                className="w-full appearance-none rounded-2xl border px-4 py-3 pr-11 text-[15px] font-bold outline-none"
+                                                className="w-full appearance-none rounded-2xl border px-3 py-3 pr-9 text-[14px] font-bold outline-none"
                                                 style={{ borderColor: "#D8E5FF", background: "#F7FAFF", color: tone.pageInk }}
                                             >
                                                 <option value="Week" style={{ color: tone.pageInk }}>Tuần này</option>
@@ -401,7 +401,7 @@ export const AdminDashboard = (): JSX.Element => {
                                                 <option value="Quarter" style={{ color: tone.pageInk }}>Quý này</option>
                                                 <option value="Year" style={{ color: tone.pageInk }}>Năm nay</option>
                                             </select>
-                                            <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2" style={{ color: tone.pageInk }} />
+                                            <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-5 w-5 -translate-y-1/2" style={{ color: tone.pageInk }} />
                                         </div>
                                     </div>
                                     <div className="rounded-[20px] border px-4 py-4 shadow-soft-sm" style={{ borderColor: "#CFE0FF", background: "#FFFFFF" }}>
@@ -523,7 +523,7 @@ export const AdminDashboard = (): JSX.Element => {
                                                     </p>
                                                 </div>
                                                 <div className="flex flex-wrap gap-2">
-                                                    {(["CSV", "EXCEL", "PDF"] as const).map((format) => {
+                                                    {(["EXCEL"] as const).map((format) => {
                                                         const key = `${reportType}:${format}`;
                                                         return (
                                                             <button
