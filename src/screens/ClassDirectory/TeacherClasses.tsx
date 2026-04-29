@@ -21,8 +21,8 @@ export const TeacherClasses = (): JSX.Element => {
     return (
         <TeacherWorkspaceShell breadcrumbs={[{ label: "Teacher workspace", href: "/teacher/dashboard" }, { label: "Lớp chủ nhiệm" }]}>
             <section className="rounded-[28px] border border-emerald-200 bg-[radial-gradient(circle_at_top_left,_rgba(16,185,129,0.15),_transparent_36%),linear-gradient(135deg,_#ffffff_10%,_#f4fffb_55%,_#f7f9ff_100%)] p-6 shadow-soft-lg">
-                <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-                    <div>
+                <div className="grid gap-4 xl:grid-cols-3 xl:items-center">
+                    <div className="xl:col-span-2">
                         <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-white/80 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-emerald-700">
                             <BookOpenCheck className="h-4 w-4" />
                             Lớp chủ nhiệm
@@ -32,20 +32,20 @@ export const TeacherClasses = (): JSX.Element => {
                             Danh sách lớp được phân công, mức độ sẵn sàng của học sinh, và độ phủ đơn hàng để thấy ngay lớp nào cần theo sát hơn.
                         </p>
                     </div>
-                    <div className="flex flex-wrap gap-3">
-                        <button type="button" onClick={() => navigate("/teacher/dashboard")} className="inline-flex items-center gap-2 rounded-2xl border border-emerald-200 bg-white px-4 py-3 text-sm font-bold text-gray-900 shadow-soft-sm transition-all hover:-translate-y-0.5 hover:shadow-soft-md">
+                    <div className="grid auto-rows-fr grid-cols-1 gap-3 sm:grid-cols-2 xl:col-span-1">
+                        <button type="button" onClick={() => navigate("/teacher/dashboard")} className="inline-flex h-full w-full items-center justify-center gap-2 rounded-2xl border border-emerald-200 bg-white px-4 py-3 text-center text-sm font-bold text-gray-900 shadow-soft-sm transition-all hover:-translate-y-0.5 hover:shadow-soft-md">
                             <GraduationCap className="h-4 w-4 text-emerald-700" />
                             Tổng quan
                         </button>
-                        <button type="button" onClick={() => navigate("/teacher/reminders")} className="inline-flex items-center gap-2 rounded-2xl border border-amber-200 bg-white px-4 py-3 text-sm font-bold text-gray-900 shadow-soft-sm transition-all hover:-translate-y-0.5 hover:shadow-soft-md">
+                        <button type="button" onClick={() => navigate("/teacher/reminders")} className="inline-flex h-full w-full items-center justify-center gap-2 rounded-2xl border border-amber-200 bg-white px-4 py-3 text-center text-sm font-bold text-gray-900 shadow-soft-sm transition-all hover:-translate-y-0.5 hover:shadow-soft-md">
                             <BellRing className="h-4 w-4 text-amber-700" />
                             Nhắc phụ huynh
                         </button>
-                        <button type="button" onClick={() => navigate("/teacher/messages")} className="inline-flex items-center gap-2 rounded-2xl border border-sky-200 bg-white px-4 py-3 text-sm font-bold text-gray-900 shadow-soft-sm transition-all hover:-translate-y-0.5 hover:shadow-soft-md">
+                        <button type="button" onClick={() => navigate("/teacher/messages")} className="inline-flex h-full w-full items-center justify-center gap-2 rounded-2xl border border-sky-200 bg-white px-4 py-3 text-center text-sm font-bold text-gray-900 shadow-soft-sm transition-all hover:-translate-y-0.5 hover:shadow-soft-md">
                             <MessageSquare className="h-4 w-4 text-sky-700" />
                             Tin nhắn
                         </button>
-                        <button type="button" onClick={() => navigate("/teacher/reports")} className="inline-flex items-center gap-2 rounded-2xl border border-sky-200 bg-white px-4 py-3 text-sm font-bold text-gray-900 shadow-soft-sm transition-all hover:-translate-y-0.5 hover:shadow-soft-md">
+                        <button type="button" onClick={() => navigate("/teacher/reports")} className="inline-flex h-full w-full items-center justify-center gap-2 rounded-2xl border border-sky-200 bg-white px-4 py-3 text-center text-sm font-bold text-gray-900 shadow-soft-sm transition-all hover:-translate-y-0.5 hover:shadow-soft-md">
                             <ClipboardList className="h-4 w-4 text-sky-700" />
                             Báo cáo
                         </button>
