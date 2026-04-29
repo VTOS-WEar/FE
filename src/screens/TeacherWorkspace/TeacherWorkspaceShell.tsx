@@ -83,7 +83,7 @@ export function TeacherWorkspaceShell({
                 ) : null}
                 </div>
 
-                <nav className="mt-4 flex flex-wrap items-center gap-1 text-xs font-bold">
+                <nav className="mt-4 inline-flex flex-wrap items-center gap-1 rounded-xl border border-gray-100 bg-[#f7f9fc] p-1 text-xs font-bold">
                   {breadcrumbs.map((item, index) => (
                     <span key={`${item.label}-${index}`}>
                       {item.href ? (
