@@ -142,21 +142,30 @@ export const TeacherDashboard = (): JSX.Element => {
                                         ? Math.round((item.orderedStudentCount / item.studentCount) * 100)
                                         : 0;
                                     return (
-                                        <button
+                                        <div
                                             key={item.classGroupId}
-                                            type="button"
-                                            onClick={() => navigate(`/teacher/classes/${item.classGroupId}`)}
-                                            className="group flex min-h-[220px] flex-1 items-stretch justify-between gap-3 px-5 py-5 text-left transition-all hover:bg-[#f8fbff]"
+                                            className="min-h-[220px] px-5 py-5 transition-all hover:bg-[#f8fbff]"
                                         >
-                                            <div className="flex flex-1 flex-col justify-between">
-                                                <div>
-                                                    <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#6b7280]">{item.academicYear}</p>
-                                                    <p className="mt-4 max-w-xl text-sm font-medium leading-6 text-[#4c5769]">
-                                                        Theo dõi 3 mốc chính của lớp: liên kết phụ huynh, đo size, và đặt đồng phục. Mở chi tiết để xem danh sách học sinh cần xử lý ngay.
-                                                    </p>
+                                            <div className="flex flex-col gap-4">
+                                                <div className="flex flex-wrap items-start justify-between gap-3">
+                                                    <div>
+                                                        <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#6b7280]">{item.academicYear}</p>
+                                                        <p className="mt-1 text-lg font-extrabold text-gray-900">{item.className}</p>
+                                                    </div>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => navigate(`/teacher/classes/${item.classGroupId}`)}
+                                                        className="rounded-full bg-[#eef7ff] px-3 py-1.5 text-xs font-bold text-sky-700 transition-colors hover:bg-sky-100"
+                                                    >
+                                                        Mở chi tiết
+                                                    </button>
                                                 </div>
 
-                                                <div className="mt-5 grid gap-3 md:grid-cols-3">
+                                                <p className="max-w-3xl text-sm font-medium leading-6 text-[#4c5769]">
+                                                    Theo dõi 3 mốc chính để biết học sinh nào còn thiếu liên kết phụ huynh, thiếu đo size, hoặc chưa đặt đồng phục.
+                                                </p>
+
+                                                <div className="grid gap-3 md:grid-cols-3">
                                                     <div className="rounded-2xl border border-amber-100 bg-amber-50/70 p-3">
                                                         <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-amber-700">Liên kết PH</p>
                                                         <p className="mt-2 text-lg font-extrabold text-gray-900">{item.studentCount - item.missingParentLinkCount}/{item.studentCount}</p>
@@ -165,13 +174,13 @@ export const TeacherDashboard = (): JSX.Element => {
                                                         </div>
                                                         <p className="mt-2 text-xs font-semibold text-amber-800">{item.missingParentLinkCount} cần bổ sung</p>
                                                     </div>
-                                                    <div className="rounded-2xl border border-rose-100 bg-rose-50/70 p-3">
-                                                        <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-rose-700">Đo size</p>
+                                                    <div className="rounded-2xl border border-amber-100 bg-amber-50/70 p-3">
+                                                        <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-amber-700">Đo size</p>
                                                         <p className="mt-2 text-lg font-extrabold text-gray-900">{item.studentCount - item.missingMeasurementCount}/{item.studentCount}</p>
                                                         <div className="mt-2 h-2 rounded-full bg-white/80">
-                                                            <div className="h-2 rounded-full bg-rose-400" style={{ width: `${measuredPercent}%` }} />
+                                                            <div className="h-2 rounded-full bg-amber-400" style={{ width: `${measuredPercent}%` }} />
                                                         </div>
-                                                        <p className="mt-2 text-xs font-semibold text-rose-800">{item.missingMeasurementCount} chưa đo</p>
+                                                        <p className="mt-2 text-xs font-semibold text-amber-800">{item.missingMeasurementCount} chưa đo</p>
                                                     </div>
                                                     <div className="rounded-2xl border border-sky-100 bg-sky-50/70 p-3">
                                                         <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-sky-700">Đặt đồng phục</p>
@@ -182,15 +191,8 @@ export const TeacherDashboard = (): JSX.Element => {
                                                         <p className="mt-2 text-xs font-semibold text-sky-800">{studentsWithoutOrders} chưa đặt</p>
                                                     </div>
                                                 </div>
-
                                             </div>
-
-                                            <div className="flex items-end">
-                                                <span className="rounded-full bg-[#eef7ff] px-3 py-1.5 text-xs font-bold text-sky-700 transition-colors group-hover:bg-sky-100">
-                                                    Mở chi tiết
-                                                </span>
-                                            </div>
-                                        </button>
+                                        </div>
                                     );
                                 })}
                             </div>
