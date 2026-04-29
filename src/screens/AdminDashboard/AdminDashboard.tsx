@@ -5,6 +5,7 @@ import {
     ArrowRight,
     BarChart3,
     CreditCard,
+    ChevronDown,
     Download,
     FolderClock,
     TrendingUp,
@@ -388,17 +389,20 @@ export const AdminDashboard = (): JSX.Element => {
                                 <div className="grid gap-3 sm:grid-cols-2 xl:w-[380px]">
                                     <div className="rounded-[20px] border px-4 py-4 shadow-soft-sm" style={{ borderColor: "#CFE0FF", background: "#FFFFFF" }}>
                                         <p className="text-[12px] font-black uppercase tracking-[0.1em]" style={{ color: "#4F6BA6" }}>Bộ lọc thời gian</p>
-                                        <select
-                                            value={timeRange}
-                                            onChange={(event) => setTimeRange(event.target.value as TimeRange)}
-                                            className="mt-3 w-full rounded-2xl border px-4 py-3 text-[15px] font-bold outline-none"
-                                            style={{ borderColor: "#D8E5FF", background: "#F7FAFF", color: tone.pageInk }}
-                                        >
-                                            <option value="Week" style={{ color: tone.pageInk }}>Tuần này</option>
-                                            <option value="Month" style={{ color: tone.pageInk }}>Tháng này</option>
-                                            <option value="Quarter" style={{ color: tone.pageInk }}>Quý này</option>
-                                            <option value="Year" style={{ color: tone.pageInk }}>Năm nay</option>
-                                        </select>
+                                        <div className="relative mt-3">
+                                            <select
+                                                value={timeRange}
+                                                onChange={(event) => setTimeRange(event.target.value as TimeRange)}
+                                                className="w-full appearance-none rounded-2xl border px-4 py-3 pr-11 text-[15px] font-bold outline-none"
+                                                style={{ borderColor: "#D8E5FF", background: "#F7FAFF", color: tone.pageInk }}
+                                            >
+                                                <option value="Week" style={{ color: tone.pageInk }}>Tuần này</option>
+                                                <option value="Month" style={{ color: tone.pageInk }}>Tháng này</option>
+                                                <option value="Quarter" style={{ color: tone.pageInk }}>Quý này</option>
+                                                <option value="Year" style={{ color: tone.pageInk }}>Năm nay</option>
+                                            </select>
+                                            <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2" style={{ color: tone.pageInk }} />
+                                        </div>
                                     </div>
                                     <div className="rounded-[20px] border px-4 py-4 shadow-soft-sm" style={{ borderColor: "#CFE0FF", background: "#FFFFFF" }}>
                                         <p className="text-[12px] font-black uppercase tracking-[0.1em]" style={{ color: "#4F6BA6" }}>Mục đang chờ xử lý</p>
