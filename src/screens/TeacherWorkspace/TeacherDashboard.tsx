@@ -198,8 +198,8 @@ export const TeacherDashboard = (): JSX.Element => {
                             </div>
                         </div>
 
-                        <div className="space-y-4">
-                            <div className="rounded-[20px] border border-gray-200 bg-white p-5 shadow-soft-sm">
+                        <div className="grid h-full gap-4 xl:grid-rows-2">
+                            <div className="flex h-full rounded-[20px] border border-gray-200 bg-white p-5 shadow-soft-sm">
                                 <div className="flex items-center gap-3">
                                     <div className="rounded-2xl bg-[#fef6d8] p-3 text-amber-700"><AlertCircle className="h-5 w-5" /></div>
                                     <div>
@@ -208,7 +208,7 @@ export const TeacherDashboard = (): JSX.Element => {
                                     </div>
                                 </div>
                             </div>
-                            <div className="rounded-[20px] border border-gray-200 bg-white p-5 shadow-soft-sm">
+                            <div className="flex h-full rounded-[20px] border border-gray-200 bg-white p-5 shadow-soft-sm">
                                 <div className="flex items-center gap-3">
                                     <div className="rounded-2xl bg-[#eef7ff] p-3 text-sky-700"><Link2 className="h-5 w-5" /></div>
                                     <div>
