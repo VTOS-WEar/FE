@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { ArrowLeft, Loader2, ShieldCheck, Star, Store } from "lucide-react";
 import { GuestLayout } from "../../components/layout/GuestLayout";
@@ -6,6 +6,8 @@ import { PublicPageBreadcrumb } from "../../components/PublicPageBreadcrumb";
 import { useToast } from "../../contexts/ToastContext";
 import { getProviderRanking, getProviderRatings, type ProviderRankingItemDto, type ProviderRatingsResponse } from "../../lib/api/public";
 import { formatRating } from "../../lib/utils/format";
+
+const RATINGS_PAGE_SIZE = 10;
 
 function renderStars(value: number) {
     return Array.from({ length: 5 }, (_, index) => (
@@ -23,10 +25,12 @@ export function ProviderRatings(): JSX.Element {
     const [ratings, setRatings] = useState<ProviderRatingsResponse | null>(null);
     const [ranking, setRanking] = useState<ProviderRankingItemDto[]>([]);
     const [loading, setLoading] = useState(true);
+    const [ratingPage, setRatingPage] = useState(1);
 
     useEffect(() => {
         if (!id) return;
         let disposed = false;
+        setRatingPage(1);
 
         const load = async () => {
             try {
@@ -57,6 +61,13 @@ export function ProviderRatings(): JSX.Element {
             disposed = true;
         };
     }, [id, schoolId, showToast]);
+
+    const totalRatingPages = ratings ? Math.max(1, Math.ceil(ratings.items.length / RATINGS_PAGE_SIZE)) : 1;
+    const pagedRatingItems = useMemo(() => {
+        if (!ratings) return [];
+        const start = (ratingPage - 1) * RATINGS_PAGE_SIZE;
+        return ratings.items.slice(start, start + RATINGS_PAGE_SIZE);
+    }, [ratingPage, ratings]);
 
     if (loading) {
         return (
@@ -103,7 +114,7 @@ export function ProviderRatings(): JSX.Element {
                         <div className="space-y-6 border-b border-gray-200 p-6 lg:border-b-0 lg:border-r lg:p-8">
                             <div className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-violet-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-violet-600">
                                 <ShieldCheck className="h-3.5 w-3.5" />
-                                Provider reputation
+                                Đánh giá nhà cung cấp
                             </div>
                             <div>
                                 <h1 className="text-3xl font-bold tracking-tight text-gray-900">{ratings.providerName}</h1>
@@ -114,10 +125,10 @@ export function ProviderRatings(): JSX.Element {
                                 <span className="text-lg font-bold text-gray-900">{formatRating(ratings.averageRating)}</span>
                             </div>
                         </div>
-                        <div className="grid gap-4 bg-slate-50 p-6 sm:grid-cols-3 lg:p-8">
-                            <div className="rounded-[20px] border border-gray-200 bg-white p-4 shadow-soft-sm"><p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-400">Đánh giá</p><p className="mt-2 text-xl font-bold text-gray-900">{ratings.totalRatings}</p></div>
-                            <div className="rounded-[20px] border border-gray-200 bg-white p-4 shadow-soft-sm"><p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-400">Đơn hoàn tất</p><p className="mt-2 text-xl font-bold text-gray-900">{ratings.totalCompletedOrders}</p></div>
-                            <div className="rounded-[20px] border border-gray-200 bg-white p-4 shadow-soft-sm"><p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-400">Điểm trung bình</p><p className="mt-2 text-xl font-bold text-violet-600">{formatRating(ratings.averageRating)}</p></div>
+                        <div className="grid content-center items-start gap-4 bg-slate-50 p-6 sm:grid-cols-3 lg:p-8">
+                            <div className="self-center rounded-[16px] border border-gray-200 bg-white px-4 py-4 shadow-soft-sm"><p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-400">Lượt đánh giá</p><p className="mt-2 text-xl font-bold text-gray-900">{ratings.totalRatings}</p></div>
+                            <div className="self-center rounded-[16px] border border-gray-200 bg-white px-4 py-4 shadow-soft-sm"><p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-400">Đơn hoàn tất</p><p className="mt-2 text-xl font-bold text-gray-900">{ratings.totalCompletedOrders}</p></div>
+                            <div className="self-center rounded-[16px] border border-gray-200 bg-white px-4 py-4 shadow-soft-sm"><p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-400">Đánh giá</p><p className="mt-2 text-xl font-bold text-violet-600">{formatRating(ratings.averageRating)}</p></div>
                         </div>
                     </div>
                 </div>
@@ -147,21 +158,48 @@ export function ProviderRatings(): JSX.Element {
                             <p className="mt-2 text-sm font-medium text-gray-500">Đánh giá sẽ xuất hiện ở đây sau khi phụ huynh nhận hàng và gửi phản hồi.</p>
                         </div>
                     ) : (
-                        ratings.items.map((item) => (
-                            <div key={item.providerRatingId} className="rounded-[24px] border border-gray-200 bg-white p-5 shadow-soft-sm">
-                                <div className="flex flex-wrap items-start justify-between gap-4">
-                                    <div>
-                                        <p className="text-sm font-bold text-gray-900">{item.parentName}</p>
-                                        <div className="mt-2 flex items-center gap-1">{renderStars(item.rating)}</div>
+                        <>
+                            {pagedRatingItems.map((item) => (
+                                <div key={item.providerRatingId} className="rounded-[24px] border border-gray-200 bg-white p-5 shadow-soft-sm">
+                                    <div className="flex flex-wrap items-start justify-between gap-4">
+                                        <div>
+                                            <p className="text-sm font-bold text-gray-900">{item.parentName}</p>
+                                            <div className="mt-2 flex items-center gap-1">{renderStars(item.rating)}</div>
+                                        </div>
+                                        <div className="text-right text-xs font-medium text-gray-400">
+                                            <p>{new Date(item.createdAt).toLocaleString("vi-VN")}</p>
+                                            <p className="mt-1">Đơn #{item.orderId.slice(0, 8)}</p>
+                                        </div>
                                     </div>
-                                    <div className="text-right text-xs font-medium text-gray-400">
-                                        <p>{new Date(item.createdAt).toLocaleString("vi-VN")}</p>
-                                        <p className="mt-1">Đơn #{item.orderId.slice(0, 8)}</p>
+                                    {item.comment && <p className="mt-4 text-sm font-medium leading-relaxed text-gray-600">{item.comment}</p>}
+                                </div>
+                            ))}
+                            {totalRatingPages > 1 ? (
+                                <div className="flex flex-wrap items-center justify-between gap-3 rounded-[18px] border border-gray-200 bg-white px-4 py-3 shadow-soft-sm">
+                                    <p className="text-sm font-bold text-gray-500">
+                                        Trang {ratingPage}/{totalRatingPages} · {ratings.items.length} đánh giá
+                                    </p>
+                                    <div className="flex items-center gap-2">
+                                        <button
+                                            type="button"
+                                            disabled={ratingPage <= 1}
+                                            onClick={() => setRatingPage((current) => Math.max(1, current - 1))}
+                                            className="rounded-[12px] border border-gray-200 bg-white px-4 py-2 text-sm font-bold text-gray-900 shadow-soft-xs transition-colors hover:border-violet-200 hover:text-violet-700 disabled:cursor-not-allowed disabled:opacity-50"
+                                        >
+                                            Trước
+                                        </button>
+                                        <button
+                                            type="button"
+                                            disabled={ratingPage >= totalRatingPages}
+                                            onClick={() => setRatingPage((current) => Math.min(totalRatingPages, current + 1))}
+                                            className="rounded-[12px] border border-gray-200 bg-white px-4 py-2 text-sm font-bold text-gray-900 shadow-soft-xs transition-colors hover:border-violet-200 hover:text-violet-700 disabled:cursor-not-allowed disabled:opacity-50"
+                                        >
+                                            Sau
+                                        </button>
                                     </div>
                                 </div>
-                                {item.comment && <p className="mt-4 text-sm font-medium leading-relaxed text-gray-600">{item.comment}</p>}
-                            </div>
-                        ))
+                            ) : null}
+                        </>
                     )}
                 </div>
             </div>

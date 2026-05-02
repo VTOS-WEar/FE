@@ -31,7 +31,6 @@ import {
     rejectContract,
     requestProviderSignOTP,
     signProviderContract,
-    updateContractPricing,
     type ContractDto,
     type ContractListSummary,
 } from "../../lib/api/contracts";
@@ -130,7 +129,6 @@ export function ProviderContracts() {
     const [showReject, setShowReject] = useState(false);
     const [rejectReason, setRejectReason] = useState("");
     const [error, setError] = useState("");
-    const [pricingDraft, setPricingDraft] = useState<Record<string, string>>({});
     const [templateContract, setTemplateContract] = useState<ContractTemplateData | null>(null);
     const [templateLoading, setTemplateLoading] = useState(false);
     const [chatOpen, setChatOpen] = useState(false);
@@ -187,14 +185,6 @@ export function ProviderContracts() {
         try {
             const contract = await getProviderContractDetail(id);
             setSelected(contract);
-            setPricingDraft(
-                Object.fromEntries(
-                    contract.items.map((item) => [
-                        item.itemId,
-                        item.pricePerUnit && item.pricePerUnit > 0 ? String(item.pricePerUnit) : "",
-                    ]),
-                ),
-            );
             setShowDetail(true);
             setShowReject(Boolean(options?.reject));
             setRejectReason("");
@@ -237,34 +227,6 @@ export function ProviderContracts() {
             subtitle: `Trường: ${contract.schoolName || "—"} · ${contract.items.length} mẫu`,
         });
         setChatOpen(true);
-    };
-
-    const handleSavePricing = async () => {
-        if (!selected) return;
-        setActionLoading(true);
-        setError("");
-        try {
-            const payload = {
-                items: selected.items.map((item) => ({
-                    itemId: item.itemId,
-                    pricePerUnit: Number(pricingDraft[item.itemId] || 0),
-                })),
-            };
-            const updated = await updateContractPricing(selected.contractId, payload);
-            setSelected(updated);
-            setPricingDraft(
-                Object.fromEntries(
-                    updated.items.map((item) => [
-                        item.itemId,
-                        item.pricePerUnit && item.pricePerUnit > 0 ? String(item.pricePerUnit) : "",
-                    ]),
-                ),
-            );
-        } catch (e: any) {
-            setError(e.message || "Lỗi cập nhật giá");
-        } finally {
-            setActionLoading(false);
-        }
     };
 
     const handleApprove = async () => {
@@ -711,28 +673,9 @@ export function ProviderContracts() {
                                                             </p>
                                                         </div>
                                                     </div>
-                                                    {selected.status === "Pending" ? (
-                                                        <div className="w-full md:w-[240px]">
-                                                            <label className="block text-[10px] font-semibold uppercase tracking-[0.16em] text-gray-400">Giá / sản phẩm</label>
-                                                            <input
-                                                                type="number"
-                                                                min="0"
-                                                                step="1000"
-                                                                value={pricingDraft[item.itemId] ?? ""}
-                                                                onChange={(event) =>
-                                                                    setPricingDraft((current) => ({
-                                                                        ...current,
-                                                                        [item.itemId]: event.target.value,
-                                                                    }))
-                                                                }
-                                                                className="nb-input mt-2 w-full"
-                                                            />
-                                                        </div>
-                                                    ) : (
-                                                        <div className="whitespace-nowrap rounded-[8px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-bold text-gray-900">
-                                                            Giá chốt: {(item.pricePerUnit ?? 0).toLocaleString("vi-VN")} ₫
-                                                        </div>
-                                                    )}
+                                                    <div className="rounded-[8px] border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-800">
+                                                        Quản lý sau ký tại Catalog
+                                                    </div>
                                                 </div>
                                             ))}
                                         </div>
@@ -762,16 +705,13 @@ export function ProviderContracts() {
                                                     <div>
                                                         <h3 className="text-lg font-bold text-gray-900">Thao tác của nhà cung cấp</h3>
                                                         <p className="mt-1 text-sm font-semibold text-amber-800">
-                                                            Kiểm tra giá trước khi duyệt hoặc từ chối hợp đồng.
+                                                            Kiểm tra danh mục mẫu trước khi duyệt hoặc từ chối hợp đồng.
                                                         </p>
                                                     </div>
                                                 </div>
-                                                <div className="grid w-full gap-3 sm:grid-cols-3 md:w-auto">
+                                                <div className="grid w-full gap-3 sm:grid-cols-2 md:w-auto">
                                                     <button onClick={() => { setShowReject(true); setError(""); }} className="nb-btn nb-btn-red text-sm">
                                                         Từ chối
-                                                    </button>
-                                                    <button onClick={handleSavePricing} disabled={actionLoading} className="nb-btn nb-btn-outline text-sm">
-                                                        {actionLoading ? "Đang lưu..." : "Lưu giá"}
                                                     </button>
                                                     <button onClick={handleApprove} disabled={actionLoading} className="nb-btn nb-btn-green text-sm">
                                                         {actionLoading ? "Đang xử lý..." : "Duyệt hợp đồng"}
