@@ -70,26 +70,26 @@ const YAxis = OriginalYAxis as any;
 const chartColors = ["#BE123C", "#0F9D7A", "#2477E4", "#C68508", "#4B39C8", "#64748B"];
 
 const orderStatusLabels: Record<string, string> = {
-    Pending: "Ch? d?t",
-    Paid: "�� thanh to�n",
-    Confirmed: "�� x�c nh?n",
-    Processed: "�� x? l�",
-    InProduction: "�ang s?n xu?t",
-    ReadyToShip: "S?n s�ng giao",
-    Shipped: "�ang giao",
-    Delivered: "Ho�n th�nh",
-    Cancelled: "�� h?y",
-    Refunded: "�� ho�n ti?n",
-    Accepted: "�� nh?n",
+    Pending: "Chờ đặt",
+    Paid: "Đã thanh toán",
+    Confirmed: "Đã xác nhận",
+    Processed: "Đã xử lý",
+    InProduction: "Đang sản xuất",
+    ReadyToShip: "Sẵn sàng giao",
+    Shipped: "Đang giao",
+    Delivered: "Hoàn thành",
+    Cancelled: "Đã hủy",
+    Refunded: "Đã hoàn tiền",
+    Accepted: "Đã nhận",
 };
 
 const paymentStatusLabels: Record<string, string> = {
-    Pending: "Ch? thanh to�n",
-    Processing: "�ang x? l�",
-    Completed: "Ho�n t?t",
-    Failed: "Th?t b?i",
-    Cancelled: "�� h?y",
-    Refunded: "�� ho�n",
+    Pending: "Chờ thanh toán",
+    Processing: "Đang xử lý",
+    Completed: "Hoàn tất",
+    Failed: "Thất bại",
+    Cancelled: "Đã hủy",
+    Refunded: "Đã hoàn",
 };
 
 function formatCurrency(value: number) {
@@ -220,9 +220,9 @@ type GrowthChartDatum = {
 
 function SystemGrowthChart({ data }: { data: GrowthChartDatum[] }) {
     return (
-        <ChartShell label="Xu hu?ng s? d?ng" title="User m?i v� don h�ng" icon={<TrendingUp className="h-5 w-5" />}>
+        <ChartShell label="Xu hướng sử dụng" title="Người dùng mới và đơn hàng" icon={<TrendingUp className="h-5 w-5" />}>
             {data.length === 0 ? (
-                <EmptyChart label="Chua c� d? li?u tang tru?ng trong k?." />
+                <EmptyChart label="Chưa có dữ liệu tăng trưởng trong kỳ." />
             ) : (
                 <div className="h-[280px]">
                     <ResponsiveContainer width="100%" height="100%">
@@ -234,9 +234,9 @@ function SystemGrowthChart({ data }: { data: GrowthChartDatum[] }) {
                             <Tooltip
                                 formatter={(value: number, name: string) => [
                                     Number(value).toLocaleString("vi-VN"),
-                                    name === "users" ? "User m?i" : "�on h�ng",
+                                    name === "users" ? "Người dùng mới" : "Đơn hàng",
                                 ]}
-                                labelFormatter={(label: string) => `Th�ng ${label}`}
+                                labelFormatter={(label: string) => `Tháng ${label}`}
                                 contentStyle={{ borderRadius: "8px", border: "1px solid #E5E7EB", fontWeight: 600 }}
                             />
                             <Bar yAxisId="left" dataKey="users" fill="#BE123C" radius={[8, 8, 0, 0]} name="users" barSize={24} />
@@ -261,9 +261,9 @@ function OrderHealthChart({ data }: { data: StatusChartDatum[] }) {
     const total = data.reduce((sum, item) => sum + item.count, 0);
 
     return (
-        <ChartShell label="T�nh tr?ng don h�ng" title="Ph�n b? tr?ng th�i don" icon={<BarChart3 className="h-5 w-5" />}>
+        <ChartShell label="Tình trạng đơn hàng" title="Phân bổ trạng thái đơn" icon={<BarChart3 className="h-5 w-5" />}>
             {data.length === 0 ? (
-                <EmptyChart label="Chua c� d? li?u tr?ng th�i don h�ng." />
+                <EmptyChart label="Chưa có dữ liệu trạng thái đơn hàng." />
             ) : (
                 <div className="grid gap-4 lg:grid-cols-[220px_1fr]">
                     <div className="relative h-[220px]">
@@ -271,8 +271,8 @@ function OrderHealthChart({ data }: { data: StatusChartDatum[] }) {
                             <PieChart>
                                 <Tooltip
                                     formatter={(value: number, _name: string, item: any) => [
-                                        `${Number(value).toLocaleString("vi-VN")} don`,
-                                        item?.payload?.label ?? "Tr?ng th�i",
+                                        `${Number(value).toLocaleString("vi-VN")} đơn`,
+                                        item?.payload?.label ?? "Trạng thái",
                                     ]}
                                     contentStyle={{ borderRadius: "8px", border: "1px solid #E5E7EB", fontWeight: 600 }}
                                 />
@@ -284,7 +284,7 @@ function OrderHealthChart({ data }: { data: StatusChartDatum[] }) {
                             </PieChart>
                         </ResponsiveContainer>
                         <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-                            <span className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">T?ng don</span>
+                            <span className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Tổng đơn</span>
                             <span className="text-2xl font-bold text-slate-950">{total.toLocaleString("vi-VN")}</span>
                         </div>
                     </div>
@@ -307,9 +307,9 @@ function OrderHealthChart({ data }: { data: StatusChartDatum[] }) {
 
 function PaymentHealthChart({ data }: { data: StatusChartDatum[] }) {
     return (
-        <ChartShell label="Thanh to�n" title="Tr?ng th�i giao d?ch" icon={<Wallet className="h-5 w-5" />}>
+        <ChartShell label="Thanh toán" title="Trạng thái giao dịch" icon={<Wallet className="h-5 w-5" />}>
             {data.length === 0 ? (
-                <EmptyChart label="Chua c� d? li?u giao d?ch thanh to�n." />
+                <EmptyChart label="Chưa có dữ liệu giao dịch thanh toán." />
             ) : (
                 <div className="h-[260px]">
                     <ResponsiveContainer width="100%" height="100%">
@@ -319,8 +319,8 @@ function PaymentHealthChart({ data }: { data: StatusChartDatum[] }) {
                             <YAxis type="category" dataKey="label" axisLine={false} tickLine={false} width={96} tick={{ fill: "#4c5769", fontSize: 12, fontWeight: 600 }} />
                             <Tooltip
                                 formatter={(value: number, _name: string, item: any) => [
-                                    `${Number(value).toLocaleString("vi-VN")} giao d?ch � ${formatCurrency(item?.payload?.totalAmount ?? 0)}`,
-                                    item?.payload?.label ?? "Thanh to�n",
+                                    `${Number(value).toLocaleString("vi-VN")} giao dịch · ${formatCurrency(item?.payload?.totalAmount ?? 0)}`,
+                                    item?.payload?.label ?? "Thanh toán",
                                 ]}
                                 contentStyle={{ borderRadius: "8px", border: "1px solid #E5E7EB", fontWeight: 600 }}
                             />
@@ -339,15 +339,15 @@ function PaymentHealthChart({ data }: { data: StatusChartDatum[] }) {
 
 function CashFlowChart({ data }: { data: AdminCashFlowDto["revenueChart"] }) {
     return (
-        <ChartShell label="Ph� n?n t?ng" title="Ph� don h�ng v� ph� r�t ti?n" icon={<Wallet className="h-5 w-5" />}>
+        <ChartShell label="Phí nền tảng" title="Phí đơn hàng và phí rút tiền" icon={<Wallet className="h-5 w-5" />}>
             {data.length === 0 ? (
-                <EmptyChart label="Chua c� d? li?u ph� n?n t?ng." />
+                <EmptyChart label="Chưa có dữ liệu phí nền tảng." />
             ) : (
                 <div className="space-y-3">
                     <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs font-bold text-slate-600">
-                        <span className="inline-flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full bg-[#0F9D7A]" />Ph� don h�ng</span>
-                        <span className="inline-flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full bg-[#C68508]" />Ph� r�t ti?n</span>
-                        <span className="inline-flex items-center gap-2"><span className="h-0.5 w-4 rounded-full bg-[#2477E4]" />T?ng ph�</span>
+                        <span className="inline-flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full bg-[#0F9D7A]" />Phí đơn hàng</span>
+                        <span className="inline-flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full bg-[#C68508]" />Phí rút tiền</span>
+                        <span className="inline-flex items-center gap-2"><span className="h-0.5 w-4 rounded-full bg-[#2477E4]" />Tổng phí</span>
                     </div>
                     <div className="h-[260px]">
                         <ResponsiveContainer width="100%" height="100%">
@@ -358,9 +358,9 @@ function CashFlowChart({ data }: { data: AdminCashFlowDto["revenueChart"] }) {
                                 <Tooltip
                                     formatter={(value: number, name: string) => {
                                         const labels: Record<string, string> = {
-                                            orderFees: "Ph� don h�ng (1% gi� tr? don d� t?t to�n)",
-                                            withdrawalFees: "Ph� r�t ti?n (2% y�u c?u r�t ti?n d� duy?t)",
-                                            totalFees: "T?ng ph�",
+                                            orderFees: "Phí đơn hàng (1% giá trị đơn đã tất toán)",
+                                            withdrawalFees: "Phí rút tiền (2% yêu cầu rút tiền đã duyệt)",
+                                            totalFees: "Tổng phí",
                                         };
                                         return [formatCurrency(Number(value)), labels[name] ?? name];
                                     }}
@@ -380,9 +380,9 @@ function CashFlowChart({ data }: { data: AdminCashFlowDto["revenueChart"] }) {
 
 function TopUniformsPanel({ data }: { data: NonNullable<DashboardAnalyticsDto["topSellingUniforms"]> }) {
     return (
-        <ChartShell label="S?n ph?m" title="�?ng ph?c b�n ch?y" icon={<PackageCheck className="h-5 w-5" />}>
+        <ChartShell label="Sản phẩm" title="Đồng phục bán chạy" icon={<PackageCheck className="h-5 w-5" />}>
             {data.length === 0 ? (
-                <EmptyChart label="Chua c� d? li?u d?ng ph?c b�n ch?y." />
+                <EmptyChart label="Chưa có dữ liệu đồng phục bán chạy." />
             ) : (
                 <div className="space-y-3">
                     {data.slice(0, 5).map((item, index) => (
@@ -391,7 +391,7 @@ function TopUniformsPanel({ data }: { data: NonNullable<DashboardAnalyticsDto["t
                                 <p className="truncate text-sm font-bold text-slate-950">
                                     {index + 1}. {item.outfitName}
                                 </p>
-                                <p className="mt-1 text-xs font-semibold text-slate-500">{item.quantitySold.toLocaleString("vi-VN")} s?n ph?m d� b�n</p>
+                                <p className="mt-1 text-xs font-semibold text-slate-500">{item.quantitySold.toLocaleString("vi-VN")} sản phẩm đã bán</p>
                             </div>
                             <p className="text-sm font-bold text-rose-700">{formatCurrency(item.revenue)}</p>
                         </div>
@@ -466,28 +466,28 @@ export const AdminDashboard = (): JSX.Element => {
     const metrics = useMemo(
         () => [
             {
-                label: "Ngu?i d�ng to�n h? th?ng",
+                label: "Người dùng toàn hệ thống",
                 value: (data.analytics?.totalUsers ?? 0).toLocaleString("vi-VN"),
                 surfaceClassName: ADMIN_THEME.summary.users,
                 icon: <Users className="h-6 w-6" />,
                 onClick: () => navigate("/admin/users"),
             },
             {
-                label: "Y�u c?u t�i kho?n ch?",
+                label: "Yêu cầu tài khoản chờ",
                 value: pendingApprovals.toLocaleString("vi-VN"),
                 surfaceClassName: ADMIN_THEME.summary.requests,
                 icon: <FolderClock className="h-6 w-6" />,
                 onClick: () => navigate("/admin/account-requests"),
             },
             {
-                label: "R�t ti?n ch? duy?t",
+                label: "Rút tiền chờ duyệt",
                 value: pendingWithdrawals.toLocaleString("vi-VN"),
                 surfaceClassName: ADMIN_THEME.summary.withdrawals,
                 icon: <Wallet className="h-6 w-6" />,
                 onClick: () => navigate("/admin/withdrawals"),
             },
             {
-                label: "Ticket h? tr? m?",
+                label: "Ticket hỗ trợ mở",
                 value: openTicketCount.toLocaleString("vi-VN"),
                 surfaceClassName: ADMIN_THEME.summary.tickets,
                 icon: <AlertTriangle className="h-6 w-6" />,
@@ -550,31 +550,31 @@ export const AdminDashboard = (): JSX.Element => {
 
                 <div className="flex min-w-0 flex-1 flex-col">
                     <TopNavBar>
-                        <AdminTopNavTitle title="T?ng quan Admin" />
+                        <AdminTopNavTitle title="Tổng quan Admin" />
                     </TopNavBar>
 
                     <main className="flex-1 space-y-6 px-4 py-6 sm:px-6 lg:px-10 lg:py-8 nb-fade-in">
                         <section className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
                             <div>
-                                <p className="text-xs font-bold uppercase tracking-[0.16em] text-rose-700">�i?u h�nh h? th?ng</p>
+                                <p className="text-xs font-bold uppercase tracking-[0.16em] text-rose-700">Điều hành hệ thống</p>
                                 <h1 className="mt-1 text-2xl font-bold leading-tight text-slate-950">
-                                    T?ng quan v?n h�nh h�m nay
+                                    Tổng quan vận hành hôm nay
                                 </h1>
                                 <p className="mt-1 text-sm font-semibold text-slate-500">
-                                    Theo d�i tang tru?ng, don h�ng, thanh to�n v� d�ng ti?n trong m?t m�n h�nh.
+                                    Theo dõi tăng trưởng, đơn hàng, thanh toán và dòng tiền trong một màn hình.
                                 </p>
                             </div>
                             <div className="flex flex-wrap gap-2">
-                                <QuickAction icon={<Users className="h-4 w-4" />} label="Ngu?i d�ng" onClick={() => navigate("/admin/users")} />
-                                <QuickAction icon={<FolderClock className="h-4 w-4" />} label="Y�u c?u t�i kho?n" onClick={() => navigate("/admin/account-requests")} />
-                                <QuickAction icon={<Wallet className="h-4 w-4" />} label="R�t ti?n" onClick={() => navigate("/admin/withdrawals")} />
+                                <QuickAction icon={<Users className="h-4 w-4" />} label="Người dùng" onClick={() => navigate("/admin/users")} />
+                                <QuickAction icon={<FolderClock className="h-4 w-4" />} label="Yêu cầu tài khoản" onClick={() => navigate("/admin/account-requests")} />
+                                <QuickAction icon={<Wallet className="h-4 w-4" />} label="Rút tiền" onClick={() => navigate("/admin/withdrawals")} />
                             </div>
                         </section>
 
                         {loading ? (
                             <section className="rounded-[8px] border border-gray-200 bg-white p-10 text-center shadow-soft-sm">
                                 <Loader2 className="mx-auto mb-3 h-8 w-8 animate-spin text-rose-700" />
-                                <p className="text-sm font-semibold text-[#4c5769]">�ang t?i t?ng quan h? th?ng...</p>
+                                <p className="text-sm font-semibold text-[#4c5769]">Đang tải tổng quan hệ thống...</p>
                             </section>
                         ) : (
                             <>
