@@ -296,7 +296,7 @@ export function ProviderOrderDetail(): JSX.Element {
                     <main className="space-y-6 px-4 py-6 sm:px-6 lg:px-10 lg:py-8">
                         {loading ? (
                             <div className="flex min-h-[320px] flex-col items-center justify-center gap-4 rounded-[8px] border border-gray-200 bg-white shadow-soft-sm">
-                                <Loader2 className="h-10 w-10 animate-spin text-violet-600" />
+                                <Loader2 className="h-10 w-10 animate-spin text-[#3B82F6]" />
                                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">Đang đồng bộ dữ liệu đơn hàng...</p>
                             </div>
                         ) : !order || !statusMeta ? (
@@ -305,7 +305,7 @@ export function ProviderOrderDetail(): JSX.Element {
                                     <ShieldCheck className="h-10 w-10" />
                                 </div>
                                 <h2 className="mt-6 text-2xl font-bold text-gray-900">Không tìm thấy đơn hàng</h2>
-                                <button onClick={() => navigate("/provider/orders")} className="nb-btn nb-btn-purple mt-8 px-8 py-3">
+                                <button onClick={() => navigate("/provider/orders")} className="nb-btn nb-btn-provider mt-8 px-8 py-3">
                                     Quay lại danh sách
                                 </button>
                             </div>
@@ -412,7 +412,7 @@ export function ProviderOrderDetail(): JSX.Element {
                                                     <button
                                                         onClick={() => confirmStatusChange("Tiếp nhận đơn hàng", "Xác nhận tiếp nhận đơn hàng này để chuẩn bị sản xuất?", () => acceptDirectOrder(order.orderId))}
                                                         disabled={submitting}
-                                                        className="nb-btn nb-btn-green w-full"
+                                                        className="nb-btn nb-btn-provider w-full"
                                                     >
                                                         Tiếp nhận đơn
                                                     </button>
@@ -421,7 +421,7 @@ export function ProviderOrderDetail(): JSX.Element {
                                                     <button
                                                         onClick={() => confirmStatusChange("Bắt đầu sản xuất", "Xác nhận chuyển đơn hàng sang trạng thái đang sản xuất?", () => markDirectOrderInProduction(order.orderId))}
                                                         disabled={submitting}
-                                                        className="nb-btn nb-btn-green w-full"
+                                                        className="nb-btn nb-btn-provider w-full"
                                                     >
                                                         Bắt đầu sản xuất
                                                     </button>
@@ -430,7 +430,7 @@ export function ProviderOrderDetail(): JSX.Element {
                                                     <button
                                                         onClick={() => confirmStatusChange("Sẵn sàng giao hàng", "Xác nhận sản phẩm đã hoàn tất và sẵn sàng giao?", () => markDirectOrderReadyToShip(order.orderId))}
                                                         disabled={submitting}
-                                                        className="nb-btn nb-btn-green w-full"
+                                                        className="nb-btn nb-btn-provider w-full"
                                                     >
                                                         Sẵn sàng giao
                                                     </button>
@@ -482,7 +482,7 @@ export function ProviderOrderDetail(): JSX.Element {
                                                     <button
                                                         onClick={() => confirmStatusChange("Xác nhận giao hàng", `Xác nhận giao hàng qua ${shippingCompany} với mã ${trackingCode}?`, () => shipDirectOrder(order.orderId, { trackingCode, shippingCompany }))}
                                                         disabled={submitting || !trackingCode.trim() || !shippingCompany.trim()}
-                                                        className="nb-btn nb-btn-green w-full"
+                                                        className="nb-btn nb-btn-provider w-full"
                                                     >
                                                         Xác nhận khởi hành
                                                     </button>
@@ -522,7 +522,7 @@ export function ProviderOrderDetail(): JSX.Element {
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
                     <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setConfirmAction(null)} />
                     <div className="relative w-full max-w-[400px] overflow-hidden rounded-[24px] border border-gray-200 bg-white shadow-soft-xl animate-in fade-in zoom-in duration-200">
-                        <div className="border-b border-violet-100 bg-violet-50 px-6 py-4">
+                        <div className="border-b border-blue-100 bg-blue-50 px-6 py-4">
                             <h3 className="text-lg font-bold text-gray-900">{confirmAction.title}</h3>
                         </div>
                         <div className="px-6 py-6">
@@ -537,7 +537,7 @@ export function ProviderOrderDetail(): JSX.Element {
                                 <button
                                     onClick={confirmAction.onConfirm}
                                     disabled={submitting}
-                                    className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-violet-600 py-3 text-[13px] font-bold text-white shadow-soft-sm transition-all hover:bg-violet-700 disabled:opacity-50"
+                                    className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-[#3B82F6] py-3 text-[13px] font-bold text-white shadow-soft-sm transition-all hover:bg-[#2563EB] disabled:opacity-50"
                                 >
                                     {submitting ? <Loader2 className="h-4 w-4 animate-spin text-white" /> : null}
                                     Xác nhận

@@ -113,6 +113,71 @@ export type ProviderOrderMonthlyMetricDto = {
     completedRevenue: number;
 };
 
+export type ProviderCatalogItemDto = {
+    catalogItemId?: string | null;
+    contractItemId: string;
+    outfitId: string;
+    outfitName: string;
+    outfitImageUrl?: string | null;
+    schoolMaterialType?: string | null;
+    contractPricePerUnit: number;
+    displayName: string;
+    shortDescription?: string | null;
+    materialDetails?: string | null;
+    publicationPrice?: number | null;
+    postDeadlinePrice?: number | null;
+    status: string;
+};
+
+export type ProviderCatalogPublicationDto = {
+    semesterPublicationProviderId: string;
+    semesterPublicationId: string;
+    schoolId: string;
+    schoolName: string;
+    semester: string;
+    academicYear: string;
+    startDate: string;
+    endDate: string;
+    publicationStatus: string;
+    providerStatus: string;
+    contractId?: string | null;
+    contractName?: string | null;
+    contractNumber?: string | null;
+    items: ProviderCatalogItemDto[];
+};
+
+export type ProviderCatalogResponse = {
+    publications: ProviderCatalogPublicationDto[];
+    totalCount: number;
+    page: number;
+    pageSize: number;
+    totalPages: number;
+    summary: ProviderCatalogSummary;
+};
+
+export type ProviderCatalogSummary = {
+    publications: number;
+    items: number;
+    published: number;
+    needsSetup: number;
+};
+
+export type GetProviderCatalogParams = {
+    page?: number;
+    pageSize?: number;
+    status?: string;
+    search?: string;
+};
+
+export type UpsertProviderCatalogItemRequest = {
+    displayName?: string | null;
+    shortDescription?: string | null;
+    materialDetails?: string | null;
+    publicationPrice: number;
+    postDeadlinePrice: number;
+    status: string;
+};
+
 export async function getProviderDirectOrders(
     page = 1,
     pageSize = 10,
@@ -149,6 +214,35 @@ export async function getProviderDirectOrderStats(): Promise<ProviderOrderStatsD
         auth: true,
     });
     return unwrapResult(result);
+}
+
+export async function getProviderCatalog(params: GetProviderCatalogParams = {}): Promise<ProviderCatalogResponse> {
+    const searchParams = new URLSearchParams();
+    if (params.page) searchParams.set("page", String(params.page));
+    if (params.pageSize) searchParams.set("pageSize", String(params.pageSize));
+    if (params.status && params.status !== "all") searchParams.set("status", params.status);
+    if (params.search?.trim()) searchParams.set("search", params.search.trim());
+    const qs = searchParams.toString();
+
+    return api<ProviderCatalogResponse>(`${endpoints.providers.catalog}${qs ? `?${qs}` : ""}`, {
+        method: "GET",
+        auth: true,
+    });
+}
+
+export async function upsertProviderCatalogItem(
+    semesterPublicationProviderId: string,
+    outfitId: string,
+    payload: UpsertProviderCatalogItemRequest,
+): Promise<ProviderCatalogItemDto> {
+    return api<ProviderCatalogItemDto>(
+        `${endpoints.providers.catalog}/${semesterPublicationProviderId}/items/${outfitId}`,
+        {
+            method: "PUT",
+            auth: true,
+            body: JSON.stringify(payload),
+        },
+    );
 }
 
 async function putOrderAction<T = void>(path: string, body?: unknown): Promise<T> {

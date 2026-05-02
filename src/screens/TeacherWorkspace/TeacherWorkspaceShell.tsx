@@ -1,7 +1,13 @@
-import { type ReactNode, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
-import { ArrowLeft, GraduationCap, UserCircle } from "lucide-react";
-import { ClassGroupChatLauncher } from "../../components/ChatWidget/ClassGroupChatLauncher";
+import { type ReactNode, useEffect, useMemo, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { MessageCircle } from "lucide-react";
+import { DashboardSidebar } from "../../components/layout";
+import { TopNavBar } from "../../components/layout/TopNavBar";
+import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
+import { useSidebarConfig } from "../../hooks/useSidebarConfig";
+import { ChatWidget } from "../../components/ChatWidget/ChatWidget";
+import { getTeacherClassesOverview } from "../../lib/api/teachers";
+import { TeacherTopNavTitle } from "./teacherWorkspace";
 
 type BreadcrumbItem = {
   label: string;
@@ -11,110 +17,92 @@ type BreadcrumbItem = {
 type TeacherWorkspaceShellProps = {
   children: ReactNode;
   breadcrumbs: BreadcrumbItem[];
-  showBackButton?: boolean;
-  showIdentityHeader?: boolean;
-};
-
-type StoredUser = {
-  fullName?: string;
-  email?: string;
 };
 
 export function TeacherWorkspaceShell({
   children,
   breadcrumbs,
-  showBackButton = true,
-  showIdentityHeader = true,
 }: TeacherWorkspaceShellProps): JSX.Element {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const sidebarConfig = useSidebarConfig();
+  const [isCollapsed, toggle] = useSidebarCollapsed();
+  const [chatOpen, setChatOpen] = useState(false);
+  const [defaultClassId, setDefaultClassId] = useState<string>("");
+  const [defaultClassName, setDefaultClassName] = useState<string>("");
 
-  const user = useMemo<StoredUser | null>(() => {
-    try {
-      const raw = localStorage.getItem("user") ?? sessionStorage.getItem("user");
-      return raw ? JSON.parse(raw) : null;
-    } catch {
-      return null;
-    }
-  }, []);
-
-  const handleBack = () => {
-    if (window.history.length > 1) {
-      navigate(-1);
-      return;
-    }
-
-    navigate("/teacher/dashboard");
+  const handleLogout = () => {
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("user");
+    localStorage.removeItem("expires_in");
+    localStorage.removeItem("vtos_org_name");
+    sessionStorage.removeItem("access_token");
+    sessionStorage.removeItem("user");
+    sessionStorage.removeItem("expires_in");
+    navigate("/signin", { replace: true });
   };
 
+  const currentPageLabel = breadcrumbs[breadcrumbs.length - 1]?.label || "Teacher workspace";
+  const showFloatingChat = pathname !== "/teacher/messages";
+  const chatContextInfo = useMemo(() => ({
+    icon: "🏫",
+    title: defaultClassName ? `Lớp ${defaultClassName}` : "Nhóm lớp chủ nhiệm",
+    status: "Đang hoạt động",
+    statusColor: "#059669",
+    subtitle: "Trao đổi trực tiếp với phụ huynh trong lớp",
+  }), [defaultClassName]);
+
+  useEffect(() => {
+    let mounted = true;
+    getTeacherClassesOverview()
+      .then((overview) => {
+        if (!mounted || overview.classes.length === 0) return;
+        const firstClass = overview.classes[0];
+        setDefaultClassId(firstClass.id);
+        setDefaultClassName(firstClass.className);
+      })
+      .catch(() => undefined);
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   return (
-    <div className="min-h-screen min-h-[100svh] bg-[#f6f7fb]">
-      <div className="relative z-10 mx-auto max-w-[1280px] px-4 py-8 md:py-10 lg:px-8 nb-fade-in">
-        {(showBackButton || showIdentityHeader) && (
-          <div className="mb-6 flex flex-col gap-4 border-b border-gray-200 pb-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="min-w-0">
-              <div className="flex flex-wrap items-center gap-3">
-                {showBackButton ? (
-                  <button
-                    type="button"
-                    onClick={handleBack}
-                    className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-4 text-sm font-bold text-gray-700 transition-all hover:border-sky-200 hover:bg-sky-50 hover:text-sky-800"
-                  >
-                    <ArrowLeft className="h-4 w-4" />
-                    Quay lại
-                  </button>
-                ) : null}
+    <div className="teacher-workspace nb-page flex flex-col">
+      <div className="flex flex-1 flex-col lg:flex-row">
+        <div className={`${isCollapsed ? "lg:w-16" : "lg:w-[16rem]"} flex-shrink-0 transition-all duration-300 lg:sticky lg:top-0 lg:h-screen`}>
+          <DashboardSidebar {...sidebarConfig} name="Giáo viên chủ nhiệm" isCollapsed={isCollapsed} onToggle={toggle} onLogout={handleLogout} />
+        </div>
+        <div className="flex min-w-0 flex-1 flex-col">
+          <TopNavBar>
+            <TeacherTopNavTitle title={currentPageLabel} />
+          </TopNavBar>
 
-                {showIdentityHeader ? (
-                  <>
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-emerald-100 bg-emerald-50">
-                      <GraduationCap className="h-5 w-5 text-emerald-700" />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-emerald-700">Homeroom teacher</p>
-                      <p className="truncate text-base font-extrabold text-gray-900" title={user?.fullName}>
-                        {user?.fullName || "Giáo viên chủ nhiệm"}
-                      </p>
-                      <p className="truncate text-xs font-semibold text-[#6b7280]" title={user?.email}>
-                        {user?.email || "Teacher workspace"}
-                      </p>
-                    </div>
-                  </>
-                ) : null}
-              </div>
-
-              <nav className="mt-3 flex flex-wrap items-center gap-2 text-xs font-bold">
-                {breadcrumbs.map((item, index) => (
-                  <span key={`${item.label}-${index}`}>
-                    {item.href ? (
-                      <a href={item.href} className="rounded-full bg-[#f4f7fb] px-3 py-1.5 text-[#4c5769] transition-colors hover:bg-[#eaf4ff] hover:text-gray-900">
-                        {item.label}
-                      </a>
-                    ) : (
-                      <span className="rounded-full bg-emerald-50 px-3 py-1.5 text-emerald-800">{item.label}</span>
-                    )}
-                  </span>
-                ))}
-              </nav>
-            </div>
-
-            <div className="flex flex-shrink-0 items-center gap-2">
-              <ClassGroupChatLauncher />
-              <button
-                type="button"
-                onClick={() => navigate("/teacher/account")}
-                className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-3 text-sm font-bold text-gray-700 shadow-sm transition-all hover:-translate-y-[1px] hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-800"
-                aria-label="Hồ sơ giáo viên"
-                title="Hồ sơ giáo viên"
-              >
-                <UserCircle className="h-5 w-5" />
-                <span className="hidden sm:inline">Hồ sơ</span>
-              </button>
-            </div>
-          </div>
-        )}
-
-        <div className="min-w-0">{children}</div>
+          <main className="flex-1 px-4 py-6 sm:px-6 lg:px-10 lg:py-8">
+            <div className="min-w-0">{children}</div>
+          </main>
+        </div>
       </div>
+      {showFloatingChat && defaultClassId && (
+        <button
+          type="button"
+          onClick={() => setChatOpen(true)}
+          className="fixed bottom-6 right-6 z-40 inline-flex h-12 w-12 items-center justify-center rounded-full border border-emerald-200 bg-[#059669] text-white shadow-soft-md transition-colors hover:bg-[#047857] lg:bottom-8 lg:right-8"
+          aria-label="Mở chat lớp"
+          title="Mở chat lớp"
+        >
+          <MessageCircle className="h-5 w-5" />
+        </button>
+      )}
+      {showFloatingChat && defaultClassId && (
+        <ChatWidget
+          channelType="classgroup"
+          channelId={defaultClassId}
+          isOpen={chatOpen}
+          onClose={() => setChatOpen(false)}
+          contextInfo={chatContextInfo}
+        />
+      )}
     </div>
   );
 }

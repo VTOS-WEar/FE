@@ -7,6 +7,7 @@ export type ContractItemDto = {
     itemId: string;
     outfitId: string;
     outfitName: string;
+    mainImageURL?: string | null;
     pricePerUnit?: number | null;
     minQuantity?: number | null;
     maxQuantity?: number | null;
@@ -86,11 +87,52 @@ export type SignContractRequest = {
     pdfBase64?: string;
 };
 
+export type ContractListSummary = {
+    total: number;
+    pending: number;
+    waitingSchool: number;
+    waitingProvider: number;
+    active: number;
+    fulfilled: number;
+    rejected: number;
+    issue: number;
+    expiringSoon: number;
+};
+
+export type ContractListResponse = {
+    items: ContractDto[];
+    totalCount: number;
+    page: number;
+    pageSize: number;
+    totalPages: number;
+    summary: ContractListSummary;
+};
+
+export type GetContractsParams = {
+    status?: string;
+    page?: number;
+    pageSize?: number;
+    search?: string;
+};
+
+function buildContractListUrl(baseUrl: string, params: GetContractsParams | string = {}): string {
+    const options: GetContractsParams = typeof params === "string" ? { status: params } : params;
+    const searchParams = new URLSearchParams();
+    if (options.status) searchParams.set("status", options.status);
+    if (options.page) searchParams.set("page", String(options.page));
+    if (options.pageSize) searchParams.set("pageSize", String(options.pageSize));
+    if (options.search?.trim()) searchParams.set("search", options.search.trim());
+    const qs = searchParams.toString();
+    return `${baseUrl}${qs ? `?${qs}` : ""}`;
+}
+
 // ── School Contract APIs ──
 
-export async function getSchoolContracts(status?: string): Promise<ContractDto[]> {
-    const url = `${endpoints.schools.me}/contracts${status ? `?status=${status}` : ""}`;
-    return api<ContractDto[]>(url, { method: "GET", auth: true });
+export async function getSchoolContracts(params: GetContractsParams | string = {}): Promise<ContractListResponse> {
+    return api<ContractListResponse>(buildContractListUrl(`${endpoints.schools.me}/contracts`, params), {
+        method: "GET",
+        auth: true,
+    });
 }
 
 export async function getSchoolContractDetail(id: string): Promise<ContractDto> {
@@ -138,9 +180,11 @@ export async function signSchoolContract(
 
 // ── Provider Contract APIs ──
 
-export async function getProviderContracts(status?: string): Promise<ContractDto[]> {
-    const url = `${endpoints.providers.contracts}${status ? `?status=${status}` : ""}`;
-    return api<ContractDto[]>(url, { method: "GET", auth: true });
+export async function getProviderContracts(params: GetContractsParams | string = {}): Promise<ContractListResponse> {
+    return api<ContractListResponse>(buildContractListUrl(endpoints.providers.contracts, params), {
+        method: "GET",
+        auth: true,
+    });
 }
 
 export async function getProviderContractDetail(id: string): Promise<ContractDto> {

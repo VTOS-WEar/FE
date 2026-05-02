@@ -4,7 +4,6 @@ import {
     Banknote,
     Clock3,
     ExternalLink,
-    Landmark,
     Loader2,
     WalletCards,
 } from "lucide-react";
@@ -14,6 +13,7 @@ import { PROVIDER_LIST_PAGE_SIZE, ProviderDataTable, type ProviderDataTableColum
 import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
 import { useProviderSidebarConfig } from "../../hooks/useProviderSidebarConfig";
 import {
+    getProviderRevenue,
     getProviderWallet,
     getProviderWalletTransactions,
     getProviderWithdrawalRequests,
@@ -182,6 +182,7 @@ export default function ProviderWallet() {
     const [withdrawalTotal, setWithdrawalTotal] = useState(0);
     const [pendingWithdrawal, setPendingWithdrawal] = useState<ProviderWithdrawalRequestDto | undefined>();
     const [pendingWithdrawalAmount, setPendingWithdrawalAmount] = useState(0);
+    const [pendingSettlementAmount, setPendingSettlementAmount] = useState(0);
     const [page, setPage] = useState(1);
     const [withdrawalPage, setWithdrawalPage] = useState(1);
     const [loading, setLoading] = useState(true);
@@ -198,9 +199,10 @@ export default function ProviderWallet() {
     const fetchData = useCallback(async () => {
         setLoading(true);
         try {
-            const [profile, currentWallet, tx, withdrawalRes, pendingWithdrawalRes] = await Promise.all([
+            const [profile, currentWallet, revenue, tx, withdrawalRes, pendingWithdrawalRes] = await Promise.all([
                 getProviderProfile(),
                 getProviderWallet(),
+                getProviderRevenue(),
                 getProviderWalletTransactions(page, PROVIDER_LIST_PAGE_SIZE),
                 getProviderWithdrawalRequests(withdrawalPage, PROVIDER_LIST_PAGE_SIZE),
                 getProviderWithdrawalRequests(1, PROVIDER_LIST_PAGE_SIZE, "Pending"),
@@ -213,6 +215,7 @@ export default function ProviderWallet() {
             setWithdrawalTotal(withdrawalRes.total ?? 0);
             setPendingWithdrawal(pendingWithdrawalRes.items?.[0]);
             setPendingWithdrawalAmount((pendingWithdrawalRes.items ?? []).reduce((total, item) => total + item.amount, 0));
+            setPendingSettlementAmount(revenue.pendingAmount ?? 0);
             setBankForm({
                 bankCode: currentWallet.bankCode || "",
                 bankName: currentWallet.bankName || "",
@@ -247,10 +250,17 @@ export default function ProviderWallet() {
     const summaryCards = useMemo(
         () => [
             {
-                label: "Số dư khả dụng",
+                label: "Số dư thực nhận",
                 value: fmt(wallet?.balance ?? 0),
                 icon: <WalletCards className="h-5 w-5" />,
                 surfaceClassName: "bg-emerald-100",
+                iconClassName: "text-slate-900",
+            },
+            {
+                label: "Số dư chưa tất toán",
+                value: fmt(pendingSettlementAmount),
+                icon: <Banknote className="h-5 w-5" />,
+                surfaceClassName: "bg-sky-100",
                 iconClassName: "text-slate-900",
             },
             {
@@ -267,28 +277,39 @@ export default function ProviderWallet() {
                 surfaceClassName: "bg-teal-100",
                 iconClassName: "text-slate-900",
             },
-            {
-                label: "Ngân hàng",
-                value: wallet?.bankName || (isBankReady ? "Sẵn sàng" : "Chưa đủ"),
-                icon: <Landmark className="h-5 w-5" />,
-                surfaceClassName: "bg-blue-100",
-                iconClassName: "text-slate-900",
-            },
         ],
-        [isBankReady, pendingWithdrawal, pendingWithdrawalAmount, wallet, withdrawalTotal],
+        [pendingSettlementAmount, pendingWithdrawal, pendingWithdrawalAmount, wallet, withdrawalTotal],
     );
 
     const withdrawalColumns: ProviderDataTableColumn<ProviderWithdrawalRequestDto>[] = [
         {
             key: "amount",
-            header: "Số tiền",
+            header: "Số tiền trừ ví",
             render: (item) => <span className="font-bold text-slate-900">{fmt(item.amount)}</span>,
+        },
+        {
+            key: "feeAmount",
+            header: "Phí rút (2%)",
+            render: (item) => (
+                <span className="font-semibold text-amber-700">
+                    {item.feeAmount > 0 ? `-${fmt(item.feeAmount)}` : "-"}
+                </span>
+            ),
+        },
+        {
+            key: "netAmount",
+            header: "Thực nhận",
+            render: (item) => (
+                <span className="font-bold text-emerald-700">
+                    {item.netAmount > 0 ? fmt(item.netAmount) : "-"}
+                </span>
+            ),
         },
         {
             key: "status",
             header: "Trạng thái",
             render: (item) => (
-                <span className={`inline-flex w-fit rounded-full border px-3 py-1 text-xs font-bold ${withdrawalStatusTone(item.status)}`}>
+                <span className={`inline-flex w-fit whitespace-nowrap rounded-full border px-3 py-1 text-xs font-bold ${withdrawalStatusTone(item.status)}`}>
                     {withdrawalStatusLabel(item.status)}
                 </span>
             ),
@@ -396,7 +417,7 @@ export default function ProviderWallet() {
                                     </span>
                                 ) : (
                                     <button
-                                        className="nb-btn nb-btn-green w-full sm:w-auto"
+                                        className="nb-btn nb-btn-provider w-full sm:w-auto"
                                         disabled={!canRequestWithdrawal || loading}
                                         onClick={() => {
                                             setShowWithdraw(true);
@@ -418,7 +439,7 @@ export default function ProviderWallet() {
 
                         {loading ? (
                             <div className="flex min-h-[320px] items-center justify-center rounded-[8px] border border-gray-200 bg-white shadow-soft-sm">
-                                <Loader2 className="h-10 w-10 animate-spin text-violet-600" />
+                                <Loader2 className="h-10 w-10 animate-spin text-[#3B82F6]" />
                             </div>
                         ) : (
                             <>
@@ -435,7 +456,7 @@ export default function ProviderWallet() {
                                                 </span>
                                             ) : (
                                                 <button
-                                                    className="nb-btn nb-btn-green"
+                                                    className="nb-btn nb-btn-provider"
                                                     disabled={!canRequestWithdrawal}
                                                     onClick={() => {
                                                         setShowWithdraw(true);
@@ -584,7 +605,7 @@ export default function ProviderWallet() {
                                                             Hủy
                                                         </button>
                                                         <button
-                                                            className="nb-btn nb-btn-green text-sm"
+                                                            className="nb-btn nb-btn-provider text-sm"
                                                             disabled={savingBank}
                                                             onClick={async () => {
                                                                 setSavingBank(true);
@@ -657,62 +678,123 @@ export default function ProviderWallet() {
             </div>
 
             {showWithdraw ? (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-                    <div className="w-full max-w-md space-y-4 rounded-md border border-gray-200 bg-white p-6 shadow-soft-md">
-                        <h3 className="text-lg font-bold text-gray-900">Yêu cầu rút tiền</h3>
-                        <p className="text-sm text-gray-500">
-                            Số dư hiện tại: <span className="font-bold text-emerald-600">{fmt(wallet?.balance ?? 0)}</span>
-                        </p>
-                        <div>
-                            <label className="mb-1 block text-xs font-bold text-gray-500">Số tiền muốn rút (₫)</label>
-                            <input
-                                className="nb-input w-full"
-                                type="number"
-                                min={100000}
-                                step={10}
-                                max={wallet?.balance ?? 0}
-                                value={withdrawAmount}
-                                onChange={(event) => setWithdrawAmount(event.target.value)}
-                            />
+                <WithdrawModal
+                    balance={wallet?.balance ?? 0}
+                    withdrawAmount={withdrawAmount}
+                    withdrawing={withdrawing}
+                    withdrawMsg={withdrawMsg}
+                    pendingWithdrawal={!!pendingWithdrawal}
+                    hasBankAccount={!!wallet?.bankAccountNumber}
+                    onAmountChange={setWithdrawAmount}
+                    onClose={() => setShowWithdraw(false)}
+                    onSubmit={async () => {
+                        const amount = Number(withdrawAmount);
+                        const max = wallet?.balance ?? 0;
+                        if (!amount || amount <= 0) { setWithdrawMsg({ type: "err", text: "Số tiền không hợp lệ" }); return; }
+                        if (amount < 100000) { setWithdrawMsg({ type: "err", text: "Số tiền tối thiểu là 100,000₫" }); return; }
+                        if (amount % 10 !== 0) { setWithdrawMsg({ type: "err", text: "Số tiền phải chia hết cho 10" }); return; }
+                        if (amount > max) { setWithdrawMsg({ type: "err", text: "Số tiền vượt quá số dư" }); return; }
+                        if (!wallet?.bankAccountNumber) { setWithdrawMsg({ type: "err", text: "Vui lòng cập nhật thông tin ngân hàng trước" }); return; }
+                        if (pendingWithdrawal) { setWithdrawMsg({ type: "err", text: "Bạn đang có một yêu cầu rút tiền chờ xử lý" }); return; }
+                        setWithdrawing(true);
+                        try {
+                            await requestProviderWithdrawal(amount);
+                            setWithdrawAmount("");
+                            await fetchData();
+                            setShowWithdraw(false);
+                        } catch {
+                            setWithdrawMsg({ type: "err", text: "Gửi yêu cầu thất bại" });
+                        } finally {
+                            setWithdrawing(false);
+                        }
+                    }}
+                />
+            ) : null}
+        </div>
+    );
+}
+
+const WITHDRAWAL_FEE_RATE = 0.02;
+
+function WithdrawModal({
+    balance,
+    withdrawAmount,
+    withdrawing,
+    withdrawMsg,
+    pendingWithdrawal,
+    hasBankAccount,
+    onAmountChange,
+    onClose,
+    onSubmit,
+}: {
+    balance: number;
+    withdrawAmount: string;
+    withdrawing: boolean;
+    withdrawMsg: { type: "ok" | "err"; text: string } | null;
+    pendingWithdrawal: boolean;
+    hasBankAccount: boolean;
+    onAmountChange: (v: string) => void;
+    onClose: () => void;
+    onSubmit: () => void;
+}) {
+    const amount = Number(withdrawAmount) || 0;
+    const feeAmount = amount > 0 ? Math.round(amount * WITHDRAWAL_FEE_RATE) : 0;
+    const netAmount = amount > 0 ? amount - feeAmount : 0;
+    const showBreakdown = amount > 0;
+
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+            <div className="w-full max-w-md space-y-4 rounded-md border border-gray-200 bg-white p-6 shadow-soft-md">
+                <h3 className="text-lg font-bold text-gray-900">Yêu cầu rút tiền</h3>
+                <p className="text-sm text-gray-500">
+                    Số dư thực nhận: <span className="font-bold text-emerald-600">{fmt(balance)}</span>
+                </p>
+                <div>
+                    <label className="mb-1 block text-xs font-bold text-gray-500">Số tiền trừ từ ví (₫)</label>
+                    <input
+                        className="nb-input w-full"
+                        type="number"
+                        min={100000}
+                        step={10}
+                        max={balance}
+                        value={withdrawAmount}
+                        onChange={(event) => onAmountChange(event.target.value)}
+                    />
+                </div>
+
+                {showBreakdown ? (
+                    <div className="rounded-[8px] border border-slate-200 bg-slate-50 divide-y divide-slate-200">
+                        <div className="flex items-center justify-between px-4 py-2.5">
+                            <span className="text-sm font-semibold text-slate-600">Số tiền trừ từ ví</span>
+                            <span className="text-sm font-bold text-slate-900">{fmt(amount)}</span>
                         </div>
-                        {withdrawMsg ? (
-                            <div className={`nb-alert ${withdrawMsg.type === "ok" ? "nb-alert-success" : "nb-alert-error"}`}>
-                                <p className="text-sm font-medium">{withdrawMsg.text}</p>
-                            </div>
-                        ) : null}
-                        <div className="flex justify-end gap-2">
-                            <button className="nb-btn nb-btn-outline text-sm" onClick={() => setShowWithdraw(false)}>Hủy</button>
-                            <button
-                                className="nb-btn nb-btn-green text-sm"
-                                disabled={withdrawing || Boolean(pendingWithdrawal)}
-                                onClick={async () => {
-                                    const amount = Number(withdrawAmount);
-                                    const max = wallet?.balance ?? 0;
-                                    if (!amount || amount <= 0) { setWithdrawMsg({ type: "err", text: "Số tiền không hợp lệ" }); return; }
-                                    if (amount < 100000) { setWithdrawMsg({ type: "err", text: "Số tiền tối thiểu là 100,000₫" }); return; }
-                                    if (amount % 10 !== 0) { setWithdrawMsg({ type: "err", text: "Số tiền phải chia hết cho 10" }); return; }
-                                    if (amount > max) { setWithdrawMsg({ type: "err", text: "Số tiền vượt quá số dư" }); return; }
-                                    if (!wallet?.bankAccountNumber) { setWithdrawMsg({ type: "err", text: "Vui lòng cập nhật thông tin ngân hàng trước" }); return; }
-                                    if (pendingWithdrawal) { setWithdrawMsg({ type: "err", text: "Bạn đang có một yêu cầu rút tiền chờ xử lý" }); return; }
-                                    setWithdrawing(true);
-                                    try {
-                                        await requestProviderWithdrawal(amount);
-                                        setWithdrawAmount("");
-                                        await fetchData();
-                                        setShowWithdraw(false);
-                                    } catch {
-                                        setWithdrawMsg({ type: "err", text: "Gửi yêu cầu thất bại" });
-                                    } finally {
-                                        setWithdrawing(false);
-                                    }
-                                }}
-                            >
-                                {withdrawing ? "Đang gửi..." : "Gửi yêu cầu"}
-                            </button>
+                        <div className="flex items-center justify-between px-4 py-2.5">
+                            <span className="text-sm font-semibold text-slate-600">Phí rút tiền (2%)</span>
+                            <span className="text-sm font-bold text-amber-700">-{fmt(feeAmount)}</span>
+                        </div>
+                        <div className="flex items-center justify-between px-4 py-2.5">
+                            <span className="text-sm font-bold text-slate-900">Thực nhận</span>
+                            <span className="text-sm font-bold text-emerald-700">{fmt(netAmount)}</span>
                         </div>
                     </div>
+                ) : null}
+
+                {withdrawMsg ? (
+                    <div className={`nb-alert ${withdrawMsg.type === "ok" ? "nb-alert-success" : "nb-alert-error"}`}>
+                        <p className="text-sm font-medium">{withdrawMsg.text}</p>
+                    </div>
+                ) : null}
+                <div className="flex justify-end gap-2">
+                    <button className="nb-btn nb-btn-outline text-sm" onClick={onClose}>Hủy</button>
+                    <button
+                        className="nb-btn nb-btn-provider text-sm"
+                        disabled={withdrawing || pendingWithdrawal || !hasBankAccount}
+                        onClick={onSubmit}
+                    >
+                        {withdrawing ? "Đang gửi..." : "Gửi yêu cầu"}
+                    </button>
                 </div>
-            ) : null}
+            </div>
         </div>
     );
 }

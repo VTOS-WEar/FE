@@ -45,6 +45,7 @@ import { RoleGuard } from "./components/guards/RoleGuard";
 import { ProviderDashboard } from "./screens/ProviderDashboard/ProviderDashboard";
 import { SchoolContracts } from "./screens/SchoolContracts/SchoolContracts";
 import { ProviderContracts } from "./screens/ProviderContracts/ProviderContracts";
+import { ProviderCatalogManagement } from "./screens/ProviderCatalog/ProviderCatalogManagement";
 import { ContractPreview } from "./screens/ContractPreview/ContractPreview";
 import { ProviderComplaints } from "./screens/ProviderComplaints/ProviderComplaints";
 import { ParentProfile } from "./screens/ParentProfile/ParentProfile";
@@ -113,6 +114,15 @@ function RootRedirect() {
 function RouteTransitionLayout() {
   const location = useLocation();
   const currentLocationKey = `${location.pathname}${location.search}`;
+  const roleWorkspaceClass = location.pathname.startsWith("/school/")
+    ? "school-workspace"
+    : location.pathname.startsWith("/provider/")
+      ? "provider-workspace"
+      : location.pathname.startsWith("/admin/")
+        ? "admin-workspace"
+        : location.pathname.startsWith("/teacher/")
+          ? "teacher-workspace"
+          : "";
   const previousLocationRef = useRef(currentLocationKey);
   const [showLoader, setShowLoader] = useState(false);
 
@@ -130,7 +140,7 @@ function RouteTransitionLayout() {
   }, [showLoader]);
 
   return (
-    <div className="relative min-h-screen">
+    <div className={`relative min-h-screen ${roleWorkspaceClass}`}>
       <Outlet />
 
       <AnimatePresence>
@@ -340,6 +350,10 @@ const router = createBrowserRouter([{
   },
   {
     path: "/teacher/account",
+    element: <RoleGuard allowedRoles={["HomeroomTeacher"]}><Navigate to="/teacher/account-settings" replace /></RoleGuard>,
+  },
+  {
+    path: "/teacher/account-settings",
     element: <RoleGuard allowedRoles={["HomeroomTeacher"]}><TeacherAccount /></RoleGuard>,
   },
   {
@@ -381,6 +395,10 @@ const router = createBrowserRouter([{
   {
     path: "/provider/account-settings",
     element: <RoleGuard allowedRoles={["Provider"]}><ProviderAccountSettings /></RoleGuard>,
+  },
+  {
+    path: "/provider/catalog",
+    element: <RoleGuard allowedRoles={["Provider"]}><ProviderCatalogManagement /></RoleGuard>,
   },
   {
     path: "/school/account-settings",

@@ -6,9 +6,13 @@ interface SignaturePadProps {
     onSave: (dataUrl: string) => void;
     onCancel: () => void;
     title?: string;
+    accent?: "default" | "provider";
 }
 
-export function SignaturePad({ onSave, onCancel, title = "Ký tên điện tử" }: SignaturePadProps) {
+export function SignaturePad({ onSave, onCancel, title = "Ký tên điện tử", accent = "default" }: SignaturePadProps) {
+    const isProviderAccent = accent === "provider";
+    const primaryButton = isProviderAccent ? "nb-btn-provider" : "nb-btn-purple";
+    const uploadPreviewClass = isProviderAccent ? "border-[#3B82F6] bg-blue-50" : "border-[#6938EF] bg-violet-50";
     const [tab, setTab] = useState<Tab>("draw");
 
     // ── Draw tab state ──
@@ -211,7 +215,7 @@ export function SignaturePad({ onSave, onCancel, title = "Ký tên điện tử"
 
                         {uploadedImage ? (
                             /* Preview */
-                            <div className="relative border-2 border-[#6938EF] rounded bg-violet-50 p-3 flex items-center justify-center h-[160px]">
+                        <div className={`relative border-2 rounded p-3 flex items-center justify-center h-[160px] ${uploadPreviewClass}`}>
                                 <img
                                     src={uploadedImage}
                                     alt="Chữ ký"
@@ -283,7 +287,7 @@ export function SignaturePad({ onSave, onCancel, title = "Ký tên điện tử"
                     <button
                         onClick={handleSave}
                         disabled={!canConfirm}
-                        className="flex-1 nb-btn nb-btn-purple text-sm disabled:opacity-40 disabled:cursor-not-allowed"
+                        className={`flex-1 nb-btn ${primaryButton} text-sm disabled:opacity-40 disabled:cursor-not-allowed`}
                     >
                         Xác nhận chữ ký
                     </button>

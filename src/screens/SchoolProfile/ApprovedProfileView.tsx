@@ -1,5 +1,18 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { Building2, CalendarRange, CheckCircle2, Globe, ImagePlus, Mail, MapPin, Phone, Save, ShieldCheck } from "lucide-react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import {
+    AlertCircle,
+    BadgeCheck,
+    Building2,
+    CalendarRange,
+    CheckCircle2,
+    Globe,
+    ImagePlus,
+    Mail,
+    MapPin,
+    Phone,
+    Save,
+    ShieldCheck,
+} from "lucide-react";
 import {
     type ProfileStatus,
     type SchoolProfileDto,
@@ -10,6 +23,7 @@ import {
 } from "../../lib/api/schools";
 import { ApiError } from "../../lib/api/clients";
 import { formatPercent } from "../../lib/utils/format";
+import { SCHOOL_THEME } from "../../constants/schoolTheme";
 
 interface ApprovedProfileViewProps {
     profile: SchoolProfileDto;
@@ -58,6 +72,34 @@ function formatDateTime(value: string | null | undefined): string {
     });
 }
 
+function SummaryCard({
+    label,
+    value,
+    icon,
+    surfaceClassName,
+    iconClassName,
+}: {
+    label: string;
+    value: string;
+    icon: ReactNode;
+    surfaceClassName: string;
+    iconClassName: string;
+}) {
+    return (
+        <div className={`min-h-[112px] rounded-[8px] border border-white/70 p-5 shadow-soft-sm ${surfaceClassName}`}>
+            <div className="flex h-full items-center gap-4">
+                <div className={`flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-white shadow-soft-xs ${iconClassName}`}>
+                    {icon}
+                </div>
+                <div className="min-w-0">
+                    <p className="text-sm font-semibold text-slate-700">{label}</p>
+                    <p className="mt-2 truncate text-2xl font-bold leading-tight text-slate-950">{value}</p>
+                </div>
+            </div>
+        </div>
+    );
+}
+
 export const ApprovedProfileView = ({
     profile,
     status,
@@ -82,12 +124,12 @@ export const ApprovedProfileView = ({
 
     const completenessItems = useMemo(
         () => [
-            { label: "Tên trường", done: Boolean(form.schoolName.trim()) },
-            { label: "Logo", done: Boolean(displayLogo) },
-            { label: "Email liên hệ", done: Boolean(form.email.trim()) },
-            { label: "Số điện thoại", done: Boolean(form.phone.trim()) },
-            { label: "Địa chỉ", done: Boolean(form.address.trim()) },
-            { label: "Giới thiệu ngắn", done: Boolean(form.description.trim()) },
+            { label: "Tên trường", value: form.schoolName, done: Boolean(form.schoolName.trim()), required: true },
+            { label: "Logo", value: displayLogo ? "Đã có logo" : "", done: Boolean(displayLogo), required: false },
+            { label: "Email liên hệ", value: form.email, done: Boolean(form.email.trim()), required: false },
+            { label: "Số điện thoại", value: form.phone, done: Boolean(form.phone.trim()), required: false },
+            { label: "Địa chỉ", value: form.address, done: Boolean(form.address.trim()), required: false },
+            { label: "Giới thiệu ngắn", value: form.description, done: Boolean(form.description.trim()), required: false },
         ],
         [displayLogo, form.address, form.description, form.email, form.phone, form.schoolName]
     );
@@ -96,16 +138,11 @@ export const ApprovedProfileView = ({
     const completionPercent = Math.round((completedCount / completenessItems.length) * 100);
     const hasUnsavedChanges = pendingLogoFile !== null;
 
-    const statusTone =
-        status === "submitted"
-            ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-            : "border-amber-200 bg-amber-50 text-amber-800";
-
     const statusLabel = status === "submitted" ? "Hồ sơ đã thiết lập" : "Cần bổ sung thông tin";
-    const statusMessage =
+    const statusBadgeClass =
         status === "submitted"
-            ? "Thông tin nhận diện của trường đã sẵn sàng để tiếp tục rà soát và cập nhật khi cần."
-            : "Hoàn thiện thêm các trường còn thiếu để hồ sơ hiển thị đầy đủ và nhất quán hơn.";
+            ? "nb-badge nb-badge-green"
+            : "nb-badge text-amber-700 bg-amber-50 border border-amber-200";
 
     const handleFieldChange = (field: keyof FieldState, value: string) => {
         setForm((current) => ({ ...current, [field]: value }));
@@ -169,198 +206,148 @@ export const ApprovedProfileView = ({
 
     return (
         <div className="space-y-6">
-            <section className="nb-card-static overflow-hidden p-0">
-                <div className="bg-[linear-gradient(135deg,#f8f4ff_0%,#eef6ff_55%,#ffffff_100%)] px-6 py-6 lg:px-8 lg:py-7">
-                    <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
-                        <div className="flex min-w-0 flex-col gap-5 sm:flex-row sm:items-start">
-                            <div className="relative flex-shrink-0">
-                                <button
-                                    type="button"
-                                    onClick={() => fileInputRef.current?.click()}
-                                    className="group flex h-24 w-24 items-center justify-center overflow-hidden rounded-[24px] border-2 border-dashed border-violet-200 bg-white shadow-soft-sm transition-colors hover:border-violet-400"
-                                >
-                                    {displayLogo ? (
-                                        <img src={displayLogo} alt="Logo trường" className="h-full w-full object-cover" />
-                                    ) : (
-                                        <div className="flex flex-col items-center gap-1 text-violet-700">
-                                            <ImagePlus className="h-6 w-6" />
-                                            <span className="text-[11px] font-extrabold uppercase tracking-wide">Logo</span>
-                                        </div>
-                                    )}
-                                </button>
-                                <input
-                                    ref={fileInputRef}
-                                    type="file"
-                                    accept="image/png,image/jpeg,image/webp,image/svg+xml"
-                                    className="hidden"
-                                    onChange={handleLogoSelect}
-                                />
-                            </div>
-
-                            <div className="min-w-0 space-y-3">
-                                <div className="flex flex-wrap items-center gap-2">
-                                    <span className={`rounded-full border px-3 py-1 text-xs font-extrabold shadow-soft-sm ${statusTone}`}>
-                                        {statusLabel}
-                                    </span>
-                                    <span className="rounded-full border border-violet-200 bg-white px-3 py-1 text-xs font-extrabold text-violet-700 shadow-soft-sm">
-                                        {form.level || "Chưa chọn cấp học"}
-                                    </span>
-                                    {hasUnsavedChanges && (
-                                        <span className="rounded-full border border-amber-200 bg-white px-3 py-1 text-xs font-extrabold text-amber-700 shadow-soft-sm">
-                                            Có thay đổi chưa lưu
-                                        </span>
-                                    )}
-                                </div>
-
-                                <div>
-                                    <h1 className="text-[28px] font-extrabold leading-tight text-gray-900 lg:text-[32px]">
-                                        {form.schoolName.trim() || "Hồ sơ trường học"}
-                                    </h1>
-                                </div>
-
-                                <div className="flex flex-wrap items-center gap-4 text-sm font-semibold text-[#5b6475]">
-                                    <span className="inline-flex items-center gap-2">
-                                        <Building2 className="h-4 w-4 text-violet-600" />
-                                        Mã trường: {schoolCode}
-                                    </span>
-                                    <span className="inline-flex items-center gap-2">
-                                        <CalendarRange className="h-4 w-4 text-violet-600" />
-                                        Cập nhật lần cuối: {formatDateTime(profile.updatedAt || profile.createdAt)}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="flex flex-col gap-3 xl:items-end">
-                            <button
-                                onClick={handleSave}
-                                disabled={saving}
-                                className="nb-btn nb-btn-purple min-w-[180px] text-sm disabled:opacity-50"
-                            >
-                                <Save className="h-4 w-4" />
-                                {saving ? "Đang lưu..." : "Lưu thay đổi"}
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => fileInputRef.current?.click()}
-                                className="nb-btn nb-btn-outline text-sm"
-                            >
-                                <ImagePlus className="h-4 w-4" />
-                                {displayLogo ? "Đổi logo" : "Tải logo"}
-                            </button>
-                        </div>
-                    </div>
+            <section className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
+                <div>
+                    <p className="text-sm font-semibold text-slate-500">Thông tin trường học</p>
+                    <h1 className="mt-2 text-3xl font-bold tracking-normal text-slate-950">Hồ sơ trường học</h1>
                 </div>
-
-                <div className="border-t border-white/60 bg-white px-6 py-5 lg:px-8">
-                    <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.15fr,0.85fr]">
-                        <div className={`rounded-[20px] border p-4 shadow-soft-sm ${statusTone}`}>
-                            <div className="flex items-start gap-3">
-                                <ShieldCheck className="mt-0.5 h-5 w-5 flex-shrink-0" />
-                                <div>
-                                    <p className="text-sm font-extrabold">{statusLabel}</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="rounded-[20px] border border-gray-200 bg-white p-4 shadow-soft-sm">
-                            <div className="flex items-center justify-between gap-3">
-                                <div>
-                                    <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-gray-500">Mức độ hoàn thiện</p>
-                                    <p className="mt-1 text-2xl font-extrabold text-gray-900">{formatPercent(completionPercent, { maximumFractionDigits: 0 })}</p>
-                                </div>
-                                <div className="rounded-full bg-violet-50 px-3 py-1 text-xs font-extrabold text-violet-700">
-                                    {completedCount}/{completenessItems.length} mục
-                                </div>
-                            </div>
-                            <div className="mt-4 h-2 overflow-hidden rounded-full bg-gray-100">
-                                <div className="h-full rounded-full bg-[linear-gradient(90deg,#6938EF_0%,#0EA5E9_100%)]" style={{ width: `${completionPercent}%` }} />
-                            </div>
-                        </div>
+                <div className="flex flex-col gap-3 xl:items-end">
+                    <div className="flex flex-wrap items-center gap-3">
+                        <span className={statusBadgeClass}>{statusLabel}</span>
+                        {hasUnsavedChanges ? (
+                            <span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-bold text-amber-700">
+                                Có logo chưa lưu
+                            </span>
+                        ) : null}
+                        <button onClick={handleSave} disabled={saving} className={`${SCHOOL_THEME.primaryButton} disabled:opacity-50`}>
+                            <Save className="h-4 w-4" />
+                            {saving ? "Đang lưu..." : "Lưu thay đổi"}
+                        </button>
+                    </div>
+                    <div className="grid w-full gap-2 sm:grid-cols-2 xl:w-auto">
+                        <SystemInfoChip label="Khởi tạo hồ sơ" value={formatDateTime(profile.createdAt)} />
+                        <SystemInfoChip label="Cập nhật gần nhất" value={formatDateTime(profile.updatedAt || profile.createdAt)} />
                     </div>
                 </div>
             </section>
 
-            {error && (
-                <div className="nb-alert nb-alert-error text-sm">
-                    <span>⚠️</span>
-                    <span>{error}</span>
-                </div>
-            )}
-            {success && (
-                <div className="nb-alert nb-alert-success text-sm">
-                    <span>✅</span>
-                    <span>{success}</span>
-                </div>
-            )}
+            <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                <SummaryCard
+                    label="Trạng thái hồ sơ"
+                    value={statusLabel}
+                    icon={<BadgeCheck className="h-6 w-6" />}
+                    surfaceClassName={status === "submitted" ? SCHOOL_THEME.summary.mint : SCHOOL_THEME.summary.cyan}
+                    iconClassName={status === "submitted" ? "text-emerald-700" : "text-amber-700"}
+                />
+                <SummaryCard
+                    label="Hoàn thiện hồ sơ"
+                    value={formatPercent(completionPercent, { maximumFractionDigits: 0 })}
+                    icon={<CheckCircle2 className="h-6 w-6" />}
+                    surfaceClassName={SCHOOL_THEME.summary.school}
+                    iconClassName={SCHOOL_THEME.primaryText}
+                />
+                <SummaryCard
+                    label="Cấp học / Niên khóa"
+                    value={`${form.level || "Chưa chọn"} · ${form.academicYear || "Chưa có"}`}
+                    icon={<Building2 className="h-6 w-6" />}
+                    surfaceClassName={SCHOOL_THEME.summary.slate}
+                    iconClassName="text-slate-700"
+                />
+                <SummaryCard
+                    label="Thông tin liên hệ"
+                    value={form.phone || form.email || "Chưa cập nhật"}
+                    icon={<Phone className="h-6 w-6" />}
+                    surfaceClassName={SCHOOL_THEME.summary.cyan}
+                    iconClassName="text-cyan-700"
+                />
+            </section>
 
-            <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.15fr,0.85fr]">
-                <section className="space-y-6">
-                    <div className="nb-card-static p-0">
-                        <div className="border-b border-gray-200 px-6 py-5 lg:px-8">
-                            <h2 className="text-lg font-extrabold text-gray-900">Nhận diện trường</h2>
+            {error ? (
+                <div className="rounded-[8px] border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700">{error}</div>
+            ) : null}
+            {success ? (
+                <div className="rounded-[8px] border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">{success}</div>
+            ) : null}
+
+            <section className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
+                <div className="space-y-6">
+                    <div className="rounded-[8px] border border-gray-200 bg-white p-6 shadow-soft-sm">
+                        <div className="flex items-center gap-3">
+                            <div className={`flex h-11 w-11 items-center justify-center rounded-full ${SCHOOL_THEME.primarySoftBg} ${SCHOOL_THEME.primaryText}`}>
+                                <Building2 className="h-5 w-5" />
+                            </div>
+                            <div>
+                                <p className="text-sm font-semibold text-slate-500">Thông tin nhận diện</p>
+                                <h2 className="mt-1 text-xl font-bold text-gray-900">Cập nhật hồ sơ</h2>
+                            </div>
                         </div>
-                        <div className="space-y-5 px-6 py-6 lg:px-8">
-                            <FieldGroup label="Tên trường">
-                                <input
-                                    value={form.schoolName}
-                                    onChange={(event) => handleFieldChange("schoolName", event.target.value)}
-                                    className="nb-input w-full py-3"
-                                    placeholder="Nhập tên trường"
-                                />
-                            </FieldGroup>
 
-                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                                <FieldGroup label="Cấp học">
-                                    <select
-                                        value={form.level}
-                                        onChange={(event) => handleFieldChange("level", event.target.value)}
-                                        className="nb-select w-full"
-                                    >
-                                        <option value="Tiểu học">Tiểu học</option>
-                                        <option value="THCS">THCS</option>
-                                        <option value="THPT">THPT</option>
-                                    </select>
-                                </FieldGroup>
-
-                                <FieldGroup label="Mã trường">
-                                    <input value={schoolCode} disabled className="nb-input w-full bg-gray-50 py-3" />
+                        <div className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-2">
+                            <div className="md:col-span-2">
+                                <FieldGroup label="Tên trường">
+                                    <input
+                                        value={form.schoolName}
+                                        onChange={(event) => handleFieldChange("schoolName", event.target.value)}
+                                        className="nb-input w-full py-3"
+                                        placeholder="Nhập tên trường"
+                                    />
                                 </FieldGroup>
                             </div>
+
+                            <FieldGroup label="Cấp học">
+                                <select
+                                    value={form.level}
+                                    onChange={(event) => handleFieldChange("level", event.target.value)}
+                                    className="nb-select w-full"
+                                >
+                                    <option value="Tiểu học">Tiểu học</option>
+                                    <option value="THCS">THCS</option>
+                                    <option value="THPT">THPT</option>
+                                </select>
+                            </FieldGroup>
+
+                            <FieldGroup label="Niên khóa">
+                                <select
+                                    value={form.academicYear}
+                                    onChange={(event) => handleFieldChange("academicYear", event.target.value)}
+                                    className="nb-select w-full"
+                                >
+                                    <option value="2024 - 2025">2024 - 2025</option>
+                                    <option value="2025 - 2026">2025 - 2026</option>
+                                    <option value="2026 - 2027">2026 - 2027</option>
+                                </select>
+                            </FieldGroup>
+
+                            <FieldGroup label="Năm thành lập">
+                                <input
+                                    value={form.foundedYear}
+                                    onChange={(event) => handleFieldChange("foundedYear", event.target.value)}
+                                    className="nb-input w-full py-3"
+                                    placeholder="VD: 1991"
+                                />
+                            </FieldGroup>
                         </div>
                     </div>
 
-                    <div className="nb-card-static p-0">
-                        <div className="border-b border-gray-200 px-6 py-5 lg:px-8">
-                            <h2 className="text-lg font-extrabold text-gray-900">Thông tin liên hệ công khai</h2>
-                        </div>
-                        <div className="space-y-5 px-6 py-6 lg:px-8">
-                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                                <FieldGroup label="Email liên hệ">
-                                    <IconInput
-                                        icon={<Mail className="h-4 w-4 text-gray-400" />}
-                                        value={form.email}
-                                        onChange={(value) => handleFieldChange("email", value)}
-                                        placeholder="school@example.com"
-                                        type="email"
-                                    />
-                                </FieldGroup>
-                                <FieldGroup label="Số điện thoại">
-                                    <IconInput
-                                        icon={<Phone className="h-4 w-4 text-gray-400" />}
-                                        value={form.phone}
-                                        onChange={(value) => handleFieldChange("phone", value)}
-                                        placeholder="0901 234 567"
-                                    />
-                                </FieldGroup>
-                            </div>
-
-                            <FieldGroup label="Địa chỉ">
+                    <div className="rounded-[8px] border border-gray-200 bg-white p-6 shadow-soft-sm">
+                        <h2 className="text-xl font-bold text-gray-900">Thông tin liên hệ</h2>
+                        <div className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-2">
+                            <FieldGroup label="Email liên hệ">
                                 <IconInput
-                                    icon={<MapPin className="h-4 w-4 text-gray-400" />}
-                                    value={form.address}
-                                    onChange={(value) => handleFieldChange("address", value)}
-                                    placeholder="Nhập địa chỉ trường"
+                                    icon={<Mail className="h-4 w-4 text-gray-400" />}
+                                    value={form.email}
+                                    onChange={(value) => handleFieldChange("email", value)}
+                                    placeholder="school@example.com"
+                                    type="email"
+                                />
+                            </FieldGroup>
+
+                            <FieldGroup label="Số điện thoại">
+                                <IconInput
+                                    icon={<Phone className="h-4 w-4 text-gray-400" />}
+                                    value={form.phone}
+                                    onChange={(value) => handleFieldChange("phone", value)}
+                                    placeholder="0901 234 567"
                                 />
                             </FieldGroup>
 
@@ -372,128 +359,185 @@ export const ApprovedProfileView = ({
                                     placeholder="https://www.truong.edu.vn"
                                 />
                             </FieldGroup>
-                        </div>
-                    </div>
 
-                    <div className="nb-card-static p-0">
-                        <div className="border-b border-gray-200 px-6 py-5 lg:px-8">
-                            <h2 className="text-lg font-extrabold text-gray-900">Thông tin bổ sung</h2>
-                        </div>
-                        <div className="space-y-5 px-6 py-6 lg:px-8">
-                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                                <FieldGroup label="Năm thành lập">
-                                    <input
-                                        value={form.foundedYear}
-                                        onChange={(event) => handleFieldChange("foundedYear", event.target.value)}
-                                        className="nb-input w-full py-3"
-                                        placeholder="VD: 1991"
-                                    />
-                                </FieldGroup>
-
-                                <FieldGroup label="Niên khóa">
-                                    <select
-                                        value={form.academicYear}
-                                        onChange={(event) => handleFieldChange("academicYear", event.target.value)}
-                                        className="nb-select w-full"
-                                    >
-                                        <option value="2024 - 2025">2024 - 2025</option>
-                                        <option value="2025 - 2026">2025 - 2026</option>
-                                        <option value="2026 - 2027">2026 - 2027</option>
-                                    </select>
-                                </FieldGroup>
-                            </div>
-
-                            <FieldGroup label="Giới thiệu ngắn">
-                                <textarea
-                                    value={form.description}
-                                    onChange={(event) => handleFieldChange("description", event.target.value)}
-                                    rows={4}
-                                    className="nb-input w-full resize-none py-3"
-                                    placeholder="Mô tả ngắn gọn về định hướng hoặc điểm nhận diện của trường"
+                            <FieldGroup label="Địa chỉ">
+                                <IconInput
+                                    icon={<MapPin className="h-4 w-4 text-gray-400" />}
+                                    value={form.address}
+                                    onChange={(value) => handleFieldChange("address", value)}
+                                    placeholder="Nhập địa chỉ trường"
                                 />
                             </FieldGroup>
                         </div>
                     </div>
-                </section>
+
+                    <div className="rounded-[8px] border border-gray-200 bg-white p-6 shadow-soft-sm">
+                        <FieldGroup label="Giới thiệu ngắn">
+                            <textarea
+                                value={form.description}
+                                onChange={(event) => handleFieldChange("description", event.target.value)}
+                                rows={3}
+                                className="nb-input min-h-[96px] w-full resize-none py-3"
+                                placeholder="Mô tả ngắn gọn về định hướng hoặc điểm nhận diện của trường"
+                            />
+                        </FieldGroup>
+
+                        <div className="mt-5 flex justify-end">
+                            <button onClick={handleSave} disabled={saving} className={`${SCHOOL_THEME.primaryButton} disabled:opacity-50`}>
+                                <Save className="h-4 w-4" />
+                                {saving ? "Đang lưu..." : "Lưu hồ sơ"}
+                            </button>
+                        </div>
+                    </div>
+                </div>
 
                 <aside className="space-y-6">
-                    <div className="nb-card-static p-0">
-                        <div className="border-b border-gray-200 px-6 py-5">
-                            <h2 className="text-lg font-extrabold text-gray-900">Checklist hoàn thiện</h2>
+                    <div className="rounded-[8px] border border-gray-200 bg-white p-6 shadow-soft-sm">
+                        <div className="flex items-center gap-4">
+                            <button
+                                type="button"
+                                onClick={() => fileInputRef.current?.click()}
+                                className={`group flex h-24 w-24 flex-shrink-0 items-center justify-center overflow-hidden rounded-[8px] border-2 border-dashed ${SCHOOL_THEME.primarySoftBorder} bg-white shadow-soft-sm transition-colors hover:border-blue-400`}
+                            >
+                                {displayLogo ? (
+                                    <img src={displayLogo} alt="Logo trường" className="h-full w-full object-cover" />
+                                ) : (
+                                    <div className={`flex flex-col items-center gap-1 ${SCHOOL_THEME.primaryText}`}>
+                                        <ImagePlus className="h-6 w-6" />
+                                        <span className="text-xs font-bold">Logo</span>
+                                    </div>
+                                )}
+                            </button>
+                            <div className="min-w-0">
+                                <p className="text-sm font-semibold text-slate-500">Logo trường</p>
+                                <h2 className="mt-1 text-xl font-bold text-gray-900">{form.schoolName || "Chưa đặt tên trường"}</h2>
+                                <p className="mt-1 text-sm font-semibold text-slate-500">Mã trường: {schoolCode}</p>
+                            </div>
                         </div>
-                        <div className="space-y-3 px-6 py-6">
+
+                        <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                            className="hidden"
+                            onChange={handleLogoSelect}
+                        />
+
+                        <div className="mt-5 flex flex-wrap gap-3">
+                            <button
+                                type="button"
+                                onClick={() => fileInputRef.current?.click()}
+                                className="nb-btn nb-btn-outline text-sm hover:border-blue-200 hover:text-[#2563EB]"
+                            >
+                                <ImagePlus className="h-4 w-4" />
+                                {displayLogo ? "Đổi logo" : "Tải logo"}
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="rounded-[8px] border border-gray-200 bg-white p-6 shadow-soft-sm">
+                        <div className="flex items-center gap-3">
+                            <div className="flex h-11 w-11 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
+                                <ShieldCheck className="h-5 w-5" />
+                            </div>
+                            <div>
+                                <p className="text-sm font-semibold text-slate-500">Độ tin cậy hồ sơ</p>
+                                <h2 className="mt-1 text-xl font-bold text-gray-900">Mức hoàn thiện</h2>
+                            </div>
+                        </div>
+
+                        <div className="mt-6">
+                            <div className="flex items-center justify-between text-sm font-semibold text-slate-700">
+                                <span>{completedCount}/{completenessItems.length} thông tin đã có</span>
+                                <span>{formatPercent(completionPercent, { maximumFractionDigits: 0 })}</span>
+                            </div>
+                            <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-100">
+                                <div className="h-full rounded-full bg-[#2563EB] transition-all" style={{ width: `${completionPercent}%` }} />
+                            </div>
+                        </div>
+
+                        <div className="mt-6 space-y-3">
                             {completenessItems.map((item) => (
-                                <div
-                                    key={item.label}
-                                    className={`flex items-center justify-between rounded-[16px] border px-4 py-3 shadow-soft-sm ${
-                                        item.done ? "border-emerald-200 bg-emerald-50" : "border-gray-200 bg-white"
-                                    }`}
-                                >
-                                    <span className="text-sm font-semibold text-gray-800">{item.label}</span>
-                                    {item.done ? (
-                                        <span className="inline-flex items-center gap-1 text-xs font-extrabold text-emerald-700">
-                                            <CheckCircle2 className="h-4 w-4" />
-                                            Đã có
-                                        </span>
-                                    ) : (
-                                        <span className="text-xs font-extrabold text-amber-700">Cần bổ sung</span>
-                                    )}
-                                </div>
+                                <SignalRow key={item.label} title={item.label} value={item.value} completed={item.done} required={item.required} />
                             ))}
                         </div>
                     </div>
 
-                    <div className="nb-card-static p-0">
-                        <div className="border-b border-gray-200 px-6 py-5">
-                            <h2 className="text-lg font-extrabold text-gray-900">Thông tin hệ thống</h2>
-                        </div>
-                        <div className="space-y-4 px-6 py-6">
-                            <InfoRow label="Mã định danh" value={schoolCode} />
-                            <InfoRow label="Khởi tạo hồ sơ" value={formatDateTime(profile.createdAt)} />
-                            <InfoRow label="Cập nhật gần nhất" value={formatDateTime(profile.updatedAt || profile.createdAt)} />
-                        </div>
-                    </div>
                 </aside>
-            </div>
+            </section>
         </div>
     );
 };
 
-const FieldGroup = ({ label, children }: { label: string; children: React.ReactNode }) => (
-    <div>
-        <label className="mb-1.5 block text-sm font-bold text-gray-900">{label}</label>
-        {children}
-    </div>
-);
+function FieldGroup({ label, children }: { label: string; children: ReactNode }) {
+    return (
+        <div>
+            <label className="mb-1.5 block text-sm font-bold text-gray-900">{label}</label>
+            {children}
+        </div>
+    );
+}
 
-const InfoRow = ({ label, value }: { label: string; value: string }) => (
-    <div className="rounded-[16px] border border-gray-200 bg-white px-4 py-3 shadow-soft-sm">
-        <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-gray-500">{label}</p>
-        <p className="mt-1 text-sm font-bold text-gray-900">{value}</p>
-    </div>
-);
-
-const IconInput = ({
+function IconInput({
     icon,
     value,
     onChange,
     placeholder,
     type = "text",
 }: {
-    icon: React.ReactNode;
+    icon: ReactNode;
     value: string;
     onChange: (value: string) => void;
     placeholder: string;
     type?: string;
-}) => (
-    <div className="relative">
-        <div className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2">{icon}</div>
-        <input
-            type={type}
-            value={value}
-            onChange={(event) => onChange(event.target.value)}
-            placeholder={placeholder}
-            className="nb-input w-full py-3 pl-10"
-        />
-    </div>
-);
+}) {
+    return (
+        <div className="relative">
+            <div className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2">{icon}</div>
+            <input
+                type={type}
+                value={value}
+                onChange={(event) => onChange(event.target.value)}
+                placeholder={placeholder}
+                className="nb-input w-full py-3 pl-10"
+            />
+        </div>
+    );
+}
+
+function SignalRow({
+    title,
+    value,
+    completed,
+    required,
+}: {
+    title: string;
+    value: string;
+    completed: boolean;
+    required: boolean;
+}) {
+    return (
+        <div className="flex items-center justify-between gap-4 rounded-[8px] border border-gray-200 bg-slate-50 p-4">
+            <div className="min-w-0">
+                <p className="text-sm font-bold text-gray-900">{title}</p>
+                <p className="mt-1 truncate text-sm text-gray-500">{completed ? value : required ? "Thông tin bắt buộc" : "Chưa cập nhật"}</p>
+            </div>
+            <div
+                className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full ${
+                    completed ? "bg-emerald-50 text-emerald-600" : required ? "bg-rose-50 text-rose-600" : "bg-amber-50 text-amber-600"
+                }`}
+            >
+                {completed ? <CheckCircle2 className="h-5 w-5" /> : <AlertCircle className="h-5 w-5" />}
+            </div>
+        </div>
+    );
+}
+
+function SystemInfoChip({ label, value }: { label: string; value: string }) {
+    return (
+        <div className="rounded-[8px] border border-gray-200 bg-white px-3 py-2 shadow-soft-xs">
+            <p className="text-xs font-semibold text-slate-500">{label}</p>
+            <p className="mt-0.5 text-sm font-bold text-slate-950">{value}</p>
+        </div>
+    );
+}

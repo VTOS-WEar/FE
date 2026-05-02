@@ -1,17 +1,10 @@
-import { AlertTriangle, CheckCircle2, ClipboardCheck, Layers3, Plus, Save, ShieldCheck, Store, Trash2 } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { AlertTriangle, ArrowLeft, CheckCircle2, ClipboardCheck, Layers3, Loader2, Plus, Save, ShieldCheck, Store, Trash2 } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-} from "../../components/ui/breadcrumb";
 import { DashboardSidebar } from "../../components/layout";
 import { RichTextEditor } from "../../components/RichTextEditor/RichTextEditor";
 import { TopNavBar } from "../../components/layout/TopNavBar";
+import { SCHOOL_THEME } from "../../constants/schoolTheme";
 import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
 import { useSidebarConfig } from "../../hooks/useSidebarConfig";
 import {
@@ -33,7 +26,7 @@ import {
 } from "../../lib/api/schools";
 
 const inputClass =
-    "w-full rounded-[12px] border border-gray-200 bg-white px-4 py-3 text-[15px] font-medium text-gray-900 shadow-soft-sm outline-none transition-all placeholder:text-gray-400 focus:border-purple-400 focus:ring-2 focus:ring-purple-200/50";
+    `w-full rounded-[8px] border border-gray-200 bg-white px-4 py-3 text-[15px] font-medium text-gray-900 shadow-soft-sm outline-none transition-all placeholder:text-gray-400 ${SCHOOL_THEME.primaryFocus}`;
 const selectClass = `${inputClass} h-[50px] cursor-pointer pr-10`;
 const semesterOptions = ["Học Kỳ I", "Học Kỳ II"];
 
@@ -75,16 +68,22 @@ function getStatusMeta(status: string | undefined) {
             return {
                 label: "Đang mở",
                 badgeClass: "nb-badge nb-badge-green",
+                surfaceClassName: SCHOOL_THEME.summary.mint,
+                iconClassName: "text-emerald-700",
             };
         case "Closed":
             return {
                 label: "Đã đóng",
                 badgeClass: "nb-badge nb-badge-blue",
+                surfaceClassName: SCHOOL_THEME.summary.slate,
+                iconClassName: "text-slate-700",
             };
         default:
             return {
                 label: "Bản nháp",
                 badgeClass: "nb-badge text-amber-700 bg-amber-50 border border-amber-200",
+                surfaceClassName: SCHOOL_THEME.summary.cyan,
+                iconClassName: "text-amber-700",
             };
     }
 }
@@ -92,14 +91,32 @@ function getStatusMeta(status: string | undefined) {
 function InfoStat({
     label,
     value,
+    note,
+    icon,
+    surfaceClassName = SCHOOL_THEME.summary.school,
+    iconClassName = SCHOOL_THEME.primaryText,
 }: {
     label: string;
     value: string;
+    note?: string;
+    icon?: ReactNode;
+    surfaceClassName?: string;
+    iconClassName?: string;
 }) {
     return (
-        <div className="rounded-[20px] border border-gray-200 bg-white p-4 shadow-soft-sm">
-            <p className="text-[11px] font-extrabold uppercase tracking-[0.18em] text-gray-500">{label}</p>
-            <p className="mt-3 text-2xl font-extrabold text-gray-900">{value}</p>
+        <div className={`min-h-[112px] rounded-[8px] border border-white/70 p-5 shadow-soft-sm ${surfaceClassName}`}>
+            <div className="flex h-full items-center gap-4">
+                {icon ? (
+                    <div className={`flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-white shadow-soft-xs ${iconClassName}`}>
+                        {icon}
+                    </div>
+                ) : null}
+                <div className="min-w-0">
+                    <p className="text-sm font-semibold text-slate-700">{label}</p>
+                    <p className="mt-2 truncate text-2xl font-bold leading-tight text-slate-950">{value}</p>
+                    {note ? <p className="mt-2 line-clamp-1 text-xs font-semibold text-slate-600">{note}</p> : null}
+                </div>
+            </div>
         </div>
     );
 }
@@ -387,7 +404,7 @@ export const SemesterPublicationWorkspace = (): JSX.Element => {
         <div className="nb-page flex flex-col">
             {toast && (
                 <div
-                    className={`fixed right-6 top-6 z-[99999] flex items-center gap-3 rounded-[12px] border px-5 py-3 text-sm font-extrabold shadow-soft-md ${
+                    className={`fixed right-6 top-6 z-[99999] flex items-center gap-3 rounded-[12px] border px-5 py-3 text-sm font-bold shadow-soft-md ${
                         toast.type === "success"
                             ? "border-emerald-200 bg-emerald-50 text-emerald-700"
                             : "border-red-200 bg-red-50 text-red-700"
@@ -410,49 +427,38 @@ export const SemesterPublicationWorkspace = (): JSX.Element => {
 
                 <div className="flex min-w-0 flex-1 flex-col">
                     <TopNavBar>
-                        <Breadcrumb>
-                            <BreadcrumbList>
-                                <BreadcrumbItem>
-                                    <BreadcrumbLink href="/school/dashboard" className="text-base font-semibold text-[#4c5769]">
-                                        Trang chủ
-                                    </BreadcrumbLink>
-                                </BreadcrumbItem>
-                                <BreadcrumbSeparator className="text-[#cbcad7]">/</BreadcrumbSeparator>
-                                <BreadcrumbItem>
-                                    <BreadcrumbLink href="/school/semester-publications" className="text-base font-semibold text-[#4c5769]">
-                                        Công bố học kỳ
-                                    </BreadcrumbLink>
-                                </BreadcrumbItem>
-                                <BreadcrumbSeparator className="text-[#cbcad7]">/</BreadcrumbSeparator>
-                                <BreadcrumbItem>
-                                    <BreadcrumbPage className="text-base font-bold text-gray-900">
-                                        {isEditMode ? "Workspace" : "Tạo bản nháp"}
-                                    </BreadcrumbPage>
-                                </BreadcrumbItem>
-                            </BreadcrumbList>
-                        </Breadcrumb>
+                        <div className="flex items-center gap-3 px-2 py-2">
+                            <button
+                                onClick={() => navigate(isEditMode && id ? `/school/semester-publications/${id}` : "/school/semester-publications")}
+                                className="flex h-9 w-9 items-center justify-center rounded-[8px] border border-gray-200 bg-white shadow-soft-sm transition-colors hover:bg-slate-50"
+                                aria-label="Quay lại công bố học kỳ"
+                            >
+                                <ArrowLeft className="h-4 w-4 text-gray-900" />
+                            </button>
+                            <h1 className="text-xl font-bold leading-none text-gray-900">
+                                {isEditMode ? "Chỉnh sửa công bố học kỳ" : "Tạo công bố học kỳ"}
+                            </h1>
+                        </div>
                     </TopNavBar>
 
                     <main className="flex-1 space-y-6 px-4 py-6 sm:px-6 lg:px-10 lg:py-8">
-                        <section className="rounded-[24px] border border-gray-200 bg-white p-6 shadow-soft-sm lg:p-7">
-                            <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
-                                <div className="max-w-3xl">
+                        {!loading && (
+                        <section className="space-y-5">
+                            <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                                <div>
                                     <div className="flex flex-wrap items-center gap-2">
                                         <span className={statusMeta.badgeClass}>{statusMeta.label}</span>
-                                        <span className="rounded-full border border-gray-200 bg-violet-50 px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.16em] text-violet-700">
-                                            Publication Workspace
-                                        </span>
                                     </div>
-                                    <h1 className="mt-4 text-[28px] font-extrabold leading-tight text-gray-900 lg:text-[34px]">
+                                    <h2 className="mt-3 text-2xl font-bold leading-tight text-slate-950">
                                         {publication ? `${publication.semester} / ${publication.academicYear}` : "Khởi tạo đợt công bố học kỳ"}
-                                    </h1>
+                                    </h2>
                                 </div>
 
                                 <div className="flex flex-wrap gap-3 xl:justify-end">
                                     <button
                                         onClick={handleSavePublication}
                                         disabled={saving}
-                                        className="nb-btn nb-btn-purple text-sm disabled:opacity-50"
+                                        className={SCHOOL_THEME.primaryButton}
                                     >
                                         <Save className="h-4 w-4" />
                                         {saving ? "Đang lưu..." : publication ? "Cập nhật thông tin" : "Lưu bản nháp"}
@@ -464,45 +470,61 @@ export const SemesterPublicationWorkspace = (): JSX.Element => {
                                     )}
                                     {publication?.status === "Active" && (
                                         <button onClick={handleClose} className="nb-btn nb-btn-outline text-sm">
-                                            Đóng đợt mở bán
+                                            Đánh dấu hết hạn học kỳ
                                         </button>
                                     )}
                                 </div>
                             </div>
 
-                            <div className="mt-6 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+                            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
                                 <InfoStat
-                                    label="Metadata"
+                                    label="Thông tin công bố"
                                     value={hasRequiredMetadata ? "Đã đủ" : "Thiếu"}
+                                    icon={<ClipboardCheck className="h-5 w-5" />}
+                                    surfaceClassName={hasRequiredMetadata ? SCHOOL_THEME.summary.mint : SCHOOL_THEME.summary.cyan}
+                                    iconClassName={hasRequiredMetadata ? "text-emerald-700" : "text-amber-700"}
                                 />
                                 <InfoStat
                                     label="Đồng phục đã gắn"
                                     value={String(selectedOutfits.length)}
+                                    icon={<Layers3 className="h-5 w-5" />}
+                                    surfaceClassName={SCHOOL_THEME.summary.school}
                                 />
                                 <InfoStat
-                                    label="Nhà cung cấp hoạt động"
-                                    value={String(activeProviderCount)}
+                                    label="NCC được chọn"
+                                    value={String(selectedProviders.length)}
+                                    note={`${activeProviderCount} đang hoạt động`}
+                                    icon={<Store className="h-5 w-5" />}
+                                    surfaceClassName={SCHOOL_THEME.summary.mint}
+                                    iconClassName="text-emerald-700"
                                 />
                                 <InfoStat
                                     label="Cập nhật gần nhất"
                                     value={publication ? formatDateTime(publication.updatedAt || publication.createdAt) : "Chưa lưu"}
+                                    icon={<Save className="h-5 w-5" />}
+                                    surfaceClassName={SCHOOL_THEME.summary.slate}
+                                    iconClassName="text-slate-700"
                                 />
                             </div>
                         </section>
+                        )}
 
                         {loading ? (
-                            <div className="nb-skeleton h-[320px]" />
+                            <div className="flex min-h-[320px] flex-col items-center justify-center gap-4 rounded-[8px] border border-gray-200 bg-white shadow-soft-sm">
+                                <Loader2 className="h-10 w-10 animate-spin text-[#2563EB]" />
+                                <p className="text-xs font-semibold text-slate-500">Đang tải công bố học kỳ...</p>
+                            </div>
                         ) : (
                             <>
                                 <div className="grid gap-6 xl:grid-cols-[1.15fr,0.85fr]">
                                     <section className="nb-card-static p-0">
                                         <div className="border-b border-gray-200 px-6 py-5 lg:px-8">
-                                            <h2 className="text-lg font-extrabold text-gray-900">Thiết lập đợt công bố</h2>
+                                            <h2 className="text-lg font-bold text-gray-900">Thiết lập đợt công bố</h2>
                                         </div>
                                         <div className="space-y-5 px-6 py-6 lg:px-8">
                                             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                                                 <div>
-                                                    <label className="mb-2 block text-sm font-extrabold text-gray-700">Học kỳ</label>
+                                                    <label className="mb-2 block text-sm font-bold text-gray-700">Học kỳ</label>
                                                     <select
                                                         value={form.semester}
                                                         onChange={(event) => handleChange("semester", event.target.value)}
@@ -517,7 +539,7 @@ export const SemesterPublicationWorkspace = (): JSX.Element => {
                                                     </select>
                                                 </div>
                                                 <div>
-                                                    <label className="mb-2 block text-sm font-extrabold text-gray-700">Năm học</label>
+                                                    <label className="mb-2 block text-sm font-bold text-gray-700">Năm học</label>
                                                     <select
                                                         value={form.academicYear}
                                                         onChange={(event) => handleChange("academicYear", event.target.value)}
@@ -535,7 +557,7 @@ export const SemesterPublicationWorkspace = (): JSX.Element => {
 
                                             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                                                 <div>
-                                                    <label className="mb-2 block text-sm font-extrabold text-gray-700">Ngày bắt đầu</label>
+                                                    <label className="mb-2 block text-sm font-bold text-gray-700">Ngày bắt đầu</label>
                                                     <input
                                                         type="date"
                                                         value={form.startDate}
@@ -544,7 +566,7 @@ export const SemesterPublicationWorkspace = (): JSX.Element => {
                                                     />
                                                 </div>
                                                 <div>
-                                                    <label className="mb-2 block text-sm font-extrabold text-gray-700">Ngày kết thúc</label>
+                                                    <label className="mb-2 block text-sm font-bold text-gray-700">Ngày kết thúc</label>
                                                     <input
                                                         type="date"
                                                         value={form.endDate}
@@ -555,7 +577,7 @@ export const SemesterPublicationWorkspace = (): JSX.Element => {
                                             </div>
 
                                             <div>
-                                                <label className="mb-2 block text-sm font-extrabold text-gray-700">Mô tả</label>
+                                                <label className="mb-2 block text-sm font-bold text-gray-700">Mô tả</label>
                                                 <RichTextEditor
                                                     value={form.description}
                                                     onChange={(html) => handleChange("description", html)}
@@ -564,7 +586,7 @@ export const SemesterPublicationWorkspace = (): JSX.Element => {
                                             </div>
 
                                             <div>
-                                                <label className="mb-2 block text-sm font-extrabold text-gray-700">Quy tắc / ghi chú</label>
+                                                <label className="mb-2 block text-sm font-bold text-gray-700">Quy tắc / ghi chú</label>
                                                 <RichTextEditor
                                                     value={form.rules}
                                                     onChange={(html) => handleChange("rules", html)}
@@ -577,7 +599,7 @@ export const SemesterPublicationWorkspace = (): JSX.Element => {
                                     <aside className="space-y-6">
                                         <div className="nb-card-static p-0">
                                             <div className="border-b border-gray-200 px-6 py-5">
-                                                <h2 className="text-lg font-extrabold text-gray-900">Checklist sẵn sàng</h2>
+                                                <h2 className="text-lg font-bold text-gray-900">Checklist sẵn sàng</h2>
                                             </div>
                                             <div className="space-y-3 px-6 py-6">
                                                 {[
@@ -596,7 +618,7 @@ export const SemesterPublicationWorkspace = (): JSX.Element => {
                                                 ].map((item) => (
                                                     <div
                                                         key={item.label}
-                                                        className={`rounded-[18px] border px-4 py-4 shadow-soft-sm ${
+                                                        className={`rounded-[8px] border px-4 py-4 shadow-soft-sm ${
                                                             item.done ? "border-emerald-200 bg-emerald-50" : "border-gray-200 bg-white"
                                                         }`}
                                                     >
@@ -607,13 +629,13 @@ export const SemesterPublicationWorkspace = (): JSX.Element => {
                                                                 <ClipboardCheck className="mt-0.5 h-5 w-5 flex-shrink-0 text-amber-600" />
                                                             )}
                                                             <div>
-                                                                <p className="text-sm font-extrabold text-gray-900">{item.label}</p>
+                                                                <p className="text-sm font-bold text-gray-900">{item.label}</p>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 ))}
 
-                                                <div className={`rounded-[18px] border px-4 py-4 shadow-soft-sm ${publishReady ? "border-emerald-200 bg-emerald-50" : "border-amber-200 bg-amber-50"}`}>
+                                                <div className={`rounded-[8px] border px-4 py-4 shadow-soft-sm ${publishReady ? "border-emerald-200 bg-emerald-50" : "border-amber-200 bg-amber-50"}`}>
                                                     <div className="flex items-start gap-3">
                                                         {publishReady ? (
                                                             <ShieldCheck className="mt-0.5 h-5 w-5 flex-shrink-0 text-emerald-600" />
@@ -621,7 +643,7 @@ export const SemesterPublicationWorkspace = (): JSX.Element => {
                                                             <AlertTriangle className="mt-0.5 h-5 w-5 flex-shrink-0 text-amber-600" />
                                                         )}
                                                         <div>
-                                                            <p className="text-sm font-extrabold text-gray-900">
+                                                            <p className="text-sm font-bold text-gray-900">
                                                                 {publishReady ? "Bản nháp đã sẵn sàng để công khai" : "Chưa nên công khai ngay"}
                                                             </p>
                                                         </div>
@@ -638,10 +660,10 @@ export const SemesterPublicationWorkspace = (): JSX.Element => {
                                         <div className="border-b border-gray-200 px-6 py-5">
                                             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                                                 <div>
-                                                    <h2 className="text-lg font-extrabold text-gray-900">Đồng phục trong công bố</h2>
+                                                    <h2 className="text-lg font-bold text-gray-900">Đồng phục trong công bố</h2>
                                                 </div>
                                                 {publication && publication.status === "Draft" && (
-                                                    <button onClick={handleAddOutfits} className="nb-btn nb-btn-purple nb-btn-sm text-xs">
+                                                    <button onClick={handleAddOutfits} className={`${SCHOOL_THEME.primaryButton} h-9 px-3 text-xs`}>
                                                         <Plus className="h-4 w-4" />
                                                         Thêm vào công bố
                                                     </button>
@@ -662,18 +684,26 @@ export const SemesterPublicationWorkspace = (): JSX.Element => {
                                                             </div>
                                                         ) : (
                                                             selectedOutfits.map((outfit) => (
-                                                                <div key={outfit.id} className="rounded-[18px] border border-gray-200 bg-white p-4 shadow-soft-sm">
-                                                                    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                                                                        <div className="min-w-0 flex-1">
+                                                                <div key={outfit.id} className="rounded-[8px] border border-gray-200 bg-white p-4 shadow-soft-sm">
+                                                                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                                                                        <div className="flex min-w-0 flex-1 items-center gap-3">
+                                                                            <div className="h-12 w-12 flex-shrink-0 overflow-hidden rounded-[8px] border border-gray-200 bg-slate-50 shadow-soft-xs">
+                                                                                {outfit.mainImageURL ? (
+                                                                                    <img src={outfit.mainImageURL} alt={outfit.outfitName} className="h-full w-full object-cover" />
+                                                                                ) : (
+                                                                                    <div className={`flex h-full w-full items-center justify-center text-xs font-bold ${SCHOOL_THEME.primaryText}`}>
+                                                                                        SP
+                                                                                    </div>
+                                                                                )}
+                                                                            </div>
+                                                                            <div className="min-w-0">
                                                                             <div className="flex flex-wrap items-center gap-2">
-                                                                                <h3 className="text-sm font-black text-gray-900">{outfit.outfitName}</h3>
-                                                                                <span className="rounded-full border border-violet-200 bg-violet-50 px-2.5 py-1 text-[11px] font-extrabold text-violet-700">
+                                                                                <h3 className="text-sm font-bold text-gray-900">{outfit.outfitName}</h3>
+                                                                                <span className={`rounded-full border ${SCHOOL_THEME.primarySoftBorder} ${SCHOOL_THEME.primarySoftBg} px-2.5 py-1 text-[11px] font-bold ${SCHOOL_THEME.primaryText}`}>
                                                                                     {outfit.outfitType}
                                                                                 </span>
                                                                             </div>
-                                                                            {outfit.notes && (
-                                                                                <p className="mt-2 text-sm font-medium leading-6 text-[#5b6475]">{outfit.notes}</p>
-                                                                            )}
+                                                                            </div>
                                                                         </div>
                                                                         {publication.status === "Draft" && (
                                                                             <button onClick={() => handleRemoveOutfit(outfit.id)} className="nb-btn nb-btn-outline nb-btn-sm text-xs">
@@ -689,8 +719,8 @@ export const SemesterPublicationWorkspace = (): JSX.Element => {
 
                                                     {publication.status === "Draft" && (
                                                         <>
-                                                            <div className="rounded-[18px] border border-violet-200 bg-violet-50 p-4 shadow-soft-sm">
-                                                                <label className="mb-2 block text-sm font-extrabold text-gray-700">Ghi chú cho lô thêm mới</label>
+                                                            <div className={`rounded-[8px] border ${SCHOOL_THEME.primarySoftBorder} ${SCHOOL_THEME.primarySoftBg} p-4 shadow-soft-sm`}>
+                                                                <label className="mb-2 block text-sm font-bold text-gray-700">Ghi chú cho lô thêm mới</label>
                                                                 <textarea
                                                                     value={outfitNotes}
                                                                     onChange={(event) => setOutfitNotes(event.target.value)}
@@ -700,7 +730,7 @@ export const SemesterPublicationWorkspace = (): JSX.Element => {
                                                             </div>
 
                                                             <div>
-                                                                <h3 className="text-sm font-extrabold uppercase tracking-[0.16em] text-gray-500">Danh mục có thể thêm</h3>
+                                                                <h3 className="text-sm font-bold uppercase tracking-[0.16em] text-gray-500">Danh mục có thể thêm</h3>
                                                                 <div className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2">
                                                                     {availableOutfitSuggestions.length === 0 ? (
                                                                         <div className="rounded-[16px] border border-dashed border-gray-200 bg-white p-5 text-sm font-semibold text-gray-500 md:col-span-2">
@@ -714,9 +744,9 @@ export const SemesterPublicationWorkspace = (): JSX.Element => {
                                                                                     key={outfit.outfitID}
                                                                                     type="button"
                                                                                     onClick={() => handleToggleOutfit(outfit.outfitID)}
-                                                                                    className={`rounded-[18px] border p-4 text-left transition-colors ${
+                                                                                    className={`rounded-[8px] border p-4 text-left transition-colors ${
                                                                                         isSelected
-                                                                                            ? "border-violet-300 bg-violet-50 shadow-soft-sm"
+                                                                                            ? "border-blue-300 bg-blue-50 shadow-soft-sm"
                                                                                             : "border-gray-200 bg-white shadow-soft-sm hover:border-gray-300"
                                                                                     }`}
                                                                                 >
@@ -725,16 +755,16 @@ export const SemesterPublicationWorkspace = (): JSX.Element => {
                                                                                             {outfit.mainImageURL ? (
                                                                                                 <img src={outfit.mainImageURL} alt={outfit.outfitName} className="h-full w-full object-cover" />
                                                                                             ) : (
-                                                                                                <div className="flex h-full w-full items-center justify-center text-sm font-black text-violet-600">
+                                                                                                <div className={`flex h-full w-full items-center justify-center text-sm font-bold ${SCHOOL_THEME.primaryText}`}>
                                                                                                     SP
                                                                                                 </div>
                                                                                             )}
                                                                                         </div>
                                                                                         <div className="min-w-0 flex-1">
                                                                                             <div className="flex flex-wrap items-center gap-2">
-                                                                                                <h4 className="text-sm font-black text-gray-900">{outfit.outfitName}</h4>
+                                                                                                <h4 className="text-sm font-bold text-gray-900">{outfit.outfitName}</h4>
                                                                                                 {isSelected && (
-                                                                                                    <span className="rounded-full border border-violet-200 bg-white px-2 py-0.5 text-[10px] font-extrabold text-violet-700">
+                                                                                                    <span className={`rounded-full border ${SCHOOL_THEME.primarySoftBorder} bg-white px-2 py-0.5 text-[10px] font-bold ${SCHOOL_THEME.primaryText}`}>
                                                                                                         Đã chọn
                                                                                                     </span>
                                                                                                 )}
@@ -758,7 +788,7 @@ export const SemesterPublicationWorkspace = (): JSX.Element => {
 
                                     <section className="nb-card-static p-0">
                                         <div className="border-b border-gray-200 px-6 py-5">
-                                            <h2 className="text-lg font-extrabold text-gray-900">Nhà cung cấp tham gia</h2>
+                                            <h2 className="text-lg font-bold text-gray-900">Nhà cung cấp tham gia</h2>
                                         </div>
                                         <div className="space-y-5 px-6 py-6">
                                             {!publication ? (
@@ -768,7 +798,7 @@ export const SemesterPublicationWorkspace = (): JSX.Element => {
                                             ) : (
                                                 <>
                                                     <div>
-                                                        <h3 className="text-sm font-extrabold uppercase tracking-[0.16em] text-gray-500">Đang hoạt động / đã kích hoạt</h3>
+                                                        <h3 className="text-sm font-bold uppercase tracking-[0.16em] text-gray-500">Đang hoạt động / đã kích hoạt</h3>
                                                         <div className="mt-3 space-y-3">
                                                             {selectedProviders.length === 0 ? (
                                                                 <div className="rounded-[16px] border border-dashed border-gray-200 bg-white p-5 text-sm font-semibold text-gray-500">
@@ -778,18 +808,18 @@ export const SemesterPublicationWorkspace = (): JSX.Element => {
                                                                 selectedProviders.map((provider) => (
                                                                     <div
                                                                         key={provider.id}
-                                                                        className={`rounded-[18px] border p-4 shadow-soft-sm ${
+                                                                        className={`rounded-[8px] border p-4 shadow-soft-sm ${
                                                                             provider.status === "Active" ? "border-emerald-200 bg-emerald-50/60" : "border-gray-200 bg-white"
                                                                         }`}
                                                                     >
                                                                         <div className="flex items-start gap-3">
-                                                                            <div className="rounded-2xl bg-white p-3 text-violet-700 shadow-soft-sm">
+                                                                            <div className={`rounded-full bg-white p-3 ${SCHOOL_THEME.primaryText} shadow-soft-sm`}>
                                                                                 <Store className="h-5 w-5" />
                                                                             </div>
                                                                             <div className="min-w-0 flex-1">
                                                                                 <div className="flex flex-wrap items-center gap-2">
-                                                                                    <h3 className="text-sm font-black text-gray-900">{provider.providerName}</h3>
-                                                                                    <span className="rounded-full border border-gray-200 bg-white px-2.5 py-1 text-[11px] font-extrabold text-gray-700">
+                                                                                    <h3 className="text-sm font-bold text-gray-900">{provider.providerName}</h3>
+                                                                                    <span className="rounded-full border border-gray-200 bg-white px-2.5 py-1 text-[11px] font-bold text-gray-700">
                                                                                         {provider.status}
                                                                                     </span>
                                                                                 </div>
@@ -818,7 +848,7 @@ export const SemesterPublicationWorkspace = (): JSX.Element => {
                                                     </div>
 
                                                     <div>
-                                                        <h3 className="text-sm font-extrabold uppercase tracking-[0.16em] text-gray-500">Nhà cung cấp có thể kích hoạt</h3>
+                                                        <h3 className="text-sm font-bold uppercase tracking-[0.16em] text-gray-500">Nhà cung cấp có thể kích hoạt</h3>
                                                         <div className="mt-3 space-y-3">
                                                             {availableProviderSuggestions.length === 0 ? (
                                                                 <div className="rounded-[16px] border border-dashed border-gray-200 bg-white p-5 text-sm font-semibold text-gray-500">
@@ -826,15 +856,15 @@ export const SemesterPublicationWorkspace = (): JSX.Element => {
                                                                 </div>
                                                             ) : (
                                                                 availableProviderSuggestions.map((provider) => (
-                                                                    <div key={`${provider.providerID}-${provider.contractID}`} className="rounded-[18px] border border-gray-200 bg-white p-4 shadow-soft-sm">
+                                                                    <div key={`${provider.providerID}-${provider.contractID}`} className="rounded-[8px] border border-gray-200 bg-white p-4 shadow-soft-sm">
                                                                         <div className="flex items-start gap-3">
-                                                                            <div className="rounded-2xl bg-violet-50 p-3 text-violet-700">
+                                                                            <div className={`rounded-full ${SCHOOL_THEME.primarySoftBg} p-3 ${SCHOOL_THEME.primaryText}`}>
                                                                                 <Layers3 className="h-5 w-5" />
                                                                             </div>
                                                                             <div className="min-w-0 flex-1">
                                                                                 <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                                                                                     <div>
-                                                                                        <h3 className="text-sm font-black text-gray-900">{provider.providerName}</h3>
+                                                                                        <h3 className="text-sm font-bold text-gray-900">{provider.providerName}</h3>
                                                                                         <p className="mt-1 text-xs font-semibold text-[#6F6A7D]">
                                                                                             {provider.contractName} · {provider.contactEmail || "Chưa có email"}
                                                                                         </p>

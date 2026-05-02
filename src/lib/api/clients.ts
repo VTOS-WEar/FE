@@ -91,8 +91,12 @@ export async function api<T>(
     });
 
     if (!res.ok) {
+        const isAuthenticatedRequest = options.auth === true || headers.has("Authorization");
+
         // ── Auto-logout on 401 (token expired / invalid) ──
-        if (res.status === 401) {
+        // Public endpoints such as /api/Auth/login also return 401 for invalid
+        // credentials, so only treat 401 as an expired session for authenticated calls.
+        if (res.status === 401 && isAuthenticatedRequest) {
             localStorage.removeItem("access_token");
             localStorage.removeItem("user");
             localStorage.removeItem("expires_in");

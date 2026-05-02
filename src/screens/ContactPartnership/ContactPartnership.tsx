@@ -1,21 +1,48 @@
 import { useState } from "react";
-import { GuestLayout } from "../../components/layout/GuestLayout";
 import { Link } from "react-router-dom";
+import { AlertTriangle, Building2, CheckCircle2, Home, RefreshCcw, School, Send } from "lucide-react";
+import { GuestLayout } from "../../components/layout/GuestLayout";
 import { submitAccountRequest } from "../../lib/api/accountRequests";
 
+const initialContactForm = {
+    organizationName: "",
+    contactPersonName: "",
+    contactEmail: "",
+    contactPhone: "",
+    type: 1 as 1 | 2,
+    description: "",
+    address: "",
+};
+
+const successThemes = {
+    1: {
+        label: "Trường học",
+        primary: "#6938EF",
+        hover: "#5B21B6",
+        soft: "#F3F0FF",
+        border: "#DDD6FE",
+    },
+    2: {
+        label: "Nhà cung cấp",
+        primary: "#3B82F6",
+        hover: "#2563EB",
+        soft: "#EFF6FF",
+        border: "#BFDBFE",
+    },
+} as const;
+
 export const ContactPartnership = (): JSX.Element => {
-    const [form, setForm] = useState({
-        organizationName: "",
-        contactPersonName: "",
-        contactEmail: "",
-        contactPhone: "",
-        type: 1 as 1 | 2,
-        description: "",
-        address: "",
-    });
+    const [form, setForm] = useState(initialContactForm);
     const [loading, setLoading] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const [error, setError] = useState("");
+    const successTheme = successThemes[form.type];
+
+    const resetSubmission = () => {
+        setForm(initialContactForm);
+        setError("");
+        setSubmitted(false);
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -49,21 +76,50 @@ export const ContactPartnership = (): JSX.Element => {
         return (
             <GuestLayout bgColor="#f9fafb">
                 <main className="nb-page flex-1 px-4 py-10 lg:py-20 nb-fade-in">
-                    <div className="mx-auto w-full max-w-lg text-center">
-                        <div className="nb-card-static p-10 ring-2 ring-purple-300/35 shadow-soft-lg">
-                            <div className="text-6xl mb-5">✅</div>
-                            <h1 className="font-extrabold text-gray-900 text-2xl lg:text-3xl mb-3 tracking-tight">
-                                Yêu cầu đã được gửi! ✦
-                            </h1>
-                            <p className="font-medium text-gray-500 text-base mb-6">
-                                Cảm ơn bạn đã quan tâm đến VTOS. Đội ngũ chăm sóc sẽ liên hệ với bạn trong thời gian sớm nhất.
-                            </p>
-                            <Link
-                                to="/homepage"
-                                className="inline-flex h-11 items-center justify-center rounded-lg border border-gray-200 bg-gradient-to-r from-[#A78BFA] via-[#C4B5FD] to-[#7C3AED] px-5 text-sm font-extrabold text-gray-900 shadow-soft-md transition-all hover:-translate-y-px hover:shadow-soft-md"
-                            >
-                                ← Về trang chủ
-                            </Link>
+                    <div className="mx-auto w-full max-w-lg">
+                        <div className="overflow-hidden rounded-[8px] border border-gray-200 bg-white shadow-soft-lg">
+                            <div className="h-1.5" style={{ backgroundColor: successTheme.primary }} />
+                            <div className="px-6 py-8 text-center sm:px-10">
+                                <div
+                                    className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-[8px] border"
+                                    style={{
+                                        backgroundColor: successTheme.soft,
+                                        borderColor: successTheme.border,
+                                        color: successTheme.primary,
+                                    }}
+                                >
+                                    <CheckCircle2 className="h-8 w-8" strokeWidth={1.8} />
+                                </div>
+                                <p className="mb-2 text-xs font-semibold uppercase tracking-wide" style={{ color: successTheme.primary }}>
+                                    Yêu cầu {successTheme.label.toLowerCase()}
+                                </p>
+                                <h1 className="mb-3 text-2xl font-semibold tracking-tight text-gray-900 lg:text-3xl">
+                                    Yêu cầu đã được gửi
+                                </h1>
+                                <p className="mx-auto mb-6 max-w-md text-sm leading-6 text-gray-500">
+                                    Cảm ơn bạn đã quan tâm đến VTOS. Đội ngũ phụ trách sẽ xem xét thông tin và liên hệ lại trong thời gian sớm nhất.
+                                </p>
+                                <div className="flex flex-col justify-center gap-3 sm:flex-row">
+                                    <Link
+                                        to="/homepage"
+                                        className="inline-flex h-11 items-center justify-center gap-2 rounded-[8px] px-5 text-sm font-semibold text-white shadow-soft-sm transition-colors"
+                                        style={{ backgroundColor: successTheme.primary }}
+                                        onMouseEnter={(event) => { event.currentTarget.style.backgroundColor = successTheme.hover; }}
+                                        onMouseLeave={(event) => { event.currentTarget.style.backgroundColor = successTheme.primary; }}
+                                    >
+                                        <Home className="h-4 w-4" />
+                                        Về trang chủ
+                                    </Link>
+                                    <button
+                                        type="button"
+                                        onClick={resetSubmission}
+                                        className="inline-flex h-11 items-center justify-center gap-2 rounded-[8px] border border-gray-200 bg-white px-5 text-sm font-semibold text-gray-700 shadow-soft-sm transition-colors hover:bg-gray-50"
+                                    >
+                                        <RefreshCcw className="h-4 w-4" />
+                                        Gửi yêu cầu khác
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </main>
@@ -71,66 +127,57 @@ export const ContactPartnership = (): JSX.Element => {
         );
     }
 
-    const inputClass = "nb-input w-full h-11 text-sm border border-gray-200 bg-white shadow-soft-sm transition-all hover:-translate-y-px hover:border-purple-500 hover:shadow-soft-md hover:bg-violet-50 focus:border-purple-500 focus:bg-violet-50 focus:shadow-sm focus:ring-2 focus:ring-purple-300/55 focus:ring-offset-0";
+    const inputClass = "nb-input w-full h-11 text-sm border border-gray-200 bg-white shadow-soft-sm transition-all hover:border-purple-500 hover:bg-violet-50 focus:border-purple-500 focus:bg-violet-50 focus:shadow-sm focus:ring-2 focus:ring-purple-300/55 focus:ring-offset-0";
 
     return (
         <GuestLayout bgColor="#f9fafb">
             <main className="nb-page flex-1 px-4 py-10 lg:py-20 nb-fade-in">
                 <div className="mx-auto w-full max-w-3xl">
-                    <div className="text-center mb-8">
-                        <h1 className="font-extrabold text-gray-900 text-3xl lg:text-4xl mb-2 tracking-tight leading-tight">
-                            Liên hệ hợp tác <span className="text-[#7C3AED]">✦</span>
+                    <div className="mb-8 text-center">
+                        <h1 className="mb-2 text-3xl font-semibold leading-tight tracking-tight text-gray-900 lg:text-4xl">
+                            Liên hệ hợp tác
                         </h1>
-                        <div className="mx-auto mb-3 h-1 w-28 rounded-full bg-gradient-to-r from-[#EDE9FE] via-[#B8A9E8] to-[#EDE9FE]" />
-                        <p className="font-bold text-gray-500 text-base lg:text-lg">
+                        <p className="text-base font-medium text-gray-500 lg:text-lg">
                             Bạn là trường học hoặc nhà cung cấp? Điền form bên dưới, chúng tôi sẽ liên hệ lại.
                         </p>
                     </div>
 
                     <form
                         onSubmit={handleSubmit}
-                        className="nb-card-static p-6 lg:p-8 space-y-5 ring-2 ring-purple-300/35 shadow-soft-lg"
+                        className="space-y-5 rounded-[8px] border border-gray-200 bg-white p-6 shadow-soft-lg lg:p-8"
                     >
-                        {/* Type selector */}
                         <div>
-                            <label className="block text-sm font-bold text-gray-900 mb-2">
+                            <label className="mb-2 block text-sm font-semibold text-gray-900">
                                 Bạn là?
                             </label>
                             <div className="grid grid-cols-2 gap-3">
                                 <button
                                     type="button"
                                     onClick={() => setForm(f => ({ ...f, type: 1 }))}
-                                    className={`nb-card p-4 min-h-[116px] text-center flex flex-col items-center justify-center transition-all duration-200 hover:-translate-y-px hover:shadow-soft-md ${
-                                        form.type === 1
-                                            ? "bg-gradient-to-b from-[#EFF7FF] to-[#E1EEFF] !border-sky-300 !shadow-soft-md ring-2 ring-[#A8D4E6]/45"
-                                            : ""
-                                    }`}
+                                    className="flex min-h-[112px] flex-col items-center justify-center rounded-[8px] border bg-white p-4 text-center shadow-soft-sm transition-colors hover:bg-gray-50"
+                                    style={form.type === 1 ? { borderColor: successThemes[1].primary, backgroundColor: successThemes[1].soft } : { borderColor: "#E5E7EB" }}
                                 >
-                                    <div className="text-3xl mb-1">🏫</div>
-                                    <div className="font-bold text-sm text-gray-900">
+                                    <School className="mb-2 h-7 w-7" strokeWidth={1.8} style={{ color: form.type === 1 ? successThemes[1].primary : "#6B7280" }} />
+                                    <div className="text-sm font-semibold text-gray-900">
                                         Trường học
                                     </div>
                                 </button>
                                 <button
                                     type="button"
                                     onClick={() => setForm(f => ({ ...f, type: 2 }))}
-                                    className={`nb-card p-4 min-h-[116px] text-center flex flex-col items-center justify-center transition-all duration-200 hover:-translate-y-px hover:shadow-soft-md ${
-                                        form.type === 2
-                                            ? "bg-gradient-to-b from-[#FFF8EB] to-[#FFEFD8] !border-amber-300 !shadow-soft-md ring-2 ring-[#FFD08C]/45"
-                                            : ""
-                                    }`}
+                                    className="flex min-h-[112px] flex-col items-center justify-center rounded-[8px] border bg-white p-4 text-center shadow-soft-sm transition-colors hover:bg-gray-50"
+                                    style={form.type === 2 ? { borderColor: successThemes[2].primary, backgroundColor: successThemes[2].soft } : { borderColor: "#E5E7EB" }}
                                 >
-                                    <div className="text-3xl mb-1">🏭</div>
-                                    <div className="font-bold text-sm text-gray-900">
+                                    <Building2 className="mb-2 h-7 w-7" strokeWidth={1.8} style={{ color: form.type === 2 ? successThemes[2].primary : "#6B7280" }} />
+                                    <div className="text-sm font-semibold text-gray-900">
                                         Nhà cung cấp
                                     </div>
                                 </button>
                             </div>
                         </div>
 
-                        {/* Organization name */}
                         <div>
-                            <label className="block text-sm font-bold text-gray-900 mb-1">
+                            <label className="mb-1 block text-sm font-semibold text-gray-900">
                                 Tên tổ chức <span className="text-red-800">*</span>
                             </label>
                             <input
@@ -142,9 +189,8 @@ export const ContactPartnership = (): JSX.Element => {
                             />
                         </div>
 
-                        {/* Contact person name */}
                         <div>
-                            <label className="block text-sm font-bold text-gray-900 mb-1">
+                            <label className="mb-1 block text-sm font-semibold text-gray-900">
                                 Họ tên người liên hệ <span className="text-red-800">*</span>
                             </label>
                             <input
@@ -156,9 +202,8 @@ export const ContactPartnership = (): JSX.Element => {
                             />
                         </div>
 
-                        {/* Email */}
                         <div>
-                            <label className="block text-sm font-bold text-gray-900 mb-1">
+                            <label className="mb-1 block text-sm font-semibold text-gray-900">
                                 Email liên hệ <span className="text-red-800">*</span>
                             </label>
                             <input
@@ -170,9 +215,8 @@ export const ContactPartnership = (): JSX.Element => {
                             />
                         </div>
 
-                        {/* Phone */}
                         <div>
-                            <label className="block text-sm font-bold text-gray-900 mb-1">
+                            <label className="mb-1 block text-sm font-semibold text-gray-900">
                                 Số điện thoại <span className="text-red-800">*</span>
                             </label>
                             <input
@@ -184,9 +228,8 @@ export const ContactPartnership = (): JSX.Element => {
                             />
                         </div>
 
-                        {/* Address */}
                         <div>
-                            <label className="block text-sm font-bold text-gray-900 mb-1">
+                            <label className="mb-1 block text-sm font-semibold text-gray-900">
                                 Địa chỉ
                             </label>
                             <input
@@ -198,9 +241,8 @@ export const ContactPartnership = (): JSX.Element => {
                             />
                         </div>
 
-                        {/* Description */}
                         <div>
-                            <label className="block text-sm font-bold text-gray-900 mb-1">
+                            <label className="mb-1 block text-sm font-semibold text-gray-900">
                                 Mô tả thêm
                             </label>
                             <textarea
@@ -208,13 +250,13 @@ export const ContactPartnership = (): JSX.Element => {
                                 onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
                                 placeholder="Thông tin thêm về trường/công ty của bạn..."
                                 rows={3}
-                                className="nb-input w-full text-sm resize-none border border-gray-200 bg-white shadow-soft-sm transition-all hover:-translate-y-px hover:border-purple-500 hover:shadow-soft-md hover:bg-violet-50 focus:border-purple-500 focus:bg-violet-50 focus:shadow-sm focus:ring-2 focus:ring-purple-300/55 focus:ring-offset-0"
+                                className="nb-input w-full resize-none border border-gray-200 bg-white text-sm shadow-soft-sm transition-all hover:border-purple-500 hover:bg-violet-50 focus:border-purple-500 focus:bg-violet-50 focus:shadow-sm focus:ring-2 focus:ring-purple-300/55 focus:ring-offset-0"
                             />
                         </div>
 
                         {error && (
-                            <div className="nb-alert nb-alert-error text-sm">
-                                <span>⚠</span>
+                            <div className="flex items-start gap-2 rounded-[8px] border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+                                <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0" />
                                 <span className="font-medium">{error}</span>
                             </div>
                         )}
@@ -222,18 +264,18 @@ export const ContactPartnership = (): JSX.Element => {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="group relative w-full h-12 inline-flex items-center justify-center rounded-lg border border-gray-200 bg-gradient-to-r from-[#A78BFA] via-[#C4B5FD] to-[#7C3AED] text-base font-extrabold text-gray-900 shadow-soft-md transition-all hover:-translate-y-px hover:shadow-soft-md hover:brightness-[1.06] active:translate-y-px active:shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-[8px] border border-purple-700 bg-[#6938EF] text-base font-semibold text-white shadow-soft-md transition-colors hover:bg-[#5B21B6] disabled:cursor-not-allowed disabled:opacity-50"
                         >
-                            <span className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_18%,rgba(255,255,255,0.6),transparent_45%)] opacity-80 transition-opacity group-hover:opacity-100" />
-                            {loading ? "Đang gửi..." : "Gửi yêu cầu liên hệ ✦"}
+                            <Send className="h-4 w-4" />
+                            {loading ? "Đang gửi..." : "Gửi yêu cầu liên hệ"}
                         </button>
                     </form>
 
-                    <p className="text-center mt-6 font-medium text-sm">
+                    <p className="mt-6 text-center text-sm font-medium">
                         <span className="text-gray-600">Bạn là phụ huynh? </span>
                         <Link
                             to="/signup/parent"
-                            className="font-bold text-gray-900 hover:text-purple-500 border-b-2 border-purple-300 transition-colors"
+                            className="font-semibold text-gray-900 transition-colors hover:text-purple-500"
                         >
                             Đăng ký tài khoản
                         </Link>

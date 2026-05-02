@@ -16,7 +16,7 @@ export const ImportDataSection = (): JSX.Element => {
                         <AlertTitle className="font-bold text-black text-lg sm:text-2xl m-0">
                             Cần cập nhật: Dữ liệu Học kỳ 1 (2026-2027)
                         </AlertTitle>
-                        <Badge className="bg-[#f9e3e2] border-[#f6cccb] text-[#ac3129] font-extrabold text-xs sm:text-sm hover:bg-[#f9e3e2] h-auto px-2.5 py-[5px] w-fit">
+                        <Badge className="bg-[#f9e3e2] border-[#f6cccb] text-[#ac3129] font-bold text-xs sm:text-sm hover:bg-[#f9e3e2] h-auto px-2.5 py-[5px] w-fit">
                             CHƯA NHẬP LIỆU
                         </Badge>
                     </div>
@@ -26,7 +26,7 @@ export const ImportDataSection = (): JSX.Element => {
                             Hệ thống chưa ghi nhận danh sách học sinh cho học kỳ mới. Nhà
                             trường vui lòng cập nhập sớm để đảm bảo học sinh có thể truy cập{" "}
                         </span>
-                        <span className="font-extrabold">Phòng thử ảo</span>
+                        <span className="font-bold">Phòng thử ảo</span>
                         <span className="font-medium">
                             {" "}
                             và đặt mua đồng phục đúng hạn. Việc chậm trễ có thể ảnh hướng đến

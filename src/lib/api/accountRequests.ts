@@ -55,12 +55,14 @@ export async function getAccountRequests(params?: {
     pageSize?: number;
     status?: number;
     type?: number;
+    search?: string;
 }): Promise<AccountRequestListResponse> {
     const query = new URLSearchParams();
     if (params?.page) query.set("page", String(params.page));
     if (params?.pageSize) query.set("pageSize", String(params.pageSize));
     if (params?.status) query.set("status", String(params.status));
     if (params?.type) query.set("type", String(params.type));
+    if (params?.search) query.set("search", params.search);
     return api<AccountRequestListResponse>(`/api/admin/account-requests?${query}`, {
         method: "GET",
         auth: true,

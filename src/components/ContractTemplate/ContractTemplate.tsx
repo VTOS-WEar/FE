@@ -233,6 +233,7 @@ export function ContractTemplate({
     // ── Sign button logic — School can sign at Pending or PendingSchoolSign ──
     const canSchoolSign = viewerRole === "school" && (contract.status === "Pending" || contract.status === "PendingSchoolSign") && !localSchoolSig;
     const canProviderSign = viewerRole === "provider" && contract.status === "PendingProviderSign" && !localProviderSig;
+    const providerPrimaryButton = "nb-btn nb-btn-provider";
 
     return (
         <>
@@ -275,7 +276,7 @@ export function ContractTemplate({
                             <button
                                 onClick={() => setShowProviderOTP(true)}
                                 disabled={signing}
-                                className="nb-btn nb-btn-purple nb-btn-sm text-xs disabled:opacity-50"
+                                className={`${providerPrimaryButton} nb-btn-sm text-xs disabled:opacity-50`}
                             >
                                 {signing ? "⏳ Đang xử lý..." : "✍️ Ký"}
                             </button>
@@ -692,6 +693,7 @@ export function ContractTemplate({
                     onRequestOTP={onRequestProviderOTP}
                     onVerified={(code) => { setPendingProviderOTP(code); setShowProviderOTP(false); setShowProviderPad(true); }}
                     onCancel={() => setShowProviderOTP(false)}
+                    accent="provider"
                 />
             )}
 
@@ -708,6 +710,7 @@ export function ContractTemplate({
                     title="Ký tên — Đại diện Bên B (Nhà cung cấp)"
                     onSave={handleProviderSign}
                     onCancel={() => setShowProviderPad(false)}
+                    accent="provider"
                 />
             )}
         </>

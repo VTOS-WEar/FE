@@ -99,6 +99,7 @@ const DATE_SORT_OPTIONS = [
 ];
 
 const MIN_PAGE_FETCH_FEEDBACK_MS = 700;
+const MIN_FILTER_COMMIT_MS = 450;
 
 function formatCurrency(value: number) {
     return `${value.toLocaleString("vi-VN")} ₫`;
@@ -171,16 +172,19 @@ export function ProviderOrders(): JSX.Element {
     const [stats, setStats] = useState<ProviderOrderStatsDto | null>(null);
     const [status, setStatus] = useState("");
     const [searchTerm, setSearchTerm] = useState("");
+    const [searchInput, setSearchInput] = useState("");
     const [dateRange, setDateRange] = useState("all");
     const [page, setPage] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
     const [loading, setLoading] = useState(true);
     const [fetchingOrders, setFetchingOrders] = useState(false);
+    const [filtering, setFiltering] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [confirmAction, setConfirmAction] = useState<{ title: string; message: string; onConfirm: () => void } | null>(null);
     const hasLoadedOrdersRef = useRef(false);
     const fetchStartedAtRef = useRef(0);
     const fetchSequenceRef = useRef(0);
+    const filterTimerRef = useRef<ReturnType<typeof window.setTimeout> | null>(null);
     const { showToast } = useToast();
     const navigate = useNavigate();
 
@@ -244,6 +248,14 @@ export function ProviderOrders(): JSX.Element {
     useEffect(() => {
         fetchData();
     }, [fetchData]);
+
+    useEffect(() => {
+        return () => {
+            if (filterTimerRef.current) {
+                window.clearTimeout(filterTimerRef.current);
+            }
+        };
+    }, []);
 
     const doAction = async (fn: () => Promise<void>) => {
         setSubmitting(true);
@@ -402,6 +414,23 @@ export function ProviderOrders(): JSX.Element {
     const paymentStatus = PAYMENT_STATUS_OPTIONS.some((item) => item.value === status) ? status : "";
     const receivedStatus = RECEIVED_STATUS_OPTIONS.some((item) => item.value === status) ? status : "";
 
+    const scheduleSearchCommit = useCallback(
+        (nextSearch: string) => {
+            preserveResultsHeight();
+            setFiltering(true);
+            if (filterTimerRef.current) {
+                window.clearTimeout(filterTimerRef.current);
+            }
+            filterTimerRef.current = window.setTimeout(() => {
+                setSearchTerm(nextSearch);
+                setPage(1);
+                setFiltering(false);
+                filterTimerRef.current = null;
+            }, MIN_FILTER_COMMIT_MS);
+        },
+        [preserveResultsHeight],
+    );
+
     const handleStatusChange = (nextStatus: string) => {
         preserveResultsHeight();
         setStatus(nextStatus);
@@ -479,7 +508,7 @@ export function ProviderOrders(): JSX.Element {
                                     event.stopPropagation();
                                     action.onClick();
                                 }}
-                                className="rounded-[8px] bg-violet-50 px-3 py-2 text-xs font-bold text-violet-700 transition-colors hover:bg-violet-100"
+                                className="rounded-[8px] bg-blue-50 px-3 py-2 text-xs font-bold text-blue-700 transition-colors hover:bg-blue-100"
                             >
                                 {action.label}
                             </button>
@@ -490,7 +519,7 @@ export function ProviderOrders(): JSX.Element {
                                 event.stopPropagation();
                                 navigate(`/provider/orders/${order.orderId}`);
                             }}
-                            className="inline-flex h-9 w-9 items-center justify-center rounded-[8px] border border-slate-200 bg-white text-slate-700 transition-colors hover:border-violet-200 hover:text-violet-700"
+                                className="inline-flex h-9 w-9 items-center justify-center rounded-[8px] border border-slate-200 bg-white text-slate-700 transition-colors hover:border-blue-200 hover:text-blue-700"
                             aria-label="Xem chi tiết đơn hàng"
                         >
                             <Eye className="h-4 w-4" />
@@ -511,7 +540,7 @@ export function ProviderOrders(): JSX.Element {
                 <div className="flex-1 min-w-0">
                     <TopNavBar>
                         <div className="flex items-center gap-3 px-2 py-2">
-                            <div className="hidden h-10 w-10 items-center justify-center rounded-2xl bg-violet-600 text-white shadow-soft-sm sm:flex">
+                            <div className="hidden h-10 w-10 items-center justify-center rounded-2xl bg-[#3B82F6] text-white shadow-soft-sm sm:flex">
                                 <ShoppingBag className="h-5 w-5" />
                             </div>
                             <div>
@@ -617,10 +646,11 @@ export function ProviderOrders(): JSX.Element {
                             <label className="relative block w-full lg:max-w-[300px]">
                                 <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
                                 <input
-                                    value={searchTerm}
+                                    value={searchInput}
                                     onChange={(event) => {
-                                        setSearchTerm(event.target.value);
-                                        setPage(1);
+                                        const nextSearch = event.target.value;
+                                        setSearchInput(nextSearch);
+                                        scheduleSearchCommit(nextSearch);
                                     }}
                                     placeholder="Search..."
                                     className="h-10 w-full rounded-full border border-slate-200 bg-white pl-11 pr-4 text-sm font-medium text-slate-800 outline-none shadow-soft-xs transition-colors placeholder:text-slate-500 focus:border-violet-200 focus:ring-4 focus:ring-violet-50"
@@ -669,6 +699,13 @@ export function ProviderOrders(): JSX.Element {
                                     </select>
                                     <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-900" />
                                 </label>
+
+                                {fetchingOrders || filtering ? (
+                                    <div className="inline-flex h-10 items-center gap-2 rounded-full border border-blue-100 bg-white px-3 text-xs font-bold text-blue-700 shadow-soft-sm">
+                                        <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-blue-100 border-t-[#3B82F6]" />
+                                        Đang tải
+                                    </div>
+                                ) : null}
                             </div>
                         </section>
 
@@ -719,7 +756,7 @@ export function ProviderOrders(): JSX.Element {
                         <div ref={resultsRegionRef} style={preservedHeightStyle} className="relative">
                         {loading ? (
                             <div className="flex min-h-[320px] flex-col items-center justify-center gap-4 rounded-[32px] border border-gray-200 bg-white shadow-soft-sm">
-                                <Loader2 className="h-10 w-10 animate-spin text-violet-600" />
+                                <Loader2 className="h-10 w-10 animate-spin text-[#3B82F6]" />
                                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">Đang đồng bộ dữ liệu đơn hàng...</p>
                             </div>
                         ) : displayedOrders.length === 0 ? (
@@ -737,13 +774,6 @@ export function ProviderOrders(): JSX.Element {
                                 onRowClick={(order) => navigate(`/provider/orders/${order.orderId}`)}
                             />
                         )}
-
-                        {fetchingOrders ? (
-                            <div className="absolute right-4 top-4 inline-flex items-center gap-2 rounded-full border border-violet-100 bg-white/90 px-3 py-1.5 text-xs font-bold text-violet-700 shadow-soft-sm backdrop-blur">
-                                <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                                Đang tải
-                            </div>
-                        ) : null}
 
                         {totalPages > 1 ? (
                             <div className="flex items-center justify-center gap-3">
@@ -779,7 +809,7 @@ export function ProviderOrders(): JSX.Element {
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
                     <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setConfirmAction(null)} />
                     <div className="relative w-full max-w-[400px] overflow-hidden rounded-[24px] border border-gray-200 bg-white shadow-soft-xl animate-in fade-in zoom-in duration-200">
-                        <div className="border-b border-violet-100 bg-violet-50 px-6 py-4">
+                        <div className="border-b border-blue-100 bg-blue-50 px-6 py-4">
                             <h3 className="text-lg font-bold text-gray-900">{confirmAction.title}</h3>
                         </div>
                         <div className="px-6 py-6">
@@ -794,7 +824,7 @@ export function ProviderOrders(): JSX.Element {
                                 <button
                                     onClick={confirmAction.onConfirm}
                                     disabled={submitting}
-                                    className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-violet-600 py-3 text-[13px] font-bold text-white shadow-soft-sm transition-all hover:bg-violet-700 disabled:opacity-50"
+                                    className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-[#3B82F6] py-3 text-[13px] font-bold text-white shadow-soft-sm transition-all hover:bg-[#2563EB] disabled:opacity-50"
                                 >
                                     {submitting ? <Loader2 className="h-4 w-4 animate-spin text-white" /> : null}
                                     Xác nhận

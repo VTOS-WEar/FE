@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
+import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "../../components/ui/breadcrumb";
+import { CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, ClipboardList, Clock3, FileText, Inbox, Search } from "lucide-react";
 import { DashboardSidebar } from "../../components/layout";
 import { TopNavBar } from "../../components/layout/TopNavBar";
+import { SCHOOL_THEME } from "../../constants/schoolTheme";
 import { usePreservedResultsHeight } from "../../hooks/usePreservedResultsHeight";
 import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
 import { useSidebarConfig } from "../../hooks/useSidebarConfig";
@@ -12,6 +13,10 @@ import {
     reviewTeacherReport,
     type TeacherReportListItemDto,
 } from "../../lib/api/teachers";
+
+const MIN_FILTER_FETCH_FEEDBACK_MS = 700;
+const MIN_FILTER_COMMIT_MS = 450;
+const REPORTS_PAGE_SIZE = 5;
 
 function formatReportType(reportType: string) {
     switch (reportType) {
@@ -30,23 +35,57 @@ function formatStatus(status: string) {
     return status === "Reviewed" ? "Đã xem" : "Đang chờ xem";
 }
 
+function SummaryCard({
+    label,
+    value,
+    icon,
+    surfaceClassName,
+}: {
+    label: string;
+    value: number | string;
+    icon: ReactNode;
+    surfaceClassName: string;
+}) {
+    return (
+        <div className={`min-h-[112px] rounded-[8px] border p-5 shadow-soft-sm ${surfaceClassName}`}>
+            <div className="flex h-full items-center gap-4">
+                <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-white text-slate-900 shadow-soft-xs">
+                    {icon}
+                </div>
+                <div className="min-w-0">
+                    <p className="text-sm font-semibold text-slate-700">{label}</p>
+                    <p className="mt-2 text-2xl font-bold leading-tight text-slate-950">{value}</p>
+                </div>
+            </div>
+        </div>
+    );
+}
+
 export const SchoolTeacherReports = (): JSX.Element => {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const sidebarConfig = useSidebarConfig();
     const [isCollapsed, toggle] = useSidebarCollapsed();
     const [reports, setReports] = useState<TeacherReportListItemDto[]>([]);
+    const [summaryReports, setSummaryReports] = useState<TeacherReportListItemDto[]>([]);
     const [classOptions, setClassOptions] = useState<{ id: string; className: string }[]>([]);
     const [loading, setLoading] = useState(true);
+    const [summaryLoading, setSummaryLoading] = useState(true);
+    const [fetchingReports, setFetchingReports] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [status, setStatus] = useState(searchParams.get("status") || "");
     const [classGroupId, setClassGroupId] = useState(searchParams.get("classGroupId") || "");
+    const [searchTerm, setSearchTerm] = useState("");
+    const [searchInput, setSearchInput] = useState("");
+    const [page, setPage] = useState(1);
+    const [filtering, setFiltering] = useState(false);
     const [selectedReport, setSelectedReport] = useState<TeacherReportListItemDto | null>(null);
     const [reviewNote, setReviewNote] = useState("");
     const [submitting, setSubmitting] = useState(false);
-    const hasActiveFilters = !!(status || classGroupId);
-    const isFilteredEmptyState = !loading && !error && hasActiveFilters && reports.length === 0;
-    const { preserveResultsHeight, preservedHeightStyle, resultsRegionRef } = usePreservedResultsHeight(isFilteredEmptyState);
+    const hasLoadedReportsRef = useRef(false);
+    const fetchStartedAtRef = useRef(0);
+    const fetchSequenceRef = useRef(0);
+    const filterTimerRef = useRef<ReturnType<typeof window.setTimeout> | null>(null);
 
     useEffect(() => {
         getSchoolClassesOverview()
@@ -55,21 +94,63 @@ export const SchoolTeacherReports = (): JSX.Element => {
     }, []);
 
     useEffect(() => {
-        setLoading(true);
+        return () => {
+            if (filterTimerRef.current) {
+                window.clearTimeout(filterTimerRef.current);
+            }
+        };
+    }, []);
+
+    useEffect(() => {
+        setSummaryLoading(true);
+        getSchoolTeacherReports()
+            .then((response) => setSummaryReports(response.items))
+            .catch(() => undefined)
+            .finally(() => setSummaryLoading(false));
+    }, []);
+
+    useEffect(() => {
+        const fetchSequence = fetchSequenceRef.current + 1;
+        const isInitialLoad = !hasLoadedReportsRef.current;
+        fetchSequenceRef.current = fetchSequence;
+        fetchStartedAtRef.current = Date.now();
+        setLoading(isInitialLoad);
+        setFetchingReports(!isInitialLoad);
         setError(null);
         getSchoolTeacherReports({
             classGroupId: classGroupId || undefined,
             status: status || undefined,
         })
             .then((response) => {
+                if (fetchSequence !== fetchSequenceRef.current) return;
                 setReports(response.items);
                 setSelectedReport((current) => {
                     if (!current) return null;
                     return response.items.find((item) => item.id === current.id) ?? null;
                 });
             })
-            .catch((err: unknown) => setError(err instanceof Error ? err.message : "Không thể tải báo cáo giáo viên"))
-            .finally(() => setLoading(false));
+            .catch((err: unknown) => {
+                if (fetchSequence !== fetchSequenceRef.current) return;
+                setError(err instanceof Error ? err.message : "Không thể tải báo cáo giáo viên");
+            })
+            .finally(() => {
+                if (fetchSequence !== fetchSequenceRef.current) return;
+
+                const finish = () => {
+                    if (fetchSequence !== fetchSequenceRef.current) return;
+                    hasLoadedReportsRef.current = true;
+                    setLoading(false);
+                    setFetchingReports(false);
+                };
+
+                const elapsed = Date.now() - fetchStartedAtRef.current;
+                if (!isInitialLoad && elapsed < MIN_FILTER_FETCH_FEEDBACK_MS) {
+                    window.setTimeout(finish, MIN_FILTER_FETCH_FEEDBACK_MS - elapsed);
+                    return;
+                }
+
+                finish();
+            });
     }, [classGroupId, status]);
 
     useEffect(() => {
@@ -81,8 +162,56 @@ export const SchoolTeacherReports = (): JSX.Element => {
         setReviewNote(selectedReport.reviewNote || "");
     }, [selectedReport]);
 
-    const pendingCount = useMemo(() => reports.filter((item) => item.status !== "Reviewed").length, [reports]);
-    const reviewedCount = reports.length - pendingCount;
+    const pendingCount = useMemo(() => summaryReports.filter((item) => item.status !== "Reviewed").length, [summaryReports]);
+    const reviewedCount = summaryReports.length - pendingCount;
+    const displayedReports = useMemo(() => {
+        const query = searchTerm.trim().toLowerCase();
+        if (!query) return reports;
+
+        return reports.filter((report) => {
+            const searchable = [
+                report.title,
+                report.content,
+                report.className,
+                formatReportType(report.reportType),
+                formatStatus(report.status),
+            ].join(" ").toLowerCase();
+
+            return searchable.includes(query);
+        });
+    }, [reports, searchTerm]);
+    const totalPages = Math.max(1, Math.ceil(displayedReports.length / REPORTS_PAGE_SIZE));
+    const currentPage = Math.min(page, totalPages);
+    const paginatedReports = useMemo(
+        () => displayedReports.slice((currentPage - 1) * REPORTS_PAGE_SIZE, currentPage * REPORTS_PAGE_SIZE),
+        [currentPage, displayedReports],
+    );
+    const firstReportIndex = displayedReports.length === 0 ? 0 : (currentPage - 1) * REPORTS_PAGE_SIZE + 1;
+    const lastReportIndex = Math.min(currentPage * REPORTS_PAGE_SIZE, displayedReports.length);
+    const hasActiveFilters = !!(status || classGroupId || searchTerm.trim());
+    const isFilteredEmptyState = !loading && !error && hasActiveFilters && displayedReports.length === 0;
+    const { preserveResultsHeight, preservedHeightStyle, resultsRegionRef } = usePreservedResultsHeight(isFilteredEmptyState);
+
+    useEffect(() => {
+        setPage((current) => Math.min(current, totalPages));
+    }, [totalPages]);
+
+    const scheduleSearchCommit = useCallback(
+        (nextSearch: string) => {
+            preserveResultsHeight();
+            setFiltering(true);
+            if (filterTimerRef.current) {
+                window.clearTimeout(filterTimerRef.current);
+            }
+            filterTimerRef.current = window.setTimeout(() => {
+                setPage(1);
+                setSearchTerm(nextSearch);
+                setFiltering(false);
+                filterTimerRef.current = null;
+            }, MIN_FILTER_COMMIT_MS);
+        },
+        [preserveResultsHeight],
+    );
 
     const handleReviewSubmit = async () => {
         if (!selectedReport || selectedReport.status === "Reviewed") {
@@ -96,6 +225,7 @@ export const SchoolTeacherReports = (): JSX.Element => {
             });
 
             setReports((current) => current.map((item) => (item.id === updated.id ? updated : item)));
+            setSummaryReports((current) => current.map((item) => (item.id === updated.id ? updated : item)));
             setSelectedReport(updated);
         } catch (err: unknown) {
             alert(err instanceof Error ? err.message : "Không thể lưu phản hồi");
@@ -112,104 +242,132 @@ export const SchoolTeacherReports = (): JSX.Element => {
                 </div>
                 <div className="flex min-w-0 flex-1 flex-col">
                     <TopNavBar>
-                        <Breadcrumb>
-                            <BreadcrumbList>
-                                <BreadcrumbItem><BreadcrumbLink href="/school/dashboard" className="font-semibold text-[#4c5769] text-base">Trang chủ</BreadcrumbLink></BreadcrumbItem>
-                                <BreadcrumbSeparator className="text-[#cbcad7]">/</BreadcrumbSeparator>
-                                <BreadcrumbItem><BreadcrumbPage className="font-bold text-gray-900 text-base">Báo cáo giáo viên</BreadcrumbPage></BreadcrumbItem>
-                            </BreadcrumbList>
-                        </Breadcrumb>
+                        <div className="flex items-center gap-2 px-2 py-2">
+                            <ClipboardList className={`h-5 w-5 ${SCHOOL_THEME.primaryText}`} />
+                            <h1 className="text-xl font-bold text-gray-900">Báo cáo giáo viên</h1>
+                        </div>
                     </TopNavBar>
 
-                    <main className="flex-1 px-4 py-6 sm:px-6 lg:px-10 lg:py-8">
-                        <section className="rounded-[28px] border border-amber-200 bg-[linear-gradient(135deg,_#fffef8_0%,_#ffffff_45%,_#f4fbff_100%)] p-6 shadow-soft-lg">
+                    <main className="flex-1 space-y-6 px-4 py-6 sm:px-6 lg:px-10 lg:py-8">
+                        <section className="space-y-5">
                             <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
                                 <div>
-                                     <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-amber-700">Báo cáo giáo viên</p>
-                                     <h1 className="mt-2 text-[30px] font-extrabold leading-tight text-gray-900 lg:text-[38px]">Báo cáo từ giáo viên chủ nhiệm</h1>
+                                     <h1 className="text-2xl font-bold leading-tight text-slate-950">Báo cáo từ giáo viên chủ nhiệm</h1>
+                                     <p className="mt-1 text-sm font-semibold text-slate-500">
+                                         Theo dõi phản hồi từ GVCN, lọc theo lớp và đánh dấu các báo cáo đã được nhà trường xử lý.
+                                     </p>
                                  </div>
-                                <div className="grid gap-3 sm:grid-cols-2">
-                                    <div className="rounded-2xl border border-amber-200 bg-white/90 p-4">
-                                        <p className="text-sm font-semibold text-[#6b7280]">Đang chờ xem</p>
-                                        <p className="mt-2 text-3xl font-extrabold text-gray-900">{pendingCount}</p>
-                                    </div>
-                                    <div className="rounded-2xl border border-emerald-200 bg-white/90 p-4">
-                                        <p className="text-sm font-semibold text-[#6b7280]">Đã xử lý</p>
-                                        <p className="mt-2 text-3xl font-extrabold text-gray-900">{reviewedCount}</p>
-                                    </div>
-                                </div>
+                            </div>
+
+                            <div className="grid gap-4 md:grid-cols-3">
+                                <SummaryCard label="Tổng báo cáo" value={summaryLoading ? "..." : summaryReports.length} icon={<FileText className="h-5 w-5" />} surfaceClassName={SCHOOL_THEME.summary.school} />
+                                <SummaryCard label="Đang chờ xem" value={summaryLoading ? "..." : pendingCount} icon={<Clock3 className="h-5 w-5" />} surfaceClassName={SCHOOL_THEME.summary.cyan} />
+                                <SummaryCard label="Đã xử lý" value={summaryLoading ? "..." : reviewedCount} icon={<CheckCircle2 className="h-5 w-5" />} surfaceClassName={SCHOOL_THEME.summary.mint} />
                             </div>
                         </section>
 
-                        <section className="mt-6 rounded-[24px] border border-gray-200 bg-white p-5 shadow-soft-md">
-                            <div className="grid gap-3 md:grid-cols-2">
-                                <label className="text-sm font-semibold text-[#4c5769]">
-                                    Lớp
-                                    <select value={classGroupId} onChange={(e) => {
-                                        preserveResultsHeight();
-                                        setClassGroupId(e.target.value);
-                                    }} className="mt-2 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 font-semibold text-gray-900 outline-none focus:border-amber-300">
+                        <section className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                            <label className="relative block w-full lg:max-w-[320px]">
+                                <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+                                <input
+                                    value={searchInput}
+                                    onChange={(event) => {
+                                        const nextSearch = event.target.value;
+                                        setSearchInput(nextSearch);
+                                        scheduleSearchCommit(nextSearch);
+                                    }}
+                                    placeholder="Tìm báo cáo..."
+                                    className="h-10 w-full rounded-full border border-slate-200 bg-white pl-11 pr-4 text-sm font-medium text-slate-800 outline-none shadow-soft-xs transition-colors placeholder:text-slate-500 focus:border-blue-200 focus:ring-4 focus:ring-blue-50"
+                                />
+                            </label>
+
+                            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+                                <label className="relative block">
+                                    <select
+                                        value={classGroupId}
+                                        onChange={(event) => {
+                                            preserveResultsHeight();
+                                            setPage(1);
+                                            setClassGroupId(event.target.value);
+                                        }}
+                                        className="h-10 min-w-[156px] appearance-none rounded-full border border-slate-200 bg-white py-0 pl-4 pr-10 text-sm font-medium text-slate-700 outline-none shadow-soft-xs transition-colors focus:border-blue-200 focus:ring-4 focus:ring-blue-50"
+                                    >
                                         <option value="">Tất cả lớp</option>
                                         {classOptions.map((item) => (
                                             <option key={item.id} value={item.id}>Lớp {item.className}</option>
                                         ))}
                                     </select>
+                                    <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-900" />
                                 </label>
-                                <label className="text-sm font-semibold text-[#4c5769]">
-                                    Trạng thái
-                                    <select value={status} onChange={(e) => {
-                                        preserveResultsHeight();
-                                        setStatus(e.target.value);
-                                    }} className="mt-2 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 font-semibold text-gray-900 outline-none focus:border-amber-300">
-                                        <option value="">Tất cả</option>
+
+                                <label className="relative block">
+                                    <select
+                                        value={status}
+                                        onChange={(event) => {
+                                            preserveResultsHeight();
+                                            setPage(1);
+                                            setStatus(event.target.value);
+                                        }}
+                                        className="h-10 min-w-[148px] appearance-none rounded-full border border-slate-200 bg-white py-0 pl-4 pr-10 text-sm font-medium text-slate-700 outline-none shadow-soft-xs transition-colors focus:border-blue-200 focus:ring-4 focus:ring-blue-50"
+                                    >
+                                        <option value="">Tất cả trạng thái</option>
                                         <option value="Submitted">Đang chờ xem</option>
                                         <option value="Reviewed">Đã xem</option>
                                     </select>
+                                    <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-900" />
                                 </label>
+
+                                {fetchingReports || filtering ? (
+                                    <div className="inline-flex h-10 items-center gap-2 rounded-full border border-blue-100 bg-white px-3 text-xs font-bold text-[#2563EB] shadow-soft-sm">
+                                        <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-blue-100 border-t-[#2563EB]" />
+                                        Đang tải
+                                    </div>
+                                ) : null}
                             </div>
                         </section>
 
                         {loading && (
-                            <section className="mt-6 rounded-2xl border border-gray-200 bg-white p-10 text-center shadow-soft-md">
-                                <div className="mx-auto mb-3 h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-amber-600" />
+                            <section className="rounded-[8px] border border-gray-200 bg-white p-10 text-center shadow-soft-sm">
+                                <div className={`mx-auto mb-3 h-8 w-8 animate-spin rounded-full border-4 border-gray-200 ${SCHOOL_THEME.spinner}`} />
                                 <p className="text-sm font-semibold text-[#4c5769]">Đang tải báo cáo...</p>
                             </section>
                         )}
 
                         {!loading && error && (
-                            <section className="mt-6 rounded-2xl border border-red-200 bg-white p-8 text-center shadow-soft-md">
+                            <section className="rounded-[8px] border border-red-200 bg-white p-8 text-center shadow-soft-sm">
                                 <p className="text-base font-bold text-red-600">{error}</p>
                             </section>
                         )}
 
                         {!loading && !error && (
-                            <section ref={resultsRegionRef} style={preservedHeightStyle} className="mt-6 grid gap-6 xl:grid-cols-[1.15fr_0.95fr]">
-                                <div className="rounded-[24px] border border-gray-200 bg-white shadow-soft-md">
+                            <section ref={resultsRegionRef} style={preservedHeightStyle} className="relative grid gap-6 xl:grid-cols-[1.15fr_0.95fr]">
+                                <div className="rounded-[8px] border border-gray-200 bg-white shadow-soft-sm">
                                     <div className="border-b border-gray-100 px-5 py-4">
-                                        <p className="text-xs font-bold uppercase tracking-[0.16em] text-amber-700">Danh sách báo cáo</p>
-                                        <h2 className="text-xl font-extrabold text-gray-900">{reports.length} báo cáo</h2>
+                                        <p className={`text-xs font-bold uppercase tracking-[0.16em] ${SCHOOL_THEME.primaryText}`}>Danh sách báo cáo</p>
+                                        <h2 className="text-xl font-bold text-gray-900">{displayedReports.length} báo cáo</h2>
                                     </div>
                                     <div className="divide-y divide-gray-100">
-                                        {reports.length === 0 && (
+                                        {displayedReports.length === 0 && (
                                             <div className="px-5 py-10 text-center text-sm font-semibold text-[#4c5769]">
+                                                <Inbox className={`mx-auto mb-3 h-9 w-9 ${SCHOOL_THEME.primaryText}`} />
                                                 Chưa có báo cáo phù hợp với bộ lọc hiện tại.
                                             </div>
                                         )}
-                                        {reports.map((report) => (
+                                        {paginatedReports.map((report) => (
                                             <button
                                                 key={report.id}
                                                 type="button"
                                                 onClick={() => setSelectedReport(report)}
-                                                className={`w-full px-5 py-5 text-left transition-colors hover:bg-[#fffdf5] ${selectedReport?.id === report.id ? "bg-[#fff9e8]" : "bg-white"}`}
+                                                className={`w-full px-5 py-5 text-left transition-colors hover:bg-blue-50/70 ${selectedReport?.id === report.id ? "bg-blue-50" : "bg-white"}`}
                                             >
                                                 <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
                                                     <div className="min-w-0">
                                                         <div className="flex flex-wrap items-center gap-2">
-                                                            <h3 className="text-lg font-extrabold text-gray-900">{report.title}</h3>
-                                                            <span className={`rounded-full px-3 py-1 text-xs font-bold ${report.status === "Reviewed" ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"}`}>
+                                                            <h3 className="text-lg font-bold text-gray-900">{report.title}</h3>
+                                                            <span className={`rounded-full px-3 py-1 text-xs font-bold ${report.status === "Reviewed" ? "bg-emerald-100 text-emerald-700" : "bg-blue-100 text-[#2563EB]"}`}>
                                                                 {formatStatus(report.status)}
                                                             </span>
-                                                            <span className="rounded-full bg-sky-100 px-3 py-1 text-xs font-bold text-sky-700">{formatReportType(report.reportType)}</span>
+                                                            <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-700">{formatReportType(report.reportType)}</span>
                                                         </div>
                                                         <p className="mt-2 text-sm font-semibold text-[#4c5769]">Lớp {report.className}</p>
                                                         <p className="mt-3 line-clamp-2 text-sm leading-6 text-[#4c5769]">{report.content}</p>
@@ -222,9 +380,41 @@ export const SchoolTeacherReports = (): JSX.Element => {
                                             </button>
                                         ))}
                                     </div>
+                                    {displayedReports.length > 0 && (
+                                        <div className="flex flex-col gap-3 border-t border-gray-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+                                            <p className="text-sm font-semibold text-[#4c5769]">
+                                                Hiển thị {firstReportIndex.toLocaleString("vi-VN")}-{lastReportIndex.toLocaleString("vi-VN")} / {displayedReports.length.toLocaleString("vi-VN")} báo cáo · Trang {currentPage}/{totalPages}
+                                            </p>
+                                            {totalPages > 1 && (
+                                                <div className="flex items-center gap-2">
+                                                    <button
+                                                        type="button"
+                                                        disabled={currentPage <= 1}
+                                                        onClick={() => setPage((current) => Math.max(1, current - 1))}
+                                                        className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-soft-xs transition-colors hover:border-blue-200 hover:text-[#2563EB] disabled:cursor-not-allowed disabled:opacity-40"
+                                                        title="Trang trước"
+                                                    >
+                                                        <ChevronLeft className="h-4 w-4" />
+                                                    </button>
+                                                    <span className="min-w-[72px] text-center text-sm font-bold text-gray-900">
+                                                        {currentPage}/{totalPages}
+                                                    </span>
+                                                    <button
+                                                        type="button"
+                                                        disabled={currentPage >= totalPages}
+                                                        onClick={() => setPage((current) => Math.min(totalPages, current + 1))}
+                                                        className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-soft-xs transition-colors hover:border-blue-200 hover:text-[#2563EB] disabled:cursor-not-allowed disabled:opacity-40"
+                                                        title="Trang sau"
+                                                    >
+                                                        <ChevronRight className="h-4 w-4" />
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
 
-                                <div className="rounded-[24px] border border-gray-200 bg-white p-5 shadow-soft-md">
+                                <div className="rounded-[8px] border border-gray-200 bg-white p-5 shadow-soft-sm">
                                     {!selectedReport ? (
                                         <div className="flex h-full min-h-[320px] items-center justify-center text-center">
                                             <div>
@@ -235,31 +425,31 @@ export const SchoolTeacherReports = (): JSX.Element => {
                                     ) : (
                                         <>
                                             <div className="flex flex-wrap items-center gap-2">
-                                                <h2 className="text-2xl font-extrabold text-gray-900">{selectedReport.title}</h2>
-                                                <span className={`rounded-full px-3 py-1 text-xs font-bold ${selectedReport.status === "Reviewed" ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"}`}>
+                                                <h2 className="text-2xl font-bold text-gray-900">{selectedReport.title}</h2>
+                                                <span className={`rounded-full px-3 py-1 text-xs font-bold ${selectedReport.status === "Reviewed" ? "bg-emerald-100 text-emerald-700" : "bg-blue-100 text-[#2563EB]"}`}>
                                                     {formatStatus(selectedReport.status)}
                                                 </span>
                                             </div>
 
                                             <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                                                <div className="rounded-2xl bg-[#f8fafc] p-4">
+                                                <div className="rounded-[8px] bg-[#F8FAFC] p-4">
                                                     <p className="text-sm font-semibold text-[#6b7280]">Lớp</p>
-                                                    <button type="button" onClick={() => navigate(`/school/students/classes/${selectedReport.classGroupId}`)} className="mt-1 text-left text-lg font-extrabold text-gray-900 hover:text-amber-700">
+                                                    <button type="button" onClick={() => navigate(`/school/students/classes/${selectedReport.classGroupId}`)} className="mt-1 text-left text-lg font-bold text-gray-900 hover:text-[#2563EB]">
                                                         {selectedReport.className}
                                                     </button>
                                                 </div>
-                                                <div className="rounded-2xl bg-[#f8fafc] p-4">
+                                                <div className="rounded-[8px] bg-[#F8FAFC] p-4">
                                                     <p className="text-sm font-semibold text-[#6b7280]">Loại báo cáo</p>
-                                                    <p className="mt-1 text-lg font-extrabold text-gray-900">{formatReportType(selectedReport.reportType)}</p>
+                                                    <p className="mt-1 text-lg font-bold text-gray-900">{formatReportType(selectedReport.reportType)}</p>
                                                 </div>
                                             </div>
 
-                                            <div className="mt-4 rounded-2xl bg-[#fffdf5] p-4">
+                                            <div className="mt-4 rounded-[8px] bg-[#EFF6FF] p-4">
                                                 <p className="text-sm font-semibold text-[#6b7280]">Nội dung giáo viên gửi</p>
                                                 <p className="mt-2 whitespace-pre-wrap text-sm leading-7 text-[#334155]">{selectedReport.content}</p>
                                             </div>
 
-                                            <div className="mt-4 rounded-2xl bg-[#f8fafc] p-4 text-sm font-semibold text-[#4c5769]">
+                                            <div className="mt-4 rounded-[8px] bg-[#F8FAFC] p-4 text-sm font-semibold text-[#4c5769]">
                                                 <p>Gửi lúc: {new Date(selectedReport.submittedAt).toLocaleString("vi-VN")}</p>
                                                 <p className="mt-1">{selectedReport.reviewedAt ? `Đã xem lúc: ${new Date(selectedReport.reviewedAt).toLocaleString("vi-VN")}` : "Báo cáo này chưa được nhà trường đánh dấu đã xem."}</p>
                                             </div>
@@ -272,22 +462,23 @@ export const SchoolTeacherReports = (): JSX.Element => {
                                                         onChange={(e) => setReviewNote(e.target.value)}
                                                         rows={6}
                                                         placeholder="Thêm ghi chú để giáo viên biết nhà trường đã tiếp nhận và cần làm gì tiếp theo..."
-                                                        className="mt-2 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-900 outline-none focus:border-amber-300"
+                                                        className={`mt-2 w-full rounded-[8px] border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-900 outline-none ${SCHOOL_THEME.primaryFocus}`}
                                                     />
                                                 </label>
                                             </div>
 
                                             <div className="mt-5 flex flex-wrap gap-3">
-                                                <button type="button" onClick={handleReviewSubmit} disabled={submitting || selectedReport.status === "Reviewed"} className="nb-btn text-sm disabled:cursor-not-allowed disabled:opacity-60">
+                                                <button type="button" onClick={handleReviewSubmit} disabled={submitting || selectedReport.status === "Reviewed"} className={SCHOOL_THEME.primaryButton}>
                                                     {selectedReport.status === "Reviewed" ? "Đã được đánh dấu" : submitting ? "Đang lưu..." : "Đánh dấu đã xem"}
                                                 </button>
-                                                <button type="button" onClick={() => navigate(`/school/students/classes/${selectedReport.classGroupId}`)} className="nb-btn nb-btn-outline text-sm">
+                                                <button type="button" onClick={() => navigate(`/school/students/classes/${selectedReport.classGroupId}`)} className="nb-btn nb-btn-outline text-sm hover:border-blue-200 hover:text-[#2563EB]">
                                                     Mở chi tiết lớp
                                                 </button>
                                             </div>
                                         </>
                                     )}
                                 </div>
+
                             </section>
                         )}
                     </main>

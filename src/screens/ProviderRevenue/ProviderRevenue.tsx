@@ -1,14 +1,16 @@
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import {
     ArrowDownToLine,
     Banknote,
     CheckCircle2,
+    ChevronDown,
     Download,
     ExternalLink,
     FileSpreadsheet,
     Loader2,
     PercentCircle,
+    Search,
     ShoppingBag,
     TableProperties,
     TimerReset,
@@ -17,6 +19,7 @@ import * as XLSX from "xlsx";
 import { DashboardSidebar } from "../../components/layout";
 import { TopNavBar } from "../../components/layout/TopNavBar";
 import { PROVIDER_LIST_PAGE_SIZE, ProviderDataTable, type ProviderDataTableColumn } from "../../components/provider/ProviderDataTable";
+import { usePreservedResultsHeight } from "../../hooks/usePreservedResultsHeight";
 import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
 import { useProviderSidebarConfig } from "../../hooks/useProviderSidebarConfig";
 import {
@@ -46,7 +49,7 @@ function orderStatusLabel(status: string) {
         case "Pending":
             return "Chờ thanh toán";
         case "Paid":
-            return "Đã thanh toán";
+            return "Chờ tiếp nhận";
         case "Accepted":
             return "Đã tiếp nhận";
         case "InProduction":
@@ -111,6 +114,43 @@ function orderPaymentClass(status: string) {
     }
 }
 
+const PROCESSING_STATUS_FILTER = "Accepted,InProduction,ReadyToShip";
+
+const PAYMENT_STATUS_OPTIONS = [
+    { value: "", label: "Trạng thái thanh toán" },
+    { value: "Pending", label: "Chờ thanh toán" },
+    { value: "Paid", label: "Đã thanh toán" },
+    { value: "Refunded", label: "Đã hoàn tiền" },
+    { value: "Cancelled", label: "Đã hủy" },
+];
+
+const RECEIVED_STATUS_OPTIONS = [
+    { value: "", label: "Trạng thái đơn" },
+    { value: "Paid", label: "Chờ tiếp nhận" },
+    { value: "Accepted", label: "Đã tiếp nhận" },
+    { value: PROCESSING_STATUS_FILTER, label: "Đang xử lý" },
+    { value: "InProduction", label: "Đang sản xuất" },
+    { value: "ReadyToShip", label: "Chờ giao" },
+    { value: "Shipped", label: "Đang giao" },
+    { value: "Delivered", label: "Đã giao" },
+];
+
+const DATE_SORT_OPTIONS = [
+    { value: "all", label: "All time" },
+    { value: "week", label: "This week" },
+    { value: "month", label: "This month" },
+];
+
+const MIN_PAGE_FETCH_FEEDBACK_MS = 700;
+const MIN_FILTER_COMMIT_MS = 450;
+
+function formatDateParam(value: Date) {
+    const year = value.getFullYear();
+    const month = String(value.getMonth() + 1).padStart(2, "0");
+    const day = String(value.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+}
+
 function applyColumnWidths(worksheet: XLSX.WorkSheet, rows: Record<string, unknown>[]) {
     const headers = Object.keys(rows[0] ?? {});
     if (!headers.length) return;
@@ -160,31 +200,96 @@ export default function ProviderRevenue() {
     const [orders, setOrders] = useState<ProviderIncomingOrderItemDto[]>([]);
     const [total, setTotal] = useState(0);
     const [page, setPage] = useState(1);
+    const [status, setStatus] = useState("");
+    const [searchTerm, setSearchTerm] = useState("");
+    const [searchInput, setSearchInput] = useState("");
+    const [dateRange, setDateRange] = useState("all");
     const [loading, setLoading] = useState(true);
+    const [fetchingOrders, setFetchingOrders] = useState(false);
+    const [filtering, setFiltering] = useState(false);
     const [exporting, setExporting] = useState(false);
+    const hasLoadedOrdersRef = useRef(false);
+    const fetchStartedAtRef = useRef(0);
+    const fetchSequenceRef = useRef(0);
+    const filterTimerRef = useRef<ReturnType<typeof window.setTimeout> | null>(null);
 
-    const fetchData = useCallback(async () => {
-        setLoading(true);
-        try {
-            const [profile, rev, orderPage] = await Promise.all([
-                getProviderProfile(),
-                getProviderRevenue(),
-                getProviderDirectOrders(page, PROVIDER_LIST_PAGE_SIZE),
-            ]);
-            setProviderName(profile.providerName || "Nhà cung cấp");
-            setRevenue(rev);
-            setOrders(orderPage.items);
-            setTotal(orderPage.totalCount);
-        } catch {
-            // keep the current screen stable if the backend is temporarily unavailable
-        } finally {
-            setLoading(false);
+    const dateFilters = useMemo(() => {
+        const now = new Date();
+        const start = new Date(now);
+        start.setHours(0, 0, 0, 0);
+
+        if (dateRange === "all") {
+            return {
+                search: searchTerm,
+            };
         }
-    }, [page]);
+
+        if (dateRange === "week") {
+            const day = start.getDay();
+            const diffToMonday = day === 0 ? -6 : 1 - day;
+            start.setDate(start.getDate() + diffToMonday);
+        } else {
+            start.setDate(1);
+        }
+
+        return {
+            fromDate: formatDateParam(start),
+            toDate: formatDateParam(now),
+            search: searchTerm,
+        };
+    }, [dateRange, searchTerm]);
+
+    const fetchData = useCallback(() => {
+        const isInitialLoad = !hasLoadedOrdersRef.current;
+        const fetchSequence = fetchSequenceRef.current + 1;
+        fetchSequenceRef.current = fetchSequence;
+        setLoading(isInitialLoad);
+        setFetchingOrders(!isInitialLoad);
+        fetchStartedAtRef.current = Date.now();
+
+        Promise.all([
+            getProviderProfile(),
+            getProviderRevenue(),
+            getProviderDirectOrders(page, PROVIDER_LIST_PAGE_SIZE, status || undefined, dateFilters),
+        ])
+            .then(([profile, rev, orderPage]) => {
+                setProviderName(profile.providerName || "Nhà cung cấp");
+                setRevenue(rev);
+                setOrders(orderPage.items);
+                setTotal(orderPage.totalCount);
+            })
+            .catch(() => {
+                // keep the current screen stable if the backend is temporarily unavailable
+            })
+            .finally(() => {
+                const elapsed = Date.now() - fetchStartedAtRef.current;
+                const finish = () => {
+                    if (fetchSequence !== fetchSequenceRef.current) return;
+                    hasLoadedOrdersRef.current = true;
+                    setLoading(false);
+                    setFetchingOrders(false);
+                };
+
+                if (!isInitialLoad && elapsed < MIN_PAGE_FETCH_FEEDBACK_MS) {
+                    window.setTimeout(finish, MIN_PAGE_FETCH_FEEDBACK_MS - elapsed);
+                    return;
+                }
+
+                finish();
+            });
+    }, [dateFilters, page, status]);
 
     useEffect(() => {
         fetchData();
     }, [fetchData]);
+
+    useEffect(() => {
+        return () => {
+            if (filterTimerRef.current) {
+                window.clearTimeout(filterTimerRef.current);
+            }
+        };
+    }, []);
 
     const handleLogout = () => {
         localStorage.removeItem("access_token");
@@ -205,15 +310,15 @@ export default function ProviderRevenue() {
             };
             const reportOrders =
                 total > orders.length
-                    ? await getProviderDirectOrders(1, Math.max(total, PROVIDER_LIST_PAGE_SIZE))
+                    ? await getProviderDirectOrders(1, Math.max(total, PROVIDER_LIST_PAGE_SIZE), status || undefined, dateFilters)
                     : { items: orders, totalCount: total };
 
             const summaryRows = [
                 { "Chỉ số": "Doanh thu đối soát", "Giá trị": currentRevenue.totalRevenue, "Hiển thị": fmt(currentRevenue.totalRevenue) },
-                { "Chỉ số": "Đơn đã ghi nhận", "Giá trị": currentRevenue.totalPaidOrders, "Hiển thị": String(currentRevenue.totalPaidOrders) },
+                { "Chỉ số": "Đơn đã nhận tiền", "Giá trị": currentRevenue.totalPaidOrders, "Hiển thị": String(currentRevenue.totalPaidOrders) },
                 { "Chỉ số": "Đơn chờ đối soát", "Giá trị": currentRevenue.totalPendingOrders, "Hiển thị": String(currentRevenue.totalPendingOrders) },
                 { "Chỉ số": "Khoản chờ đối soát", "Giá trị": currentRevenue.pendingAmount, "Hiển thị": fmt(currentRevenue.pendingAmount) },
-                { "Chỉ số": "Đơn hàng trong báo cáo", "Giá trị": reportOrders.totalCount, "Hiển thị": String(reportOrders.totalCount) },
+                { "Chỉ số": "Đơn theo bộ lọc", "Giá trị": reportOrders.totalCount, "Hiển thị": String(reportOrders.totalCount) },
             ];
 
             const orderRows = reportOrders.items.map((order) => ({
@@ -225,7 +330,7 @@ export default function ProviderRevenue() {
                 "Doanh thu": order.totalAmount,
                 "Hiển thị doanh thu": fmt(order.totalAmount),
                 "Trạng thái đơn": orderStatusLabel(order.orderStatus),
-                "Thanh toán": orderPaymentLabel(order.orderStatus),
+                "Thanh toán phụ huynh": orderPaymentLabel(order.orderStatus),
             }));
 
             const workbook = XLSX.utils.book_new();
@@ -236,7 +341,7 @@ export default function ProviderRevenue() {
             const ordersSheet = XLSX.utils.json_to_sheet(
                 orderRows.length
                     ? orderRows
-                    : [{ "Ngày đặt": "", "Mã đơn": "", "Phụ huynh": "", "Học sinh": "", "Số món": 0, "Doanh thu": 0, "Hiển thị doanh thu": fmt(0), "Trạng thái đơn": "", "Thanh toán": "" }],
+                    : [{ "Ngày đặt": "", "Mã đơn": "", "Phụ huynh": "", "Học sinh": "", "Số món": 0, "Doanh thu": 0, "Hiển thị doanh thu": fmt(0), "Trạng thái đơn": "", "Thanh toán phụ huynh": "" }],
             );
             applyColumnWidths(ordersSheet, orderRows);
             XLSX.utils.book_append_sheet(workbook, ordersSheet, "DonHang");
@@ -245,7 +350,7 @@ export default function ProviderRevenue() {
         } finally {
             setExporting(false);
         }
-    }, [orders, revenue, total]);
+    }, [dateFilters, orders, revenue, status, total]);
 
     const totalPages = Math.max(1, Math.ceil(total / PROVIDER_LIST_PAGE_SIZE));
     const paidOrders = revenue?.totalPaidOrders ?? 0;
@@ -253,11 +358,38 @@ export default function ProviderRevenue() {
     const pendingAmount = revenue?.pendingAmount ?? 0;
     const totalRevenue = revenue?.totalRevenue ?? 0;
     const averageOrderValue = paidOrders > 0 ? totalRevenue / paidOrders : 0;
+    const paymentStatus = PAYMENT_STATUS_OPTIONS.some((item) => item.value === status) ? status : "";
+    const receivedStatus = RECEIVED_STATUS_OPTIONS.some((item) => item.value === status) ? status : "";
+    const isFilteredEmptyState = !loading && !!status && orders.length === 0;
+    const { preserveResultsHeight, preservedHeightStyle, resultsRegionRef } = usePreservedResultsHeight(isFilteredEmptyState);
+
+    const scheduleSearchCommit = useCallback(
+        (nextSearch: string) => {
+            preserveResultsHeight();
+            setFiltering(true);
+            if (filterTimerRef.current) {
+                window.clearTimeout(filterTimerRef.current);
+            }
+            filterTimerRef.current = window.setTimeout(() => {
+                setSearchTerm(nextSearch);
+                setPage(1);
+                setFiltering(false);
+                filterTimerRef.current = null;
+            }, MIN_FILTER_COMMIT_MS);
+        },
+        [preserveResultsHeight],
+    );
+
+    const handleStatusChange = (nextStatus: string) => {
+        preserveResultsHeight();
+        setStatus(nextStatus);
+        setPage(1);
+    };
 
     const summaryCards = useMemo(
         () => [
             {
-                label: "Đơn đã ghi nhận",
+                label: "Đơn đã nhận tiền",
                 value: String(paidOrders),
                 icon: <CheckCircle2 className="h-6 w-6" />,
                 surfaceClassName: "bg-blue-100",
@@ -278,7 +410,7 @@ export default function ProviderRevenue() {
                 iconClassName: "text-slate-900",
             },
             {
-                label: "Đơn hàng báo cáo",
+                label: "Đơn theo bộ lọc",
                 value: String(total),
                 icon: <ShoppingBag className="h-6 w-6" />,
                 surfaceClassName: "bg-lime-200",
@@ -329,7 +461,7 @@ export default function ProviderRevenue() {
             },
             {
                 key: "paymentStatus",
-                header: "Thanh toán",
+                header: "Thanh toán PH",
                 className: "text-center",
                 render: (order) => <span className={orderPaymentClass(order.orderStatus)}>{orderPaymentLabel(order.orderStatus)}</span>,
             },
@@ -385,7 +517,7 @@ export default function ProviderRevenue() {
                                 </div>
                                 <button
                                     type="button"
-                                    className="nb-btn nb-btn-green inline-flex w-fit items-center gap-2"
+                                    className="nb-btn nb-btn-provider inline-flex w-fit items-center gap-2"
                                     disabled={loading || exporting}
                                     onClick={handleExportReport}
                                 >
@@ -401,7 +533,7 @@ export default function ProviderRevenue() {
                                             <p className="text-sm font-semibold text-emerald-700">Doanh thu đối soát</p>
                                             <p className="mt-3 text-4xl font-bold leading-tight text-slate-950 sm:text-5xl">{fmt(totalRevenue)}</p>
                                             <p className="mt-3 text-sm font-semibold text-slate-500">
-                                                {paidOrders} đơn đã ghi nhận, {pendingOrders} đơn đang chờ đưa vào báo cáo cuối kỳ.
+                                                {paidOrders} đơn đã nhận tiền, {pendingOrders} đơn đang chờ đưa vào báo cáo cuối kỳ.
                                             </p>
                                         </div>
                                         <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-700">
@@ -440,7 +572,7 @@ export default function ProviderRevenue() {
                                             <span className="text-slate-950">Hiện tại</span>
                                         </div>
                                         <div className="flex items-center justify-between rounded-[8px] bg-slate-50 px-3 py-2">
-                                            <span>Đơn hàng báo cáo</span>
+                                            <span>Đơn theo bộ lọc</span>
                                             <span className="text-slate-950">{total}</span>
                                         </div>
                                     </div>
@@ -465,7 +597,7 @@ export default function ProviderRevenue() {
 
                         {loading ? (
                             <div className="flex min-h-[320px] flex-col items-center justify-center gap-4 rounded-[8px] border border-gray-200 bg-white shadow-soft-sm">
-                                <Loader2 className="h-10 w-10 animate-spin text-violet-600" />
+                                <Loader2 className="h-10 w-10 animate-spin text-[#3B82F6]" />
                                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">Đang đồng bộ dữ liệu doanh thu...</p>
                             </div>
                         ) : (
@@ -480,28 +612,111 @@ export default function ProviderRevenue() {
                                     </span>
                                 </div>
 
-                                {orders.length === 0 ? (
-                                    <p className="mt-5 rounded-[8px] border border-dashed border-gray-200 bg-slate-50 p-8 text-center text-sm font-medium text-gray-500">
-                                        Chưa có đơn hàng nào trong báo cáo.
-                                    </p>
-                                ) : (
-                                    <div className="mt-5">
+                                <div className="mt-5 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                                    <label className="relative block w-full lg:max-w-[300px]">
+                                        <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+                                        <input
+                                            value={searchInput}
+                                            onChange={(event) => {
+                                                const nextSearch = event.target.value;
+                                                setSearchInput(nextSearch);
+                                                scheduleSearchCommit(nextSearch);
+                                            }}
+                                            placeholder="Search..."
+                                            className="h-10 w-full rounded-full border border-slate-200 bg-white pl-11 pr-4 text-sm font-medium text-slate-800 outline-none shadow-soft-xs transition-colors placeholder:text-slate-500 focus:border-violet-200 focus:ring-4 focus:ring-violet-50"
+                                        />
+                                    </label>
+
+                                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+                                        <label className="relative block">
+                                            <select
+                                                value={paymentStatus}
+                                                onChange={(event) => handleStatusChange(event.target.value)}
+                                                className="h-10 min-w-[148px] appearance-none rounded-full border border-slate-200 bg-white py-0 pl-4 pr-10 text-sm font-medium text-slate-700 outline-none shadow-soft-xs transition-colors focus:border-violet-200 focus:ring-4 focus:ring-violet-50"
+                                            >
+                                                {PAYMENT_STATUS_OPTIONS.map((option) => (
+                                                    <option key={option.value || "all-payment"} value={option.value}>{option.label}</option>
+                                                ))}
+                                            </select>
+                                            <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-900" />
+                                        </label>
+
+                                        <label className="relative block">
+                                            <select
+                                                value={receivedStatus}
+                                                onChange={(event) => handleStatusChange(event.target.value)}
+                                                className="h-10 min-w-[156px] appearance-none rounded-full border border-slate-200 bg-white py-0 pl-4 pr-10 text-sm font-medium text-slate-700 outline-none shadow-soft-xs transition-colors focus:border-violet-200 focus:ring-4 focus:ring-violet-50"
+                                            >
+                                                {RECEIVED_STATUS_OPTIONS.map((option) => (
+                                                    <option key={option.value || "all-received"} value={option.value}>{option.label}</option>
+                                                ))}
+                                            </select>
+                                            <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-900" />
+                                        </label>
+
+                                        <label className="relative block">
+                                            <select
+                                                value={dateRange}
+                                                onChange={(event) => {
+                                                    preserveResultsHeight();
+                                                    setDateRange(event.target.value);
+                                                    setPage(1);
+                                                }}
+                                                className="h-10 min-w-[112px] appearance-none rounded-full border border-slate-200 bg-white py-0 pl-4 pr-10 text-sm font-medium text-slate-700 outline-none shadow-soft-xs transition-colors focus:border-violet-200 focus:ring-4 focus:ring-violet-50"
+                                            >
+                                                {DATE_SORT_OPTIONS.map((option) => (
+                                                    <option key={option.value} value={option.value}>{option.label}</option>
+                                                ))}
+                                            </select>
+                                            <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-900" />
+                                        </label>
+
+                                        {fetchingOrders || filtering ? (
+                                            <div className="inline-flex h-10 items-center gap-2 rounded-full border border-blue-100 bg-white px-3 text-xs font-bold text-blue-700 shadow-soft-sm">
+                                                <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-blue-100 border-t-[#3B82F6]" />
+                                                Đang tải
+                                            </div>
+                                        ) : null}
+                                    </div>
+                                </div>
+
+                                <div ref={resultsRegionRef} style={preservedHeightStyle} className="relative mt-5">
+                                    {orders.length === 0 ? (
+                                        <p className="rounded-[8px] border border-dashed border-gray-200 bg-slate-50 p-8 text-center text-sm font-medium text-gray-500">
+                                            Chưa có đơn hàng nào trong báo cáo.
+                                        </p>
+                                    ) : (
                                         <ProviderDataTable
                                             items={orders}
                                             columns={orderColumns}
                                             getKey={(order) => order.orderId}
                                             onRowClick={(order) => navigate(`/provider/orders/${order.orderId}`)}
                                         />
-                                    </div>
-                                )}
+                                    )}
+
+                                </div>
 
                                 {totalPages > 1 ? (
                                     <div className="mt-5 flex justify-center gap-2">
-                                        <button disabled={page <= 1} onClick={() => setPage((current) => current - 1)} className="nb-btn nb-btn-outline nb-btn-sm text-sm">
+                                        <button
+                                            disabled={page <= 1 || fetchingOrders}
+                                            onClick={() => {
+                                                preserveResultsHeight();
+                                                setPage((current) => current - 1);
+                                            }}
+                                            className="nb-btn nb-btn-outline nb-btn-sm text-sm"
+                                        >
                                             ← Trước
                                         </button>
                                         <span className="flex items-center px-2 text-sm font-medium text-gray-500">{page}/{totalPages}</span>
-                                        <button disabled={page >= totalPages} onClick={() => setPage((current) => current + 1)} className="nb-btn nb-btn-outline nb-btn-sm text-sm">
+                                        <button
+                                            disabled={page >= totalPages || fetchingOrders}
+                                            onClick={() => {
+                                                preserveResultsHeight();
+                                                setPage((current) => current + 1);
+                                            }}
+                                            className="nb-btn nb-btn-outline nb-btn-sm text-sm"
+                                        >
                                             Sau →
                                         </button>
                                     </div>

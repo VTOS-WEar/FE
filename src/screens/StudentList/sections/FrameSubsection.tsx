@@ -97,7 +97,7 @@ export const FrameSubsection = (): JSX.Element => {
 
                 <div className="flex flex-col items-center justify-center w-[263px] mt-[27px] text-black text-2xl text-center">
                     <span className="font-medium italic">Xin chào!</span>
-                    <span className="font-extrabold">Trường Tiểu học FPT</span>
+                    <span className="font-bold">Trường Tiểu học FPT</span>
                 </div>
             </div>
 

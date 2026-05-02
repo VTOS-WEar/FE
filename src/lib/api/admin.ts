@@ -44,19 +44,33 @@ export type DashboardAnalyticsDto = {
     totalRevenue: number;
     pendingApprovals: number;
     pendingWithdrawals: number;
-    recentActivities: { description: string; createdAt: string }[];
+    ordersPerMonth: { month: string; orderCount: number }[];
+    revenuePerMonth: { month: string; revenue: number }[];
+    usersPerMonth: { month: string; role: string; userCount: number }[];
+    orderStatusBreakdown: { status: string; count: number; totalAmount: number }[];
+    paymentStatusBreakdown: { status: string; count: number; totalAmount: number }[];
+    topSellingUniforms: { outfitId: string; outfitName: string; quantitySold: number; revenue: number }[];
+    recentActivities?: { description: string; createdAt: string }[];
 };
 
 export type WithdrawalRequestDto = {
-    id: string;
+    withdrawalRequestId: string;
+    walletId: string;
+    schoolId?: string;
     schoolName: string;
+    ownerId?: string;
+    ownerType?: string;
+    ownerName?: string;
     amount: number;
-    bankAccount: string;
-    bankName: string;
+    bankCode?: string | null;
+    bankName?: string | null;
+    bankAccountNumber?: string | null;
+    bankAccountName?: string | null;
     status: string;
     requestedAt: string;
-    processedAt?: string;
-    adminNote?: string;
+    approvedAt?: string | null;
+    paidAt?: string | null;
+    adminNote?: string | null;
 };
 
 export type PaymentTransactionDto = {
@@ -160,12 +174,33 @@ export type UserReportDto = {
 
 // ── User Management ──
 
-export async function getUsers(): Promise<UserDto[]> {
-    const raw = await api<any[]>("/api/admin/users", { method: "GET", auth: true });
-    return raw.map(u => ({
+export type UserListPagedResult = {
+    items: UserDto[];
+    totalCount: number;
+    page: number;
+    pageSize: number;
+};
+
+export async function getUsers(params?: {
+    page?: number;
+    pageSize?: number;
+    search?: string;
+    role?: string;
+    status?: string;
+}): Promise<UserListPagedResult> {
+    const q = new URLSearchParams();
+    if (params?.page) q.set("page", String(params.page));
+    if (params?.pageSize) q.set("pageSize", String(params.pageSize));
+    if (params?.search) q.set("search", params.search);
+    if (params?.role) q.set("role", params.role);
+    if (params?.status) q.set("status", params.status);
+    const raw = await api<any>(`/api/admin/users?${q}`, { method: "GET", auth: true });
+    // Normalise items
+    const items: UserDto[] = (raw.items ?? []).map((u: any) => ({
         ...u,
         status: u.status || (u.isDeleted ? "Suspended" : u.isActive ? "Active" : "Suspended"),
     }));
+    return { items, totalCount: raw.totalCount ?? 0, page: raw.page ?? 1, pageSize: raw.pageSize ?? 20 };
 }
 
 export async function getUserDetail(id: string): Promise<UserDetailDto> {
@@ -263,12 +298,15 @@ export async function getPaymentCompletionRate(dateFrom?: string, dateTo?: strin
 }
 
 export async function getAdminSemesterPublications(params: {
-    page?: number; pageSize?: number; status?: string;
+    page?: number; pageSize?: number; status?: string; schoolId?: string; search?: string; academicYear?: string;
 } = {}): Promise<AdminSemesterPublicationListDto> {
     const query = new URLSearchParams();
     if (params.page) query.set("page", String(params.page));
     if (params.pageSize) query.set("pageSize", String(params.pageSize));
     if (params.status) query.set("status", params.status);
+    if (params.schoolId) query.set("schoolId", params.schoolId);
+    if (params.search) query.set("search", params.search);
+    if (params.academicYear) query.set("academicYear", params.academicYear);
     return api<AdminSemesterPublicationListDto>(`/api/admin/semester-publications?${query}`, { method: "GET", auth: true });
 }
 
@@ -280,12 +318,13 @@ export async function getSemesterMonitorReport(semesterPublicationId: string): P
 // ── Withdrawal Requests ──
 
 export async function getWithdrawalRequests(params?: {
-    page?: number; pageSize?: number; status?: string;
-}): Promise<{ items: WithdrawalRequestDto[]; total: number }> {
+    page?: number; pageSize?: number; status?: string; search?: string;
+}): Promise<{ items: WithdrawalRequestDto[]; total: number; totalCount?: number }> {
     const query = new URLSearchParams();
     if (params?.page) query.set("page", String(params.page));
     if (params?.pageSize) query.set("pageSize", String(params.pageSize));
     if (params?.status) query.set("status", params.status);
+    if (params?.search) query.set("search", params.search);
     return api(`/api/admin/withdrawals?${query}`, { method: "GET", auth: true });
 }
 
@@ -431,15 +470,19 @@ export async function removeFeedback(id: string) {
 // ── Phase 04: Cash Flow ──
 
 export type AdminCashFlowDto = {
-    totalParentPayments: number;
-    totalProviderPayments: number;
-    totalRefunds: number;
-    pendingPayments: number;
+    totalOrderFees: number;
+    totalWithdrawalFees: number;
+    totalPlatformFees: number;
     totalTransactionCount: number;
     pendingComplaintCount: number;
     activeCampaignCount: number;
     pendingAccountRequestCount: number;
-    revenueChart: { date: string; income: number; expense: number }[];
+    revenueChart: {
+        date: string;
+        orderFees: number;
+        withdrawalFees: number;
+        totalFees: number;
+    }[];
 };
 
 export async function getAdminCashFlow(days = 30): Promise<AdminCashFlowDto> {
@@ -474,6 +517,7 @@ export async function getAdminTransactions(params: {
     page?: number; pageSize?: number;
     type?: string; status?: string;
     from?: string; to?: string;
+    search?: string;
 } = {}): Promise<AdminTransactionListResult> {
     const q = new URLSearchParams();
     if (params.page) q.set("page", String(params.page));
@@ -482,6 +526,7 @@ export async function getAdminTransactions(params: {
     if (params.status) q.set("status", params.status);
     if (params.from) q.set("from", params.from);
     if (params.to) q.set("to", params.to);
+    if (params.search) q.set("search", params.search);
     return api(`/api/admin/transactions?${q}`, { method: "GET", auth: true });
 }
 
@@ -517,12 +562,16 @@ export type AdminComplaintListResult = {
 
 export async function getAdminComplaints(params: {
     page?: number; pageSize?: number;
-    status?: string;
+    status?: string; search?: string;
+    requesterRole?: string; category?: string;
 } = {}): Promise<AdminComplaintListResult> {
     const q = new URLSearchParams();
     if (params.page) q.set("page", String(params.page));
     if (params.pageSize) q.set("pageSize", String(params.pageSize));
     if (params.status) q.set("status", params.status);
+    if (params.search) q.set("search", params.search);
+    if (params.requesterRole) q.set("requesterRole", params.requesterRole);
+    if (params.category) q.set("category", params.category);
     return api(`/api/admin/complaints?${q}`, { method: "GET", auth: true });
 }
 

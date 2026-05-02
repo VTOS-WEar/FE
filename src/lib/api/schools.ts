@@ -448,12 +448,39 @@ export type OutfitDto = {
 export type OutfitListResponse = {
     items: OutfitDto[];
     total: number;
+    totalCount?: number;
+    page?: number;
+    pageSize?: number;
+    totalPages?: number;
+    summary?: OutfitListSummaryDto;
 };
 
-/** Get all outfits for the current school */
-export async function getSchoolOutfits(isAvailable?: boolean): Promise<OutfitListResponse> {
-    const params = isAvailable !== undefined ? `?isAvailable=${isAvailable}` : "";
-    return api<OutfitListResponse>(`${endpoints.schools.outfits}${params}`, {
+export type OutfitListSummaryDto = {
+    total: number;
+    available: number;
+    unavailable: number;
+};
+
+export type GetSchoolOutfitsParams = {
+    isAvailable?: boolean;
+    page?: number;
+    pageSize?: number;
+    search?: string;
+    categoryId?: string;
+};
+
+/** Get outfits for the current school with optional server-side filters */
+export async function getSchoolOutfits(params: GetSchoolOutfitsParams | boolean = {}): Promise<OutfitListResponse> {
+    const options: GetSchoolOutfitsParams = typeof params === "boolean" ? { isAvailable: params } : params;
+    const searchParams = new URLSearchParams();
+    if (options.isAvailable !== undefined) searchParams.set("isAvailable", String(options.isAvailable));
+    if (options.page) searchParams.set("page", String(options.page));
+    if (options.pageSize) searchParams.set("pageSize", String(options.pageSize));
+    if (options.search?.trim()) searchParams.set("search", options.search.trim());
+    if (options.categoryId) searchParams.set("categoryId", options.categoryId);
+
+    const qs = searchParams.toString();
+    return api<OutfitListResponse>(`${endpoints.schools.outfits}${qs ? `?${qs}` : ""}`, {
         method: "GET",
         auth: true,
     });

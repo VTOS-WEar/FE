@@ -35,10 +35,10 @@ const schools: School[] = [
 
 export const JoinedSchoolsSection = (): JSX.Element => {
   return (
-    <section className="nb-section-calm">
-      <div className="mx-auto max-w-[1100px] px-4 md:px-8">
+    <section className="nb-section-calm py-10 lg:py-12">
+      <div className="mx-auto w-full max-w-[1400px] px-4 md:px-8 lg:px-12">
         {/* Header */}
-        <div className="flex items-end justify-between mb-12 nb-reveal">
+        <div className="mb-8 flex items-end justify-between nb-reveal lg:mb-9">
           <h2 className="text-3xl font-extrabold text-gray-900 md:text-4xl">
             Trường học tham gia
           </h2>
@@ -53,7 +53,7 @@ export const JoinedSchoolsSection = (): JSX.Element => {
         </div>
 
         {/* School Cards — all neutral white (Rule 4: no competing accents) */}
-        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 nb-reveal-stagger">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 nb-reveal-stagger">
           {schools.map((school) => (
             <div
               key={school.id}

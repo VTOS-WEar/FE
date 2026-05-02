@@ -9,6 +9,7 @@ import {
 } from "../../components/ui/breadcrumb";
 import { DashboardSidebar } from "../../components/layout";
 import { TopNavBar } from "../../components/layout/TopNavBar";
+import { AdminTopNavTitle } from "../AdminShared/adminWorkspace";
 import { AccountSecuritySettings } from "../../components/security/AccountSecuritySettings";
 import { useAdminSidebarConfig } from "../../hooks/useAdminSidebarConfig";
 import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
@@ -54,20 +55,8 @@ export const AdminAccountSettings = (): JSX.Element => {
 
         <div className="flex min-w-0 flex-1 flex-col">
           <TopNavBar>
-            <Breadcrumb>
-              <BreadcrumbList>
-                <BreadcrumbItem>
-                  <BreadcrumbLink href="/admin/dashboard" className="text-base font-semibold text-[#4c5769]">
-                    Trang chủ
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator className="text-[#cbcad7]">/</BreadcrumbSeparator>
-                <BreadcrumbItem>
-                  <BreadcrumbPage className="text-base font-bold text-gray-900">Cài đặt tài khoản</BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
-          </TopNavBar>
+                        <AdminTopNavTitle title="Cài đặt tài khoản" />
+                    </TopNavBar>
 
           <main className="nb-fade-in flex-1 px-4 py-6 sm:px-6 lg:px-10 lg:py-8">
             <AccountSecuritySettings suppressHelperText />

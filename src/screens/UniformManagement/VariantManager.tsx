@@ -226,11 +226,11 @@ export default function VariantManager({
                 <div className="sticky top-0 z-10 border-b border-gray-200 bg-[linear-gradient(180deg,_#faf5ff_0%,_#ffffff_100%)] px-6 py-5">
                     <div className="flex items-start justify-between gap-4">
                         <div className="max-w-2xl">
-                            <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-yellow-200 bg-yellow-50 px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em] text-gray-900">
+                            <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-yellow-200 bg-yellow-50 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.16em] text-gray-900">
                                 <Ruler className="h-3.5 w-3.5" />
                                 Manage Size
                             </div>
-                            <h2 className="text-[24px] font-black leading-none text-gray-900">Kích cỡ sản phẩm</h2>
+                            <h2 className="text-[24px] font-bold leading-none text-gray-900">Kích cỡ sản phẩm</h2>
                             <p className="mt-2 text-[14px] font-semibold text-gray-500">{outfitName}</p>
                         </div>
                         <button onClick={onClose} className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-[12px] border border-gray-200 bg-white text-gray-600 shadow-soft-sm transition-all hover:text-gray-900">
@@ -264,7 +264,7 @@ export default function VariantManager({
                             <div className="flex flex-col gap-4 rounded-[22px] border border-violet-200 bg-[linear-gradient(180deg,_#faf5ff_0%,_#ffffff_100%)] p-5 shadow-soft-sm sm:flex-row sm:items-center sm:justify-between">
                                 <div>
                                     <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-violet-700">Size workspace</p>
-                                    <h3 className="mt-1 text-xl font-extrabold text-gray-900">{variants.length} kích cỡ đã cấu hình</h3>
+                                    <h3 className="mt-1 text-xl font-bold text-gray-900">{variants.length} kích cỡ đã cấu hình</h3>
                                 </div>
                                 <button onClick={openCreate} className="nb-btn nb-btn-purple text-sm whitespace-nowrap">
                                     Thêm kích cỡ
@@ -286,7 +286,7 @@ export default function VariantManager({
                                             <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                                                 <div className="min-w-0 flex-1">
                                                     <div className="flex flex-wrap items-center gap-3">
-                                                        <span className="inline-flex min-w-[52px] items-center justify-center rounded-[14px] border border-violet-200 bg-violet-100 px-3 py-2 text-[14px] font-extrabold text-violet-700">
+                                                        <span className="inline-flex min-w-[52px] items-center justify-center rounded-[14px] border border-violet-200 bg-violet-100 px-3 py-2 text-[14px] font-bold text-violet-700">
                                                             {variant.size}
                                                         </span>
                                                         <span className="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-[12px] font-bold text-sky-700">
@@ -328,7 +328,7 @@ export default function VariantManager({
 
                             {!loading && variants.length === 0 && (
                                 <div className="rounded-[22px] border-2 border-dashed border-purple-300 bg-violet-50/50 py-12 text-center">
-                                    <p className="text-[15px] font-extrabold text-gray-900">Chưa có kích cỡ nào</p>
+                                    <p className="text-[15px] font-bold text-gray-900">Chưa có kích cỡ nào</p>
                                     <p className="mt-1 text-[13px] font-semibold text-gray-500">Nhấn Thêm kích cỡ để bắt đầu</p>
                                 </div>
                             )}
@@ -340,7 +340,7 @@ export default function VariantManager({
                             <div className="flex items-center justify-between gap-3">
                                 <div>
                                     <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-violet-700">{editingId ? "Cập nhật" : "Tạo mới"}</p>
-                                    <h3 className="mt-1 text-xl font-extrabold text-gray-900">{editingId ? "Chỉnh sửa kích cỡ" : "Thêm kích cỡ mới"}</h3>
+                                    <h3 className="mt-1 text-xl font-bold text-gray-900">{editingId ? "Chỉnh sửa kích cỡ" : "Thêm kích cỡ mới"}</h3>
                                 </div>
                                 <button type="button" onClick={closeEditor} className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 bg-white shadow-soft-sm">
                                     <X className="h-4 w-4" />
@@ -350,7 +350,7 @@ export default function VariantManager({
                             <div className="space-y-3 rounded-[18px] border border-gray-200 bg-white p-4 shadow-soft-sm">
                                 <div className="flex items-center gap-2">
                                     <Layers3 className="h-4 w-4 text-violet-600" />
-                                    <p className="text-[14px] font-extrabold text-gray-900">Kích cỡ cơ bản</p>
+                                    <p className="text-[14px] font-bold text-gray-900">Kích cỡ cơ bản</p>
                                 </div>
 
                                 <div className="flex flex-wrap gap-2">
@@ -359,7 +359,7 @@ export default function VariantManager({
                                             key={size}
                                             type="button"
                                             onClick={() => setForm((current) => ({ ...current, size }))}
-                                            className={`rounded-[12px] border px-3 py-1.5 text-[13px] font-extrabold transition-all ${form.size === size ? "border-purple-500 bg-violet-500 text-white" : "border-gray-200 bg-white text-gray-900"}`}
+                                            className={`rounded-[12px] border px-3 py-1.5 text-[13px] font-bold transition-all ${form.size === size ? "border-purple-500 bg-violet-500 text-white" : "border-gray-200 bg-white text-gray-900"}`}
                                         >
                                             {size}
                                         </button>
@@ -376,7 +376,7 @@ export default function VariantManager({
                             </div>
 
                             <div className="rounded-[18px] border border-gray-200 bg-white p-4 shadow-soft-sm">
-                                <label className="mb-2 block text-[14px] font-extrabold text-gray-900">Chất liệu</label>
+                                <label className="mb-2 block text-[14px] font-bold text-gray-900">Chất liệu</label>
                                 <ModernInput
                                     type="text"
                                     value={form.materialType}
@@ -387,7 +387,7 @@ export default function VariantManager({
 
                             <div className="space-y-4 rounded-[18px] border border-gray-200 bg-white p-4 shadow-soft-sm">
                                 <div>
-                                    <p className="text-[14px] font-extrabold text-gray-900">Số đo theo size</p>
+                                    <p className="text-[14px] font-bold text-gray-900">Số đo theo size</p>
                                 </div>
 
                                 <div className="flex flex-wrap gap-2">
@@ -420,7 +420,7 @@ export default function VariantManager({
                                                 <div className="mb-3 flex items-start justify-between gap-3">
                                                     <div>
                                                         <p className="text-[12px] font-bold uppercase tracking-[0.14em] text-violet-700">Chỉ số</p>
-                                                        <p className="mt-1 text-[15px] font-extrabold text-gray-900">{measurement.displayName || "Chưa đặt tên"}</p>
+                                                        <p className="mt-1 text-[15px] font-bold text-gray-900">{measurement.displayName || "Chưa đặt tên"}</p>
                                                     </div>
                                                     <button type="button" onClick={() => removeMeasurement(measurement.id)} className="flex items-center gap-1 rounded-[10px] border border-red-200 bg-red-50 px-3 py-2 text-[12px] font-bold text-red-600">
                                                         <Trash2 className="h-3.5 w-3.5" />
@@ -430,7 +430,7 @@ export default function VariantManager({
 
                                                 <div className="grid gap-3 md:grid-cols-2">
                                                     <div>
-                                                        <label className="mb-2 block text-[12px] font-extrabold text-gray-900">Loại số đo</label>
+                                                        <label className="mb-2 block text-[12px] font-bold text-gray-900">Loại số đo</label>
                                                         <select
                                                             value={measurement.fieldKey}
                                                             onChange={(e) => {
@@ -456,7 +456,7 @@ export default function VariantManager({
                                                     </div>
 
                                                     <div>
-                                                        <label className="mb-2 block text-[12px] font-extrabold text-gray-900">Tên hiển thị</label>
+                                                        <label className="mb-2 block text-[12px] font-bold text-gray-900">Tên hiển thị</label>
                                                         <ModernInput
                                                             value={measurement.displayName}
                                                             onChange={(e) => updateMeasurement(measurement.id, { displayName: e.target.value })}
@@ -467,13 +467,13 @@ export default function VariantManager({
 
                                                 <div className="mt-3 grid gap-3 sm:grid-cols-3">
                                                     <div>
-                                                        <label className="mb-2 block text-[12px] font-extrabold text-gray-900">Đơn vị</label>
+                                                        <label className="mb-2 block text-[12px] font-bold text-gray-900">Đơn vị</label>
                                                         <div className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-3 text-[14px] font-semibold text-gray-500">
                                                             {measurement.unit}
                                                         </div>
                                                     </div>
                                                     <div>
-                                                        <label className="mb-2 block text-[12px] font-extrabold text-gray-900">Min</label>
+                                                        <label className="mb-2 block text-[12px] font-bold text-gray-900">Min</label>
                                                         <ModernInput
                                                             type="number"
                                                             step="0.01"
@@ -483,7 +483,7 @@ export default function VariantManager({
                                                         />
                                                     </div>
                                                     <div>
-                                                        <label className="mb-2 block text-[12px] font-extrabold text-gray-900">Max</label>
+                                                        <label className="mb-2 block text-[12px] font-bold text-gray-900">Max</label>
                                                         <ModernInput
                                                             type="number"
                                                             step="0.01"
@@ -500,10 +500,10 @@ export default function VariantManager({
                             </div>
 
                             <div className="flex justify-end gap-3 pt-1">
-                                <button type="button" onClick={closeEditor} className="rounded-lg border border-gray-200 bg-white px-5 py-3 text-[15px] font-extrabold text-gray-700 shadow-soft-sm transition-all hover:scale-[0.99] hover:shadow-soft-sm active:scale-[0.98] active:shadow-none">
+                                <button type="button" onClick={closeEditor} className="rounded-lg border border-gray-200 bg-white px-5 py-3 text-[15px] font-bold text-gray-700 shadow-soft-sm transition-all hover:scale-[0.99] hover:shadow-soft-sm active:scale-[0.98] active:shadow-none">
                                     Hủy
                                 </button>
-                                <button type="submit" disabled={saving || !form.size.trim()} className="flex items-center gap-2 rounded-lg border border-purple-500 bg-violet-500 px-5 py-3 text-[15px] font-extrabold text-white shadow-soft-sm transition-all hover:scale-[0.99] hover:shadow-soft-sm active:scale-[0.98] active:shadow-none disabled:opacity-50">
+                                <button type="submit" disabled={saving || !form.size.trim()} className="flex items-center gap-2 rounded-lg border border-purple-500 bg-violet-500 px-5 py-3 text-[15px] font-bold text-white shadow-soft-sm transition-all hover:scale-[0.99] hover:shadow-soft-sm active:scale-[0.98] active:shadow-none disabled:opacity-50">
                                     <Plus className="h-4 w-4" />
                                     {saving ? "Đang lưu..." : editingId ? "Lưu thay đổi" : "Thêm kích cỡ"}
                                 </button>
@@ -518,17 +518,17 @@ export default function VariantManager({
                     <div className="absolute inset-0 bg-black/50" onClick={() => setDeletingId(null)} />
                     <div className="relative mx-4 w-full max-w-[420px] overflow-hidden rounded-xl border border-gray-200 bg-white shadow-soft-lg">
                         <div className="border-b border-red-200 bg-red-50 px-6 py-4">
-                            <h3 className="text-[18px] font-black text-gray-900">Xóa kích cỡ?</h3>
+                            <h3 className="text-[18px] font-bold text-gray-900">Xóa kích cỡ?</h3>
                         </div>
                         <div className="px-6 py-5">
                             <p className="mb-5 text-[15px] font-semibold text-gray-500">
                                 Kích cỡ và các chỉ số đã cấu hình sẽ bị xóa.
                             </p>
                             <div className="flex justify-end gap-3">
-                                <button onClick={() => setDeletingId(null)} className="rounded-lg border border-gray-200 bg-white px-5 py-3 text-[15px] font-extrabold text-gray-700 shadow-soft-sm transition-all hover:scale-[0.99] hover:shadow-soft-sm active:scale-[0.98] active:shadow-none">
+                                <button onClick={() => setDeletingId(null)} className="rounded-lg border border-gray-200 bg-white px-5 py-3 text-[15px] font-bold text-gray-700 shadow-soft-sm transition-all hover:scale-[0.99] hover:shadow-soft-sm active:scale-[0.98] active:shadow-none">
                                     Hủy
                                 </button>
-                                <button onClick={handleDelete} disabled={saving} className="rounded-lg border border-red-500 bg-red-500 px-5 py-3 text-[15px] font-extrabold text-white shadow-soft-sm transition-all hover:scale-[0.99] hover:shadow-soft-sm active:scale-[0.98] active:shadow-none disabled:opacity-50">
+                                <button onClick={handleDelete} disabled={saving} className="rounded-lg border border-red-500 bg-red-500 px-5 py-3 text-[15px] font-bold text-white shadow-soft-sm transition-all hover:scale-[0.99] hover:shadow-soft-sm active:scale-[0.98] active:shadow-none disabled:opacity-50">
                                     {saving ? "Đang xóa..." : "Xóa"}
                                 </button>
                             </div>
@@ -539,7 +539,7 @@ export default function VariantManager({
 
             {toast && (
                 <div className={`fixed bottom-6 right-6 z-[70] flex items-center gap-3 rounded-xl border border-gray-200 px-5 py-3.5 shadow-soft-md ${toast.type === "success" ? "bg-emerald-500 text-white" : "bg-red-500 text-white"}`}>
-                    <span className="font-extrabold text-[15px]">{toast.msg}</span>
+                    <span className="font-bold text-[15px]">{toast.msg}</span>
                 </div>
             )}
         </div>

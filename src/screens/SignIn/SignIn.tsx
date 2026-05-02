@@ -6,10 +6,23 @@ import { login, verify2FA, googleLogin } from "../../lib/api/auth";
 import { useGoogleLogin } from "@react-oauth/google";
 import { getSchoolProfile } from "../../lib/api/schools";
 import { getProviderProfile } from "../../lib/api/providers";
+import { ApiError } from "../../lib/api/clients";
 import { Notify } from "../../components/ui/notify";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { GuestLayout } from "../../components/layout/GuestLayout";
 import { useToast } from "../../contexts/ToastContext";
+
+function getSignInErrorMessage(error: unknown): string {
+  if (error instanceof ApiError && typeof error.details === "object" && error.details !== null) {
+    const code = (error.details as { code?: string }).code;
+    if (code === "INVALID_CREDENTIALS") return "Email hoặc mật khẩu không đúng.";
+    if (code === "EMAIL_NOT_VERIFIED") return "Email chưa được xác minh. Vui lòng kiểm tra email để xác minh tài khoản.";
+    if (code === "ACCOUNT_DISABLED") return "Tài khoản đã bị vô hiệu hóa.";
+  }
+
+  return error instanceof Error ? error.message : "Có lỗi xảy ra.";
+}
+
 export const SignIn = (): JSX.Element => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
@@ -106,8 +119,8 @@ export const SignIn = (): JSX.Element => {
 
       // Normal login → store + redirect
       completeLogin(data);
-    } catch (e: any) {
-      setNotify({ title: "Đăng nhập thất bại", message: e?.message || "Có lỗi xảy ra.", variant: "error" });
+    } catch (e: unknown) {
+      setNotify({ title: "Đăng nhập thất bại", message: getSignInErrorMessage(e), variant: "error" });
     } finally {
       setIsLoading(false);
     }

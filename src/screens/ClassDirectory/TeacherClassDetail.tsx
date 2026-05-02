@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, BellRing, ClipboardList, GraduationCap, Mail, MessageSquare, Ruler, ShoppingBag, Star, Users } from "lucide-react";
+import { TeacherHero, TEACHER_THEME, TeacherSectionHeader } from "../TeacherWorkspace/teacherWorkspace";
 import {
     getTeacherClassDetail,
     getTeacherClassFeedback,
@@ -50,57 +51,42 @@ export const TeacherClassDetail = (): JSX.Element => {
             </button>
 
             {loading && (
-                <div className="rounded-2xl border border-gray-200 bg-white p-10 text-center shadow-soft-md">
-                    <div className="mx-auto mb-3 h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-emerald-600" />
+                <div className={`${TEACHER_THEME.panel} p-10 text-center`}>
+                    <div className="mx-auto mb-3 h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-[#059669]" />
                     <p className="text-sm font-semibold text-[#4c5769]">Đang tải thông tin lớp...</p>
                 </div>
             )}
 
             {!loading && error && (
-                <div className="rounded-2xl border border-red-200 bg-white p-8 text-center shadow-soft-md">
+                <div className="rounded-[8px] border border-rose-200 bg-white p-8 text-center shadow-soft-sm">
                     <p className="text-base font-bold text-red-600">{error}</p>
                 </div>
             )}
 
             {!loading && !error && detail && (
                 <>
-                    <section className="rounded-[28px] border border-emerald-200 bg-[radial-gradient(circle_at_top_left,_rgba(16,185,129,0.14),_transparent_36%),linear-gradient(135deg,_#ffffff_10%,_#f2fff8_55%,_#f7fbff_100%)] p-6 shadow-soft-lg">
-                        <div className="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
-                            <div>
-                                <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-emerald-700">{detail.schoolName}</p>
-                                <h1 className="mt-2 text-[30px] font-extrabold leading-tight text-gray-900 lg:text-[38px]">Lớp {detail.className}</h1>
-                                <p className="mt-3 max-w-2xl text-sm font-medium leading-6 text-[#4c5769] lg:text-base">
-                                    Xem sĩ số, đo áo, liên kết phụ huynh, độ phủ đơn hàng và phản hồi gần đây của lớp trong một màn hình duy nhất.
-                                </p>
-                            </div>
-                            <div className="grid gap-3 sm:grid-cols-3">
-                                <div className="rounded-2xl border border-emerald-200 bg-white/90 px-5 py-4">
-                                    <p className="text-sm font-semibold text-[#6b7280]">Học sinh</p>
-                                    <p className="mt-2 text-3xl font-extrabold text-gray-900">{detail.studentCount}</p>
-                                </div>
-                                <div className="rounded-2xl border border-sky-200 bg-white/90 px-5 py-4">
-                                    <p className="text-sm font-semibold text-[#6b7280]">Đo áo đầy đủ</p>
-                                    <p className="mt-2 text-3xl font-extrabold text-gray-900">{detail.measurementReadyCount}</p>
-                                </div>
-                                <div className="rounded-2xl border border-amber-200 bg-white/90 px-5 py-4">
-                                    <p className="text-sm font-semibold text-[#6b7280]">Đã đặt hàng</p>
-                                    <p className="mt-2 text-3xl font-extrabold text-gray-900">{coverage?.studentsWithOrders ?? 0}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
+                    <TeacherHero
+                        eyebrow={detail.schoolName}
+                        title={`Lớp ${detail.className}`}
+                        description="Xem sĩ số, đo áo, liên kết phụ huynh, độ phủ đơn hàng và phản hồi gần đây của lớp trong một màn hình duy nhất."
+                        stats={[
+                            { label: "Học sinh", value: String(detail.studentCount) },
+                            { label: "Đo áo đầy đủ", value: String(detail.measurementReadyCount) },
+                            { label: "Đã đặt hàng", value: String(coverage?.studentsWithOrders ?? 0) },
+                        ]}
+                    />
 
                     <section className="mt-6 grid gap-4 xl:grid-cols-[1.05fr_1.35fr]">
                         <div className="space-y-4">
-                            <div className="rounded-[24px] border border-gray-200 bg-white p-5 shadow-soft-md">
+                            <div className={`${TEACHER_THEME.panel} p-5`}>
                                 <div className="flex items-center gap-3">
-                                    <div className="rounded-2xl bg-emerald-50 p-3 text-emerald-700"><GraduationCap className="h-5 w-5" /></div>
+                                    <div className="rounded-[8px] bg-[#ECFDF5] p-3 text-emerald-700"><GraduationCap className="h-5 w-5" /></div>
                                     <div>
                                         <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-700">Giáo viên chủ nhiệm</p>
-                                        <h2 className="text-xl font-extrabold text-gray-900">{detail.homeroomTeacher?.fullName || "Chưa cập nhật"}</h2>
+                                        <h2 className="text-xl font-bold text-gray-900">{detail.homeroomTeacher?.fullName || "Chưa cập nhật"}</h2>
                                     </div>
                                 </div>
-                                <div className="mt-5 space-y-3 rounded-2xl bg-[#f4fffb] p-4 text-sm font-semibold text-[#4c5769]">
+                                <div className="mt-5 space-y-3 rounded-[8px] bg-[#ECFDF5] p-4 text-sm font-semibold text-[#4c5769]">
                                     <div className="flex items-center gap-2">
                                         <Mail className="h-4 w-4 text-emerald-600" />
                                         <span>{detail.homeroomTeacher?.email || "Chưa có email"}</span>
@@ -115,58 +101,55 @@ export const TeacherClassDetail = (): JSX.Element => {
                                     </div>
                                 </div>
                                 <div className="mt-4 grid gap-3">
-                                    <button type="button" onClick={() => navigate(`/teacher/reports/new?classGroupId=${detail.id}`)} className="inline-flex items-center justify-center gap-2 rounded-2xl border border-sky-200 bg-white px-4 py-3 text-sm font-bold text-gray-900 shadow-soft-sm transition-all hover:-translate-y-0.5">
+                                    <button type="button" onClick={() => navigate(`/teacher/reports/new?classGroupId=${detail.id}`)} className={TEACHER_THEME.secondaryButton}>
                                         <ClipboardList className="h-4 w-4 text-sky-700" />
                                         Tạo báo cáo
                                     </button>
-                                    <button type="button" onClick={() => navigate(`/teacher/reminders?classGroupId=${detail.id}`)} className="inline-flex items-center justify-center gap-2 rounded-2xl border border-amber-200 bg-white px-4 py-3 text-sm font-bold text-gray-900 shadow-soft-sm transition-all hover:-translate-y-0.5">
+                                    <button type="button" onClick={() => navigate(`/teacher/reminders?classGroupId=${detail.id}`)} className="inline-flex items-center justify-center gap-2 rounded-[8px] border border-amber-200 bg-white px-4 py-2.5 text-sm font-bold text-amber-800 shadow-soft-xs transition-colors hover:bg-amber-50">
                                         <BellRing className="h-4 w-4 text-amber-700" />
                                         Nhắc phụ huynh
                                     </button>
-                                    <button type="button" onClick={() => navigate(`/teacher/messages?classGroupId=${detail.id}`)} className="inline-flex items-center justify-center gap-2 rounded-2xl border border-emerald-200 bg-white px-4 py-3 text-sm font-bold text-gray-900 shadow-soft-sm transition-all hover:-translate-y-0.5">
+                                    <button type="button" onClick={() => navigate(`/teacher/messages?classGroupId=${detail.id}`)} className="inline-flex items-center justify-center gap-2 rounded-[8px] border border-sky-200 bg-white px-4 py-2.5 text-sm font-bold text-sky-800 shadow-soft-xs transition-colors hover:bg-sky-50">
                                         <MessageSquare className="h-4 w-4 text-emerald-700" />
                                         Mở chat lớp
                                     </button>
                                 </div>
                             </div>
 
-                            <div className="rounded-[24px] border border-gray-200 bg-white p-5 shadow-soft-md">
+                            <div className={`${TEACHER_THEME.panel} p-5`}>
                                 <div className="flex items-center gap-3">
-                                    <div className="rounded-2xl bg-[#eef6ff] p-3 text-sky-700"><ShoppingBag className="h-5 w-5" /></div>
+                                    <div className="rounded-[8px] bg-[#E0F2FE] p-3 text-sky-700"><ShoppingBag className="h-5 w-5" /></div>
                                     <div>
                                         <p className="text-xs font-bold uppercase tracking-[0.16em] text-sky-700">Độ phủ đơn hàng</p>
-                                        <h2 className="text-xl font-extrabold text-gray-900">
+                                        <h2 className="text-xl font-bold text-gray-900">
                                             {coverage?.studentsWithOrders ?? 0}/{coverage?.totalStudents ?? detail.studentCount} học sinh đã đặt
                                         </h2>
                                     </div>
                                 </div>
                                 <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                                    <div className="rounded-2xl bg-[#f8fbff] p-4">
+                                    <div className="rounded-[8px] bg-[#F8FAFC] p-4">
                                         <p className="text-sm font-semibold text-[#6b7280]">Đang chờ</p>
-                                        <p className="mt-1 text-xl font-extrabold text-gray-900">{coverage?.pendingOrders ?? 0}</p>
+                                        <p className="mt-1 text-xl font-bold text-gray-900">{coverage?.pendingOrders ?? 0}</p>
                                     </div>
-                                    <div className="rounded-2xl bg-[#f8fbff] p-4">
+                                    <div className="rounded-[8px] bg-[#F8FAFC] p-4">
                                         <p className="text-sm font-semibold text-[#6b7280]">Đang xử lý</p>
-                                        <p className="mt-1 text-xl font-extrabold text-gray-900">{coverage?.activeOrders ?? 0}</p>
+                                        <p className="mt-1 text-xl font-bold text-gray-900">{coverage?.activeOrders ?? 0}</p>
                                     </div>
-                                    <div className="rounded-2xl bg-[#f8fbff] p-4">
+                                    <div className="rounded-[8px] bg-[#F8FAFC] p-4">
                                         <p className="text-sm font-semibold text-[#6b7280]">Đã giao</p>
-                                        <p className="mt-1 text-xl font-extrabold text-gray-900">{coverage?.deliveredOrders ?? 0}</p>
+                                        <p className="mt-1 text-xl font-bold text-gray-900">{coverage?.deliveredOrders ?? 0}</p>
                                     </div>
-                                    <div className="rounded-2xl bg-[#f8fbff] p-4">
+                                    <div className="rounded-[8px] bg-[#F8FAFC] p-4">
                                         <p className="text-sm font-semibold text-[#6b7280]">Chưa đặt</p>
-                                        <p className="mt-1 text-xl font-extrabold text-gray-900">{coverage?.studentsWithoutOrders ?? 0}</p>
+                                        <p className="mt-1 text-xl font-bold text-gray-900">{coverage?.studentsWithoutOrders ?? 0}</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         <div className="space-y-4">
-                            <div className="rounded-[24px] border border-gray-200 bg-white shadow-soft-md">
-                                <div className="border-b border-gray-200 px-5 py-4">
-                                    <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-700">Danh sách học sinh</p>
-                                    <h2 className="text-xl font-extrabold text-gray-900">Theo dõi nhanh tình trạng từng em</h2>
-                                </div>
+                            <div className={TEACHER_THEME.panel}>
+                                <TeacherSectionHeader label="Danh sách học sinh" title="Theo dõi nhanh tình trạng từng em" />
                                 <div className="divide-y divide-gray-100">
                                     {detail.students.map((student) => (
                                         <div key={student.id} className="grid gap-4 px-5 py-4 lg:grid-cols-[1.2fr_0.8fr_1.2fr_1fr] lg:items-center">
@@ -196,11 +179,8 @@ export const TeacherClassDetail = (): JSX.Element => {
                             </div>
 
                             <div className="grid gap-4 xl:grid-cols-2">
-                                <div className="rounded-[24px] border border-gray-200 bg-white shadow-soft-md">
-                                    <div className="border-b border-gray-200 px-5 py-4">
-                                        <p className="text-xs font-bold uppercase tracking-[0.16em] text-sky-700">Phản hồi gần đây</p>
-                                        <h2 className="text-xl font-extrabold text-gray-900">Đánh giá từ phụ huynh</h2>
-                                    </div>
+                                <div className={TEACHER_THEME.panel}>
+                                    <TeacherSectionHeader label="Phản hồi gần đây" title="Đánh giá từ phụ huynh" />
                                     <div className="divide-y divide-gray-100">
                                         {feedback && feedback.items.length === 0 && (
                                             <div className="px-5 py-8 text-sm font-semibold text-[#4c5769]">Chưa có phản hồi nào cho lớp này.</div>
@@ -218,11 +198,8 @@ export const TeacherClassDetail = (): JSX.Element => {
                                     </div>
                                 </div>
 
-                                <div className="rounded-[24px] border border-gray-200 bg-white shadow-soft-md">
-                                    <div className="border-b border-gray-200 px-5 py-4">
-                                        <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-700">Báo cáo gần đây</p>
-                                        <h2 className="text-xl font-extrabold text-gray-900">Lịch sử gửi nhà trường</h2>
-                                    </div>
+                                <div className={TEACHER_THEME.panel}>
+                                    <TeacherSectionHeader label="Báo cáo gần đây" title="Lịch sử gửi nhà trường" />
                                     <div className="divide-y divide-gray-100">
                                         {reports.length === 0 && (
                                             <div className="px-5 py-8 text-sm font-semibold text-[#4c5769]">Chưa có báo cáo nào cho lớp này.</div>
@@ -230,7 +207,7 @@ export const TeacherClassDetail = (): JSX.Element => {
                                         {reports.map((report) => (
                                             <div key={report.id} className="px-5 py-4">
                                                 <div className="flex items-center gap-2">
-                                                    <p className="text-sm font-extrabold text-gray-900">{report.title}</p>
+                                                    <p className="text-sm font-bold text-gray-900">{report.title}</p>
                                                     <span className={`rounded-full px-3 py-1 text-[11px] font-bold ${report.status === "Reviewed" ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"}`}>
                                                         {report.status === "Reviewed" ? "Đã xem" : "Đang chờ"}
                                                     </span>

@@ -1,307 +1,453 @@
-import { useEffect, useMemo, useState, type ReactNode } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { type ReactNode, useCallback, useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
     AlertTriangle,
-    ArrowRight,
     BarChart3,
-    CreditCard,
-    Download,
     FolderClock,
+    Loader2,
+    PackageCheck,
     TrendingUp,
     Users,
     Wallet,
 } from "lucide-react";
 import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-} from "../../components/ui/breadcrumb";
+    Bar as OriginalBar,
+    BarChart as OriginalBarChart,
+    CartesianGrid as OriginalCartesianGrid,
+    Cell as OriginalCell,
+    ComposedChart as OriginalComposedChart,
+    Line as OriginalLine,
+    Pie as OriginalPie,
+    PieChart as OriginalPieChart,
+    ResponsiveContainer as OriginalResponsiveContainer,
+    Tooltip as OriginalTooltip,
+    XAxis as OriginalXAxis,
+    YAxis as OriginalYAxis,
+} from "recharts";
 import { DashboardSidebar } from "../../components/layout";
 import { TopNavBar } from "../../components/layout/TopNavBar";
+import { AdminTopNavTitle } from "../AdminShared/adminWorkspace";
 import { useAdminSidebarConfig } from "../../hooks/useAdminSidebarConfig";
 import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
 import {
-    exportReport,
-    getAdminComplaints,
-    getAdminTransactions,
     getDashboardAnalytics,
-    getPaymentCompletionRate,
-    getTotalOrders,
-    getTotalRevenue,
+    getAdminCashFlow,
     getWithdrawalRequests,
-    type AdminComplaintDto,
-    type AdminTransactionDto,
+    getAdminComplaints,
     type DashboardAnalyticsDto,
+    type AdminCashFlowDto,
+    type AdminComplaintListResult,
     type WithdrawalRequestDto,
 } from "../../lib/api/admin";
 import {
     getAccountRequests,
     type AccountRequestListItem,
 } from "../../lib/api/accountRequests";
-import { formatPercent } from "../../lib/utils/format";
 
-type TimeRange = "Week" | "Month" | "Quarter" | "Year";
+const ADMIN_THEME = {
+    primaryText: "text-rose-700",
+    summary: {
+        users: "border-rose-100 bg-rose-50",
+        requests: "border-amber-100 bg-amber-100",
+        withdrawals: "border-emerald-100 bg-emerald-100",
+        tickets: "border-orange-100 bg-orange-100",
+    },
+} as const;
 
-type QueueTone = {
-    accent: string;
-    surface: string;
-    text: string;
+const Bar = OriginalBar as any;
+const BarChart = OriginalBarChart as any;
+const CartesianGrid = OriginalCartesianGrid as any;
+const Cell = OriginalCell as any;
+const ComposedChart = OriginalComposedChart as any;
+const Line = OriginalLine as any;
+const Pie = OriginalPie as any;
+const PieChart = OriginalPieChart as any;
+const ResponsiveContainer = OriginalResponsiveContainer as any;
+const Tooltip = OriginalTooltip as any;
+const XAxis = OriginalXAxis as any;
+const YAxis = OriginalYAxis as any;
+
+const chartColors = ["#BE123C", "#0F9D7A", "#2477E4", "#C68508", "#4B39C8", "#64748B"];
+
+const orderStatusLabels: Record<string, string> = {
+    Pending: "Ch? d?t",
+    Paid: "–„ thanh to·n",
+    Confirmed: "–„ x·c nh?n",
+    Processed: "–„ x? l˝",
+    InProduction: "–ang s?n xu?t",
+    ReadyToShip: "S?n s‡ng giao",
+    Shipped: "–ang giao",
+    Delivered: "Ho‡n th‡nh",
+    Cancelled: "–„ h?y",
+    Refunded: "–„ ho‡n ti?n",
+    Accepted: "–„ nh?n",
 };
 
-const tone = {
-    pageInk: "#141B34",
-    muted: "#5B6478",
-    line: "#D8DEEA",
-    shell: "#FFFFFF",
-    soft: "#F7F8FC",
-    hero: "linear-gradient(135deg, #172554 0%, #1D4ED8 52%, #38BDF8 100%)",
-    violet: "#6D5EF5",
-    emerald: "#0F9D7A",
-    amber: "#C68508",
-    rose: "#D9485F",
-    sky: "#2477E4",
+const paymentStatusLabels: Record<string, string> = {
+    Pending: "Ch? thanh to·n",
+    Processing: "–ang x? l˝",
+    Completed: "Ho‡n t?t",
+    Failed: "Th?t b?i",
+    Cancelled: "–„ h?y",
+    Refunded: "–„ ho‡n",
 };
 
-const queueTones: Record<string, QueueTone> = {
-    approvals: { accent: tone.violet, surface: "#F1EDFF", text: "#4935C5" },
-    withdrawals: { accent: tone.emerald, surface: "#E8FFF7", text: "#0B7A5E" },
-    support: { accent: tone.rose, surface: "#FFF0F3", text: "#B23148" },
-    finance: { accent: tone.sky, surface: "#ECF5FF", text: "#175DB8" },
-};
-
-function fmtNumber(value?: number) {
-    return value?.toLocaleString("vi-VN") ?? "0";
+function formatCurrency(value: number) {
+    return new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND", maximumFractionDigits: 0 }).format(value || 0);
 }
 
-function fmtCurrency(value?: number) {
-    return `${fmtNumber(value)} ‚Ç´`;
+function formatCompactNumber(value: number) {
+    return new Intl.NumberFormat("vi-VN", { notation: "compact", maximumFractionDigits: 1 }).format(value || 0);
 }
 
-function fmtDate(value?: string) {
-    if (!value) return "‚Äî";
-    return new Date(value).toLocaleString("vi-VN");
+function formatMonth(month: string) {
+    const [year, monthNumber] = month.split("-");
+    return monthNumber && year ? `${monthNumber}/${year.slice(-2)}` : month;
 }
 
-function exportLabel(reportType: string) {
-    switch (reportType) {
-        case "orders":
-            return "ƒê∆°n h√†ng";
-        case "revenue":
-            return "Doanh thu";
-        case "users":
-            return "Ng∆∞·ªùi d√πng";
-        case "payments":
-            return "Thanh to√°n";
-        default:
-            return reportType;
-    }
-}
-
-function DashboardStatCard({
-    icon,
+function SummaryCard({
     label,
     value,
+    icon,
+    surfaceClassName,
+    onClick,
+}: {
+    label: string;
+    value: string | number;
+    icon: ReactNode;
+    surfaceClassName: string;
+    onClick?: () => void;
+}) {
+    const Component = onClick ? "button" : "div";
+
+    return (
+        <Component
+            type={onClick ? "button" : undefined}
+            onClick={onClick}
+            className={`min-h-[118px] w-full rounded-[8px] border p-5 text-left shadow-soft-sm transition-colors ${surfaceClassName} ${onClick ? "hover:border-rose-300" : ""}`}
+        >
+            <div className="flex h-full items-center gap-4">
+                <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-white text-slate-900 shadow-soft-xs">
+                    {icon}
+                </div>
+                <div className="min-w-0">
+                    <p className="text-sm font-semibold text-slate-700">{label}</p>
+                    <p className="mt-2 text-2xl font-bold leading-tight text-slate-950">{value}</p>
+                </div>
+            </div>
+        </Component>
+    );
+}
+
+function SectionHeader({
+    label,
+    title,
+    action,
+}: {
+    label: string;
+    title: string;
+    action?: ReactNode;
+}) {
+    return (
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 px-4 py-3">
+            <div>
+                <p className={`text-xs font-bold uppercase tracking-[0.14em] ${ADMIN_THEME.primaryText}`}>{label}</p>
+                <h2 className="mt-1 text-lg font-bold text-slate-950">{title}</h2>
+            </div>
+            {action}
+        </div>
+    );
+}
+
+function QuickAction({
+    icon,
+    label,
+    onClick,
 }: {
     icon: ReactNode;
     label: string;
-    value: string;
+    onClick: () => void;
 }) {
     return (
-        <article className="rounded-[24px] border px-5 py-5 shadow-soft-lg" style={{ borderColor: tone.line, background: tone.shell }}>
-            <div className="flex items-center justify-between gap-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl" style={{ background: "#EEF4FF", color: tone.sky }}>
-                    {icon}
-                </div>
-            </div>
-            <p className="mt-4 text-[12px] font-black uppercase tracking-[0.1em]" style={{ color: tone.muted }}>
-                {label}
-            </p>
-            <p className="mt-2 text-[30px] font-black leading-none" style={{ color: tone.pageInk }}>
-                {value}
-            </p>
-        </article>
+        <button
+            type="button"
+            onClick={onClick}
+            className="inline-flex h-11 items-center justify-center gap-2 rounded-[8px] border border-gray-200 bg-white px-4 text-sm font-bold text-slate-900 shadow-soft-xs transition-colors hover:border-rose-200 hover:text-rose-700"
+        >
+            {icon}
+            {label}
+        </button>
     );
 }
 
-function QueueCard({
+function ChartShell({
+    label,
     title,
-    count,
-    href,
-    items,
-    toneKey,
+    icon,
+    children,
 }: {
+    label: string;
     title: string;
-    count: string;
-    href: string;
-    items: Array<{ title: string; meta: string }>;
-    toneKey: keyof typeof queueTones;
-}) {
-    const palette = queueTones[toneKey];
-
-    return (
-        <article className="rounded-[24px] border p-5 shadow-soft-lg" style={{ borderColor: tone.line, background: tone.shell }}>
-            <div className="flex items-start justify-between gap-4">
-                <div>
-                    <div
-                        className="inline-flex items-center rounded-full px-3 py-1 text-[12px] font-black uppercase tracking-[0.08em]"
-                        style={{ background: palette.surface, color: palette.text }}
-                    >
-                        {title}
-                    </div>
-                    <p className="mt-4 text-[28px] font-black leading-none" style={{ color: tone.pageInk }}>
-                        {count}
-                    </p>
-                </div>
-                <div
-                    className="flex h-11 w-11 items-center justify-center rounded-2xl border"
-                    style={{ borderColor: palette.accent, color: palette.accent, background: palette.surface }}
-                >
-                    <ArrowRight className="h-5 w-5" />
-                </div>
-            </div>
-
-            <div className="mt-5 space-y-3">
-                {items.length > 0 ? (
-                    items.map((item, index) => (
-                        <div
-                            key={`${item.title}-${index}`}
-                            className="rounded-2xl border px-4 py-3"
-                            style={{ borderColor: tone.line, background: tone.soft }}
-                        >
-                            <p className="text-[14px] font-black leading-6" style={{ color: tone.pageInk }}>
-                                {item.title}
-                            </p>
-                            <p className="mt-1 text-[13px] font-semibold leading-5" style={{ color: tone.muted }}>
-                                {item.meta}
-                            </p>
-                        </div>
-                    ))
-                ) : (
-                    <div className="rounded-2xl border px-4 py-4 text-[14px] font-semibold" style={{ borderColor: tone.line, background: tone.soft, color: tone.muted }}>
-                        Ch∆∞a c√≥ m·ª•c ∆∞u ti√™n n√†o trong nh√≥m n√†y.
-                    </div>
-                )}
-            </div>
-
-            <Link
-                to={href}
-                className="mt-5 inline-flex items-center gap-2 text-[14px] font-black transition-opacity hover:opacity-80"
-                style={{ color: palette.accent }}
-            >
-                M·ªü khu v·ª±c x·ª≠ l√Ω
-                <ArrowRight className="h-4 w-4" />
-            </Link>
-        </article>
-    );
-}
-
-function ActivityList({
-    title,
-    items,
-    emptyText,
-}: {
-    title: string;
-    items: Array<{ title: string; meta: string; value?: string }>;
-    emptyText: string;
+    icon: ReactNode;
+    children: ReactNode;
 }) {
     return (
-        <section className="rounded-[24px] border p-5 shadow-soft-lg" style={{ borderColor: tone.line, background: tone.shell }}>
-            <div className="flex items-center justify-between gap-3">
-                <h2 className="text-[20px] font-black" style={{ color: tone.pageInk }}>
-                    {title}
-                </h2>
-            </div>
-            <div className="mt-5 space-y-3">
-                {items.length > 0 ? (
-                    items.map((item, index) => (
-                        <div
-                            key={`${item.title}-${index}`}
-                            className="flex items-start justify-between gap-4 rounded-2xl border px-4 py-3"
-                            style={{ borderColor: tone.line, background: tone.soft }}
-                        >
-                            <div className="min-w-0">
-                                <p className="text-[14px] font-black leading-6" style={{ color: tone.pageInk }}>
-                                    {item.title}
-                                </p>
-                                <p className="mt-1 text-[13px] font-semibold leading-5" style={{ color: tone.muted }}>
-                                    {item.meta}
-                                </p>
-                            </div>
-                            {item.value && (
-                                <span className="shrink-0 text-[13px] font-black" style={{ color: tone.sky }}>
-                                    {item.value}
-                                </span>
-                            )}
-                        </div>
-                    ))
-                ) : (
-                    <div className="rounded-2xl border px-4 py-4 text-[14px] font-semibold" style={{ borderColor: tone.line, background: tone.soft, color: tone.muted }}>
-                        {emptyText}
-                    </div>
-                )}
-            </div>
+        <section className="rounded-[8px] border border-gray-200 bg-white shadow-soft-sm">
+            <SectionHeader
+                label={label}
+                title={title}
+                action={<div className="flex h-9 w-9 items-center justify-center rounded-[8px] bg-rose-50 text-rose-700">{icon}</div>}
+            />
+            <div className="p-4">{children}</div>
         </section>
     );
 }
+
+function EmptyChart({ label }: { label: string }) {
+    return (
+        <div className="flex h-[260px] items-center justify-center rounded-[8px] border border-dashed border-gray-200 bg-slate-50 text-center">
+            <p className="px-6 text-sm font-semibold text-slate-500">{label}</p>
+        </div>
+    );
+}
+
+type GrowthChartDatum = {
+    month: string;
+    label: string;
+    users: number;
+    orders: number;
+};
+
+function SystemGrowthChart({ data }: { data: GrowthChartDatum[] }) {
+    return (
+        <ChartShell label="Xu hu?ng s? d?ng" title="User m?i v‡ don h‡ng" icon={<TrendingUp className="h-5 w-5" />}>
+            {data.length === 0 ? (
+                <EmptyChart label="Chua cÛ d? li?u tang tru?ng trong k?." />
+            ) : (
+                <div className="h-[280px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={data} margin={{ top: 8, right: 16, bottom: 0, left: -12 }}>
+                            <CartesianGrid stroke="#E5E7EB" strokeDasharray="4 6" vertical={false} />
+                            <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fill: "#64748B", fontSize: 12, fontWeight: 600 }} />
+                            <YAxis yAxisId="left" axisLine={false} tickLine={false} tick={{ fill: "#64748B", fontSize: 12, fontWeight: 600 }} allowDecimals={false} />
+                            <YAxis yAxisId="right" orientation="right" axisLine={false} tickLine={false} tick={{ fill: "#64748B", fontSize: 12, fontWeight: 600 }} allowDecimals={false} />
+                            <Tooltip
+                                formatter={(value: number, name: string) => [
+                                    Number(value).toLocaleString("vi-VN"),
+                                    name === "users" ? "User m?i" : "–on h‡ng",
+                                ]}
+                                labelFormatter={(label: string) => `Th·ng ${label}`}
+                                contentStyle={{ borderRadius: "8px", border: "1px solid #E5E7EB", fontWeight: 600 }}
+                            />
+                            <Bar yAxisId="left" dataKey="users" fill="#BE123C" radius={[8, 8, 0, 0]} name="users" barSize={24} />
+                            <Bar yAxisId="right" dataKey="orders" fill="#2477E4" radius={[8, 8, 0, 0]} name="orders" barSize={24} />
+                        </BarChart>
+                    </ResponsiveContainer>
+                </div>
+            )}
+        </ChartShell>
+    );
+}
+
+type StatusChartDatum = {
+    status: string;
+    label: string;
+    count: number;
+    totalAmount: number;
+    color: string;
+};
+
+function OrderHealthChart({ data }: { data: StatusChartDatum[] }) {
+    const total = data.reduce((sum, item) => sum + item.count, 0);
+
+    return (
+        <ChartShell label="TÏnh tr?ng don h‡ng" title="Ph‚n b? tr?ng th·i don" icon={<BarChart3 className="h-5 w-5" />}>
+            {data.length === 0 ? (
+                <EmptyChart label="Chua cÛ d? li?u tr?ng th·i don h‡ng." />
+            ) : (
+                <div className="grid gap-4 lg:grid-cols-[220px_1fr]">
+                    <div className="relative h-[220px]">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <PieChart>
+                                <Tooltip
+                                    formatter={(value: number, _name: string, item: any) => [
+                                        `${Number(value).toLocaleString("vi-VN")} don`,
+                                        item?.payload?.label ?? "Tr?ng th·i",
+                                    ]}
+                                    contentStyle={{ borderRadius: "8px", border: "1px solid #E5E7EB", fontWeight: 600 }}
+                                />
+                                <Pie data={data} dataKey="count" nameKey="label" cx="50%" cy="50%" innerRadius={58} outerRadius={86} paddingAngle={3} stroke="#FFFFFF" strokeWidth={3}>
+                                    {data.map((item) => (
+                                        <Cell key={item.status} fill={item.color} />
+                                    ))}
+                                </Pie>
+                            </PieChart>
+                        </ResponsiveContainer>
+                        <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
+                            <span className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">T?ng don</span>
+                            <span className="text-2xl font-bold text-slate-950">{total.toLocaleString("vi-VN")}</span>
+                        </div>
+                    </div>
+                    <div className="grid content-center gap-2">
+                        {data.slice(0, 6).map((item) => (
+                            <div key={item.status} className="flex items-center justify-between gap-3 rounded-[8px] bg-slate-50 px-3 py-2">
+                                <span className="inline-flex min-w-0 items-center gap-2 text-sm font-bold text-slate-900">
+                                    <span className="h-2.5 w-2.5 flex-shrink-0 rounded-full" style={{ background: item.color }} />
+                                    <span className="truncate">{item.label}</span>
+                                </span>
+                                <span className="text-sm font-bold text-slate-950">{item.count.toLocaleString("vi-VN")}</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+        </ChartShell>
+    );
+}
+
+function PaymentHealthChart({ data }: { data: StatusChartDatum[] }) {
+    return (
+        <ChartShell label="Thanh to·n" title="Tr?ng th·i giao d?ch" icon={<Wallet className="h-5 w-5" />}>
+            {data.length === 0 ? (
+                <EmptyChart label="Chua cÛ d? li?u giao d?ch thanh to·n." />
+            ) : (
+                <div className="h-[260px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={data} layout="vertical" margin={{ top: 4, right: 16, bottom: 0, left: 16 }}>
+                            <CartesianGrid stroke="#E5E7EB" strokeDasharray="4 6" horizontal={false} />
+                            <XAxis type="number" axisLine={false} tickLine={false} tick={{ fill: "#64748B", fontSize: 12, fontWeight: 600 }} allowDecimals={false} />
+                            <YAxis type="category" dataKey="label" axisLine={false} tickLine={false} width={96} tick={{ fill: "#4c5769", fontSize: 12, fontWeight: 600 }} />
+                            <Tooltip
+                                formatter={(value: number, _name: string, item: any) => [
+                                    `${Number(value).toLocaleString("vi-VN")} giao d?ch ∑ ${formatCurrency(item?.payload?.totalAmount ?? 0)}`,
+                                    item?.payload?.label ?? "Thanh to·n",
+                                ]}
+                                contentStyle={{ borderRadius: "8px", border: "1px solid #E5E7EB", fontWeight: 600 }}
+                            />
+                            <Bar dataKey="count" radius={[0, 8, 8, 0]} barSize={18}>
+                                {data.map((item) => (
+                                    <Cell key={item.status} fill={item.color} />
+                                ))}
+                            </Bar>
+                        </BarChart>
+                    </ResponsiveContainer>
+                </div>
+            )}
+        </ChartShell>
+    );
+}
+
+function CashFlowChart({ data }: { data: AdminCashFlowDto["revenueChart"] }) {
+    return (
+        <ChartShell label="PhÌ n?n t?ng" title="PhÌ don h‡ng v‡ phÌ r˙t ti?n" icon={<Wallet className="h-5 w-5" />}>
+            {data.length === 0 ? (
+                <EmptyChart label="Chua cÛ d? li?u phÌ n?n t?ng." />
+            ) : (
+                <div className="space-y-3">
+                    <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs font-bold text-slate-600">
+                        <span className="inline-flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full bg-[#0F9D7A]" />PhÌ don h‡ng</span>
+                        <span className="inline-flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full bg-[#C68508]" />PhÌ r˙t ti?n</span>
+                        <span className="inline-flex items-center gap-2"><span className="h-0.5 w-4 rounded-full bg-[#2477E4]" />T?ng phÌ</span>
+                    </div>
+                    <div className="h-[260px]">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <ComposedChart data={data} margin={{ top: 8, right: 16, bottom: 0, left: -12 }}>
+                                <CartesianGrid stroke="#E5E7EB" strokeDasharray="4 6" vertical={false} />
+                                <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fill: "#64748B", fontSize: 12, fontWeight: 600 }} />
+                                <YAxis axisLine={false} tickLine={false} tick={{ fill: "#64748B", fontSize: 12, fontWeight: 600 }} tickFormatter={formatCompactNumber} />
+                                <Tooltip
+                                    formatter={(value: number, name: string) => {
+                                        const labels: Record<string, string> = {
+                                            orderFees: "PhÌ don h‡ng (1% gi· tr? don d„ t?t to·n)",
+                                            withdrawalFees: "PhÌ r˙t ti?n (2% yÍu c?u r˙t ti?n d„ duy?t)",
+                                            totalFees: "T?ng phÌ",
+                                        };
+                                        return [formatCurrency(Number(value)), labels[name] ?? name];
+                                    }}
+                                    contentStyle={{ borderRadius: "8px", border: "1px solid #E5E7EB", fontWeight: 600 }}
+                                />
+                                <Bar dataKey="orderFees" fill="#0F9D7A" radius={[8, 8, 0, 0]} name="orderFees" barSize={18} />
+                                <Bar dataKey="withdrawalFees" fill="#C68508" radius={[8, 8, 0, 0]} name="withdrawalFees" barSize={18} />
+                                <Line type="monotone" dataKey="totalFees" stroke="#2477E4" strokeWidth={3} dot={false} name="totalFees" />
+                            </ComposedChart>
+                        </ResponsiveContainer>
+                    </div>
+                </div>
+            )}
+        </ChartShell>
+    );
+}
+
+function TopUniformsPanel({ data }: { data: NonNullable<DashboardAnalyticsDto["topSellingUniforms"]> }) {
+    return (
+        <ChartShell label="S?n ph?m" title="–?ng ph?c b·n ch?y" icon={<PackageCheck className="h-5 w-5" />}>
+            {data.length === 0 ? (
+                <EmptyChart label="Chua cÛ d? li?u d?ng ph?c b·n ch?y." />
+            ) : (
+                <div className="space-y-3">
+                    {data.slice(0, 5).map((item, index) => (
+                        <div key={item.outfitId} className="grid gap-2 rounded-[8px] border border-gray-100 bg-slate-50 px-3 py-3 sm:grid-cols-[1fr_auto] sm:items-center">
+                            <div className="min-w-0">
+                                <p className="truncate text-sm font-bold text-slate-950">
+                                    {index + 1}. {item.outfitName}
+                                </p>
+                                <p className="mt-1 text-xs font-semibold text-slate-500">{item.quantitySold.toLocaleString("vi-VN")} s?n ph?m d„ b·n</p>
+                            </div>
+                            <p className="text-sm font-bold text-rose-700">{formatCurrency(item.revenue)}</p>
+                        </div>
+                    ))}
+                </div>
+            )}
+        </ChartShell>
+    );
+}
+
+type DashboardData = {
+    analytics: DashboardAnalyticsDto | null;
+    cashFlow: AdminCashFlowDto | null;
+    withdrawals: WithdrawalRequestDto[];
+    accountRequests: AccountRequestListItem[];
+    complaintResult: AdminComplaintListResult | null;
+};
 
 export const AdminDashboard = (): JSX.Element => {
     const navigate = useNavigate();
     const sidebarConfig = useAdminSidebarConfig();
     const [isCollapsed, toggle] = useSidebarCollapsed();
-    const [timeRange, setTimeRange] = useState<TimeRange>("Month");
     const [loading, setLoading] = useState(true);
-    const [exporting, setExporting] = useState<string | null>(null);
+    const [data, setData] = useState<DashboardData>({
+        analytics: null,
+        cashFlow: null,
+        withdrawals: [],
+        accountRequests: [],
+        complaintResult: null,
+    });
 
-    const [analytics, setAnalytics] = useState<DashboardAnalyticsDto | null>(null);
-    const [ordersCount, setOrdersCount] = useState<number | null>(null);
-    const [revenueTotal, setRevenueTotal] = useState<number | null>(null);
-    const [paymentRate, setPaymentRate] = useState<number | null>(null);
-    const [withdrawals, setWithdrawals] = useState<WithdrawalRequestDto[]>([]);
-    const [accountRequests, setAccountRequests] = useState<AccountRequestListItem[]>([]);
-    const [transactions, setTransactions] = useState<AdminTransactionDto[]>([]);
-    const [complaints, setComplaints] = useState<AdminComplaintDto[]>([]);
-
-    useEffect(() => {
-        let cancelled = false;
-
-        async function loadDashboard() {
-            setLoading(true);
-            const results = await Promise.allSettled([
-                getDashboardAnalytics(timeRange),
-                getTotalOrders(),
-                getTotalRevenue(),
-                getPaymentCompletionRate(),
+    const fetchData = useCallback(async () => {
+        setLoading(true);
+        try {
+            const [analyticsRes, cashFlowRes, withdrawalsRes, requestsRes, complaintsRes] = await Promise.allSettled([
+                getDashboardAnalytics(),
+                getAdminCashFlow(365),
                 getWithdrawalRequests({ page: 1, pageSize: 4, status: "Pending" }),
                 getAccountRequests({ page: 1, pageSize: 4, status: 1 }),
-                getAdminTransactions({ page: 1, pageSize: 4 }),
-                getAdminComplaints({ page: 1, pageSize: 4, status: "Open" }),
+                getAdminComplaints({ page: 1, pageSize: 4 }),
             ]);
-
-            if (cancelled) return;
-
-            const [analyticsRes, ordersRes, revenueRes, paymentRes, withdrawalsRes, requestsRes, transactionsRes, complaintsRes] = results;
-
-            if (analyticsRes.status === "fulfilled") setAnalytics(analyticsRes.value);
-            if (ordersRes.status === "fulfilled") setOrdersCount(Number(ordersRes.value?.totalOrders ?? ordersRes.value?.count ?? 0));
-            if (revenueRes.status === "fulfilled") setRevenueTotal(Number(revenueRes.value?.totalRevenue ?? revenueRes.value?.amount ?? 0));
-            if (paymentRes.status === "fulfilled") setPaymentRate(Number(paymentRes.value?.completionRate ?? 0));
-            if (withdrawalsRes.status === "fulfilled") setWithdrawals(withdrawalsRes.value.items ?? []);
-            if (requestsRes.status === "fulfilled") setAccountRequests(requestsRes.value.items ?? []);
-            if (transactionsRes.status === "fulfilled") setTransactions(transactionsRes.value.items ?? []);
-            if (complaintsRes.status === "fulfilled") setComplaints(complaintsRes.value.items ?? []);
-
+            setData({
+                analytics: analyticsRes.status === "fulfilled" ? analyticsRes.value : null,
+                cashFlow: cashFlowRes.status === "fulfilled" ? cashFlowRes.value : null,
+                withdrawals: withdrawalsRes.status === "fulfilled" ? (withdrawalsRes.value.items ?? []) : [],
+                accountRequests: requestsRes.status === "fulfilled" ? (requestsRes.value.items ?? []) : [],
+                complaintResult: complaintsRes.status === "fulfilled" ? complaintsRes.value : null,
+            });
+        } finally {
             setLoading(false);
         }
+    }, []);
 
-        loadDashboard();
-
-        return () => {
-            cancelled = true;
-        };
-    }, [timeRange]);
+    useEffect(() => {
+        fetchData();
+    }, [fetchData]);
 
     const handleLogout = () => {
         localStorage.removeItem("access_token");
@@ -313,36 +459,87 @@ export const AdminDashboard = (): JSX.Element => {
         navigate("/signin", { replace: true });
     };
 
-    const handleExport = async (reportType: string, format: "CSV" | "EXCEL" | "PDF") => {
-        setExporting(`${reportType}:${format}`);
-        try {
-            const blob = await exportReport(reportType, format);
-            const url = URL.createObjectURL(blob);
-            const anchor = document.createElement("a");
-            anchor.href = url;
-            anchor.download = `admin_${reportType}.${format === "EXCEL" ? "xlsx" : format.toLowerCase()}`;
-            anchor.click();
-            URL.revokeObjectURL(url);
-        } finally {
-            setExporting(null);
-        }
-    };
+    const openTicketCount = (data.complaintResult?.openCount ?? 0) + (data.complaintResult?.inProgressCount ?? 0);
+    const pendingApprovals = data.analytics?.pendingApprovals ?? data.accountRequests.length;
+    const pendingWithdrawals = data.analytics?.pendingWithdrawals ?? data.withdrawals.length;
 
-    const queueSummary = useMemo(() => {
-        return {
-            approvalCount: analytics?.pendingApprovals ?? accountRequests.length,
-            withdrawalCount: analytics?.pendingWithdrawals ?? withdrawals.length,
-            supportCount: complaints.length,
-            financeWatch: transactions.filter((item) => item.status === "Pending" || item.status === "Processing").length,
-        };
-    }, [analytics, accountRequests.length, complaints.length, transactions, withdrawals.length]);
+    const metrics = useMemo(
+        () => [
+            {
+                label: "Ngu?i d˘ng to‡n h? th?ng",
+                value: (data.analytics?.totalUsers ?? 0).toLocaleString("vi-VN"),
+                surfaceClassName: ADMIN_THEME.summary.users,
+                icon: <Users className="h-6 w-6" />,
+                onClick: () => navigate("/admin/users"),
+            },
+            {
+                label: "YÍu c?u t‡i kho?n ch?",
+                value: pendingApprovals.toLocaleString("vi-VN"),
+                surfaceClassName: ADMIN_THEME.summary.requests,
+                icon: <FolderClock className="h-6 w-6" />,
+                onClick: () => navigate("/admin/account-requests"),
+            },
+            {
+                label: "R˙t ti?n ch? duy?t",
+                value: pendingWithdrawals.toLocaleString("vi-VN"),
+                surfaceClassName: ADMIN_THEME.summary.withdrawals,
+                icon: <Wallet className="h-6 w-6" />,
+                onClick: () => navigate("/admin/withdrawals"),
+            },
+            {
+                label: "Ticket h? tr? m?",
+                value: openTicketCount.toLocaleString("vi-VN"),
+                surfaceClassName: ADMIN_THEME.summary.tickets,
+                icon: <AlertTriangle className="h-6 w-6" />,
+                onClick: () => navigate("/admin/complaints"),
+            },
+        ],
+        [data, navigate, pendingApprovals, pendingWithdrawals, openTicketCount],
+    );
 
-    const recentActivity = useMemo(() => {
-        return (analytics?.recentActivities ?? []).slice(0, 4).map((item) => ({
-            title: item.description,
-            meta: fmtDate(item.createdAt),
+    const growthChartData = useMemo<GrowthChartDatum[]>(() => {
+        const ordersByMonth = new Map((data.analytics?.ordersPerMonth ?? []).map((item) => [item.month, item.orderCount]));
+        const usersByMonth = new Map<string, number>();
+        (data.analytics?.usersPerMonth ?? []).forEach((item) => {
+            usersByMonth.set(item.month, (usersByMonth.get(item.month) ?? 0) + item.userCount);
+        });
+
+        const months = Array.from(new Set([...ordersByMonth.keys(), ...usersByMonth.keys()])).sort();
+        return months.map((month) => ({
+            month,
+            label: formatMonth(month),
+            users: usersByMonth.get(month) ?? 0,
+            orders: ordersByMonth.get(month) ?? 0,
         }));
-    }, [analytics]);
+    }, [data.analytics]);
+
+    const orderStatusData = useMemo<StatusChartDatum[]>(
+        () =>
+            (data.analytics?.orderStatusBreakdown ?? [])
+                .filter((item) => item.count > 0)
+                .map((item, index) => ({
+                    status: item.status,
+                    label: orderStatusLabels[item.status] ?? item.status,
+                    count: item.count,
+                    totalAmount: item.totalAmount,
+                    color: chartColors[index % chartColors.length],
+                })),
+        [data.analytics],
+    );
+
+    const paymentStatusData = useMemo<StatusChartDatum[]>(
+        () =>
+            (data.analytics?.paymentStatusBreakdown ?? [])
+                .filter((item) => item.count > 0)
+                .map((item, index) => ({
+                    status: item.status,
+                    label: paymentStatusLabels[item.status] ?? item.status,
+                    count: item.count,
+                    totalAmount: item.totalAmount,
+                    color: chartColors[(index + 2) % chartColors.length],
+                })),
+        [data.analytics],
+    );
 
     return (
         <div className="nb-page flex flex-col">
@@ -350,272 +547,62 @@ export const AdminDashboard = (): JSX.Element => {
                 <div className={`${isCollapsed ? "lg:w-16" : "lg:w-[16rem]"} flex-shrink-0 lg:sticky lg:top-0 lg:h-screen transition-all duration-300`}>
                     <DashboardSidebar {...sidebarConfig} isCollapsed={isCollapsed} onToggle={toggle} onLogout={handleLogout} />
                 </div>
-                <div className="flex-1 min-w-0">
+
+                <div className="flex min-w-0 flex-1 flex-col">
                     <TopNavBar>
-                        <Breadcrumb>
-                            <BreadcrumbList>
-                                <BreadcrumbItem>
-                                    <BreadcrumbLink href="/admin/dashboard" className="font-semibold text-[#4c5769] text-base">
-                                        Trang ch·ªß
-                                    </BreadcrumbLink>
-                                </BreadcrumbItem>
-                                <BreadcrumbSeparator className="text-[#cbcad7]">/</BreadcrumbSeparator>
-                                <BreadcrumbItem>
-                                    <BreadcrumbPage className="font-bold text-gray-900 text-base">T·ªïng quan Admin</BreadcrumbPage>
-                                </BreadcrumbItem>
-                            </BreadcrumbList>
-                        </Breadcrumb>
+                        <AdminTopNavTitle title="T?ng quan Admin" />
                     </TopNavBar>
 
-                    <main className="flex-1 px-4 py-6 sm:px-6 lg:px-10 lg:py-8 space-y-6 nb-fade-in">
-                        <section
-                            className="overflow-hidden rounded-[32px] border px-6 py-6 text-white shadow-soft-lg lg:px-8 lg:py-8"
-                            style={{ borderColor: "#2446A6", background: tone.hero }}
-                        >
-                            <div className="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
-                                <div className="max-w-3xl">
-                                    <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[12px] font-black uppercase tracking-[0.12em] text-white">
-                                        ƒêi·ªÅu h√†nh h·ªá th·ªëng
-                                    </div>
-                                    <h1 className="mt-4 text-[34px] font-black leading-tight md:text-[46px]">
-                                        Theo d√µi vi·ªác c·∫ßn x·ª≠ l√Ω trong to√†n h·ªá th·ªëng.
-                                    </h1>
-                                </div>
-
-                                <div className="grid gap-3 sm:grid-cols-2 xl:w-[380px]">
-                                    <div className="rounded-[24px] border border-white/15 bg-white/10 px-4 py-4 backdrop-blur-sm">
-                                        <p className="text-[12px] font-black uppercase tracking-[0.1em] text-white/70">B·ªô l·ªçc th·ªùi gian</p>
-                                        <select
-                                            value={timeRange}
-                                            onChange={(event) => setTimeRange(event.target.value as TimeRange)}
-                                            className="mt-3 w-full rounded-2xl border border-white/20 bg-white/10 px-4 py-3 text-[15px] font-bold text-white outline-none"
-                                        >
-                                            <option value="Week" style={{ color: tone.pageInk }}>Tu·∫ßn n√†y</option>
-                                            <option value="Month" style={{ color: tone.pageInk }}>Th√°ng n√†y</option>
-                                            <option value="Quarter" style={{ color: tone.pageInk }}>Qu√Ω n√†y</option>
-                                            <option value="Year" style={{ color: tone.pageInk }}>NƒÉm nay</option>
-                                        </select>
-                                    </div>
-                                    <div className="rounded-[24px] border border-white/15 bg-white/10 px-4 py-4 backdrop-blur-sm">
-                                        <p className="text-[12px] font-black uppercase tracking-[0.1em] text-white/70">M·ª•c ƒëang ch·ªù x·ª≠ l√Ω</p>
-                                        <p className="mt-3 text-[34px] font-black leading-none text-white">
-                                            {fmtNumber(
-                                                queueSummary.approvalCount +
-                                                queueSummary.withdrawalCount +
-                                                queueSummary.supportCount +
-                                                queueSummary.financeWatch,
-                                            )}
-                                        </p>
-                                    </div>
-                                </div>
+                    <main className="flex-1 space-y-6 px-4 py-6 sm:px-6 lg:px-10 lg:py-8 nb-fade-in">
+                        <section className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
+                            <div>
+                                <p className="text-xs font-bold uppercase tracking-[0.16em] text-rose-700">–i?u h‡nh h? th?ng</p>
+                                <h1 className="mt-1 text-2xl font-bold leading-tight text-slate-950">
+                                    T?ng quan v?n h‡nh hÙm nay
+                                </h1>
+                                <p className="mt-1 text-sm font-semibold text-slate-500">
+                                    Theo dıi tang tru?ng, don h‡ng, thanh to·n v‡ dÚng ti?n trong m?t m‡n hÏnh.
+                                </p>
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                                <QuickAction icon={<Users className="h-4 w-4" />} label="Ngu?i d˘ng" onClick={() => navigate("/admin/users")} />
+                                <QuickAction icon={<FolderClock className="h-4 w-4" />} label="YÍu c?u t‡i kho?n" onClick={() => navigate("/admin/account-requests")} />
+                                <QuickAction icon={<Wallet className="h-4 w-4" />} label="R˙t ti?n" onClick={() => navigate("/admin/withdrawals")} />
                             </div>
                         </section>
 
-                        <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-                            <DashboardStatCard
-                                icon={<Users className="h-5 w-5" />}
-                                label="Ng∆∞·ªùi d√πng to√†n h·ªá th·ªëng"
-                                value={loading ? "‚Ä¶" : fmtNumber(analytics?.totalUsers)}
-                            />
-                            <DashboardStatCard
-                                icon={<FolderClock className="h-5 w-5" />}
-                                label="ƒê∆°n h√†ng c·∫ßn theo d√µi"
-                                value={loading ? "‚Ä¶" : fmtNumber(ordersCount ?? analytics?.totalOrders ?? 0)}
-                            />
-                            <DashboardStatCard
-                                icon={<TrendingUp className="h-5 w-5" />}
-                                label="Doanh thu ghi nh·∫≠n"
-                                value={loading ? "‚Ä¶" : fmtCurrency(revenueTotal ?? analytics?.totalRevenue ?? 0)}
-                            />
-                            <DashboardStatCard
-                                icon={<CreditCard className="h-5 w-5" />}
-                                label="T·ª∑ l·ªá ho√†n t·∫•t thanh to√°n"
-                                value={loading ? "‚Ä¶" : formatPercent(paymentRate, { maximumFractionDigits: 2 })}
-                            />
-                        </section>
-
-                        <section>
-                            <div className="flex items-center justify-between gap-3">
-                                <div>
-                                    <h2 className="text-[24px] font-black" style={{ color: tone.pageInk }}>
-                                        H√†ng ch·ªù ∆∞u ti√™n
-                                    </h2>
-                                </div>
-                            </div>
-
-                            <div className="mt-4 grid gap-4 xl:grid-cols-2 2xl:grid-cols-4">
-                                <QueueCard
-                                    title="C·∫•p t√†i kho·∫£n"
-                                    count={fmtNumber(queueSummary.approvalCount)}
-                                    href="/admin/account-requests"
-                                    toneKey="approvals"
-                                    items={accountRequests.map((item) => ({
-                                        title: item.organizationName,
-                                        meta: `${item.contactEmail} ¬∑ ${fmtDate(item.createdAt)}`,
-                                    }))}
-                                />
-                                <QueueCard
-                                    title="R√∫t ti·ªÅn"
-                                    count={fmtNumber(queueSummary.withdrawalCount)}
-                                    href="/admin/withdrawals"
-                                    toneKey="withdrawals"
-                                    items={withdrawals.map((item) => ({
-                                        title: item.schoolName || "Y√™u c·∫ßu r√∫t ti·ªÅn",
-                                        meta: `${fmtCurrency(item.amount)} ¬∑ ${item.bankName || "Ch∆∞a c√≥ ng√¢n h√†ng"}`,
-                                    }))}
-                                />
-                                <QueueCard
-                                    title="H·ªó tr·ª£"
-                                    count={fmtNumber(queueSummary.supportCount)}
-                                    href="/admin/complaints"
-                                    toneKey="support"
-                                    items={complaints.map((item) => ({
-                                        title: item.title,
-                                        meta: `${item.schoolName} ¬∑ ${fmtDate(item.createdAt)}`,
-                                    }))}
-                                />
-                                <QueueCard
-                                    title="T√†i ch√≠nh"
-                                    count={fmtNumber(queueSummary.financeWatch)}
-                                    href="/admin/transactions"
-                                    toneKey="finance"
-                                    items={transactions
-                                        .filter((item) => item.status === "Pending" || item.status === "Processing")
-                                        .map((item) => ({
-                                            title: item.orderCode ? `ƒê∆°n ${item.orderCode}` : item.transactionType,
-                                            meta: `${item.status} ¬∑ ${fmtDate(item.createdAt)}`,
-                                        }))}
-                                />
-                            </div>
-                        </section>
-
-                        <section className="grid gap-4 xl:grid-cols-[1.2fr,0.8fr]">
-                            <ActivityList
-                                title="Ho·∫°t ƒë·ªông g·∫ßn ƒë√¢y"
-                                emptyText="Ch∆∞a c√≥ ho·∫°t ƒë·ªông g·∫ßn ƒë√¢y t·ª´ analytics."
-                                items={recentActivity}
-                            />
-
-                            <section className="rounded-[24px] border p-5 shadow-soft-lg" style={{ borderColor: tone.line, background: tone.shell }}>
-                                <h2 className="text-[20px] font-black" style={{ color: tone.pageInk }}>
-                                    Xu·∫•t b√°o c√°o nhanh
-                                </h2>
-
-                                <div className="mt-5 space-y-3">
-                                    {["orders", "revenue", "users", "payments"].map((reportType) => (
-                                        <div
-                                            key={reportType}
-                                            className="rounded-2xl border px-4 py-4"
-                                            style={{ borderColor: tone.line, background: tone.soft }}
-                                        >
-                                            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                                                <div>
-                                                    <p className="text-[15px] font-black" style={{ color: tone.pageInk }}>
-                                                        {exportLabel(reportType)}
-                                                    </p>
-                                                </div>
-                                                <div className="flex flex-wrap gap-2">
-                                                    {(["CSV", "EXCEL", "PDF"] as const).map((format) => {
-                                                        const key = `${reportType}:${format}`;
-                                                        return (
-                                                            <button
-                                                                key={format}
-                                                                onClick={() => handleExport(reportType, format)}
-                                                                disabled={exporting === key}
-                                                                className="inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-[13px] font-black transition-all disabled:opacity-50"
-                                                                style={{ borderColor: tone.line, background: "#fff", color: tone.pageInk }}
-                                                            >
-                                                                <Download className="h-4 w-4" />
-                                                                {exporting === key ? "ƒêang xu·∫•t..." : format}
-                                                            </button>
-                                                        );
-                                                    })}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
+                        {loading ? (
+                            <section className="rounded-[8px] border border-gray-200 bg-white p-10 text-center shadow-soft-sm">
+                                <Loader2 className="mx-auto mb-3 h-8 w-8 animate-spin text-rose-700" />
+                                <p className="text-sm font-semibold text-[#4c5769]">–ang t?i t?ng quan h? th?ng...</p>
                             </section>
-                        </section>
-
-                        <section className="grid gap-4 xl:grid-cols-3">
-                            <ActivityList
-                                title="Giao d·ªãch m·ªõi"
-                                emptyText="Ch∆∞a c√≥ giao d·ªãch m·ªõi ƒë·ªÉ hi·ªÉn th·ªã."
-                                items={transactions.map((item) => ({
-                                    title: item.orderCode ? `ƒê∆°n ${item.orderCode}` : item.transactionType,
-                                    meta: `${item.status} ¬∑ ${fmtDate(item.createdAt)}`,
-                                    value: fmtCurrency(item.amount),
-                                }))}
-                            />
-                            <ActivityList
-                                title="R√∫t ti·ªÅn ch·ªù duy·ªát"
-                                emptyText="Kh√¥ng c√≥ y√™u c·∫ßu r√∫t ti·ªÅn ch·ªù duy·ªát."
-                                items={withdrawals.map((item) => ({
-                                    title: item.schoolName || "Y√™u c·∫ßu r√∫t ti·ªÅn",
-                                    meta: `${item.bankName || "Ch∆∞a c√≥ ng√¢n h√†ng"} ¬∑ ${fmtDate(item.requestedAt)}`,
-                                    value: fmtCurrency(item.amount),
-                                }))}
-                            />
-                            <ActivityList
-                                title="V√πng r·ªßi ro h·ªó tr·ª£"
-                                emptyText="Kh√¥ng c√≥ khi·∫øu n·∫°i m·ªü trong th·ªùi ƒëi·ªÉm n√†y."
-                                items={complaints.map((item) => ({
-                                    title: item.title,
-                                    meta: `${item.schoolName} ¬∑ ${item.providerName || "Ch∆∞a c√≥ NCC"} ¬∑ ${fmtDate(item.createdAt)}`,
-                                }))}
-                            />
-                        </section>
-
-                        <section className="rounded-[24px] border p-5 shadow-soft-lg" style={{ borderColor: tone.line, background: tone.shell }}>
-                            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                                <div>
-                                    <h2 className="text-[20px] font-black" style={{ color: tone.pageInk }}>
-                                        L·ªëi t·∫Øt ƒëi·ªÅu ph·ªëi
-                                    </h2>
-                                </div>
-                                <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
-                                    {[
-                                        {
-                                            href: "/admin/account-requests",
-                                            icon: <FolderClock className="h-4 w-4" />,
-                                            label: "X·ª≠ l√Ω c·∫•p t√†i kho·∫£n",
-                                        },
-                                        {
-                                            href: "/admin/withdrawals",
-                                            icon: <Wallet className="h-4 w-4" />,
-                                            label: "Duy·ªát r√∫t ti·ªÅn",
-                                        },
-                                        {
-                                            href: "/admin/transactions",
-                                            icon: <CreditCard className="h-4 w-4" />,
-                                            label: "Theo d√µi giao d·ªãch",
-                                        },
-                                        {
-                                            href: "/admin/complaints",
-                                            icon: <AlertTriangle className="h-4 w-4" />,
-                                            label: "Can thi·ªáp h·ªó tr·ª£",
-                                        },
-                                        {
-                                            href: "/admin/semester-monitor",
-                                            icon: <BarChart3 className="h-4 w-4" />,
-                                            label: "B√°o c√°o h·ªçc k·ª≥",
-                                        },
-                                    ].map((item) => (
-                                        <Link
-                                            key={item.href}
-                                            to={item.href}
-                                            className="inline-flex items-center justify-center gap-2 rounded-2xl border px-4 py-3 text-[14px] font-black transition-all hover:-translate-y-px"
-                                            style={{ borderColor: tone.line, background: tone.soft, color: tone.pageInk }}
-                                        >
-                                            {item.icon}
-                                            {item.label}
-                                        </Link>
+                        ) : (
+                            <>
+                                <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                                    {metrics.map((metric) => (
+                                        <SummaryCard key={metric.label} {...metric} />
                                     ))}
-                                </div>
-                            </div>
-                        </section>
+                                </section>
 
+                                <section className="grid items-start gap-4 xl:grid-cols-12">
+                                    <div className="xl:col-span-7">
+                                        <SystemGrowthChart data={growthChartData} />
+                                    </div>
+                                    <div className="xl:col-span-5">
+                                        <CashFlowChart data={data.cashFlow?.revenueChart ?? []} />
+                                    </div>
+                                    <div className="xl:col-span-6">
+                                        <OrderHealthChart data={orderStatusData} />
+                                    </div>
+                                    <div className="xl:col-span-6">
+                                        <PaymentHealthChart data={paymentStatusData} />
+                                    </div>
+                                    <div className="xl:col-span-12">
+                                        <TopUniformsPanel data={data.analytics?.topSellingUniforms ?? []} />
+                                    </div>
+                                </section>
+                            </>
+                        )}
                     </main>
                 </div>
             </div>

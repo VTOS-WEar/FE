@@ -25,11 +25,11 @@ export const FeaturesHighlightSection = (): JSX.Element => {
   return (
     <section
       id="how-it-works"
-      className="nb-section-loud"
+      className="nb-section-loud py-10 lg:py-12"
     >
-      <div className="mx-auto w-full max-w-[1100px] px-4 md:px-8">
+      <div className="mx-auto w-full max-w-[1400px] px-4 md:px-8 lg:px-12">
         {/* Header */}
-        <header className="mb-14 text-center nb-reveal">
+        <header className="mb-8 text-center nb-reveal lg:mb-9">
           <h2 className="text-3xl font-extrabold leading-[1.15] text-gray-900 md:text-4xl lg:text-[2.75rem]">
             Cách hoạt động
           </h2>
@@ -39,7 +39,7 @@ export const FeaturesHighlightSection = (): JSX.Element => {
         </header>
 
         {/* 3-step cards */}
-        <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
           {steps.map((step, index) => {
             const Icon = step.icon;
             return (

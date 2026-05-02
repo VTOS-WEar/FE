@@ -12,6 +12,7 @@ interface OTPVerificationProps {
     /** Called when OTP is confirmed — receives the 6-digit code to pass to the sign endpoint. */
     onVerified: (otpCode: string) => void;
     onCancel: () => void;
+    accent?: "default" | "provider";
 }
 
 const OTP_LENGTH = 6;
@@ -23,7 +24,12 @@ export function OTPVerification({
     onRequestOTP,
     onVerified,
     onCancel,
+    accent = "default",
 }: OTPVerificationProps) {
+    const isProviderAccent = accent === "provider";
+    const accentSurface = isProviderAccent ? "bg-blue-50" : "bg-violet-50";
+    const accentText = isProviderAccent ? "text-blue-600" : "text-violet-600";
+    const primaryButton = isProviderAccent ? "nb-btn-provider" : "nb-btn-purple";
     const [digits, setDigits] = useState<string[]>(Array(OTP_LENGTH).fill(""));
     const [countdown, setCountdown] = useState(RESEND_SECONDS);
     const [sending, setSending] = useState(false);
@@ -128,12 +134,12 @@ export function OTPVerification({
             >
                 {/* Header */}
                 <div className="text-center mb-6">
-                    <div className="w-14 h-14 rounded-full bg-violet-50 border border-gray-200 flex items-center justify-center text-2xl mx-auto mb-3">
+                    <div className={`w-14 h-14 rounded-full ${accentSurface} border border-gray-200 flex items-center justify-center text-2xl mx-auto mb-3`}>
                         🔐
                     </div>
                     <h3 className="font-extrabold text-gray-900 text-lg">Xác thực danh tính</h3>
                     {signerName && (
-                        <p className="text-sm font-bold text-violet-600 mt-1">{signerName}</p>
+                        <p className={`text-sm font-bold ${accentText} mt-1`}>{signerName}</p>
                     )}
                     <p className="text-sm text-gray-500 mt-2 leading-relaxed">
                         {sent ? (
@@ -190,7 +196,7 @@ export function OTPVerification({
                         <button
                             onClick={handleSend}
                             disabled={sending}
-                            className="text-xs font-bold text-violet-600 underline underline-offset-2 disabled:opacity-50"
+                            className={`text-xs font-bold ${accentText} underline underline-offset-2 disabled:opacity-50`}
                         >
                             {sending ? "Đang gửi..." : "Gửi lại mã OTP"}
                         </button>
@@ -205,7 +211,7 @@ export function OTPVerification({
                     <button
                         onClick={handleVerify}
                         disabled={code.length < OTP_LENGTH || verifying}
-                        className="flex-1 nb-btn nb-btn-purple text-sm disabled:opacity-40 disabled:cursor-not-allowed"
+                        className={`flex-1 nb-btn ${primaryButton} text-sm disabled:opacity-40 disabled:cursor-not-allowed`}
                     >
                         {verifying ? (
                             <span className="flex items-center justify-center gap-2">

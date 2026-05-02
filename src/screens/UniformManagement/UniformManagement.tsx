@@ -1,27 +1,24 @@
 import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
-import { useState, useEffect, useMemo, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
     Box,
+    ChevronDown,
     Eye,
     EyeOff,
+    ImagePlus,
+    Loader2,
     Pencil,
     Plus,
     Search,
     Shirt,
     Trash2,
+    X,
 } from "lucide-react";
 import { useToast } from "../../contexts/ToastContext";
-import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-} from "../../components/ui/breadcrumb";
 import { DashboardSidebar } from "../../components/layout";
 import { TopNavBar } from "../../components/layout/TopNavBar";
+import { SCHOOL_THEME } from "../../constants/schoolTheme";
 import { useSidebarConfig } from "../../hooks/useSidebarConfig";
 import {
     getSchoolProfile,
@@ -56,6 +53,8 @@ const OUTFIT_TYPE_OPTIONS = [
     { value: 3, label: "Phụ kiện" },
     { value: 4, label: "Khác" },
 ];
+
+const MIN_FILTER_FEEDBACK_MS = 700;
 
 function inferOutfitTypeFromCategoryName(categoryName: string): number {
     const normalized = categoryName
@@ -183,30 +182,37 @@ function OutfitFormModal({
         );
     };
 
-    const modernInputClass = "w-full rounded-[10px] border border-gray-200 bg-white px-4 py-3 text-[15px] font-medium text-gray-900 shadow-soft-sm outline-none transition-all placeholder:text-gray-400 focus:border-purple-400 focus:ring-2 focus:ring-purple-200/50";
+    const modernInputClass = `w-full rounded-[8px] border border-gray-200 bg-white px-4 py-3 text-[15px] font-medium text-gray-900 shadow-soft-sm outline-none transition-all placeholder:text-gray-400 ${SCHOOL_THEME.primaryFocus}`;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-            <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-            <div className="relative mx-4 max-h-[90vh] w-full max-w-[640px] overflow-y-auto rounded-[18px] border border-gray-200 bg-white shadow-soft-lg">
-                <div className="sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-gray-200 bg-violet-50 px-6 py-5">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div className="absolute inset-0 bg-slate-950/45" onClick={onClose} />
+            <div className="relative max-h-[92vh] w-full max-w-[920px] overflow-hidden rounded-[8px] border border-gray-200 bg-white shadow-soft-lg">
+                <div className="sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-gray-200 bg-white px-6 py-5">
                     <div>
-                        <div className="mb-2 inline-flex items-center gap-2 rounded-[8px] border border-yellow-200 bg-yellow-50 px-3 py-1 text-[12px] font-black shadow-soft-sm">
-                            {isEditing ? "✏️ CHỈNH SỬA MẪU" : "➕ THÊM MỚI"}
+                        <div className={`mb-2 inline-flex items-center gap-2 rounded-full border ${SCHOOL_THEME.primarySoftBorder} ${SCHOOL_THEME.primarySoftBg} px-3 py-1 text-[12px] font-bold uppercase tracking-[0.12em] ${SCHOOL_THEME.primaryText}`}>
+                            {isEditing ? "Chỉnh sửa mẫu" : "Thêm mẫu mới"}
                         </div>
-                        <h2 className="text-[24px] font-black leading-none text-gray-900 md:text-[28px]">
+                        <h2 className="text-2xl font-bold leading-none text-gray-900">
                             {isEditing ? "Chỉnh sửa mẫu đồng phục" : "Thêm mẫu đồng phục mới"}
                         </h2>
                     </div>
-                    <button onClick={onClose} className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-[10px] border border-gray-200 bg-white text-[22px] font-black shadow-soft-sm transition-all hover:scale-[0.99] hover:shadow-soft-sm active:scale-[0.98] active:shadow-none">×</button>
+                    <button
+                        onClick={onClose}
+                        className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-[8px] border border-gray-200 bg-white text-gray-700 shadow-soft-sm transition-colors hover:bg-slate-50"
+                        aria-label="Đóng"
+                    >
+                        <X className="h-5 w-5" />
+                    </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-6 px-6 py-6 md:px-8 md:py-8">
-                    <section>
-                        <label className="mb-2 block text-[14px] font-extrabold text-gray-900">Thiết kế đồng phục</label>
-                        <div className="rounded-[14px] border border-purple-200 bg-violet-50 p-3 shadow-soft-sm">
+                <form onSubmit={handleSubmit} className="max-h-[calc(92vh-154px)] overflow-y-auto px-6 py-6 md:px-8">
+                    <div className="grid gap-6 lg:grid-cols-[360px_1fr]">
+                    <section className="space-y-5">
+                        <label className="mb-2 block text-[14px] font-bold text-gray-900">Thiết kế đồng phục</label>
+                        <div className={`rounded-[8px] border ${SCHOOL_THEME.primarySoftBorder} ${SCHOOL_THEME.primarySoftBg} p-3 shadow-soft-sm`}>
                             <div
-                                className="relative flex min-h-[200px] cursor-pointer items-center justify-center rounded-[10px] border-[2px] border-dashed border-[#8B6BFF] bg-white/70 px-4 py-6"
+                                className={`relative flex min-h-[340px] cursor-pointer items-center justify-center overflow-hidden rounded-[8px] border-2 border-dashed ${SCHOOL_THEME.primarySoftBorder} bg-slate-50 px-4 py-6 transition-colors hover:border-blue-300`}
                                 onClick={() => fileInputRef.current?.click()}
                                 onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
                                 onDrop={(e) => {
@@ -218,49 +224,38 @@ function OutfitFormModal({
                             >
                                 <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={(e) => handleFileChange(e.target.files?.[0] || null)} />
                                 {imagePreview ? (
-                                    <>
-                                        <button type="button" onClick={(e) => { e.stopPropagation(); setImageFile(null); setImagePreview(null); setForm((f) => ({ ...f, mainImageURL: "" })); }} className="absolute right-3 top-3 z-10 flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-400 shadow-soft-sm transition-all hover:scale-[0.99] hover:shadow-soft-sm hover:text-red-500">×</button>
-                                        <img src={imagePreview} alt="Preview" className="h-[180px] w-[180px] rounded-[10px] border border-gray-200 object-cover shadow-soft-sm" />
-                                    </>
+                                    <div className="relative flex h-[300px] w-full items-center justify-center">
+                                        <img src={imagePreview} alt="Preview" className="max-h-full max-w-full object-contain drop-shadow-md" />
+                                        <button
+                                            type="button"
+                                            onClick={(e) => { e.stopPropagation(); setImageFile(null); setImagePreview(null); setForm((f) => ({ ...f, mainImageURL: "" })); }}
+                                            className="absolute right-0 top-0 z-10 flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-400 shadow-soft-sm transition-colors hover:text-red-500"
+                                            aria-label="Xóa ảnh"
+                                        >
+                                            <X className="h-4 w-4" />
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }}
+                                            className={`absolute bottom-0 right-0 z-10 rounded-[8px] border ${SCHOOL_THEME.primarySoftBorder} bg-white px-3 py-2 text-xs font-bold ${SCHOOL_THEME.primaryText} shadow-soft-sm transition-colors hover:bg-blue-50`}
+                                        >
+                                            Đổi ảnh
+                                        </button>
+                                    </div>
                                 ) : (
                                     <div className="flex flex-col items-center gap-3 text-center">
-                                        <div className="flex h-12 w-12 items-center justify-center rounded-[10px] border border-gray-200 bg-white shadow-soft-sm">
-                                            <svg className="h-6 w-6 text-violet-500" viewBox="0 0 24 24" fill="currentColor"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z" /></svg>
+                                        <div className={`flex h-12 w-12 items-center justify-center rounded-[8px] border ${SCHOOL_THEME.primarySoftBorder} bg-white ${SCHOOL_THEME.primaryText} shadow-soft-sm`}>
+                                            <ImagePlus className="h-6 w-6" />
                                         </div>
-                                        <p className="text-[14px] font-extrabold text-gray-900">Kéo thả hoặc nhấn để chọn ảnh</p>
-                                        <p className="text-[13px] font-bold text-gray-500">JPG, PNG tối đa 5MB. Đây là ảnh thiết kế để Provider tiếp nhận và hoàn thiện thông tin bán hàng.</p>
+                                        <p className="text-[14px] font-bold text-gray-900">Kéo thả hoặc nhấn để chọn ảnh</p>
+                                        <p className="text-[13px] font-bold leading-5 text-gray-500">JPG, PNG hoặc WebP tối đa 5MB. Ảnh này sẽ hiển thị trong danh sách mẫu đồng phục của trường.</p>
                                     </div>
                                 )}
                             </div>
                         </div>
                         {uploadError && <p className="mt-2 text-[13px] font-bold text-[#FF6B57]">{uploadError}</p>}
-                    </section>
-
-                    <section className="grid gap-5 md:grid-cols-2">
-                        <div className="md:col-span-2">
-                            <label className="mb-2 block text-[14px] font-extrabold text-gray-900">Tên mẫu <span className="ml-1 text-red-500">*</span></label>
-                            <input type="text" value={form.outfitName} onChange={(e) => setForm((f) => ({ ...f, outfitName: e.target.value }))} placeholder="VD: Áo sơ mi Nam" className={`${modernInputClass} ${isNameOver ? "!border-[#EF4444]" : ""}`} required maxLength={50} />
-                            <div className={`mt-1 text-right text-xs font-semibold ${isNameOver ? "text-red-500" : nameLength > 40 ? "text-[#F59E0B]" : "text-gray-400"}`}>{nameLength}/50</div>
-                        </div>
-
-                        <div className="md:col-span-2">
-                            <div className="mb-2 flex items-center justify-between">
-                                <label className="block text-[14px] font-extrabold text-gray-900">Mô tả thiết kế</label>
-                                <button type="button" onClick={() => setShowPreview(!showPreview)} className={`flex items-center gap-1.5 rounded-[8px] border border-gray-200 px-3 py-1.5 text-[12px] font-extrabold transition-all ${showPreview ? "bg-violet-500 text-white shadow-soft-sm" : "bg-white text-gray-900 shadow-soft-sm hover:bg-violet-50"}`}>{showPreview ? "Chỉnh sửa" : "Xem trước"}</button>
-                            </div>
-                            <div className={showPreview ? "hidden" : ""}>
-                                <RichTextEditor value={form.description} onChange={(html) => setForm((f) => ({ ...f, description: html }))} placeholder="VD: Mẫu áo sơ mi cổ Đức, tay dài, dùng cho học sinh nam khối THCS..." />
-                            </div>
-                            {showPreview && (
-                                <div className="min-h-[120px] rounded-[8px] border border-violet-200 bg-violet-50 px-5 py-4 shadow-soft-sm">
-                                    {form.description ? <div className="prose-editor-content text-[15px] leading-relaxed text-gray-700" dangerouslySetInnerHTML={{ __html: form.description }} /> : <p className="text-[15px] italic font-normal text-gray-400">Chưa có nội dung mô tả.</p>}
-                                </div>
-                            )}
-                            <div className={`mt-1 text-right text-xs font-semibold ${isDescOver ? "text-red-500" : descLength > 400 ? "text-[#F59E0B]" : "text-gray-400"}`}>{descLength}/500</div>
-                        </div>
-
-                        <div>
-                            <label className="mb-2 block text-[14px] font-extrabold text-gray-900">Loại đồng phục</label>
+                        <div className="hidden">
+                            <label className="mb-2 block text-[14px] font-bold text-gray-900">Loại đồng phục</label>
                             <select
                                 value={form.categoryId}
                                 onChange={(e) => {
@@ -283,12 +278,63 @@ function OutfitFormModal({
                             )}
                         </div>
                     </section>
+
+                    <section className="space-y-4">
+                        <div className="grid gap-4 xl:grid-cols-[minmax(0,1.35fr)_minmax(220px,0.65fr)]">
+                        <div>
+                            <label className="mb-2 block text-[14px] font-bold text-gray-900">Tên mẫu <span className="ml-1 text-red-500">*</span></label>
+                            <input type="text" value={form.outfitName} onChange={(e) => setForm((f) => ({ ...f, outfitName: e.target.value }))} placeholder="VD: Áo sơ mi Nam" className={`${modernInputClass} ${isNameOver ? "!border-[#EF4444]" : ""}`} required maxLength={50} />
+                            <div className={`mt-1 text-right text-xs font-semibold ${isNameOver ? "text-red-500" : nameLength > 40 ? "text-[#F59E0B]" : "text-gray-400"}`}>{nameLength}/50</div>
+                        </div>
+
+                        <div>
+                            <label className="mb-2 block text-[14px] font-bold text-gray-900">Loại đồng phục</label>
+                            <select
+                                value={form.categoryId}
+                                onChange={(e) => {
+                                    const category = categories.find((item) => item.categoryId === e.target.value);
+                                    setForm((f) => ({
+                                        ...f,
+                                        categoryId: e.target.value,
+                                        outfitType: category ? inferOutfitTypeFromCategoryName(category.categoryName) : 1,
+                                    }));
+                                }}
+                                className={modernInputClass}
+                            >
+                                <option value="">Chọn danh mục</option>
+                                {categories.map((category) => (
+                                    <option key={category.categoryId} value={category.categoryId}>{category.categoryName}</option>
+                                ))}
+                            </select>
+                            {categories.length === 0 && (
+                                <p className="mt-2 text-[13px] font-bold text-amber-600">Admin cần tạo danh mục trước khi trường gắn danh mục cho đồng phục.</p>
+                            )}
+                        </div>
+                        </div>
+
+                        <div>
+                            <div className="mb-2 flex items-center justify-between">
+                                <label className="block text-[14px] font-bold text-gray-900">Mô tả thiết kế</label>
+                                <button type="button" onClick={() => setShowPreview(!showPreview)} className={`flex items-center gap-1.5 rounded-[8px] border px-3 py-1.5 text-[12px] font-bold transition-colors ${showPreview ? "border-blue-500 bg-[#2563EB] text-white shadow-soft-sm" : "border-gray-200 bg-white text-gray-900 shadow-soft-sm hover:border-blue-200 hover:text-[#2563EB]"}`}>{showPreview ? "Chỉnh sửa" : "Xem trước"}</button>
+                            </div>
+                            <div className={showPreview ? "hidden" : ""}>
+                                <RichTextEditor value={form.description} onChange={(html) => setForm((f) => ({ ...f, description: html }))} placeholder="VD: Mẫu áo sơ mi cổ Đức, tay dài, dùng cho học sinh nam khối THCS..." />
+                            </div>
+                            {showPreview && (
+                                <div className={`min-h-[120px] rounded-[8px] border ${SCHOOL_THEME.primarySoftBorder} ${SCHOOL_THEME.primarySoftBg} px-5 py-4 shadow-soft-sm`}>
+                                    {form.description ? <div className="prose-editor-content text-[15px] leading-relaxed text-gray-700" dangerouslySetInnerHTML={{ __html: form.description }} /> : <p className="text-[15px] italic font-normal text-gray-400">Chưa có nội dung mô tả.</p>}
+                                </div>
+                            )}
+                            <div className={`mt-1 text-right text-xs font-semibold ${isDescOver ? "text-red-500" : descLength > 400 ? "text-[#F59E0B]" : "text-gray-400"}`}>{descLength}/500</div>
+                        </div>
+                    </section>
+                    </div>
                 </form>
 
-                <div className="flex flex-col-reverse gap-3 border-t border-gray-200 bg-[#FFFDF9] px-6 py-5 sm:flex-row sm:justify-end">
-                    <button type="button" onClick={onClose} className="rounded-[8px] border border-gray-200 bg-white px-5 py-3 text-[15px] font-extrabold text-gray-900 shadow-soft-sm transition-all hover:scale-[0.99]">Huỷ</button>
-                    <button onClick={handleSubmit} disabled={isLoading || !form.outfitName.trim() || isNameOver || isDescOver} className="flex items-center justify-center gap-2 rounded-[8px] bg-violet-500 px-5 py-3 text-[15px] font-extrabold text-white shadow-soft-sm transition-all hover:scale-[0.99] disabled:opacity-50">
-                        {isLoading && <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" strokeOpacity="0.25" /><path d="M4 12a8 8 0 018-8" strokeLinecap="round" /></svg>}
+                <div className="flex flex-col-reverse gap-3 border-t border-gray-200 bg-white px-6 py-5 sm:flex-row sm:justify-end">
+                    <button type="button" onClick={onClose} className="rounded-[8px] border border-gray-200 bg-white px-5 py-3 text-[15px] font-bold text-gray-900 shadow-soft-sm transition-all hover:scale-[0.99]">Huỷ</button>
+                    <button onClick={handleSubmit} disabled={isLoading || !form.outfitName.trim() || isNameOver || isDescOver} className={SCHOOL_THEME.primaryButton}>
+                        {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
                         {isEditing ? "Lưu thay đổi" : "Tạo mẫu"}
                     </button>
                 </div>
@@ -310,14 +356,14 @@ function DeleteConfirmDialog({
                 <div className="border-b border-gray-200 bg-red-50 px-6 py-4">
                     <div className="flex items-center gap-3">
                         <div className="flex h-10 w-10 items-center justify-center rounded-[8px] border border-gray-200 bg-white text-lg shadow-soft-sm">🗑️</div>
-                        <h3 className="text-[18px] font-black text-gray-900">Xóa mẫu đồng phục?</h3>
+                        <h3 className="text-[18px] font-bold text-gray-900">Xóa mẫu đồng phục?</h3>
                     </div>
                 </div>
                 <div className="px-6 py-5">
                     <p className="mb-5 text-[15px] font-semibold text-gray-500">Bạn có chắc muốn xóa <strong>"{outfitName}"</strong>? Hành động này không thể hoàn tác.</p>
                     <div className="flex justify-end gap-3">
-                        <button onClick={onClose} className="rounded-[8px] border border-gray-200 bg-white px-5 py-3 text-[15px] font-extrabold text-gray-900 shadow-soft-sm transition-all">Huỷ</button>
-                        <button onClick={onConfirm} disabled={isLoading} className="flex items-center gap-2 rounded-[8px] bg-red-500 px-5 py-3 text-[15px] font-extrabold text-white shadow-soft-sm disabled:opacity-50">
+                        <button onClick={onClose} className="rounded-[8px] border border-gray-200 bg-white px-5 py-3 text-[15px] font-bold text-gray-900 shadow-soft-sm transition-all">Huỷ</button>
+                        <button onClick={onConfirm} disabled={isLoading} className="flex items-center gap-2 rounded-[8px] bg-red-500 px-5 py-3 text-[15px] font-bold text-white shadow-soft-sm disabled:opacity-50">
                             {isLoading && <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" strokeOpacity="0.25" /><path d="M4 12a8 8 0 018-8" strokeLinecap="round" /></svg>}
                             Xóa
                         </button>
@@ -341,14 +387,14 @@ function HideConfirmDialog({
                 <div className="border-b border-gray-200 bg-amber-50 px-6 py-4">
                     <div className="flex items-center gap-3">
                         <div className="flex h-10 w-10 items-center justify-center rounded-[8px] border border-gray-200 bg-white text-lg shadow-soft-sm">🙈</div>
-                        <h3 className="text-[18px] font-black text-gray-900">Ẩn mẫu đồng phục?</h3>
+                        <h3 className="text-[18px] font-bold text-gray-900">Ẩn mẫu đồng phục?</h3>
                     </div>
                 </div>
                 <div className="px-6 py-5">
                     <p className="mb-5 text-[15px] font-semibold text-gray-500">Mẫu <strong>"{outfitName}"</strong> đã từng thuộc chiến dịch đã hoàn tất nên không thể xóa. Bạn có muốn ẩn mẫu này khỏi trang công khai không?</p>
                     <div className="flex justify-end gap-3">
-                        <button onClick={onClose} className="rounded-[8px] border border-gray-200 bg-white px-5 py-3 text-[15px] font-extrabold text-gray-900 shadow-soft-sm transition-all">Huỷ</button>
-                        <button onClick={onConfirm} disabled={isLoading} className="flex items-center gap-2 rounded-[8px] bg-amber-600 px-5 py-3 text-[15px] font-extrabold text-white shadow-soft-sm disabled:opacity-50">
+                        <button onClick={onClose} className="rounded-[8px] border border-gray-200 bg-white px-5 py-3 text-[15px] font-bold text-gray-900 shadow-soft-sm transition-all">Huỷ</button>
+                        <button onClick={onConfirm} disabled={isLoading} className="flex items-center gap-2 rounded-[8px] bg-amber-600 px-5 py-3 text-[15px] font-bold text-white shadow-soft-sm disabled:opacity-50">
                             {isLoading && <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" strokeOpacity="0.25" /><path d="M4 12a8 8 0 018-8" strokeLinecap="round" /></svg>}
                             Ẩn
                         </button>
@@ -359,115 +405,14 @@ function HideConfirmDialog({
     );
 }
 
-function StatCard({
-    label,
-    value,
-    tone,
-}: {
-    label: string;
-    value: number;
-    tone: "violet" | "blue" | "amber";
-}) {
-    const toneMap = {
-        violet: "from-violet-50 to-white border-violet-200 text-violet-700",
-        blue: "from-sky-50 to-white border-sky-200 text-sky-700",
-        amber: "from-amber-50 to-white border-amber-200 text-amber-700",
-    };
-
-    return (
-        <div className={`rounded-2xl border bg-gradient-to-br p-5 shadow-soft-md ${toneMap[tone]}`}>
-            <p className="text-sm font-semibold uppercase tracking-[0.12em] opacity-80">{label}</p>
-            <p className="mt-3 text-3xl font-extrabold text-gray-900">{value}</p>
-        </div>
-    );
-}
-
-function UniformCard({ item, onEdit, onDelete, onHide, onUnhide }: {
-    item: OutfitDto;
-    onEdit: (item: OutfitDto) => void;
-    onDelete: (item: OutfitDto) => void;
-    onHide: (item: OutfitDto) => void;
-    onUnhide: (item: OutfitDto) => void;
-}) {
-    return (
-        <div className="overflow-hidden rounded-[26px] border border-gray-200 bg-white shadow-soft-md transition-all hover:-translate-y-1 hover:border-violet-300 hover:shadow-soft-lg">
-            <div className="relative flex aspect-[4/3] w-full items-center justify-center border-b border-gray-200 bg-gray-100">
-                {item.mainImageURL ? (
-                    <img src={item.mainImageURL} alt={item.outfitName} className="h-full w-full object-cover" />
-                ) : (
-                    <Shirt className="h-14 w-14 text-gray-300" />
-                )}
-                <div className="absolute left-3 top-3 flex flex-wrap gap-2">
-                    <span className="rounded-full border border-white/80 bg-white/90 px-3 py-1 text-[11px] font-black text-gray-700 shadow-soft-sm">
-                        {item.categoryName || OUTFIT_TYPE_LABELS[item.outfitType] || "Khác"}
-                    </span>
-                    <span className={`rounded-full border px-3 py-1 text-[11px] font-black shadow-soft-sm ${item.isAvailable ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-amber-200 bg-amber-50 text-amber-700"}`}>
-                        {item.isAvailable ? "Đang hiển thị" : "Tạm ẩn"}
-                    </span>
-                </div>
-            </div>
-
-            <div className="flex flex-col gap-4 p-5">
-                <div>
-                    <h3 className="text-lg font-extrabold leading-tight text-gray-900">{item.outfitName}</h3>
-                    <p className="mt-2 line-clamp-3 text-sm font-medium leading-6 text-[#4c5769]">
-                        {item.description ? stripHtml(item.description) : "Chưa có mô tả cho mẫu đồng phục này."}
-                    </p>
-                </div>
-
-                <div className="grid grid-cols-3 gap-2">
-                    <button onClick={() => onEdit(item)} className="flex items-center justify-center gap-1 rounded-[12px] border border-gray-200 bg-white px-3 py-2.5 text-[12px] font-bold text-gray-700 transition-all hover:border-violet-200 hover:text-violet-700">
-                        <Pencil className="h-3.5 w-3.5" />
-                        Sửa
-                    </button>
-                    {item.canDelete ? (
-                        <button onClick={() => onDelete(item)} className="flex items-center justify-center gap-1 rounded-[12px] border border-red-200 bg-red-50 px-3 py-2.5 text-[12px] font-bold text-red-600 transition-all hover:bg-red-100">
-                            <Trash2 className="h-3.5 w-3.5" />
-                            Xóa
-                        </button>
-                    ) : item.isAvailable ? (
-                        <button onClick={() => onHide(item)} className="flex items-center justify-center gap-1 rounded-[12px] border border-amber-200 bg-amber-50 px-3 py-2.5 text-[12px] font-bold text-amber-700 transition-all hover:bg-amber-100">
-                            <EyeOff className="h-3.5 w-3.5" />
-                            Ẩn
-                        </button>
-                    ) : (
-                        <button onClick={() => onUnhide(item)} className="flex items-center justify-center gap-1 rounded-[12px] border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-[12px] font-bold text-emerald-700 transition-all hover:bg-emerald-100">
-                            <Eye className="h-3.5 w-3.5" />
-                            Hiện
-                        </button>
-                    )}
-                    <div className="flex items-center justify-center rounded-[12px] border border-gray-200 bg-gray-50 px-3 py-2.5 text-[12px] font-bold text-gray-500">
-                        Design only
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-}
-
-function UploadPlaceholderCard({ onClick }: { onClick: () => void }) {
-    return (
-        <button
-            type="button"
-            onClick={onClick}
-            className="flex min-h-[340px] flex-col items-center justify-center rounded-[26px] border-2 border-dashed border-violet-200 bg-[linear-gradient(180deg,_#ffffff_0%,_#faf5ff_100%)] p-6 text-center transition-all duration-200 hover:-translate-y-1 hover:border-violet-400 hover:bg-violet-50"
-        >
-            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-violet-200 bg-white text-violet-600 shadow-soft-sm">
-                <Plus className="h-8 w-8" />
-            </div>
-            <p className="text-base font-extrabold text-gray-900">Thêm thiết kế mới</p>
-        </button>
-    );
-}
-
 function EmptyState({ onCreate }: { onCreate: () => void }) {
     return (
-        <div className="rounded-[26px] border border-gray-200 bg-white p-12 text-center shadow-soft-md">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border border-violet-200 bg-violet-50 text-violet-600 shadow-soft-sm">
+        <div className="rounded-[8px] border border-gray-200 bg-white p-12 text-center shadow-soft-sm">
+            <div className={`mx-auto flex h-16 w-16 items-center justify-center rounded-full border ${SCHOOL_THEME.primarySoftBorder} ${SCHOOL_THEME.primarySoftBg} ${SCHOOL_THEME.primaryText} shadow-soft-sm`}>
                 <Box className="h-8 w-8" />
             </div>
-            <h2 className="mt-5 text-xl font-extrabold text-gray-900">Chưa có thiết kế đồng phục nào</h2>
-            <button onClick={onCreate} className="nb-btn nb-btn-purple mt-5 text-sm">
+            <h2 className="mt-5 text-xl font-bold text-gray-900">Chưa có thiết kế đồng phục nào</h2>
+            <button onClick={onCreate} className={`${SCHOOL_THEME.primaryButton} mt-5`}>
                 Tạo mẫu đầu tiên
             </button>
         </div>
@@ -475,20 +420,18 @@ function EmptyState({ onCreate }: { onCreate: () => void }) {
 }
 
 function SearchEmptyState({
-    search,
     onClear,
 }: {
-    search: string;
     onClear: () => void;
 }) {
     return (
-        <div className="rounded-[26px] border border-gray-200 bg-white p-12 text-center shadow-soft-md min-h-[340px] flex flex-col items-center justify-center">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border border-violet-200 bg-violet-50 text-violet-600 shadow-soft-sm">
+        <div className="flex min-h-[320px] flex-col items-center justify-center rounded-[8px] border border-gray-200 bg-white p-12 text-center shadow-soft-sm">
+            <div className={`mx-auto flex h-16 w-16 items-center justify-center rounded-full border ${SCHOOL_THEME.primarySoftBorder} ${SCHOOL_THEME.primarySoftBg} ${SCHOOL_THEME.primaryText} shadow-soft-sm`}>
                 <Search className="h-8 w-8" />
             </div>
-            <h2 className="mt-5 text-xl font-extrabold text-gray-900">Không tìm thấy mẫu phù hợp</h2>
-            <button onClick={onClear} className="nb-btn nb-btn-outline mt-5 text-sm">
-                Xóa tìm kiếm
+            <h2 className="mt-5 text-xl font-bold text-gray-900">Không tìm thấy mẫu phù hợp</h2>
+            <button onClick={onClear} className="nb-btn nb-btn-outline mt-5 text-sm hover:border-blue-200 hover:text-[#2563EB]">
+                Xóa bộ lọc
             </button>
         </div>
     );
@@ -496,17 +439,92 @@ function SearchEmptyState({
 
 function LoadingState() {
     return (
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
-            {[1, 2, 3].map((item) => (
-                <div key={item} className="h-[340px] rounded-[26px] border border-gray-200 bg-white shadow-soft-md">
-                    <div className="h-[180px] animate-pulse rounded-t-[26px] bg-violet-50" />
-                    <div className="space-y-3 p-5">
-                        <div className="h-4 w-2/3 animate-pulse rounded bg-gray-100" />
-                        <div className="h-4 w-full animate-pulse rounded bg-gray-100" />
-                        <div className="h-4 w-3/4 animate-pulse rounded bg-gray-100" />
-                    </div>
+        <div className="bg-white">
+            {[1, 2, 3, 4, 5].map((item) => (
+                <div key={item} className="grid grid-cols-[90px_1.4fr_1fr_0.8fr_0.7fr_110px] items-center gap-4 border-b border-gray-100 px-5 py-4 last:border-b-0">
+                    <div className="h-4 animate-pulse rounded bg-gray-100" />
+                    <div className="h-12 animate-pulse rounded-[8px] bg-gray-100" />
+                    <div className="h-4 animate-pulse rounded bg-gray-100" />
+                    <div className="h-4 animate-pulse rounded bg-gray-100" />
+                    <div className="h-6 animate-pulse rounded-full bg-gray-100" />
+                    <div className="h-8 animate-pulse rounded bg-gray-100" />
                 </div>
             ))}
+        </div>
+    );
+}
+
+function UniformTable({
+    items,
+    onEdit,
+    onDelete,
+    onHide,
+    onUnhide,
+}: {
+    items: OutfitDto[];
+    onEdit: (item: OutfitDto) => void;
+    onDelete: (item: OutfitDto) => void;
+    onHide: (item: OutfitDto) => void;
+    onUnhide: (item: OutfitDto) => void;
+}) {
+    return (
+        <div className="overflow-hidden bg-white">
+            <div className="hidden grid-cols-[90px_1.5fr_1fr_0.8fr_0.7fr_112px] items-center gap-4 border-b border-gray-200 bg-slate-50 px-5 py-4 text-sm font-bold text-slate-950 lg:grid">
+                <span>ID</span>
+                <span>Thiết kế</span>
+                <span>Danh mục</span>
+                <span>Loại</span>
+                <span>Trạng thái</span>
+                <span>Thao tác</span>
+            </div>
+            <div className="divide-y divide-gray-100">
+                {items.map((item) => (
+                    <div key={item.outfitId} className="grid gap-4 px-5 py-4 transition-colors hover:bg-blue-50/50 lg:grid-cols-[90px_1.5fr_1fr_0.8fr_0.7fr_112px] lg:items-center">
+                        <span className="font-mono text-sm font-semibold text-slate-600">#{item.outfitId.slice(0, 6).toUpperCase()}</span>
+
+                        <div className="flex min-w-0 items-center gap-3">
+                            <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center overflow-hidden rounded-[8px] border border-gray-200 bg-slate-50">
+                                {item.mainImageURL ? (
+                                    <img src={item.mainImageURL} alt={item.outfitName} className="h-full w-full object-cover" />
+                                ) : (
+                                    <Shirt className="h-5 w-5 text-slate-300" />
+                                )}
+                            </div>
+                            <div className="min-w-0">
+                                <p className="truncate text-sm font-bold text-slate-950">{item.outfitName}</p>
+                                <p className="mt-1 line-clamp-1 text-xs font-medium text-slate-500">
+                                    {item.description ? stripHtml(item.description) : "Chưa có mô tả"}
+                                </p>
+                            </div>
+                        </div>
+
+                        <span className="text-sm font-semibold text-slate-700">{item.categoryName || "Chưa phân loại"}</span>
+                        <span className="text-sm font-semibold text-slate-700">{OUTFIT_TYPE_LABELS[item.outfitType] || "Khác"}</span>
+                        <span className={`inline-flex w-fit rounded-full px-3 py-1 text-xs font-bold ${item.isAvailable ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-600"}`}>
+                            {item.isAvailable ? "Hiển thị" : "Tạm ẩn"}
+                        </span>
+
+                        <div className="flex items-center gap-2">
+                            <button type="button" onClick={() => onEdit(item)} className="inline-flex h-8 w-8 items-center justify-center rounded-[8px] text-slate-700 transition-colors hover:bg-blue-50 hover:text-[#2563EB]" aria-label="Sửa">
+                                <Pencil className="h-4 w-4" />
+                            </button>
+                            {item.canDelete ? (
+                                <button type="button" onClick={() => onDelete(item)} className="inline-flex h-8 w-8 items-center justify-center rounded-[8px] text-slate-700 transition-colors hover:bg-red-50 hover:text-red-600" aria-label="Xóa">
+                                    <Trash2 className="h-4 w-4" />
+                                </button>
+                            ) : item.isAvailable ? (
+                                <button type="button" onClick={() => onHide(item)} className="inline-flex h-8 w-8 items-center justify-center rounded-[8px] text-slate-700 transition-colors hover:bg-slate-100 hover:text-slate-900" aria-label="Ẩn">
+                                    <EyeOff className="h-4 w-4" />
+                                </button>
+                            ) : (
+                                <button type="button" onClick={() => onUnhide(item)} className="inline-flex h-8 w-8 items-center justify-center rounded-[8px] text-slate-700 transition-colors hover:bg-emerald-50 hover:text-emerald-700" aria-label="Hiện">
+                                    <Eye className="h-4 w-4" />
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                ))}
+            </div>
         </div>
     );
 }
@@ -535,12 +553,6 @@ function Pagination({
     );
 }
 
-const FILTER_TABS: { key: "all" | "available" | "unavailable"; label: string }[] = [
-    { key: "all", label: "Tất cả" },
-    { key: "available", label: "Đang hiển thị" },
-    { key: "unavailable", label: "Tạm ẩn" },
-];
-
 export const UniformManagement = (): JSX.Element => {
     const navigate = useNavigate();
     const sidebarConfig = useSidebarConfig();
@@ -551,10 +563,17 @@ export const UniformManagement = (): JSX.Element => {
     const [outfits, setOutfits] = useState<OutfitDto[]>([]);
     const [categories, setCategories] = useState<UniformCategoryDto[]>([]);
     const [loading, setLoading] = useState(true);
+    const [searchInput, setSearchInput] = useState("");
     const [search, setSearch] = useState("");
-    const [activeTab, setActiveTab] = useState<"all" | "available" | "unavailable">("all");
+    const [categoryInput, setCategoryInput] = useState("");
+    const [categoryFilter, setCategoryFilter] = useState("");
+    const [statusInput, setStatusInput] = useState<"all" | "available" | "unavailable">("all");
+    const [statusFilter, setStatusFilter] = useState<"all" | "available" | "unavailable">("all");
+    const [filtering, setFiltering] = useState(false);
     const [page, setPage] = useState(1);
-    const pageSize = 12;
+    const pageSize = 8;
+    const [totalPages, setTotalPages] = useState(1);
+    const [stats, setStats] = useState({ total: 0, available: 0, unavailable: 0 });
 
     const [showFormModal, setShowFormModal] = useState(false);
     const [editingOutfit, setEditingOutfit] = useState<OutfitDto | null>(null);
@@ -567,6 +586,7 @@ export const UniformManagement = (): JSX.Element => {
     const [unhideLoading, setUnhideLoading] = useState(false);
     const resultsRegionRef = useRef<HTMLDivElement>(null);
     const [searchEmptyMinHeight, setSearchEmptyMinHeight] = useState<number | null>(null);
+    const filterTimerRef = useRef<number | null>(null);
 
     useEffect(() => {
         getSchoolProfile().then((p) => setSchoolName(p.schoolName || "")).catch(() => {});
@@ -578,10 +598,38 @@ export const UniformManagement = (): JSX.Element => {
 
     const fetchOutfits = useCallback(() => {
         setLoading(true);
-        getSchoolOutfits().then((res) => setOutfits(res.items)).catch(() => setOutfits([])).finally(() => setLoading(false));
-    }, []);
+        const isAvailable = statusFilter === "available" ? true : statusFilter === "unavailable" ? false : undefined;
+        getSchoolOutfits({
+            page,
+            pageSize,
+            search,
+            categoryId: categoryFilter || undefined,
+            isAvailable,
+        }).then((res) => {
+            const nextTotalPages = Math.max(1, res.totalPages ?? Math.ceil((res.totalCount ?? res.total ?? res.items.length) / pageSize));
+            setOutfits(res.items);
+            setTotalPages(nextTotalPages);
+            setStats(res.summary ?? {
+                total: res.totalCount ?? res.total ?? res.items.length,
+                available: res.items.filter((item) => item.isAvailable).length,
+                unavailable: res.items.filter((item) => !item.isAvailable).length,
+            });
+            if (page > nextTotalPages) {
+                setPage(nextTotalPages);
+            }
+        }).catch(() => {
+            setOutfits([]);
+            setTotalPages(1);
+        }).finally(() => setLoading(false));
+    }, [categoryFilter, page, pageSize, search, statusFilter]);
 
     useEffect(() => { fetchOutfits(); }, [fetchOutfits]);
+
+    useEffect(() => () => {
+        if (filterTimerRef.current !== null) {
+            window.clearTimeout(filterTimerRef.current);
+        }
+    }, []);
 
     const openCreate = () => { setEditingOutfit(null); setShowFormModal(true); };
     const openEdit = (outfit: OutfitDto) => { setEditingOutfit(outfit); setShowFormModal(true); };
@@ -656,32 +704,36 @@ export const UniformManagement = (): JSX.Element => {
         }
     };
 
-    const filteredOutfits = useMemo(() => {
-        let items = outfits;
-        if (activeTab === "available") items = items.filter((o) => o.isAvailable);
-        else if (activeTab === "unavailable") items = items.filter((o) => !o.isAvailable);
-        if (search.trim()) {
-            const q = search.trim().toLowerCase();
-            items = items.filter((o) => o.outfitName.toLowerCase().includes(q) || (o.description && o.description.toLowerCase().includes(q)));
-        }
-        return items;
-    }, [outfits, activeTab, search]);
-
-    const stats = useMemo(() => ({
-        total: outfits.length,
-        available: outfits.filter((item) => item.isAvailable).length,
-        unavailable: outfits.filter((item) => !item.isAvailable).length,
-    }), [outfits]);
-
-    const totalPages = Math.ceil(filteredOutfits.length / pageSize);
-    const paginatedOutfits = filteredOutfits.slice((page - 1) * pageSize, page * pageSize);
-    const isSearchEmptyState = !loading && outfits.length > 0 && filteredOutfits.length === 0;
-
     const preserveResultsHeight = useCallback(() => {
         const currentHeight = resultsRegionRef.current?.offsetHeight;
         if (!currentHeight || currentHeight <= 0) return;
         setSearchEmptyMinHeight(currentHeight);
     }, []);
+
+    const scheduleFilterCommit = useCallback((next: {
+        search?: string;
+        category?: string;
+        status?: "all" | "available" | "unavailable";
+    }) => {
+        preserveResultsHeight();
+        setFiltering(true);
+
+        if (filterTimerRef.current !== null) {
+            window.clearTimeout(filterTimerRef.current);
+        }
+
+        filterTimerRef.current = window.setTimeout(() => {
+            if (next.search !== undefined) setSearch(next.search);
+            if (next.category !== undefined) setCategoryFilter(next.category);
+            if (next.status !== undefined) setStatusFilter(next.status);
+            setPage(1);
+            setFiltering(false);
+            filterTimerRef.current = null;
+        }, MIN_FILTER_FEEDBACK_MS);
+    }, [preserveResultsHeight]);
+
+    const hasActiveFilters = Boolean(search.trim() || categoryFilter || statusFilter !== "all");
+    const isSearchEmptyState = !loading && hasActiveFilters && outfits.length === 0;
 
     useEffect(() => {
         if (!isSearchEmptyState) {
@@ -703,120 +755,121 @@ export const UniformManagement = (): JSX.Element => {
                 </div>
                 <div className="flex min-w-0 flex-1 flex-col">
                     <TopNavBar>
-                        <Breadcrumb>
-                            <BreadcrumbList>
-                                <BreadcrumbItem><BreadcrumbLink href="/school/dashboard" className="text-base font-semibold text-[#4c5769]">Trang chủ</BreadcrumbLink></BreadcrumbItem>
-                                <BreadcrumbSeparator>/</BreadcrumbSeparator>
-                                <BreadcrumbItem><BreadcrumbPage className="text-base font-bold text-gray-900">Quản lý đồng phục</BreadcrumbPage></BreadcrumbItem>
-                            </BreadcrumbList>
-                        </Breadcrumb>
+                        <div className="flex items-center gap-2 px-2 py-2">
+                            <Shirt className={`h-5 w-5 ${SCHOOL_THEME.primaryText}`} />
+                            <h1 className="text-xl font-bold text-gray-900">Quản lý đồng phục</h1>
+                        </div>
                     </TopNavBar>
 
                     <main className="flex-1 space-y-6 px-4 py-6 sm:px-6 lg:px-10 lg:py-8">
-                        <section className="rounded-[28px] border border-violet-200 bg-[radial-gradient(circle_at_top_left,_rgba(139,92,246,0.18),_transparent_38%),linear-gradient(135deg,_#ffffff_10%,_#f8f5ff_55%,_#eef7ff_100%)] p-5 shadow-soft-lg lg:p-6">
-                            <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
-                                <div className="max-w-3xl">
-                                    <div className="inline-flex items-center gap-2 rounded-full border border-violet-200 bg-white/80 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.16em] text-violet-700">
-                                        <Shirt className="h-4 w-4" />
-                                        Thiết kế đồng phục
-                                    </div>
-                                    <h1 className="mt-3 text-[26px] font-extrabold leading-tight text-gray-900 lg:text-[34px]">
-                                        Quản lý thiết kế mẫu đồng phục
-                                    </h1>
+                        <section className="rounded-[8px] border border-gray-200 bg-white shadow-soft-sm">
+                            <div className="flex flex-col gap-4 px-5 py-5 lg:flex-row lg:items-center lg:justify-between">
+                                <div>
+                                    <h2 className="text-2xl font-bold text-slate-950">Danh sách đồng phục</h2>
+                                    <p className="mt-1 text-sm font-semibold text-slate-500">
+                                        {stats.total} mẫu, {stats.available} đang hiển thị, {stats.unavailable} tạm ẩn
+                                    </p>
                                 </div>
-                                <button onClick={openCreate} className="nb-btn nb-btn-purple text-sm whitespace-nowrap">
-                                    Thêm thiết kế mới
+                                <button type="button" onClick={openCreate} className={SCHOOL_THEME.primaryButton}>
+                                    <Plus className="h-4 w-4" />
+                                    Thêm thiết kế
                                 </button>
                             </div>
 
-                            <div className="mt-5 grid gap-3 md:grid-cols-3">
-                                <StatCard label="Tổng mẫu" value={stats.total} tone="violet" />
-                                <StatCard label="Đang hiển thị" value={stats.available} tone="blue" />
-                                <StatCard label="Tạm ẩn" value={stats.unavailable} tone="amber" />
-                            </div>
-                        </section>
+                            <div className="flex flex-col gap-4 border-t border-gray-100 px-5 py-4 lg:flex-row lg:items-center lg:justify-between">
+                                <label className="relative block w-full lg:max-w-[320px]">
+                                    <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+                                    <input
+                                        type="text"
+                                        value={searchInput}
+                                        onChange={(event) => {
+                                            setSearchInput(event.target.value);
+                                            scheduleFilterCommit({ search: event.target.value });
+                                        }}
+                                        placeholder="Tìm mẫu đồng phục..."
+                                        className="h-10 w-full rounded-full border border-slate-200 bg-white pl-11 pr-4 text-sm font-medium text-slate-800 outline-none shadow-soft-xs transition-colors placeholder:text-slate-500 focus:border-blue-200 focus:ring-4 focus:ring-blue-50"
+                                    />
+                                </label>
 
-                        <section className="sticky top-0 z-20 -mx-1 rounded-[24px] bg-white/80 px-1 pb-2 pt-1 backdrop-blur-sm">
-                            <div className="nb-card-static space-y-4 p-4">
-                            <div className="flex items-center gap-2 nb-input py-2.5">
-                                <Search className="h-5 w-5 flex-shrink-0 text-[#97A3B6]" />
-                                <input
-                                    type="text"
-                                    value={search}
-                                    onChange={(e) => {
-                                        preserveResultsHeight();
-                                        setSearch(e.target.value);
-                                        setPage(1);
-                                    }}
-                                    placeholder="Tìm theo tên mẫu hoặc mô tả..."
-                                    className="flex-1 bg-transparent text-sm font-medium text-[#1a1a2e] outline-none placeholder:text-[#97A3B6]"
-                                />
-                            </div>
-
-                            <div className="nb-tabs w-fit">
-                                {FILTER_TABS.map((tab) => {
-                                    const isActive = activeTab === tab.key;
-                                    const count = tab.key === "all" ? outfits.length : tab.key === "available" ? stats.available : stats.unavailable;
-
-                                    return (
-                                        <button
-                                            key={tab.key}
-                                            onClick={() => {
-                                                preserveResultsHeight();
-                                                setActiveTab(tab.key);
-                                                setPage(1);
+                                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+                                    <label className="relative block">
+                                        <select
+                                            value={categoryInput}
+                                            onChange={(event) => {
+                                                setCategoryInput(event.target.value);
+                                                scheduleFilterCommit({ category: event.target.value });
                                             }}
-                                            className={`nb-tab ${isActive ? "nb-tab-active" : ""}`}
+                                            className="h-10 min-w-[156px] appearance-none rounded-full border border-slate-200 bg-white py-0 pl-4 pr-10 text-sm font-medium text-slate-700 outline-none shadow-soft-xs transition-colors focus:border-blue-200 focus:ring-4 focus:ring-blue-50"
                                         >
-                                            {tab.label}
-                                            <span className={`ml-1.5 flex h-5 min-w-[20px] items-center justify-center rounded-full px-1.5 text-xs font-bold ${isActive ? "bg-white/20 text-white" : "bg-[#E5E7EB] text-gray-600"}`}>
-                                                {count}
-                                            </span>
-                                        </button>
-                                    );
-                                })}
-                            </div>
-                            </div>
-                        </section>
+                                            <option value="">Danh mục</option>
+                                            {categories.map((category) => (
+                                                <option key={category.categoryId} value={category.categoryId}>{category.categoryName}</option>
+                                            ))}
+                                        </select>
+                                        <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-900" />
+                                    </label>
 
-                        <div
-                            ref={resultsRegionRef}
-                            style={isSearchEmptyState && searchEmptyMinHeight ? { minHeight: `${searchEmptyMinHeight}px` } : undefined}
-                        >
-                            {loading ? (
-                                <LoadingState />
-                            ) : filteredOutfits.length > 0 ? (
-                                <>
-                                    <section className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
-                                        {paginatedOutfits.map((item) => (
-                                            <UniformCard
-                                                key={item.outfitId}
-                                                item={item}
-                                                onEdit={openEdit}
-                                                onDelete={setDeletingOutfit}
-                                                onHide={setHidingOutfit}
-                                                onUnhide={setUnhidingOutfit}
-                                            />
-                                        ))}
-                                        <UploadPlaceholderCard onClick={openCreate} />
-                                    </section>
-                                    <Pagination page={page} totalPages={totalPages} setPage={setPage} />
-                                </>
-                            ) : outfits.length > 0 ? (
-                                <section className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
+                                    <label className="relative block">
+                                        <select
+                                            value={statusInput}
+                                            onChange={(event) => {
+                                                const nextStatus = event.target.value as "all" | "available" | "unavailable";
+                                                setStatusInput(nextStatus);
+                                                scheduleFilterCommit({ status: nextStatus });
+                                            }}
+                                            className="h-10 min-w-[148px] appearance-none rounded-full border border-slate-200 bg-white py-0 pl-4 pr-10 text-sm font-medium text-slate-700 outline-none shadow-soft-xs transition-colors focus:border-blue-200 focus:ring-4 focus:ring-blue-50"
+                                        >
+                                            <option value="all">Trạng thái</option>
+                                            <option value="available">Đang hiển thị</option>
+                                            <option value="unavailable">Tạm ẩn</option>
+                                        </select>
+                                        <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-900" />
+                                    </label>
+
+                                    {filtering ? (
+                                        <div className="inline-flex h-10 items-center gap-2 rounded-full border border-blue-100 bg-white px-3 text-xs font-bold text-[#2563EB] shadow-soft-sm">
+                                            <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-blue-100 border-t-[#2563EB]" />
+                                            Đang tải
+                                        </div>
+                                    ) : null}
+                                </div>
+                            </div>
+
+                            <div
+                                ref={resultsRegionRef}
+                                style={isSearchEmptyState && searchEmptyMinHeight ? { minHeight: `${searchEmptyMinHeight}px` } : undefined}
+                                className="relative border-t border-gray-100"
+                            >
+                                {loading ? (
+                                    <LoadingState />
+                                ) : outfits.length > 0 ? (
+                                    <>
+                                        <UniformTable
+                                            items={outfits}
+                                            onEdit={openEdit}
+                                            onDelete={setDeletingOutfit}
+                                            onHide={setHidingOutfit}
+                                            onUnhide={setUnhidingOutfit}
+                                        />
+                                        <Pagination page={page} totalPages={totalPages} setPage={setPage} />
+                                    </>
+                                ) : hasActiveFilters ? (
                                     <SearchEmptyState
-                                        search={search.trim()}
                                         onClear={() => {
+                                            setSearchInput("");
                                             setSearch("");
+                                            setCategoryInput("");
+                                            setCategoryFilter("");
+                                            setStatusInput("all");
+                                            setStatusFilter("all");
                                             setSearchEmptyMinHeight(null);
                                         }}
                                     />
-                                    <UploadPlaceholderCard onClick={openCreate} />
-                                </section>
-                            ) : (
-                                <EmptyState onCreate={openCreate} />
-                            )}
-                        </div>
+                                ) : (
+                                    <EmptyState onCreate={openCreate} />
+                                )}
+                            </div>
+                        </section>
                     </main>
                 </div>
             </div>
