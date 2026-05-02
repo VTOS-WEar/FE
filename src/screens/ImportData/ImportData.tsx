@@ -186,7 +186,7 @@ export const ImportData = (): JSX.Element => {
                             <div className="grid grid-cols-1 lg:grid-cols-[360px_1fr]">
                                 <aside className="space-y-5 border-b border-gray-200 bg-slate-50/70 p-5 lg:border-b-0 lg:border-r">
                                     <div>
-                                        <h2 className="text-lg font-black text-gray-900">Quy trình nhập liệu</h2>
+                                        <h2 className="text-lg font-bold text-gray-900">Quy trình nhập liệu</h2>
                                         <p className="mt-1 text-sm font-semibold leading-6 text-slate-500">
                                             Tải file mẫu, điền dữ liệu học sinh rồi tải lên hệ thống.
                                         </p>
@@ -196,12 +196,12 @@ export const ImportData = (): JSX.Element => {
                                         {steps.map(({ step, title, bg, borderColor }) => (
                                             <div key={step} className={`flex items-center gap-3 rounded-[8px] border ${borderColor} bg-white p-3 shadow-soft-sm`}>
                                                 <div
-                                                    className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-gray-200 text-sm font-black text-gray-900 shadow-soft-sm"
+                                                    className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-gray-200 text-sm font-bold text-gray-900 shadow-soft-sm"
                                                     style={{ backgroundColor: bg }}
                                                 >
                                                     {step}
                                                 </div>
-                                                <span className="text-sm font-black text-gray-900">{title}</span>
+                                                <span className="text-sm font-bold text-gray-900">{title}</span>
                                             </div>
                                         ))}
                                     </div>
@@ -211,13 +211,13 @@ export const ImportData = (): JSX.Element => {
                                             <div className={`flex h-10 w-10 items-center justify-center rounded-[8px] border ${SCHOOL_THEME.primarySoftBorder} ${SCHOOL_THEME.primarySoftBg} shadow-soft-sm`}>
                                                 <FileSpreadsheet className={`h-5 w-5 ${SCHOOL_THEME.primaryText}`} />
                                             </div>
-                                            <h3 className="font-black text-gray-900 text-base">File mẫu nhập liệu</h3>
+                                            <h3 className="font-bold text-gray-900 text-base">File mẫu nhập liệu</h3>
                                         </div>
                                         <button
                                             type="button"
                                             onClick={handleDownloadTemplate}
                                             disabled={downloadingTemplate}
-                                            className="mt-4 w-full flex items-center justify-center gap-2 rounded-[8px] border border-gray-200 bg-white px-4 py-3 text-[14px] font-extrabold text-gray-700 shadow-soft-sm transition-colors hover:border-blue-200 hover:text-[#2563EB] disabled:opacity-60 disabled:cursor-not-allowed"
+                                            className="mt-4 w-full flex items-center justify-center gap-2 rounded-[8px] border border-gray-200 bg-white px-4 py-3 text-[14px] font-bold text-gray-700 shadow-soft-sm transition-colors hover:border-blue-200 hover:text-[#2563EB] disabled:opacity-60 disabled:cursor-not-allowed"
                                         >
                                             <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
                                                 <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
@@ -229,7 +229,7 @@ export const ImportData = (): JSX.Element => {
 
                                 <div className="space-y-4 p-5">
                                 <div className="flex items-center justify-between">
-                                    <h3 className="font-black text-gray-900 text-lg">
+                                    <h3 className="font-bold text-gray-900 text-lg">
                                         Tải lên dữ liệu
                                     </h3>
                                 </div>
@@ -253,7 +253,7 @@ export const ImportData = (): JSX.Element => {
                                     <div className={`flex h-[72px] w-[72px] items-center justify-center rounded-[8px] border ${SCHOOL_THEME.primarySoftBorder} ${SCHOOL_THEME.primarySoftBg} shadow-soft-sm`}>
                                         <UploadCloud className={`h-10 w-10 ${SCHOOL_THEME.primaryText}`} />
                                     </div>
-                                    <p className="font-black text-gray-900 text-[17px]">
+                                    <p className="font-bold text-gray-900 text-[17px]">
                                         Kéo thả file vào đây
                                     </p>
                                     <button
@@ -291,7 +291,7 @@ export const ImportData = (): JSX.Element => {
                                                 </svg>
                                             </div>
                                             <div>
-                                                <p className="font-extrabold text-gray-900 text-sm">
+                                                <p className="font-bold text-gray-900 text-sm">
                                                     {selectedFile.name}
                                                 </p>
                                                 <p className="font-semibold text-gray-500 text-xs">
@@ -319,7 +319,7 @@ export const ImportData = (): JSX.Element => {
                                         type="button"
                                         onClick={handleUpload}
                                         disabled={uploading}
-                                        className="w-full flex items-center justify-center gap-2 rounded-[10px] border border-emerald-500 bg-emerald-500 px-4 py-3 text-[14px] font-extrabold text-white shadow-soft-sm transition-all hover:scale-[0.99] hover:shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"
+                                        className="w-full flex items-center justify-center gap-2 rounded-[10px] border border-emerald-500 bg-emerald-500 px-4 py-3 text-[14px] font-bold text-white shadow-soft-sm transition-all hover:scale-[0.99] hover:shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"
                                     >
                                         {uploading ? (
                                             <span className="flex items-center gap-2">
@@ -352,7 +352,7 @@ export const ImportData = (): JSX.Element => {
                                     result.errorCount > 0 ? "bg-amber-50" : "bg-emerald-50"
                                 }`}
                             >
-                                <h3 className="font-black text-gray-900 text-base mb-3">
+                                <h3 className="font-bold text-gray-900 text-base mb-3">
                                     📊 Kết quả nhập liệu
                                 </h3>
                                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-3">
@@ -363,14 +363,14 @@ export const ImportData = (): JSX.Element => {
                                         { label: "Lỗi", value: result.errorCount, color: "#dc2626" },
                                     ].map(({ label, value, color }) => (
                                         <div key={label} className="rounded-[10px] border border-gray-200 bg-white px-3 py-2.5 text-center shadow-soft-sm">
-                                            <p className="font-black text-xl" style={{ color }}>{value}</p>
+                                            <p className="font-bold text-xl" style={{ color }}>{value}</p>
                                             <p className="font-semibold text-gray-500 text-xs">{label}</p>
                                         </div>
                                     ))}
                                 </div>
                                 {result.errors.length > 0 && (
                                     <div className="rounded-[10px] border border-gray-200 bg-white overflow-hidden shadow-soft-sm">
-                                        <div className="grid grid-cols-[60px_1fr_2fr] px-4 py-2 bg-red-50 text-xs font-black text-red-600 border-b border-gray-200">
+                                        <div className="grid grid-cols-[60px_1fr_2fr] px-4 py-2 bg-red-50 text-xs font-bold text-red-600 border-b border-gray-200">
                                             <span>Dòng</span>
                                             <span>Tên HS</span>
                                             <span>Lỗi</span>
@@ -380,7 +380,7 @@ export const ImportData = (): JSX.Element => {
                                                 key={i}
                                                 className="grid grid-cols-[60px_1fr_2fr] px-4 py-2 text-sm border-b border-gray-100"
                                             >
-                                                <span className="font-extrabold text-red-600">{e.rowNumber}</span>
+                                                <span className="font-bold text-red-600">{e.rowNumber}</span>
                                                 <span className="font-semibold text-gray-900">{e.studentName || "—"}</span>
                                                 <span className="font-semibold text-red-600">{e.errorMessage}</span>
                                             </div>
@@ -401,7 +401,7 @@ export const ImportData = (): JSX.Element => {
                                 <div className={`flex h-9 w-9 items-center justify-center rounded-[8px] border ${SCHOOL_THEME.primarySoftBorder} ${SCHOOL_THEME.primarySoftBg} ${SCHOOL_THEME.primaryText}`}>
                                     <History className="h-4 w-4" />
                                 </div>
-                                <h2 className="font-black text-gray-900 text-xl">
+                                <h2 className="font-bold text-gray-900 text-xl">
                                     Lịch sử nhập liệu gần đây
                                 </h2>
                             </div>
@@ -413,7 +413,7 @@ export const ImportData = (): JSX.Element => {
                                             <path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" />
                                         </svg>
                                     </div>
-                                    <p className="font-black text-gray-900 text-base">
+                                    <p className="font-bold text-gray-900 text-base">
                                         Chưa có lịch sử nhập liệu
                                     </p>
                                 </div>
@@ -422,7 +422,7 @@ export const ImportData = (): JSX.Element => {
                                     {/* Table header */}
                                     <div className="hidden sm:grid grid-cols-[3fr_2fr_2fr_1.5fr] px-6 lg:px-8 py-4 bg-gray-50 border-b border-gray-200">
                                         {["Tên file", "Thời gian", "Trạng thái", "Chi tiết"].map((h) => (
-                                            <span key={h} className="font-black text-gray-700 text-sm">
+                                            <span key={h} className="font-bold text-gray-700 text-sm">
                                                 {h}
                                             </span>
                                         ))}
@@ -441,7 +441,7 @@ export const ImportData = (): JSX.Element => {
                                                             <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zM6 20V4h7v5h5v11H6z" />
                                                         </svg>
                                                     </div>
-                                                    <span className="font-extrabold text-gray-900 text-sm">
+                                                    <span className="font-bold text-gray-900 text-sm">
                                                         {row.fileName}
                                                     </span>
                                                 </div>
@@ -450,7 +450,7 @@ export const ImportData = (): JSX.Element => {
                                                 </span>
                                                 <div>
                                                     <span
-                                                        className={`inline-flex items-center gap-1.5 rounded-full border border-gray-200 px-2.5 py-0.5 text-[11px] font-extrabold shadow-soft-sm ${
+                                                        className={`inline-flex items-center gap-1.5 rounded-full border border-gray-200 px-2.5 py-0.5 text-[11px] font-bold shadow-soft-sm ${
                                                             row.status === "success"
                                                                 ? "bg-emerald-50 text-emerald-700"
                                                                 : "bg-red-50 text-red-600"

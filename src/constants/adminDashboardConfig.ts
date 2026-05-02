@@ -18,6 +18,7 @@ import type { DashboardSidebarProps } from "../components/layout";
 export const ADMIN_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, "isCollapsed" | "onToggle"> = {
     avatarSrc: "https://c.animaapp.com/mlsaxpa0EQIM7j/img/frame-239353.png",
     avatarAlt: "Admin avatar",
+    iconType: "admin",
     greeting: "Xin chào,",
     name: "Quản trị viên",
     topNavItems: [

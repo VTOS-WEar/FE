@@ -323,7 +323,7 @@ export const SemesterPublicationDetail = (): JSX.Element => {
         <div className="nb-page flex flex-col">
             {toast && (
                 <div
-                    className={`fixed right-6 top-6 z-[99999] flex items-center gap-3 rounded-[12px] border px-5 py-3 text-sm font-extrabold shadow-soft-md ${
+                    className={`fixed right-6 top-6 z-[99999] flex items-center gap-3 rounded-[12px] border px-5 py-3 text-sm font-bold shadow-soft-md ${
                         toast.type === "success"
                             ? "border-emerald-200 bg-emerald-50 text-emerald-700"
                             : "border-red-200 bg-red-50 text-red-700"

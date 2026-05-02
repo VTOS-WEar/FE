@@ -2,7 +2,7 @@ import { BellRing, ClipboardList, GraduationCap, LayoutDashboard, LifeBuoy, Mess
 import type { DashboardSidebarProps } from "../components/layout";
 
 export const TEACHER_DASHBOARD_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, "isCollapsed" | "onToggle"> = {
-    iconType: "school" as const,
+    iconType: "teacher" as const,
     greeting: "Xin chào!",
     name: "",
     topNavItems: [
@@ -14,7 +14,7 @@ export const TEACHER_DASHBOARD_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, "isCo
     ],
     navSections: [
         {
-            title: "GIẢNG DẠY",
+            title: "THEO DÕI LỚP",
             items: [
                 {
                     icon: GraduationCap,
@@ -23,7 +23,7 @@ export const TEACHER_DASHBOARD_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, "isCo
                 },
                 {
                     icon: ClipboardList,
-                    label: "Báo cáo",
+                    label: "Báo cáo GVCN",
                     href: "/teacher/reports",
                 },
                 {
@@ -31,9 +31,14 @@ export const TEACHER_DASHBOARD_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, "isCo
                     label: "Nhắc phụ huynh",
                     href: "/teacher/reminders",
                 },
+            ],
+        },
+        {
+            title: "LIÊN LẠC",
+            items: [
                 {
                     icon: MessageSquare,
-                    label: "Tin nhắn",
+                    label: "Tin nhắn lớp",
                     href: "/teacher/messages",
                 },
                 {
@@ -41,10 +46,15 @@ export const TEACHER_DASHBOARD_SIDEBAR_CONFIG: Omit<DashboardSidebarProps, "isCo
                     label: "Hỗ trợ Admin",
                     href: "/teacher/support",
                 },
+            ],
+        },
+        {
+            title: "THIẾT LẬP",
+            items: [
                 {
                     icon: UserCircle,
                     label: "Tài khoản",
-                    href: "/teacher/account",
+                    href: "/teacher/account-settings",
                 },
             ],
         },

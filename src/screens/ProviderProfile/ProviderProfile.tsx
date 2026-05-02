@@ -171,7 +171,7 @@ export const ProviderProfile = (): JSX.Element => {
                     <main className="flex-1 space-y-6 px-4 py-6 sm:px-6 lg:px-10 lg:py-8">
                         {loading ? (
                             <div className="flex items-center justify-center py-20">
-                                <Loader2 className="h-10 w-10 animate-spin text-violet-600" />
+                                <Loader2 className="h-10 w-10 animate-spin text-[#3B82F6]" />
                             </div>
                         ) : (
                             <>
@@ -182,7 +182,7 @@ export const ProviderProfile = (): JSX.Element => {
                                     </div>
                                     <div className="flex flex-wrap items-center gap-3">
                                         <span className={sc?.badge || "nb-badge bg-slate-100 text-slate-700"}>{sc?.label || "Chưa rõ"}</span>
-                                        <button onClick={handleSubmit} disabled={saving} className="nb-btn nb-btn-purple px-6 py-3 text-sm disabled:opacity-50">
+                                        <button onClick={handleSubmit} disabled={saving} className="nb-btn nb-btn-provider px-6 py-3 text-sm disabled:opacity-50">
                                             {saving ? "Đang lưu..." : "Lưu thay đổi"}
                                         </button>
                                     </div>
@@ -264,7 +264,7 @@ export const ProviderProfile = (): JSX.Element => {
                                         </div>
 
                                         <div className="mt-6 flex justify-end">
-                                            <button onClick={handleSubmit} disabled={saving} className="nb-btn nb-btn-purple px-8 py-3 text-[15px] disabled:opacity-50">
+                                            <button onClick={handleSubmit} disabled={saving} className="nb-btn nb-btn-provider px-8 py-3 text-[15px] disabled:opacity-50">
                                                 {saving ? "Đang lưu..." : "Lưu hồ sơ"}
                                             </button>
                                         </div>

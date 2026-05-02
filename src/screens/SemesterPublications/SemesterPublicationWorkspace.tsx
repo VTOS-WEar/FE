@@ -404,7 +404,7 @@ export const SemesterPublicationWorkspace = (): JSX.Element => {
         <div className="nb-page flex flex-col">
             {toast && (
                 <div
-                    className={`fixed right-6 top-6 z-[99999] flex items-center gap-3 rounded-[12px] border px-5 py-3 text-sm font-extrabold shadow-soft-md ${
+                    className={`fixed right-6 top-6 z-[99999] flex items-center gap-3 rounded-[12px] border px-5 py-3 text-sm font-bold shadow-soft-md ${
                         toast.type === "success"
                             ? "border-emerald-200 bg-emerald-50 text-emerald-700"
                             : "border-red-200 bg-red-50 text-red-700"
@@ -519,12 +519,12 @@ export const SemesterPublicationWorkspace = (): JSX.Element => {
                                 <div className="grid gap-6 xl:grid-cols-[1.15fr,0.85fr]">
                                     <section className="nb-card-static p-0">
                                         <div className="border-b border-gray-200 px-6 py-5 lg:px-8">
-                                            <h2 className="text-lg font-extrabold text-gray-900">Thiết lập đợt công bố</h2>
+                                            <h2 className="text-lg font-bold text-gray-900">Thiết lập đợt công bố</h2>
                                         </div>
                                         <div className="space-y-5 px-6 py-6 lg:px-8">
                                             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                                                 <div>
-                                                    <label className="mb-2 block text-sm font-extrabold text-gray-700">Học kỳ</label>
+                                                    <label className="mb-2 block text-sm font-bold text-gray-700">Học kỳ</label>
                                                     <select
                                                         value={form.semester}
                                                         onChange={(event) => handleChange("semester", event.target.value)}
@@ -539,7 +539,7 @@ export const SemesterPublicationWorkspace = (): JSX.Element => {
                                                     </select>
                                                 </div>
                                                 <div>
-                                                    <label className="mb-2 block text-sm font-extrabold text-gray-700">Năm học</label>
+                                                    <label className="mb-2 block text-sm font-bold text-gray-700">Năm học</label>
                                                     <select
                                                         value={form.academicYear}
                                                         onChange={(event) => handleChange("academicYear", event.target.value)}
@@ -557,7 +557,7 @@ export const SemesterPublicationWorkspace = (): JSX.Element => {
 
                                             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                                                 <div>
-                                                    <label className="mb-2 block text-sm font-extrabold text-gray-700">Ngày bắt đầu</label>
+                                                    <label className="mb-2 block text-sm font-bold text-gray-700">Ngày bắt đầu</label>
                                                     <input
                                                         type="date"
                                                         value={form.startDate}
@@ -566,7 +566,7 @@ export const SemesterPublicationWorkspace = (): JSX.Element => {
                                                     />
                                                 </div>
                                                 <div>
-                                                    <label className="mb-2 block text-sm font-extrabold text-gray-700">Ngày kết thúc</label>
+                                                    <label className="mb-2 block text-sm font-bold text-gray-700">Ngày kết thúc</label>
                                                     <input
                                                         type="date"
                                                         value={form.endDate}
@@ -577,7 +577,7 @@ export const SemesterPublicationWorkspace = (): JSX.Element => {
                                             </div>
 
                                             <div>
-                                                <label className="mb-2 block text-sm font-extrabold text-gray-700">Mô tả</label>
+                                                <label className="mb-2 block text-sm font-bold text-gray-700">Mô tả</label>
                                                 <RichTextEditor
                                                     value={form.description}
                                                     onChange={(html) => handleChange("description", html)}
@@ -586,7 +586,7 @@ export const SemesterPublicationWorkspace = (): JSX.Element => {
                                             </div>
 
                                             <div>
-                                                <label className="mb-2 block text-sm font-extrabold text-gray-700">Quy tắc / ghi chú</label>
+                                                <label className="mb-2 block text-sm font-bold text-gray-700">Quy tắc / ghi chú</label>
                                                 <RichTextEditor
                                                     value={form.rules}
                                                     onChange={(html) => handleChange("rules", html)}
@@ -599,7 +599,7 @@ export const SemesterPublicationWorkspace = (): JSX.Element => {
                                     <aside className="space-y-6">
                                         <div className="nb-card-static p-0">
                                             <div className="border-b border-gray-200 px-6 py-5">
-                                                <h2 className="text-lg font-extrabold text-gray-900">Checklist sẵn sàng</h2>
+                                                <h2 className="text-lg font-bold text-gray-900">Checklist sẵn sàng</h2>
                                             </div>
                                             <div className="space-y-3 px-6 py-6">
                                                 {[
@@ -629,7 +629,7 @@ export const SemesterPublicationWorkspace = (): JSX.Element => {
                                                                 <ClipboardCheck className="mt-0.5 h-5 w-5 flex-shrink-0 text-amber-600" />
                                                             )}
                                                             <div>
-                                                                <p className="text-sm font-extrabold text-gray-900">{item.label}</p>
+                                                                <p className="text-sm font-bold text-gray-900">{item.label}</p>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -643,7 +643,7 @@ export const SemesterPublicationWorkspace = (): JSX.Element => {
                                                             <AlertTriangle className="mt-0.5 h-5 w-5 flex-shrink-0 text-amber-600" />
                                                         )}
                                                         <div>
-                                                            <p className="text-sm font-extrabold text-gray-900">
+                                                            <p className="text-sm font-bold text-gray-900">
                                                                 {publishReady ? "Bản nháp đã sẵn sàng để công khai" : "Chưa nên công khai ngay"}
                                                             </p>
                                                         </div>
@@ -660,7 +660,7 @@ export const SemesterPublicationWorkspace = (): JSX.Element => {
                                         <div className="border-b border-gray-200 px-6 py-5">
                                             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                                                 <div>
-                                                    <h2 className="text-lg font-extrabold text-gray-900">Đồng phục trong công bố</h2>
+                                                    <h2 className="text-lg font-bold text-gray-900">Đồng phục trong công bố</h2>
                                                 </div>
                                                 {publication && publication.status === "Draft" && (
                                                     <button onClick={handleAddOutfits} className={`${SCHOOL_THEME.primaryButton} h-9 px-3 text-xs`}>
@@ -691,15 +691,15 @@ export const SemesterPublicationWorkspace = (): JSX.Element => {
                                                                                 {outfit.mainImageURL ? (
                                                                                     <img src={outfit.mainImageURL} alt={outfit.outfitName} className="h-full w-full object-cover" />
                                                                                 ) : (
-                                                                                    <div className={`flex h-full w-full items-center justify-center text-xs font-black ${SCHOOL_THEME.primaryText}`}>
+                                                                                    <div className={`flex h-full w-full items-center justify-center text-xs font-bold ${SCHOOL_THEME.primaryText}`}>
                                                                                         SP
                                                                                     </div>
                                                                                 )}
                                                                             </div>
                                                                             <div className="min-w-0">
                                                                             <div className="flex flex-wrap items-center gap-2">
-                                                                                <h3 className="text-sm font-black text-gray-900">{outfit.outfitName}</h3>
-                                                                                <span className={`rounded-full border ${SCHOOL_THEME.primarySoftBorder} ${SCHOOL_THEME.primarySoftBg} px-2.5 py-1 text-[11px] font-extrabold ${SCHOOL_THEME.primaryText}`}>
+                                                                                <h3 className="text-sm font-bold text-gray-900">{outfit.outfitName}</h3>
+                                                                                <span className={`rounded-full border ${SCHOOL_THEME.primarySoftBorder} ${SCHOOL_THEME.primarySoftBg} px-2.5 py-1 text-[11px] font-bold ${SCHOOL_THEME.primaryText}`}>
                                                                                     {outfit.outfitType}
                                                                                 </span>
                                                                             </div>
@@ -720,7 +720,7 @@ export const SemesterPublicationWorkspace = (): JSX.Element => {
                                                     {publication.status === "Draft" && (
                                                         <>
                                                             <div className={`rounded-[8px] border ${SCHOOL_THEME.primarySoftBorder} ${SCHOOL_THEME.primarySoftBg} p-4 shadow-soft-sm`}>
-                                                                <label className="mb-2 block text-sm font-extrabold text-gray-700">Ghi chú cho lô thêm mới</label>
+                                                                <label className="mb-2 block text-sm font-bold text-gray-700">Ghi chú cho lô thêm mới</label>
                                                                 <textarea
                                                                     value={outfitNotes}
                                                                     onChange={(event) => setOutfitNotes(event.target.value)}
@@ -730,7 +730,7 @@ export const SemesterPublicationWorkspace = (): JSX.Element => {
                                                             </div>
 
                                                             <div>
-                                                                <h3 className="text-sm font-extrabold uppercase tracking-[0.16em] text-gray-500">Danh mục có thể thêm</h3>
+                                                                <h3 className="text-sm font-bold uppercase tracking-[0.16em] text-gray-500">Danh mục có thể thêm</h3>
                                                                 <div className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2">
                                                                     {availableOutfitSuggestions.length === 0 ? (
                                                                         <div className="rounded-[16px] border border-dashed border-gray-200 bg-white p-5 text-sm font-semibold text-gray-500 md:col-span-2">
@@ -755,16 +755,16 @@ export const SemesterPublicationWorkspace = (): JSX.Element => {
                                                                                             {outfit.mainImageURL ? (
                                                                                                 <img src={outfit.mainImageURL} alt={outfit.outfitName} className="h-full w-full object-cover" />
                                                                                             ) : (
-                                                                                                <div className={`flex h-full w-full items-center justify-center text-sm font-black ${SCHOOL_THEME.primaryText}`}>
+                                                                                                <div className={`flex h-full w-full items-center justify-center text-sm font-bold ${SCHOOL_THEME.primaryText}`}>
                                                                                                     SP
                                                                                                 </div>
                                                                                             )}
                                                                                         </div>
                                                                                         <div className="min-w-0 flex-1">
                                                                                             <div className="flex flex-wrap items-center gap-2">
-                                                                                                <h4 className="text-sm font-black text-gray-900">{outfit.outfitName}</h4>
+                                                                                                <h4 className="text-sm font-bold text-gray-900">{outfit.outfitName}</h4>
                                                                                                 {isSelected && (
-                                                                                                    <span className={`rounded-full border ${SCHOOL_THEME.primarySoftBorder} bg-white px-2 py-0.5 text-[10px] font-extrabold ${SCHOOL_THEME.primaryText}`}>
+                                                                                                    <span className={`rounded-full border ${SCHOOL_THEME.primarySoftBorder} bg-white px-2 py-0.5 text-[10px] font-bold ${SCHOOL_THEME.primaryText}`}>
                                                                                                         Đã chọn
                                                                                                     </span>
                                                                                                 )}
@@ -788,7 +788,7 @@ export const SemesterPublicationWorkspace = (): JSX.Element => {
 
                                     <section className="nb-card-static p-0">
                                         <div className="border-b border-gray-200 px-6 py-5">
-                                            <h2 className="text-lg font-extrabold text-gray-900">Nhà cung cấp tham gia</h2>
+                                            <h2 className="text-lg font-bold text-gray-900">Nhà cung cấp tham gia</h2>
                                         </div>
                                         <div className="space-y-5 px-6 py-6">
                                             {!publication ? (
@@ -798,7 +798,7 @@ export const SemesterPublicationWorkspace = (): JSX.Element => {
                                             ) : (
                                                 <>
                                                     <div>
-                                                        <h3 className="text-sm font-extrabold uppercase tracking-[0.16em] text-gray-500">Đang hoạt động / đã kích hoạt</h3>
+                                                        <h3 className="text-sm font-bold uppercase tracking-[0.16em] text-gray-500">Đang hoạt động / đã kích hoạt</h3>
                                                         <div className="mt-3 space-y-3">
                                                             {selectedProviders.length === 0 ? (
                                                                 <div className="rounded-[16px] border border-dashed border-gray-200 bg-white p-5 text-sm font-semibold text-gray-500">
@@ -818,8 +818,8 @@ export const SemesterPublicationWorkspace = (): JSX.Element => {
                                                                             </div>
                                                                             <div className="min-w-0 flex-1">
                                                                                 <div className="flex flex-wrap items-center gap-2">
-                                                                                    <h3 className="text-sm font-black text-gray-900">{provider.providerName}</h3>
-                                                                                    <span className="rounded-full border border-gray-200 bg-white px-2.5 py-1 text-[11px] font-extrabold text-gray-700">
+                                                                                    <h3 className="text-sm font-bold text-gray-900">{provider.providerName}</h3>
+                                                                                    <span className="rounded-full border border-gray-200 bg-white px-2.5 py-1 text-[11px] font-bold text-gray-700">
                                                                                         {provider.status}
                                                                                     </span>
                                                                                 </div>
@@ -848,7 +848,7 @@ export const SemesterPublicationWorkspace = (): JSX.Element => {
                                                     </div>
 
                                                     <div>
-                                                        <h3 className="text-sm font-extrabold uppercase tracking-[0.16em] text-gray-500">Nhà cung cấp có thể kích hoạt</h3>
+                                                        <h3 className="text-sm font-bold uppercase tracking-[0.16em] text-gray-500">Nhà cung cấp có thể kích hoạt</h3>
                                                         <div className="mt-3 space-y-3">
                                                             {availableProviderSuggestions.length === 0 ? (
                                                                 <div className="rounded-[16px] border border-dashed border-gray-200 bg-white p-5 text-sm font-semibold text-gray-500">
@@ -864,7 +864,7 @@ export const SemesterPublicationWorkspace = (): JSX.Element => {
                                                                             <div className="min-w-0 flex-1">
                                                                                 <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                                                                                     <div>
-                                                                                        <h3 className="text-sm font-black text-gray-900">{provider.providerName}</h3>
+                                                                                        <h3 className="text-sm font-bold text-gray-900">{provider.providerName}</h3>
                                                                                         <p className="mt-1 text-xs font-semibold text-[#6F6A7D]">
                                                                                             {provider.contractName} · {provider.contactEmail || "Chưa có email"}
                                                                                         </p>

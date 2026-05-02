@@ -1,6 +1,6 @@
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { CheckCircle2, ChevronDown, ClipboardList, Clock3, FileText, Inbox, Loader2, Search } from "lucide-react";
+import { CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, ClipboardList, Clock3, FileText, Inbox, Search } from "lucide-react";
 import { DashboardSidebar } from "../../components/layout";
 import { TopNavBar } from "../../components/layout/TopNavBar";
 import { SCHOOL_THEME } from "../../constants/schoolTheme";
@@ -16,6 +16,7 @@ import {
 
 const MIN_FILTER_FETCH_FEEDBACK_MS = 700;
 const MIN_FILTER_COMMIT_MS = 450;
+const REPORTS_PAGE_SIZE = 5;
 
 function formatReportType(reportType: string) {
     switch (reportType) {
@@ -76,6 +77,7 @@ export const SchoolTeacherReports = (): JSX.Element => {
     const [classGroupId, setClassGroupId] = useState(searchParams.get("classGroupId") || "");
     const [searchTerm, setSearchTerm] = useState("");
     const [searchInput, setSearchInput] = useState("");
+    const [page, setPage] = useState(1);
     const [filtering, setFiltering] = useState(false);
     const [selectedReport, setSelectedReport] = useState<TeacherReportListItemDto | null>(null);
     const [reviewNote, setReviewNote] = useState("");
@@ -178,9 +180,21 @@ export const SchoolTeacherReports = (): JSX.Element => {
             return searchable.includes(query);
         });
     }, [reports, searchTerm]);
+    const totalPages = Math.max(1, Math.ceil(displayedReports.length / REPORTS_PAGE_SIZE));
+    const currentPage = Math.min(page, totalPages);
+    const paginatedReports = useMemo(
+        () => displayedReports.slice((currentPage - 1) * REPORTS_PAGE_SIZE, currentPage * REPORTS_PAGE_SIZE),
+        [currentPage, displayedReports],
+    );
+    const firstReportIndex = displayedReports.length === 0 ? 0 : (currentPage - 1) * REPORTS_PAGE_SIZE + 1;
+    const lastReportIndex = Math.min(currentPage * REPORTS_PAGE_SIZE, displayedReports.length);
     const hasActiveFilters = !!(status || classGroupId || searchTerm.trim());
     const isFilteredEmptyState = !loading && !error && hasActiveFilters && displayedReports.length === 0;
     const { preserveResultsHeight, preservedHeightStyle, resultsRegionRef } = usePreservedResultsHeight(isFilteredEmptyState);
+
+    useEffect(() => {
+        setPage((current) => Math.min(current, totalPages));
+    }, [totalPages]);
 
     const scheduleSearchCommit = useCallback(
         (nextSearch: string) => {
@@ -190,6 +204,7 @@ export const SchoolTeacherReports = (): JSX.Element => {
                 window.clearTimeout(filterTimerRef.current);
             }
             filterTimerRef.current = window.setTimeout(() => {
+                setPage(1);
                 setSearchTerm(nextSearch);
                 setFiltering(false);
                 filterTimerRef.current = null;
@@ -272,6 +287,7 @@ export const SchoolTeacherReports = (): JSX.Element => {
                                         value={classGroupId}
                                         onChange={(event) => {
                                             preserveResultsHeight();
+                                            setPage(1);
                                             setClassGroupId(event.target.value);
                                         }}
                                         className="h-10 min-w-[156px] appearance-none rounded-full border border-slate-200 bg-white py-0 pl-4 pr-10 text-sm font-medium text-slate-700 outline-none shadow-soft-xs transition-colors focus:border-blue-200 focus:ring-4 focus:ring-blue-50"
@@ -289,6 +305,7 @@ export const SchoolTeacherReports = (): JSX.Element => {
                                         value={status}
                                         onChange={(event) => {
                                             preserveResultsHeight();
+                                            setPage(1);
                                             setStatus(event.target.value);
                                         }}
                                         className="h-10 min-w-[148px] appearance-none rounded-full border border-slate-200 bg-white py-0 pl-4 pr-10 text-sm font-medium text-slate-700 outline-none shadow-soft-xs transition-colors focus:border-blue-200 focus:ring-4 focus:ring-blue-50"
@@ -303,7 +320,7 @@ export const SchoolTeacherReports = (): JSX.Element => {
                                 {fetchingReports || filtering ? (
                                     <div className="inline-flex h-10 items-center gap-2 rounded-full border border-blue-100 bg-white px-3 text-xs font-bold text-[#2563EB] shadow-soft-sm">
                                         <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-blue-100 border-t-[#2563EB]" />
-                                        Đang lọc
+                                        Đang tải
                                     </div>
                                 ) : null}
                             </div>
@@ -327,7 +344,7 @@ export const SchoolTeacherReports = (): JSX.Element => {
                                 <div className="rounded-[8px] border border-gray-200 bg-white shadow-soft-sm">
                                     <div className="border-b border-gray-100 px-5 py-4">
                                         <p className={`text-xs font-bold uppercase tracking-[0.16em] ${SCHOOL_THEME.primaryText}`}>Danh sách báo cáo</p>
-                                        <h2 className="text-xl font-extrabold text-gray-900">{displayedReports.length} báo cáo</h2>
+                                        <h2 className="text-xl font-bold text-gray-900">{displayedReports.length} báo cáo</h2>
                                     </div>
                                     <div className="divide-y divide-gray-100">
                                         {displayedReports.length === 0 && (
@@ -336,7 +353,7 @@ export const SchoolTeacherReports = (): JSX.Element => {
                                                 Chưa có báo cáo phù hợp với bộ lọc hiện tại.
                                             </div>
                                         )}
-                                        {displayedReports.map((report) => (
+                                        {paginatedReports.map((report) => (
                                             <button
                                                 key={report.id}
                                                 type="button"
@@ -346,7 +363,7 @@ export const SchoolTeacherReports = (): JSX.Element => {
                                                 <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
                                                     <div className="min-w-0">
                                                         <div className="flex flex-wrap items-center gap-2">
-                                                            <h3 className="text-lg font-extrabold text-gray-900">{report.title}</h3>
+                                                            <h3 className="text-lg font-bold text-gray-900">{report.title}</h3>
                                                             <span className={`rounded-full px-3 py-1 text-xs font-bold ${report.status === "Reviewed" ? "bg-emerald-100 text-emerald-700" : "bg-blue-100 text-[#2563EB]"}`}>
                                                                 {formatStatus(report.status)}
                                                             </span>
@@ -363,6 +380,38 @@ export const SchoolTeacherReports = (): JSX.Element => {
                                             </button>
                                         ))}
                                     </div>
+                                    {displayedReports.length > 0 && (
+                                        <div className="flex flex-col gap-3 border-t border-gray-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+                                            <p className="text-sm font-semibold text-[#4c5769]">
+                                                Hiển thị {firstReportIndex.toLocaleString("vi-VN")}-{lastReportIndex.toLocaleString("vi-VN")} / {displayedReports.length.toLocaleString("vi-VN")} báo cáo · Trang {currentPage}/{totalPages}
+                                            </p>
+                                            {totalPages > 1 && (
+                                                <div className="flex items-center gap-2">
+                                                    <button
+                                                        type="button"
+                                                        disabled={currentPage <= 1}
+                                                        onClick={() => setPage((current) => Math.max(1, current - 1))}
+                                                        className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-soft-xs transition-colors hover:border-blue-200 hover:text-[#2563EB] disabled:cursor-not-allowed disabled:opacity-40"
+                                                        title="Trang trước"
+                                                    >
+                                                        <ChevronLeft className="h-4 w-4" />
+                                                    </button>
+                                                    <span className="min-w-[72px] text-center text-sm font-bold text-gray-900">
+                                                        {currentPage}/{totalPages}
+                                                    </span>
+                                                    <button
+                                                        type="button"
+                                                        disabled={currentPage >= totalPages}
+                                                        onClick={() => setPage((current) => Math.min(totalPages, current + 1))}
+                                                        className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-soft-xs transition-colors hover:border-blue-200 hover:text-[#2563EB] disabled:cursor-not-allowed disabled:opacity-40"
+                                                        title="Trang sau"
+                                                    >
+                                                        <ChevronRight className="h-4 w-4" />
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
 
                                 <div className="rounded-[8px] border border-gray-200 bg-white p-5 shadow-soft-sm">
@@ -376,7 +425,7 @@ export const SchoolTeacherReports = (): JSX.Element => {
                                     ) : (
                                         <>
                                             <div className="flex flex-wrap items-center gap-2">
-                                                <h2 className="text-2xl font-extrabold text-gray-900">{selectedReport.title}</h2>
+                                                <h2 className="text-2xl font-bold text-gray-900">{selectedReport.title}</h2>
                                                 <span className={`rounded-full px-3 py-1 text-xs font-bold ${selectedReport.status === "Reviewed" ? "bg-emerald-100 text-emerald-700" : "bg-blue-100 text-[#2563EB]"}`}>
                                                     {formatStatus(selectedReport.status)}
                                                 </span>
@@ -385,13 +434,13 @@ export const SchoolTeacherReports = (): JSX.Element => {
                                             <div className="mt-4 grid gap-3 sm:grid-cols-2">
                                                 <div className="rounded-[8px] bg-[#F8FAFC] p-4">
                                                     <p className="text-sm font-semibold text-[#6b7280]">Lớp</p>
-                                                    <button type="button" onClick={() => navigate(`/school/students/classes/${selectedReport.classGroupId}`)} className="mt-1 text-left text-lg font-extrabold text-gray-900 hover:text-[#2563EB]">
+                                                    <button type="button" onClick={() => navigate(`/school/students/classes/${selectedReport.classGroupId}`)} className="mt-1 text-left text-lg font-bold text-gray-900 hover:text-[#2563EB]">
                                                         {selectedReport.className}
                                                     </button>
                                                 </div>
                                                 <div className="rounded-[8px] bg-[#F8FAFC] p-4">
                                                     <p className="text-sm font-semibold text-[#6b7280]">Loại báo cáo</p>
-                                                    <p className="mt-1 text-lg font-extrabold text-gray-900">{formatReportType(selectedReport.reportType)}</p>
+                                                    <p className="mt-1 text-lg font-bold text-gray-900">{formatReportType(selectedReport.reportType)}</p>
                                                 </div>
                                             </div>
 

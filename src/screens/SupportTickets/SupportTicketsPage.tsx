@@ -93,6 +93,21 @@ export function SupportTicketsPage(): JSX.Element {
 
 function SupportTicketsPanel({ role }: { role: RoleMode }): JSX.Element {
     const copy = roleCopy[role];
+    const loadingTone = role === "Provider"
+        ? {
+            pill: "inline-flex h-10 items-center gap-2 rounded-xl border border-blue-100 bg-white px-3 text-xs font-bold text-blue-700 shadow-soft-sm",
+            spinner: "h-3.5 w-3.5 animate-spin rounded-full border-2 border-blue-100 border-t-[#3B82F6]",
+            text: "text-[#3B82F6]",
+            primaryButton: "inline-flex h-10 items-center gap-2 rounded-xl border border-[#3B82F6] bg-[#3B82F6] px-4 text-sm font-bold text-white transition-colors hover:bg-[#2563EB]",
+            modalPrimaryButton: "inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[#3B82F6] px-5 text-sm font-bold text-white transition-colors hover:bg-[#2563EB] disabled:cursor-not-allowed disabled:opacity-60",
+        }
+        : {
+            pill: "inline-flex h-10 items-center gap-2 rounded-xl border border-sky-100 bg-white px-3 text-xs font-bold text-sky-700 shadow-soft-sm",
+            spinner: "h-3.5 w-3.5 animate-spin rounded-full border-2 border-sky-100 border-t-sky-700",
+            text: "text-slate-500",
+            primaryButton: "inline-flex h-10 items-center gap-2 rounded-xl border border-slate-200 bg-sky-700 px-4 text-sm font-bold text-white transition-colors hover:bg-sky-800",
+            modalPrimaryButton: "inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-sky-700 px-5 text-sm font-bold text-white transition-colors hover:bg-sky-800 disabled:cursor-not-allowed disabled:opacity-60",
+        };
     const [data, setData] = useState<SupportTicketListResult | null>(null);
     const [status, setStatus] = useState("");
     const [page, setPage] = useState(1);
@@ -181,7 +196,7 @@ function SupportTicketsPanel({ role }: { role: RoleMode }): JSX.Element {
             header: "Ticket",
             render: (ticket) => (
                 <div className="min-w-0">
-                    <p className="font-black text-slate-900">{ticket.title}</p>
+                    <p className="font-bold text-slate-900">{ticket.title}</p>
                     <p className="mt-1 line-clamp-1 text-xs font-semibold text-slate-500">{ticket.description}</p>
                 </div>
             ),
@@ -199,7 +214,7 @@ function SupportTicketsPanel({ role }: { role: RoleMode }): JSX.Element {
                 const Icon = meta.icon;
 
                 return (
-                    <span className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-black ${meta.className}`}>
+                    <span className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-bold ${meta.className}`}>
                         <Icon className="h-3.5 w-3.5" />
                         {meta.label}
                     </span>
@@ -236,11 +251,11 @@ function SupportTicketsPanel({ role }: { role: RoleMode }): JSX.Element {
             <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-soft-sm sm:p-6">
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                     <div className="max-w-3xl">
-                        <div className="inline-flex items-center gap-2 rounded-full border border-sky-100 bg-sky-50 px-3 py-1 text-xs font-black uppercase tracking-[0.16em] text-sky-700">
+                        <div className="inline-flex items-center gap-2 rounded-full border border-sky-100 bg-sky-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.16em] text-sky-700">
                             <LifeBuoy className="h-4 w-4" />
                             Support desk
                         </div>
-                        <h1 className="mt-4 text-2xl font-black text-slate-950 sm:text-3xl">{copy.title}</h1>
+                        <h1 className="mt-4 text-2xl font-bold text-slate-950 sm:text-3xl">{copy.title}</h1>
                     </div>
                     <div className="grid gap-3 sm:grid-cols-3 lg:min-w-[420px]">
                         {stats.map((item) => {
@@ -248,7 +263,7 @@ function SupportTicketsPanel({ role }: { role: RoleMode }): JSX.Element {
                             return (
                                 <div key={item.label} className={`rounded-xl border px-4 py-3 ${item.tone}`}>
                                     <Icon className="h-5 w-5" />
-                                    <p className="mt-2 text-2xl font-black">{item.value}</p>
+                                    <p className="mt-2 text-2xl font-bold">{item.value}</p>
                                     <p className="text-xs font-bold uppercase">{item.label}</p>
                                 </div>
                             );
@@ -267,7 +282,7 @@ function SupportTicketsPanel({ role }: { role: RoleMode }): JSX.Element {
                 <section className="rounded-2xl border border-slate-200 bg-white shadow-soft-sm">
                     <div className="flex flex-col gap-3 border-b border-slate-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
                         <div>
-                            <h2 className="text-lg font-black text-slate-950">Danh sách ticket</h2>
+                            <h2 className="text-lg font-bold text-slate-950">Danh sách ticket</h2>
                             <p className="text-sm font-semibold text-slate-500">{data?.total ?? 0} yêu cầu</p>
                         </div>
                         <div className="flex flex-wrap items-center gap-2">
@@ -289,15 +304,15 @@ function SupportTicketsPanel({ role }: { role: RoleMode }): JSX.Element {
                                 <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
                             </div>
                             {fetchingTickets ? (
-                                <div className="inline-flex h-10 items-center gap-2 rounded-xl border border-sky-100 bg-white px-3 text-xs font-bold text-sky-700 shadow-soft-sm">
-                                    <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-sky-100 border-t-sky-700" />
-                                    Đang lọc
+                                <div className={loadingTone.pill}>
+                                    <span className={loadingTone.spinner} />
+                                    Đang tải
                                 </div>
                             ) : null}
                             <button
                                 type="button"
                                 onClick={() => setIsCreateModalOpen(true)}
-                                className="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-200 bg-sky-700 px-4 text-sm font-black text-white transition-colors hover:bg-sky-800"
+                                className={loadingTone.primaryButton}
                             >
                                 <Plus className="h-4 w-4" />
                                 Tạo ticket mới
@@ -307,7 +322,7 @@ function SupportTicketsPanel({ role }: { role: RoleMode }): JSX.Element {
 
                     <div className="p-4">
                         {loading ? (
-                            <div className="px-5 py-10 text-center text-sm font-bold text-slate-500">Đang tải...</div>
+                            <div className={`px-5 py-10 text-center text-sm font-bold ${loadingTone.text}`}>Đang tải...</div>
                         ) : data?.items.length ? (
                             <ProviderDataTable
                                 items={data.items}
@@ -338,17 +353,17 @@ function SupportTicketsPanel({ role }: { role: RoleMode }): JSX.Element {
 
                 <aside className="space-y-6">
                     <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-soft-sm">
-                        <h2 className="text-lg font-black text-slate-950">Chi tiết</h2>
+                        <h2 className="text-lg font-bold text-slate-950">Chi tiết</h2>
                         {selected ? (
                             <div className="mt-4 space-y-4">
                                 <div>
-                                    <p className="text-xs font-black uppercase text-slate-400">Ticket</p>
-                                    <p className="mt-1 text-base font-black text-slate-950">{selected.title}</p>
+                                    <p className="text-xs font-bold uppercase text-slate-400">Ticket</p>
+                                    <p className="mt-1 text-base font-bold text-slate-950">{selected.title}</p>
                                 </div>
                                 <p className="whitespace-pre-wrap rounded-xl bg-slate-50 p-4 text-sm font-semibold leading-6 text-slate-700">{selected.description}</p>
                                 {selected.response ? (
                                     <div className="rounded-xl border border-sky-100 bg-sky-50 p-4">
-                                        <p className="text-xs font-black uppercase text-sky-700">Phản hồi từ Admin</p>
+                                        <p className="text-xs font-bold uppercase text-sky-700">Phản hồi từ Admin</p>
                                         <p className="mt-2 whitespace-pre-wrap text-sm font-semibold leading-6 text-slate-800">{selected.response}</p>
                                     </div>
                                 ) : (
@@ -376,8 +391,8 @@ function SupportTicketsPanel({ role }: { role: RoleMode }): JSX.Element {
                     <div className="w-full max-w-2xl rounded-2xl border border-slate-200 bg-white p-6 shadow-soft-lg">
                         <div className="flex items-start justify-between gap-3">
                             <div>
-                                <p className="text-[11px] font-black uppercase tracking-[0.16em] text-slate-400">Support ticket</p>
-                                <h3 className="mt-2 text-xl font-black text-slate-950">Tạo ticket mới</h3>
+                                <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-slate-400">Support ticket</p>
+                                <h3 className="mt-2 text-xl font-bold text-slate-950">Tạo ticket mới</h3>
                             </div>
                             <button
                                 type="button"
@@ -422,7 +437,7 @@ function SupportTicketsPanel({ role }: { role: RoleMode }): JSX.Element {
                                     type="button"
                                     onClick={handleSubmit}
                                     disabled={submitting || !form.title.trim() || !form.description.trim()}
-                                    className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-sky-700 px-5 text-sm font-black text-white transition-colors hover:bg-sky-800 disabled:cursor-not-allowed disabled:opacity-60"
+                                    className={loadingTone.modalPrimaryButton}
                                 >
                                     <MessageSquare className="h-4 w-4" />
                                     {submitting ? "Đang gửi..." : "Gửi Admin"}
@@ -430,7 +445,7 @@ function SupportTicketsPanel({ role }: { role: RoleMode }): JSX.Element {
                                 <button
                                     type="button"
                                     onClick={() => setIsCreateModalOpen(false)}
-                                    className="inline-flex h-11 items-center justify-center rounded-xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-900"
+                                    className="inline-flex h-11 items-center justify-center rounded-xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-900"
                                 >
                                     Hủy
                                 </button>

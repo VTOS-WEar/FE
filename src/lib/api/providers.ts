@@ -148,6 +148,25 @@ export type ProviderCatalogPublicationDto = {
 
 export type ProviderCatalogResponse = {
     publications: ProviderCatalogPublicationDto[];
+    totalCount: number;
+    page: number;
+    pageSize: number;
+    totalPages: number;
+    summary: ProviderCatalogSummary;
+};
+
+export type ProviderCatalogSummary = {
+    publications: number;
+    items: number;
+    published: number;
+    needsSetup: number;
+};
+
+export type GetProviderCatalogParams = {
+    page?: number;
+    pageSize?: number;
+    status?: string;
+    search?: string;
 };
 
 export type UpsertProviderCatalogItemRequest = {
@@ -197,8 +216,15 @@ export async function getProviderDirectOrderStats(): Promise<ProviderOrderStatsD
     return unwrapResult(result);
 }
 
-export async function getProviderCatalog(): Promise<ProviderCatalogResponse> {
-    return api<ProviderCatalogResponse>(endpoints.providers.catalog, {
+export async function getProviderCatalog(params: GetProviderCatalogParams = {}): Promise<ProviderCatalogResponse> {
+    const searchParams = new URLSearchParams();
+    if (params.page) searchParams.set("page", String(params.page));
+    if (params.pageSize) searchParams.set("pageSize", String(params.pageSize));
+    if (params.status && params.status !== "all") searchParams.set("status", params.status);
+    if (params.search?.trim()) searchParams.set("search", params.search.trim());
+    const qs = searchParams.toString();
+
+    return api<ProviderCatalogResponse>(`${endpoints.providers.catalog}${qs ? `?${qs}` : ""}`, {
         method: "GET",
         auth: true,
     });

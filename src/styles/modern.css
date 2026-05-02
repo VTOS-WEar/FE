@@ -160,6 +160,13 @@
 }
 .nb-btn-purple:hover { background: var(--nb-accent-hover); border-color: var(--nb-accent-hover); }
 
+.nb-btn-provider {
+  background: #3B82F6;
+  color: #ffffff;
+  border-color: #3B82F6;
+}
+.nb-btn-provider:hover { background: #2563EB; border-color: #2563EB; }
+
 .nb-btn-yellow {
   background: var(--nb-accent-support);
   color: var(--nb-text-primary);
@@ -1064,4 +1071,194 @@
 
 .nb-animate-shine {
   animation: nb-shine 1.5s ease-in-out infinite;
+}
+
+/* Role workspaces: semantic text weight normalization */
+.school-workspace,
+.provider-workspace,
+.admin-workspace,
+.teacher-workspace {
+  font-weight: 400;
+}
+
+.school-workspace :is(p, span, div, td, li).font-medium,
+.provider-workspace :is(p, span, div, td, li).font-medium,
+.admin-workspace :is(p, span, div, td, li).font-medium,
+.teacher-workspace :is(p, span, div, td, li).font-medium {
+  font-weight: 400;
+}
+
+.school-workspace :is(p, span, div, td, li).font-semibold,
+.provider-workspace :is(p, span, div, td, li).font-semibold,
+.admin-workspace :is(p, span, div, td, li).font-semibold,
+.teacher-workspace :is(p, span, div, td, li).font-semibold {
+  font-weight: 500;
+}
+
+.school-workspace :is(p, span, div, td, li).font-bold,
+.provider-workspace :is(p, span, div, td, li).font-bold,
+.admin-workspace :is(p, span, div, td, li).font-bold,
+.teacher-workspace :is(p, span, div, td, li).font-bold {
+  font-weight: 600;
+}
+
+.school-workspace :is(p, span, div, td, li).font-extrabold,
+.school-workspace :is(p, span, div, td, li).font-black,
+.provider-workspace :is(p, span, div, td, li).font-extrabold,
+.provider-workspace :is(p, span, div, td, li).font-black,
+.admin-workspace :is(p, span, div, td, li).font-extrabold,
+.admin-workspace :is(p, span, div, td, li).font-black,
+.teacher-workspace :is(p, span, div, td, li).font-extrabold,
+.teacher-workspace :is(p, span, div, td, li).font-black {
+  font-weight: 600;
+}
+
+.school-workspace :is(h1, h2, h3, h4).font-extrabold,
+.school-workspace :is(h1, h2, h3, h4).font-black,
+.provider-workspace :is(h1, h2, h3, h4).font-extrabold,
+.provider-workspace :is(h1, h2, h3, h4).font-black,
+.admin-workspace :is(h1, h2, h3, h4).font-extrabold,
+.admin-workspace :is(h1, h2, h3, h4).font-black,
+.teacher-workspace :is(h1, h2, h3, h4).font-extrabold,
+.teacher-workspace :is(h1, h2, h3, h4).font-black {
+  font-weight: 700;
+}
+
+.school-workspace :is(label, th).font-bold,
+.school-workspace :is(label, th).font-extrabold,
+.school-workspace :is(label, th).font-black,
+.provider-workspace :is(label, th).font-bold,
+.provider-workspace :is(label, th).font-extrabold,
+.provider-workspace :is(label, th).font-black,
+.admin-workspace :is(label, th).font-bold,
+.admin-workspace :is(label, th).font-extrabold,
+.admin-workspace :is(label, th).font-black,
+.teacher-workspace :is(label, th).font-bold,
+.teacher-workspace :is(label, th).font-extrabold,
+.teacher-workspace :is(label, th).font-black {
+  font-weight: 600;
+}
+
+.school-workspace :is(button, a).font-bold,
+.school-workspace :is(button, a).font-extrabold,
+.school-workspace :is(button, a).font-black,
+.provider-workspace :is(button, a).font-bold,
+.provider-workspace :is(button, a).font-extrabold,
+.provider-workspace :is(button, a).font-black,
+.admin-workspace :is(button, a).font-bold,
+.admin-workspace :is(button, a).font-extrabold,
+.admin-workspace :is(button, a).font-black,
+.teacher-workspace :is(button, a).font-bold,
+.teacher-workspace :is(button, a).font-extrabold,
+.teacher-workspace :is(button, a).font-black {
+  font-weight: 600;
+}
+
+.school-workspace :is(input, select, textarea).font-semibold,
+.school-workspace :is(input, select, textarea).font-bold,
+.school-workspace :is(input, select, textarea).font-extrabold,
+.school-workspace :is(input, select, textarea).font-black,
+.provider-workspace :is(input, select, textarea).font-semibold,
+.provider-workspace :is(input, select, textarea).font-bold,
+.provider-workspace :is(input, select, textarea).font-extrabold,
+.provider-workspace :is(input, select, textarea).font-black,
+.admin-workspace :is(input, select, textarea).font-semibold,
+.admin-workspace :is(input, select, textarea).font-bold,
+.admin-workspace :is(input, select, textarea).font-extrabold,
+.admin-workspace :is(input, select, textarea).font-black,
+.teacher-workspace :is(input, select, textarea).font-semibold,
+.teacher-workspace :is(input, select, textarea).font-bold,
+.teacher-workspace :is(input, select, textarea).font-extrabold,
+.teacher-workspace :is(input, select, textarea).font-black {
+  font-weight: 500;
+}
+
+.school-workspace :is(.text-xl, .text-2xl, .text-3xl, .text-4xl, .text-5xl).font-bold,
+.school-workspace :is(.text-xl, .text-2xl, .text-3xl, .text-4xl, .text-5xl).font-extrabold,
+.school-workspace :is(.text-xl, .text-2xl, .text-3xl, .text-4xl, .text-5xl).font-black,
+.provider-workspace :is(.text-xl, .text-2xl, .text-3xl, .text-4xl, .text-5xl).font-bold,
+.provider-workspace :is(.text-xl, .text-2xl, .text-3xl, .text-4xl, .text-5xl).font-extrabold,
+.provider-workspace :is(.text-xl, .text-2xl, .text-3xl, .text-4xl, .text-5xl).font-black,
+.admin-workspace :is(.text-xl, .text-2xl, .text-3xl, .text-4xl, .text-5xl).font-bold,
+.admin-workspace :is(.text-xl, .text-2xl, .text-3xl, .text-4xl, .text-5xl).font-extrabold,
+.admin-workspace :is(.text-xl, .text-2xl, .text-3xl, .text-4xl, .text-5xl).font-black,
+.teacher-workspace :is(.text-xl, .text-2xl, .text-3xl, .text-4xl, .text-5xl).font-bold,
+.teacher-workspace :is(.text-xl, .text-2xl, .text-3xl, .text-4xl, .text-5xl).font-extrabold,
+.teacher-workspace :is(.text-xl, .text-2xl, .text-3xl, .text-4xl, .text-5xl).font-black {
+  font-weight: 700;
+}
+
+.school-workspace .nb-table td,
+.provider-workspace .nb-table td,
+.admin-workspace .nb-table td,
+.teacher-workspace .nb-table td {
+  font-weight: 400;
+}
+
+.school-workspace .nb-badge,
+.provider-workspace .nb-badge,
+.admin-workspace .nb-badge,
+.teacher-workspace .nb-badge {
+  font-weight: 600;
+}
+
+.school-workspace .nb-btn,
+.school-workspace .nb-btn-outline,
+.provider-workspace .nb-btn,
+.provider-workspace .nb-btn-outline,
+.admin-workspace .nb-btn,
+.admin-workspace .nb-btn-outline,
+.teacher-workspace .nb-btn,
+.teacher-workspace .nb-btn-outline {
+  font-weight: 600;
+}
+
+.school-workspace .nb-stat-value,
+.provider-workspace .nb-stat-value,
+.admin-workspace .nb-stat-value,
+.teacher-workspace .nb-stat-value {
+  font-weight: 700;
+}
+
+.school-workspace .nb-stat-label,
+.provider-workspace .nb-stat-label,
+.admin-workspace .nb-stat-label,
+.teacher-workspace .nb-stat-label {
+  font-weight: 500;
+}
+
+.school-workspace .nb-sidebar .font-medium,
+.provider-workspace .nb-sidebar .font-medium,
+.admin-workspace .nb-sidebar .font-medium,
+.teacher-workspace .nb-sidebar .font-medium {
+  font-weight: 500;
+}
+
+.school-workspace .nb-sidebar .font-semibold,
+.provider-workspace .nb-sidebar .font-semibold,
+.admin-workspace .nb-sidebar .font-semibold,
+.teacher-workspace .nb-sidebar .font-semibold {
+  font-weight: 600;
+}
+
+.school-workspace .nb-sidebar .font-bold,
+.school-workspace .nb-sidebar .font-extrabold,
+.school-workspace .nb-sidebar .font-black,
+.provider-workspace .nb-sidebar .font-bold,
+.provider-workspace .nb-sidebar .font-extrabold,
+.provider-workspace .nb-sidebar .font-black,
+.admin-workspace .nb-sidebar .font-bold,
+.admin-workspace .nb-sidebar .font-extrabold,
+.admin-workspace .nb-sidebar .font-black,
+.teacher-workspace .nb-sidebar .font-bold,
+.teacher-workspace .nb-sidebar .font-extrabold,
+.teacher-workspace .nb-sidebar .font-black {
+  font-weight: 700;
+}
+
+.school-workspace .nb-sidebar .nb-sidebar-active,
+.provider-workspace .nb-sidebar .nb-sidebar-active,
+.admin-workspace .nb-sidebar .nb-sidebar-active,
+.teacher-workspace .nb-sidebar .nb-sidebar-active {
+  font-weight: 700;
 }

@@ -164,7 +164,7 @@ export const CheckAndPreview = (): JSX.Element => {
                                 <p className="font-medium text-[#4c5769] text-sm mb-1">
                                     Tổng số dòng tải lên
                                 </p>
-                                <p className="font-extrabold text-black text-4xl">
+                                <p className="font-bold text-black text-4xl">
                                     {TOTAL_ROWS}
                                 </p>
                             </div>
@@ -176,7 +176,7 @@ export const CheckAndPreview = (): JSX.Element => {
                                         Dòng bị lỗi
                                     </p>
                                 </div>
-                                <p className="font-extrabold text-[#e53e3e] text-4xl">
+                                <p className="font-bold text-[#e53e3e] text-4xl">
                                     {ERROR_COUNT}
                                 </p>
                             </div>
@@ -188,7 +188,7 @@ export const CheckAndPreview = (): JSX.Element => {
                                         Tỷ lệ thành công
                                     </p>
                                 </div>
-                                <p className="font-extrabold text-[#38a169] text-4xl">
+                                <p className="font-bold text-[#38a169] text-4xl">
                                     {SUCCESS_RATE}%
                                 </p>
                             </div>

@@ -52,7 +52,7 @@ export function ProviderDataTable<T>({
                                     className={`bg-white transition-colors hover:bg-slate-50 ${clickable ? "cursor-pointer" : ""} ${rowClassName?.(item) ?? ""}`}
                                 >
                                     {columns.map((column) => (
-                                        <td key={column.key} className={`px-5 py-4 align-middle text-sm text-slate-700 ${column.className ?? ""}`}>
+                                        <td key={column.key} className={`px-5 py-4 align-middle text-sm font-normal text-slate-700 ${column.className ?? ""}`}>
                                             {column.render(item)}
                                         </td>
                                     ))}

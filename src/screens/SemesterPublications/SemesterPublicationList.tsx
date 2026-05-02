@@ -418,7 +418,7 @@ export const SemesterPublicationList = (): JSX.Element => {
         <div className="nb-page flex flex-col">
             {toast && (
                 <div
-                    className={`fixed right-6 top-6 z-[99999] flex items-center gap-3 rounded-[12px] border px-5 py-3 text-sm font-extrabold shadow-soft-md ${
+                    className={`fixed right-6 top-6 z-[99999] flex items-center gap-3 rounded-[12px] border px-5 py-3 text-sm font-bold shadow-soft-md ${
                         toast.type === "success"
                             ? "border-emerald-200 bg-emerald-50 text-emerald-700"
                             : "border-red-200 bg-red-50 text-red-700"
@@ -516,7 +516,7 @@ export const SemesterPublicationList = (): JSX.Element => {
                                 {filtering ? (
                                     <div className="inline-flex h-10 items-center gap-2 rounded-full border border-blue-100 bg-white px-3 text-xs font-bold text-[#2563EB] shadow-soft-sm">
                                         <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-blue-100 border-t-[#2563EB]" />
-                                        Đang lọc
+                                        Đang tải
                                     </div>
                                 ) : null}
                             </div>
@@ -540,7 +540,7 @@ export const SemesterPublicationList = (): JSX.Element => {
                                     <div className={`mx-auto flex h-16 w-16 items-center justify-center rounded-full border ${SCHOOL_THEME.primarySoftBorder} ${SCHOOL_THEME.primarySoftBg} ${SCHOOL_THEME.primaryText} shadow-soft-sm`}>
                                         {publications.length === 0 ? <Plus className="h-8 w-8" /> : <ClipboardList className="h-8 w-8" />}
                                     </div>
-                                    <h2 className="mt-5 text-xl font-extrabold text-gray-900">
+                                    <h2 className="mt-5 text-xl font-bold text-gray-900">
                                         {publications.length === 0 ? "Chưa có công bố học kỳ nào" : "Không tìm thấy công bố phù hợp"}
                                     </h2>
                                     <div className="mt-5 flex flex-wrap items-center justify-center gap-3">

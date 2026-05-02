@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { BellRing, ChevronDown, Send } from "lucide-react";
+import { ChevronDown, Send } from "lucide-react";
+import { TeacherHero, TEACHER_THEME } from "./teacherWorkspace";
 import {
     getTeacherClassesOverview,
     getTeacherReminderCandidates,
@@ -91,34 +92,28 @@ export const TeacherReminders = (): JSX.Element => {
 
     return (
         <TeacherWorkspaceShell breadcrumbs={[{ label: "Teacher workspace", href: "/teacher/dashboard" }, { label: "Nhắc phụ huynh" }]}>
-            <section className="rounded-[24px] border border-gray-200 bg-white p-6 shadow-soft-sm">
-                <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-                    <div>
-                        <div className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-amber-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-amber-700">
-                            <BellRing className="h-4 w-4" />
-                            Reminder workspace
-                        </div>
-                        <h1 className="mt-4 text-[30px] font-extrabold leading-tight text-gray-900 lg:text-[38px]">Nhắc phụ huynh chưa đặt hàng</h1>
-                        <p className="mt-3 max-w-2xl text-sm font-medium leading-6 text-[#4c5769] lg:text-base">
-                            Xem các phụ huynh trong lớp chưa hoàn tất đặt đồng phục, gửi nhắc riêng hoặc gửi hàng loạt để không bỏ sót học sinh cần theo dõi.
-                        </p>
+            <TeacherHero
+                eyebrow="NHẮC PHỤ HUYNH"
+                title="Nhắc phụ huynh chưa đặt hàng"
+                description="Xem các phụ huynh trong lớp chưa hoàn tất đặt đồng phục, gửi nhắc riêng hoặc gửi hàng loạt để không bỏ sót học sinh cần theo dõi."
+            />
+
+            <section className={`${TEACHER_THEME.panel} mt-6 p-5`}>
+                <label className="text-sm font-semibold text-[#4c5769]">
+                    Lớp
+                    <div className="relative mt-2">
+                        <select value={classGroupId} onChange={(event) => setClassGroupId(event.target.value)} className={`${TEACHER_THEME.input} min-w-[220px] appearance-none pr-11`}>
+                            {classOptions.length === 0 && <option value="">Chưa có lớp</option>}
+                            {classOptions.map((item) => (
+                                <option key={item.id} value={item.id}>Lớp {item.className}</option>
+                            ))}
+                        </select>
+                        <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
                     </div>
-                    <label className="text-sm font-semibold text-[#4c5769]">
-                        Lớp
-                        <div className="relative mt-2">
-                            <select value={classGroupId} onChange={(event) => setClassGroupId(event.target.value)} className="w-full min-w-[220px] appearance-none rounded-2xl border border-gray-200 bg-white px-4 py-3 pr-11 font-semibold text-gray-900 outline-none focus:border-amber-300">
-                                {classOptions.length === 0 && <option value="">Chưa có lớp</option>}
-                                {classOptions.map((item) => (
-                                    <option key={item.id} value={item.id}>Lớp {item.className}</option>
-                                ))}
-                            </select>
-                            <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
-                        </div>
-                    </label>
-                </div>
+                </label>
             </section>
 
-            <section className="mt-6 rounded-[20px] border border-gray-200 bg-white p-5 shadow-soft-sm">
+            <section className={`${TEACHER_THEME.panel} mt-6 p-5`}>
                 <label className="text-sm font-semibold text-[#4c5769]">
                     Ghi chú thêm
                     <textarea
@@ -126,44 +121,44 @@ export const TeacherReminders = (): JSX.Element => {
                         onChange={(event) => setNote(event.target.value)}
                         rows={4}
                         placeholder="Ví dụ: Nhà trường đang cần chốt số liệu đồng phục trong tuần này..."
-                        className="mt-2 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-900 outline-none focus:border-amber-300"
+                        className={`${TEACHER_THEME.input} mt-2 text-sm font-medium`}
                     />
                 </label>
 
                 <div className="mt-4 flex flex-wrap gap-3">
-                    <button type="button" onClick={() => void handleSend(pendingParentIds)} disabled={sendingAll || pendingParentIds.length === 0 || !classGroupId} className="inline-flex items-center gap-2 rounded-2xl border border-amber-200 bg-amber-500 px-4 py-3 text-sm font-bold text-white shadow-soft-sm disabled:cursor-not-allowed disabled:opacity-60">
+                    <button type="button" onClick={() => void handleSend(pendingParentIds)} disabled={sendingAll || pendingParentIds.length === 0 || !classGroupId} className={TEACHER_THEME.primaryButton}>
                         <Send className="h-4 w-4" />
                         {sendingAll ? "Đang gửi..." : "Gửi nhắc hàng loạt"}
                     </button>
                     {data && (
-                        <div className="rounded-2xl bg-[#fff8eb] px-4 py-3 text-sm font-semibold text-[#6b7280]">
+                        <div className="rounded-[8px] bg-[#FEF3C7] px-4 py-3 text-sm font-semibold text-[#6b7280]">
                             {data.totalPendingParents} phụ huynh, {data.totalPendingStudents} học sinh đang chờ đặt hàng
                         </div>
                     )}
                 </div>
 
                 {success && (
-                    <div className="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-700">
+                    <div className="mt-4 rounded-[8px] border border-emerald-200 bg-[#ECFDF5] px-4 py-3 text-sm font-bold text-emerald-700">
                         {success}
                     </div>
                 )}
 
                 {error && (
-                    <div className="mt-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-bold text-red-700">
+                    <div className="mt-4 rounded-[8px] border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-bold text-rose-700">
                         {error}
                     </div>
                 )}
             </section>
 
             {loading && (
-                <section className="mt-6 rounded-2xl border border-gray-200 bg-white p-10 text-center shadow-soft-sm">
-                    <div className="mx-auto mb-3 h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-amber-600" />
+                <section className={`${TEACHER_THEME.panel} mt-6 p-10 text-center`}>
+                    <div className="mx-auto mb-3 h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-[#D97706]" />
                     <p className="text-sm font-semibold text-[#4c5769]">Đang tải danh sách phụ huynh cần nhắc...</p>
                 </section>
             )}
 
             {!loading && data && (
-                <section className="mt-6 rounded-[20px] border border-gray-200 bg-white shadow-soft-sm">
+                <section className={`${TEACHER_THEME.panel} mt-6`}>
                     <div className="divide-y divide-gray-100">
                         {data.items.length === 0 && (
                             <div className="px-5 py-10 text-center text-sm font-semibold text-[#4c5769]">
@@ -175,7 +170,7 @@ export const TeacherReminders = (): JSX.Element => {
                                 <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                                     <div>
                                         <div className="flex flex-wrap items-center gap-2">
-                                            <h2 className="text-lg font-extrabold text-gray-900">{item.parentName}</h2>
+                                            <h2 className="text-lg font-bold text-gray-900">{item.parentName}</h2>
                                             <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-700">
                                                 {item.pendingStudents.length} học sinh chưa đặt
                                             </span>
@@ -189,8 +184,8 @@ export const TeacherReminders = (): JSX.Element => {
                                             ))}
                                         </div>
                                     </div>
-                                    <button type="button" onClick={() => void handleSend([item.parentUserId])} disabled={sendingParentId === item.parentUserId} className="inline-flex items-center gap-2 rounded-2xl border border-amber-200 bg-white px-4 py-3 text-sm font-bold text-gray-900 shadow-soft-sm hover:border-amber-300 disabled:cursor-not-allowed disabled:opacity-60">
-                                        <Send className="h-4 w-4 text-amber-700" />
+                                    <button type="button" onClick={() => void handleSend([item.parentUserId])} disabled={sendingParentId === item.parentUserId} className={TEACHER_THEME.secondaryButton}>
+                                        <Send className="h-4 w-4 text-emerald-700" />
                                         {sendingParentId === item.parentUserId ? "Đang gửi..." : "Gửi riêng"}
                                     </button>
                                 </div>

@@ -456,7 +456,7 @@ export const StudentListV2 = (): JSX.Element => {
                         {/* Header */}
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                             <div>
-                                <h1 className="font-extrabold text-gray-900 text-[28px] lg:text-[32px] leading-tight">Danh sách học sinh 📚</h1>
+                                <h1 className="font-bold text-gray-900 text-[28px] lg:text-[32px] leading-tight">Danh sách học sinh 📚</h1>
                                 <p className="mt-1 font-medium text-[#4c5769] text-sm lg:text-base">Quản lý thông tin học sinh, số đo ảo và tài khoản phụ huynh.</p>
                             </div>
                             <div className="flex items-center gap-3">
@@ -507,7 +507,7 @@ export const StudentListV2 = (): JSX.Element => {
                                 {(fetchingStudents || filtering) && (
                                     <div className="inline-flex h-10 items-center gap-2 rounded-full border border-violet-100 bg-white px-3 text-xs font-bold text-violet-700 shadow-soft-sm">
                                         <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-violet-100 border-t-violet-700" />
-                                        Đang lọc
+                                        Đang tải
                                     </div>
                                 )}
                             </div>

@@ -13,9 +13,16 @@ interface DashboardLayoutProps {
  */
 export const DashboardLayout = ({ children, sidebarProps }: DashboardLayoutProps) => {
     const [isCollapsed, setIsCollapsed] = useState(false);
+    const roleWorkspaceClass = sidebarProps.iconType === "provider"
+        ? "provider-workspace"
+        : sidebarProps.iconType === "admin"
+            ? "admin-workspace"
+            : sidebarProps.iconType === "teacher"
+                ? "teacher-workspace"
+                : "school-workspace";
 
     return (
-        <div className="bg-[#f6f7f8] w-full min-h-screen flex flex-col">
+        <div className={`${roleWorkspaceClass} bg-[#f6f7f8] w-full min-h-screen flex flex-col`}>
             <div className="flex flex-1 flex-col lg:flex-row">
                 {/* Sidebar */}
                 <div className={`${isCollapsed ? "lg:w-16" : "lg:w-[16rem]"} flex-shrink-0 lg:sticky lg:top-0 lg:h-screen transition-all duration-300`}>

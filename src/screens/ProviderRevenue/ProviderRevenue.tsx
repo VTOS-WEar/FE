@@ -517,7 +517,7 @@ export default function ProviderRevenue() {
                                 </div>
                                 <button
                                     type="button"
-                                    className="nb-btn nb-btn-green inline-flex w-fit items-center gap-2"
+                                    className="nb-btn nb-btn-provider inline-flex w-fit items-center gap-2"
                                     disabled={loading || exporting}
                                     onClick={handleExportReport}
                                 >
@@ -597,7 +597,7 @@ export default function ProviderRevenue() {
 
                         {loading ? (
                             <div className="flex min-h-[320px] flex-col items-center justify-center gap-4 rounded-[8px] border border-gray-200 bg-white shadow-soft-sm">
-                                <Loader2 className="h-10 w-10 animate-spin text-violet-600" />
+                                <Loader2 className="h-10 w-10 animate-spin text-[#3B82F6]" />
                                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">Đang đồng bộ dữ liệu doanh thu...</p>
                             </div>
                         ) : (
@@ -672,9 +672,9 @@ export default function ProviderRevenue() {
                                         </label>
 
                                         {fetchingOrders || filtering ? (
-                                            <div className="inline-flex h-10 items-center gap-2 rounded-full border border-violet-100 bg-white px-3 text-xs font-bold text-violet-700 shadow-soft-sm">
-                                                <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-violet-100 border-t-violet-700" />
-                                                Đang lọc
+                                            <div className="inline-flex h-10 items-center gap-2 rounded-full border border-blue-100 bg-white px-3 text-xs font-bold text-blue-700 shadow-soft-sm">
+                                                <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-blue-100 border-t-[#3B82F6]" />
+                                                Đang tải
                                             </div>
                                         ) : null}
                                     </div>

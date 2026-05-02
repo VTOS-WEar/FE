@@ -6,7 +6,7 @@ export const SCHOOL_THEME = {
     primarySoftBg: "bg-blue-50",
     primarySoftBorder: "border-blue-100",
     primaryFocus: "focus:border-blue-300 focus:ring-4 focus:ring-blue-50",
-    primaryButton: "inline-flex h-10 items-center justify-center gap-2 rounded-[8px] bg-[#2563EB] px-4 text-sm font-bold text-white shadow-soft-sm transition-colors hover:bg-[#1D4ED8] disabled:cursor-not-allowed disabled:opacity-60",
+    primaryButton: "inline-flex h-10 items-center justify-center gap-2 rounded-[8px] bg-[#2563EB] px-4 text-sm font-semibold text-white shadow-soft-sm transition-colors hover:bg-[#1D4ED8] disabled:cursor-not-allowed disabled:opacity-60",
     activePill: "border-blue-200 bg-blue-50 text-[#2563EB]",
     inactivePill: "border-gray-200 bg-white text-[#4c5769] hover:border-blue-200 hover:text-[#2563EB]",
     hoverPanel: "hover:border-blue-300",

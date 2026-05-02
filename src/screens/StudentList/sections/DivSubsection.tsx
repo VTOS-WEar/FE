@@ -206,7 +206,7 @@ export const DivSubsection = (): JSX.Element => {
                                                     <span className="font-semibold text-[#677489] text-xs tracking-[0] leading-[normal]">
                                                         {student.parent.phone}
                                                     </span>
-                                                    <Badge className="h-auto bg-[#ebf3fd] hover:bg-[#ebf3fd] text-[#0068ff] border-[0.5px] border-[#c8def9] rounded-[5px] px-[0.3125rem] py-[0.3125rem] font-extrabold text-[0.5625rem]">
+                                                    <Badge className="h-auto bg-[#ebf3fd] hover:bg-[#ebf3fd] text-[#0068ff] border-[0.5px] border-[#c8def9] rounded-[5px] px-[0.3125rem] py-[0.3125rem] font-bold text-[0.5625rem]">
                                                         ĐàLIÊN KẾT
                                                     </Badge>
                                                 </div>
@@ -239,11 +239,11 @@ export const DivSubsection = (): JSX.Element => {
             <footer className="flex items-center justify-between h-[3.125rem] bg-slate-50 rounded-b-[10px] border-t border-solid border-[#e3e8ef] px-[1.8125rem]">
                 <div className="text-[0.8125rem] tracking-[0] leading-[normal]">
                     <span className="font-semibold text-[#677489]">Hiển thị </span>
-                    <span className="font-extrabold text-black">1</span>
+                    <span className="font-bold text-black">1</span>
                     <span className="font-semibold text-[#677489]"> đến </span>
-                    <span className="font-extrabold text-black">5</span>
+                    <span className="font-bold text-black">5</span>
                     <span className="font-semibold text-[#677489]"> của </span>
-                    <span className="font-extrabold text-black">40</span>
+                    <span className="font-bold text-black">40</span>
                     <span className="font-semibold text-[#677489]"> kết quả</span>
                 </div>
 

@@ -114,6 +114,15 @@ function RootRedirect() {
 function RouteTransitionLayout() {
   const location = useLocation();
   const currentLocationKey = `${location.pathname}${location.search}`;
+  const roleWorkspaceClass = location.pathname.startsWith("/school/")
+    ? "school-workspace"
+    : location.pathname.startsWith("/provider/")
+      ? "provider-workspace"
+      : location.pathname.startsWith("/admin/")
+        ? "admin-workspace"
+        : location.pathname.startsWith("/teacher/")
+          ? "teacher-workspace"
+          : "";
   const previousLocationRef = useRef(currentLocationKey);
   const [showLoader, setShowLoader] = useState(false);
 
@@ -131,7 +140,7 @@ function RouteTransitionLayout() {
   }, [showLoader]);
 
   return (
-    <div className="relative min-h-screen">
+    <div className={`relative min-h-screen ${roleWorkspaceClass}`}>
       <Outlet />
 
       <AnimatePresence>
@@ -341,6 +350,10 @@ const router = createBrowserRouter([{
   },
   {
     path: "/teacher/account",
+    element: <RoleGuard allowedRoles={["HomeroomTeacher"]}><Navigate to="/teacher/account-settings" replace /></RoleGuard>,
+  },
+  {
+    path: "/teacher/account-settings",
     element: <RoleGuard allowedRoles={["HomeroomTeacher"]}><TeacherAccount /></RoleGuard>,
   },
   {

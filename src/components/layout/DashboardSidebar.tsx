@@ -1,4 +1,4 @@
-import { ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, LogOut, School, Building2 } from "lucide-react";
+import { Building2, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, GraduationCap, LogOut, School, ShieldCheck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useMemo } from "react";
 
@@ -22,7 +22,7 @@ export interface DashboardSidebarProps {
     onToggle: () => void;
     avatarSrc?: string;
     avatarAlt?: string;
-    iconType?: "school" | "provider";
+    iconType?: "school" | "provider" | "admin" | "teacher";
     greeting?: string;
     name: string;
     /** Organization name (school name / provider name) — shown as secondary line below name */
@@ -64,6 +64,19 @@ export const DashboardSidebar = ({
     const renderIcon = (Icon: React.ComponentType<{ className?: string; strokeWidth?: number }>, active: boolean) => (
         <Icon className={`w-[18px] h-[18px] flex-shrink-0 ${active ? "text-white" : "text-gray-400"}`} strokeWidth={1.75} />
     );
+    const activeNavClass = {
+        school: "bg-gradient-to-r from-[#B8A9E8]/35 to-[#A996E2]/10 text-white font-bold border border-[#C4B5FD]/70 shadow-[0_0_0_1px_rgba(184,169,232,0.22)]",
+        provider: "bg-gradient-to-r from-[#3B82F6]/35 to-[#2563EB]/10 text-white font-bold border border-[#93C5FD]/70 shadow-[0_0_0_1px_rgba(59,130,246,0.22)]",
+        admin: "bg-gradient-to-r from-[#BE123C]/35 to-[#9F1239]/10 text-white font-bold border border-[#FDA4AF]/70 shadow-[0_0_0_1px_rgba(190,18,60,0.22)]",
+        teacher: "bg-gradient-to-r from-[#059669]/38 to-[#047857]/12 text-white font-bold border border-[#6EE7B7]/70 shadow-[0_0_0_1px_rgba(5,150,105,0.24)]",
+    }[iconType];
+    const activeChildMarkerClass = iconType === "teacher"
+        ? "border-[#6EE7B7] bg-[#6EE7B7]"
+        : iconType === "provider"
+            ? "border-[#93C5FD] bg-[#93C5FD]"
+            : iconType === "admin"
+                ? "border-[#FDA4AF] bg-[#FDA4AF]"
+                : "border-[#93C5FD] bg-[#93C5FD]";
 
     const renderNavItem = (item: NavItem, key: string, depth = 0, topLevel = false) => {
         const hasChildren = Boolean(item.children?.length);
@@ -89,7 +102,7 @@ export const DashboardSidebar = ({
                                 : "text-[#D1D5DB] font-medium hover:bg-white/8 hover:text-white"
                             } ${item.href || hasChildren ? "cursor-pointer" : ""}`}
                     >
-                        <span className={`h-1.5 w-1.5 rotate-45 rounded-[1px] border ${active ? "border-[#93C5FD] bg-[#93C5FD]" : "border-[#7D8398]"}`} />
+                        <span className={`h-1.5 w-1.5 rotate-45 rounded-[1px] border ${active ? activeChildMarkerClass : "border-[#7D8398]"}`} />
                         {!isCollapsed && <span className="flex-1 text-left">{item.label}</span>}
                         {!isCollapsed && item.badge ? (
                             <span className="min-w-[20px] h-5 flex items-center justify-center bg-[#FECACA] text-[#DC2626] rounded-full px-1.5 text-[10px] font-bold border border-[#DC2626]">{item.badge}</span>
@@ -111,7 +124,7 @@ export const DashboardSidebar = ({
                     onClick={handleClick}
                     className={`w-full flex items-center ${isCollapsed ? "justify-center px-0" : "gap-2.5 px-2.5"} py-[7px] rounded-md text-[13px] transition-all duration-150
                         ${active
-                            ? "bg-gradient-to-r from-[#B8A9E8]/35 to-[#A996E2]/10 text-white font-bold border border-[#C4B5FD]/70 shadow-[0_0_0_1px_rgba(184,169,232,0.22)]"
+                            ? activeNavClass
                             : "text-[#D1D5DB] font-medium hover:bg-white/8 hover:text-white hover:-translate-y-px"
                         } ${item.href || hasChildren ? "cursor-pointer" : ""}`}
                 >
@@ -141,8 +154,8 @@ export const DashboardSidebar = ({
         );
     };
 
-    const IconComponent = iconType === "provider" ? Building2 : School;
-    const iconBg = iconType === "provider" ? "bg-[#3B82F6]" : "bg-[#6938EF]";
+    const IconComponent = iconType === "provider" ? Building2 : iconType === "admin" ? ShieldCheck : iconType === "teacher" ? GraduationCap : School;
+    const iconBg = iconType === "provider" ? "bg-[#3B82F6]" : iconType === "admin" ? "bg-[#BE123C]" : iconType === "teacher" ? "bg-[#059669]" : "bg-[#6938EF]";
     const iconColor = "text-white";
 
     return (
@@ -175,7 +188,7 @@ export const DashboardSidebar = ({
                         <button onClick={() => item.href && navigate(item.href)}
                             className={`w-full flex items-center ${isCollapsed ? "justify-center px-0" : "gap-2.5 px-3"} py-2 rounded-md text-[13px] font-semibold transition-all duration-150
                                 ${item.active
-                                    ? "bg-gradient-to-r from-[#B8A9E8]/35 to-[#A996E2]/10 text-white border border-[#C4B5FD]/70 shadow-[0_0_0_1px_rgba(184,169,232,0.22)]"
+                                    ? activeNavClass
                                     : "text-[#D1D5DB] hover:bg-white/8 hover:text-white hover:-translate-y-px"
                                 } ${item.href ? "cursor-pointer" : ""}`}
                         >

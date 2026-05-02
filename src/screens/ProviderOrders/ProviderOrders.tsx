@@ -508,7 +508,7 @@ export function ProviderOrders(): JSX.Element {
                                     event.stopPropagation();
                                     action.onClick();
                                 }}
-                                className="rounded-[8px] bg-violet-50 px-3 py-2 text-xs font-bold text-violet-700 transition-colors hover:bg-violet-100"
+                                className="rounded-[8px] bg-blue-50 px-3 py-2 text-xs font-bold text-blue-700 transition-colors hover:bg-blue-100"
                             >
                                 {action.label}
                             </button>
@@ -519,7 +519,7 @@ export function ProviderOrders(): JSX.Element {
                                 event.stopPropagation();
                                 navigate(`/provider/orders/${order.orderId}`);
                             }}
-                            className="inline-flex h-9 w-9 items-center justify-center rounded-[8px] border border-slate-200 bg-white text-slate-700 transition-colors hover:border-violet-200 hover:text-violet-700"
+                                className="inline-flex h-9 w-9 items-center justify-center rounded-[8px] border border-slate-200 bg-white text-slate-700 transition-colors hover:border-blue-200 hover:text-blue-700"
                             aria-label="Xem chi tiết đơn hàng"
                         >
                             <Eye className="h-4 w-4" />
@@ -540,7 +540,7 @@ export function ProviderOrders(): JSX.Element {
                 <div className="flex-1 min-w-0">
                     <TopNavBar>
                         <div className="flex items-center gap-3 px-2 py-2">
-                            <div className="hidden h-10 w-10 items-center justify-center rounded-2xl bg-violet-600 text-white shadow-soft-sm sm:flex">
+                            <div className="hidden h-10 w-10 items-center justify-center rounded-2xl bg-[#3B82F6] text-white shadow-soft-sm sm:flex">
                                 <ShoppingBag className="h-5 w-5" />
                             </div>
                             <div>
@@ -701,9 +701,9 @@ export function ProviderOrders(): JSX.Element {
                                 </label>
 
                                 {fetchingOrders || filtering ? (
-                                    <div className="inline-flex h-10 items-center gap-2 rounded-full border border-violet-100 bg-white px-3 text-xs font-bold text-violet-700 shadow-soft-sm">
-                                        <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-violet-100 border-t-violet-700" />
-                                        Đang lọc
+                                    <div className="inline-flex h-10 items-center gap-2 rounded-full border border-blue-100 bg-white px-3 text-xs font-bold text-blue-700 shadow-soft-sm">
+                                        <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-blue-100 border-t-[#3B82F6]" />
+                                        Đang tải
                                     </div>
                                 ) : null}
                             </div>
@@ -756,7 +756,7 @@ export function ProviderOrders(): JSX.Element {
                         <div ref={resultsRegionRef} style={preservedHeightStyle} className="relative">
                         {loading ? (
                             <div className="flex min-h-[320px] flex-col items-center justify-center gap-4 rounded-[32px] border border-gray-200 bg-white shadow-soft-sm">
-                                <Loader2 className="h-10 w-10 animate-spin text-violet-600" />
+                                <Loader2 className="h-10 w-10 animate-spin text-[#3B82F6]" />
                                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">Đang đồng bộ dữ liệu đơn hàng...</p>
                             </div>
                         ) : displayedOrders.length === 0 ? (
@@ -809,7 +809,7 @@ export function ProviderOrders(): JSX.Element {
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
                     <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setConfirmAction(null)} />
                     <div className="relative w-full max-w-[400px] overflow-hidden rounded-[24px] border border-gray-200 bg-white shadow-soft-xl animate-in fade-in zoom-in duration-200">
-                        <div className="border-b border-violet-100 bg-violet-50 px-6 py-4">
+                        <div className="border-b border-blue-100 bg-blue-50 px-6 py-4">
                             <h3 className="text-lg font-bold text-gray-900">{confirmAction.title}</h3>
                         </div>
                         <div className="px-6 py-6">
@@ -824,7 +824,7 @@ export function ProviderOrders(): JSX.Element {
                                 <button
                                     onClick={confirmAction.onConfirm}
                                     disabled={submitting}
-                                    className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-violet-600 py-3 text-[13px] font-bold text-white shadow-soft-sm transition-all hover:bg-violet-700 disabled:opacity-50"
+                                    className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-[#3B82F6] py-3 text-[13px] font-bold text-white shadow-soft-sm transition-all hover:bg-[#2563EB] disabled:opacity-50"
                                 >
                                     {submitting ? <Loader2 className="h-4 w-4 animate-spin text-white" /> : null}
                                     Xác nhận

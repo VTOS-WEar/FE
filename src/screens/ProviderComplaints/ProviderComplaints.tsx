@@ -387,7 +387,7 @@ export function ProviderComplaints() {
                 <div className="flex-1 min-w-0">
                     <TopNavBar>
                         <div className="flex items-center gap-3 px-2 py-2">
-                            <div className="hidden h-10 w-10 items-center justify-center rounded-2xl bg-violet-600 text-white shadow-soft-sm sm:flex">
+                            <div className="hidden h-10 w-10 items-center justify-center rounded-2xl bg-[#3B82F6] text-white shadow-soft-sm sm:flex">
                                 <AlertTriangle className="h-5 w-5" />
                             </div>
                             <div>
@@ -449,9 +449,9 @@ export function ProviderComplaints() {
                                 </label>
 
                                 {fetchingComplaints || filtering ? (
-                                    <div className="inline-flex h-10 items-center gap-2 rounded-full border border-violet-100 bg-white px-3 text-xs font-bold text-violet-700 shadow-soft-sm">
-                                        <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-violet-100 border-t-violet-700" />
-                                        Đang lọc
+                                    <div className="inline-flex h-10 items-center gap-2 rounded-full border border-blue-100 bg-white px-3 text-xs font-bold text-blue-700 shadow-soft-sm">
+                                        <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-blue-100 border-t-[#3B82F6]" />
+                                        Đang tải
                                     </div>
                                 ) : null}
                             </div>
@@ -460,7 +460,7 @@ export function ProviderComplaints() {
                         <div ref={resultsRegionRef} style={preservedHeightStyle} className="relative">
                         {loading ? (
                             <div className="flex min-h-[320px] flex-col items-center justify-center gap-4 rounded-[32px] border border-gray-200 bg-white shadow-soft-sm">
-                                <Loader2 className="h-10 w-10 animate-spin text-violet-600" />
+                                <Loader2 className="h-10 w-10 animate-spin text-[#3B82F6]" />
                                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">Đang đồng bộ khiếu nại...</p>
                             </div>
                         ) : displayedComplaints.length === 0 ? (
@@ -511,7 +511,7 @@ export function ProviderComplaints() {
                                 <div className="w-full max-w-[760px] max-h-[88vh] overflow-auto rounded-[28px] border border-gray-200 bg-white p-6 shadow-soft-xl">
                                     {detailLoading ? (
                                         <div className="flex min-h-[260px] items-center justify-center">
-                                            <Loader2 className="h-10 w-10 animate-spin text-violet-600" />
+                                            <Loader2 className="h-10 w-10 animate-spin text-[#3B82F6]" />
                                         </div>
                                     ) : detail ? (
                                         <>
@@ -570,11 +570,11 @@ export function ProviderComplaints() {
                                                 <button onClick={() => setDetail(null)} className="nb-btn nb-btn-outline flex-1">
                                                     Đóng
                                                 </button>
-                                                <button onClick={() => openChat(detail)} className="nb-btn nb-btn-purple flex-1">
+                                                <button onClick={() => openChat(detail)} className="nb-btn nb-btn-provider flex-1">
                                                     Chat
                                                 </button>
                                                 {(detail.status === "Open" || detail.status === "InProgress") ? (
-                                                    <button onClick={handleRespond} disabled={responding || !responseText.trim()} className="nb-btn nb-btn-green flex-1">
+                                                    <button onClick={handleRespond} disabled={responding || !responseText.trim()} className="nb-btn nb-btn-provider flex-1">
                                                         {responding ? "Đang gửi..." : markResolved ? "Gửi và giải quyết" : "Gửi phản hồi"}
                                                     </button>
                                                 ) : null}

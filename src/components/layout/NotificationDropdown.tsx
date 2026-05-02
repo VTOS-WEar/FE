@@ -1,17 +1,54 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, type ComponentType } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+    AlertTriangle,
+    Bell,
+    ClipboardList,
+    CreditCard,
+    Info,
+    Package,
+    ShoppingCart,
+    Truck,
+    UserPlus,
+    Wallet,
+} from "lucide-react";
 import type { InAppNotification } from "../../lib/api/notifications";
 
-const typeIcons: Record<string, string> = {
-    ContractAction: "📋",
-    ProductionAction: "🏭",
-    DeliveryAction: "📦",
-    OrderAction: "🛒",
-    AccountRequest: "📋",
-    WithdrawalRequest: "💸",
-    Complaint: "⚠️",
-    System: "🔔",
+type NotificationIcon = ComponentType<{ className?: string; strokeWidth?: number }>;
+
+const typeIcons: Record<string, NotificationIcon> = {
+    ContractAction: ClipboardList,
+    ProductionAction: Package,
+    DeliveryAction: Truck,
+    OrderAction: ShoppingCart,
+    AccountRequest: UserPlus,
+    WithdrawalRequest: Wallet,
+    Payment: CreditCard,
+    Complaint: AlertTriangle,
+    System: Info,
 };
+
+const roleAccentMap: Record<string, { primary: string; hover: string; soft: string; text: string }> = {
+    Admin: { primary: "#BE123C", hover: "#FFF1F2", soft: "#FFF1F2", text: "#9F1239" },
+    Provider: { primary: "#3B82F6", hover: "#EFF6FF", soft: "#EFF6FF", text: "#1D4ED8" },
+    School: { primary: "#6938EF", hover: "#F3F0FF", soft: "#F3F0FF", text: "#5B21B6" },
+    HomeroomTeacher: { primary: "#059669", hover: "#ECFDF5", soft: "#ECFDF5", text: "#047857" },
+    Teacher: { primary: "#059669", hover: "#ECFDF5", soft: "#ECFDF5", text: "#047857" },
+};
+
+function getCurrentUserRole(): string {
+    const raw = localStorage.getItem("user") || sessionStorage.getItem("user");
+    try {
+        if (raw) return JSON.parse(raw).role || "";
+    } catch {
+        // ignore malformed local session data
+    }
+    return "";
+}
+
+function getNotificationAccent() {
+    return roleAccentMap[getCurrentUserRole()] ?? roleAccentMap.School;
+}
 
 function timeAgo(iso: string): string {
     const now = Date.now();
@@ -46,8 +83,8 @@ export function NotificationDropdown({
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();
+    const accent = getNotificationAccent();
 
-    // Close on click outside
     useEffect(() => {
         const handler = (e: MouseEvent) => {
             if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
@@ -73,80 +110,127 @@ export function NotificationDropdown({
 
     return (
         <div ref={dropdownRef} className="relative">
-            {/* Bell Button */}
             <button
                 onClick={handleToggle}
-                className="w-10 h-10 flex items-center justify-center rounded-full border border-gray-200 bg-white hover:bg-[#FFF5EB] shadow-sm transition-all relative"
+                className="relative flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white shadow-sm transition-colors"
+                style={{ color: isOpen ? accent.primary : "#111827", backgroundColor: isOpen ? accent.hover : "#FFFFFF" }}
+                onMouseEnter={(event) => {
+                    event.currentTarget.style.backgroundColor = accent.hover;
+                    event.currentTarget.style.color = accent.primary;
+                }}
+                onMouseLeave={(event) => {
+                    event.currentTarget.style.backgroundColor = isOpen ? accent.hover : "#FFFFFF";
+                    event.currentTarget.style.color = isOpen ? accent.primary : "#111827";
+                }}
+                aria-label="Mở thông báo"
             >
-                <svg className="w-5 h-5 text-gray-900" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 22c1.1 0 2-.9 2-2h-4a2 2 0 002 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.93 6 11v5l-2 2v1h16v-1l-2-2z" />
-                </svg>
+                <Bell className="h-5 w-5" strokeWidth={2} />
                 {unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-[#EF4444] border-2 border-white text-white text-[10px] font-bold flex items-center justify-center animate-pulse">
+                    <span
+                        className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full border-2 border-white px-1 text-[10px] font-semibold text-white"
+                        style={{ backgroundColor: accent.primary }}
+                    >
                         {unreadCount > 9 ? "9+" : unreadCount}
                     </span>
                 )}
             </button>
 
-            {/* Dropdown */}
             {isOpen && (
-                <div className="absolute right-0 top-12 w-[360px] max-h-[460px] bg-white border border-gray-200 rounded-xl shadow-soft-md z-50 flex flex-col overflow-hidden">
-                    {/* Header */}
-                    <div className="flex items-center justify-between px-4 py-3 border-b-2 border-gray-200">
-                        <h3 className="font-bold text-gray-900 text-sm">
-                            🔔 Thông báo {unreadCount > 0 && <span className="text-red-500">({unreadCount})</span>}
-                        </h3>
+                <div className="absolute right-0 top-12 z-50 flex max-h-[460px] w-[360px] flex-col overflow-hidden rounded-[8px] border border-gray-200 bg-white shadow-soft-md">
+                    <div className="flex items-center justify-between border-b border-gray-200 px-4 py-3">
+                        <div className="flex items-center gap-2">
+                            <span
+                                className="flex h-8 w-8 items-center justify-center rounded-[8px]"
+                                style={{ backgroundColor: accent.soft, color: accent.primary }}
+                            >
+                                <Bell className="h-4 w-4" strokeWidth={2} />
+                            </span>
+                            <div>
+                                <h3 className="text-sm font-semibold text-gray-900">Thông báo</h3>
+                                <p className="text-[11px] font-medium text-gray-500">
+                                    {unreadCount > 0 ? `${unreadCount} thông báo chưa đọc` : "Tất cả đã được đọc"}
+                                </p>
+                            </div>
+                        </div>
                         {unreadCount > 0 && (
                             <button
                                 onClick={onMarkAllAsRead}
-                                className="text-violet-600 font-semibold text-xs hover:underline"
+                                className="rounded-[8px] px-2.5 py-1.5 text-xs font-semibold transition-colors"
+                                style={{ color: accent.text }}
+                                onMouseEnter={(event) => { event.currentTarget.style.backgroundColor = accent.soft; }}
+                                onMouseLeave={(event) => { event.currentTarget.style.backgroundColor = "transparent"; }}
                             >
                                 Đọc tất cả
                             </button>
                         )}
                     </div>
 
-                    {/* List */}
-                    <div className="flex-1 overflow-y-auto">
+                    <div className="flex-1 overflow-y-auto bg-gray-50/60 p-2">
                         {loading ? (
-                            <div className="flex items-center justify-center py-8">
-                                <div className="animate-spin rounded-full h-6 w-6 border-2 border-[#6938EF] border-t-transparent" />
+                            <div className="flex items-center justify-center py-10">
+                                <div
+                                    className="h-6 w-6 animate-spin rounded-full border-2 border-t-transparent"
+                                    style={{ borderColor: accent.primary, borderTopColor: "transparent" }}
+                                />
                             </div>
                         ) : notifications.length === 0 ? (
-                            <div className="flex flex-col items-center justify-center py-10 text-gray-400">
-                                <svg className="w-10 h-10 mb-2" viewBox="0 0 24 24" fill="currentColor" opacity={0.3}>
-                                    <path d="M12 22c1.1 0 2-.9 2-2h-4a2 2 0 002 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.93 6 11v5l-2 2v1h16v-1l-2-2z" />
-                                </svg>
-                                <p className="font-semibold text-sm">Chưa có thông báo</p>
+                            <div className="m-2 flex flex-col items-center justify-center rounded-[8px] border border-gray-200 bg-white px-6 py-8 text-center">
+                                <span
+                                    className="mb-3 flex h-11 w-11 items-center justify-center rounded-[8px]"
+                                    style={{ backgroundColor: accent.soft, color: accent.primary }}
+                                >
+                                    <Bell className="h-5 w-5" strokeWidth={1.8} />
+                                </span>
+                                <p className="text-sm font-semibold text-gray-900">Chưa có thông báo</p>
+                                <p className="mt-1 max-w-[240px] text-xs leading-5 text-gray-500">
+                                    Các cập nhật quan trọng sẽ xuất hiện tại đây.
+                                </p>
                             </div>
                         ) : (
-                            notifications.map((n) => (
-                                <button
-                                    key={n.id}
-                                    onClick={() => handleClick(n)}
-                                    className={`w-full text-left px-4 py-3 flex items-start gap-3 hover:bg-gray-50 transition-colors border-b border-[#F3F4F6] ${
-                                        !n.isRead ? "bg-[#FEFCE8]" : ""
-                                    }`}
-                                >
-                                    <span className="text-lg flex-shrink-0 mt-0.5">
-                                        {typeIcons[n.type] || "🔔"}
-                                    </span>
-                                    <div className="flex-1 min-w-0">
-                                        <p className={`text-sm leading-snug ${!n.isRead ? "font-bold text-gray-900" : "font-medium text-gray-600"}`}>
-                                            {n.title}
-                                        </p>
-                                        <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">
-                                            {n.message}
-                                        </p>
-                                        <p className="text-[10px] text-gray-400 mt-1">
-                                            {timeAgo(n.createdAt)}
-                                        </p>
-                                    </div>
-                                    {!n.isRead && (
-                                        <span className="w-2 h-2 rounded-full bg-[#6938EF] flex-shrink-0 mt-2" />
-                                    )}
-                                </button>
-                            ))
+                            <div className="space-y-1">
+                                {notifications.map((n) => {
+                                    const Icon = typeIcons[n.type] || Bell;
+
+                                    return (
+                                        <button
+                                            key={n.id}
+                                            onClick={() => handleClick(n)}
+                                            className="flex w-full items-start gap-3 rounded-[8px] border border-transparent px-3 py-3 text-left transition-colors hover:border-gray-200 hover:bg-white"
+                                            style={{ backgroundColor: !n.isRead ? accent.soft : "transparent" }}
+                                        >
+                                            <span
+                                                className="mt-0.5 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-[8px] border"
+                                                style={{
+                                                    color: accent.primary,
+                                                    backgroundColor: "#FFFFFF",
+                                                    borderColor: !n.isRead ? accent.primary : "#E5E7EB",
+                                                }}
+                                            >
+                                                <Icon className="h-4 w-4" strokeWidth={1.8} />
+                                            </span>
+                                            <div className="min-w-0 flex-1">
+                                                <div className="flex items-start gap-2">
+                                                    <p className={`min-w-0 flex-1 truncate text-sm leading-5 ${!n.isRead ? "font-semibold text-gray-900" : "font-medium text-gray-700"}`}>
+                                                        {n.title}
+                                                    </p>
+                                                    {!n.isRead && (
+                                                        <span
+                                                            className="mt-1.5 h-2 w-2 flex-shrink-0 rounded-full"
+                                                            style={{ backgroundColor: accent.primary }}
+                                                        />
+                                                    )}
+                                                </div>
+                                                <p className="mt-0.5 line-clamp-2 text-xs leading-5 text-gray-500">
+                                                    {n.message}
+                                                </p>
+                                                <p className="mt-1 text-[11px] font-medium text-gray-400">
+                                                    {timeAgo(n.createdAt)}
+                                                </p>
+                                            </div>
+                                        </button>
+                                    );
+                                })}
+                            </div>
                         )}
                     </div>
                 </div>

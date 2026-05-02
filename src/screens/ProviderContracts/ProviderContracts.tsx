@@ -33,6 +33,7 @@ import {
     signProviderContract,
     updateContractPricing,
     type ContractDto,
+    type ContractListSummary,
 } from "../../lib/api/contracts";
 import { ContractTemplate, type ContractTemplateData } from "../../components/ContractTemplate";
 
@@ -62,11 +63,6 @@ const MIN_FILTER_FEEDBACK_MS = 450;
 
 function formatDate(value?: string | null) {
     return value ? new Date(value).toLocaleDateString("vi-VN") : "Chưa có";
-}
-
-function matchesStatus(status: string, filter: string) {
-    if (!filter) return true;
-    return filter.split(",").includes(status);
 }
 
 function StatusSummaryCard({
@@ -119,6 +115,15 @@ export function ProviderContracts() {
     const [searchInput, setSearchInput] = useState("");
     const [filtering, setFiltering] = useState(false);
     const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [counts, setCounts] = useState({
+        all: 0,
+        pending: 0,
+        providerSign: 0,
+        active: 0,
+        fulfilled: 0,
+        issue: 0,
+    });
     const [selected, setSelected] = useState<ContractDto | null>(null);
     const [showDetail, setShowDetail] = useState(false);
     const [actionLoading, setActionLoading] = useState(false);
@@ -136,14 +141,35 @@ export function ProviderContracts() {
     const fetchContracts = useCallback(async () => {
         setLoading(true);
         try {
-            const data = await getProviderContracts();
-            setContracts(data);
+            const data = await getProviderContracts({
+                page,
+                pageSize: PROVIDER_LIST_PAGE_SIZE,
+                status: statusFilter || undefined,
+                search: searchTerm || undefined,
+            });
+            const nextTotalPages = Math.max(1, data.totalPages);
+            const summary: ContractListSummary = data.summary;
+            setContracts(data.items);
+            setTotalPages(nextTotalPages);
+            setCounts({
+                all: summary.total,
+                pending: summary.pending ?? summary.waitingSchool,
+                providerSign: summary.waitingProvider,
+                active: summary.active,
+                fulfilled: summary.fulfilled,
+                issue: summary.issue,
+            });
+            if (page > nextTotalPages) {
+                setPage(nextTotalPages);
+            }
         } catch (e) {
             console.error("Error fetching contracts:", e);
+            setContracts([]);
+            setTotalPages(1);
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [page, searchTerm, statusFilter]);
 
     useEffect(() => {
         fetchContracts();
@@ -278,40 +304,7 @@ export function ProviderContracts() {
         }
     };
 
-    const counts = useMemo(() => {
-        const valueOf = (status: string[]) => contracts.filter((contract) => status.includes(contract.status)).length;
-        return {
-            all: contracts.length,
-            pending: valueOf(["Pending"]),
-            providerSign: valueOf(["PendingProviderSign"]),
-            active: valueOf(["Active", "InUse"]),
-            fulfilled: valueOf(["Fulfilled"]),
-            issue: valueOf(["Rejected", "Expired", "Cancelled"]),
-        };
-    }, [contracts]);
-
-    const displayedContracts = useMemo(() => {
-        const normalizedSearch = searchTerm.trim().toLowerCase();
-
-        return contracts.filter((contract) => {
-            if (!matchesStatus(contract.status, statusFilter)) return false;
-            if (!normalizedSearch) return true;
-
-            const statusLabel = STATUS_MAP[contract.status]?.label || contract.status;
-            return [
-                contract.contractName,
-                contract.contractNumber,
-                contract.schoolName,
-                statusLabel,
-                ...contract.items.map((item) => item.outfitName),
-            ]
-                .filter(Boolean)
-                .some((value) => String(value).toLowerCase().includes(normalizedSearch));
-        });
-    }, [contracts, searchTerm, statusFilter]);
-    const totalPages = Math.max(1, Math.ceil(displayedContracts.length / PROVIDER_LIST_PAGE_SIZE));
-    const pagedContracts = displayedContracts.slice((page - 1) * PROVIDER_LIST_PAGE_SIZE, page * PROVIDER_LIST_PAGE_SIZE);
-    const isFilteredEmptyState = !loading && (!!statusFilter || !!searchTerm.trim()) && pagedContracts.length === 0;
+    const isFilteredEmptyState = !loading && (!!statusFilter || !!searchTerm.trim()) && contracts.length === 0;
     const { preserveResultsHeight, preservedHeightStyle, resultsRegionRef } = usePreservedResultsHeight(isFilteredEmptyState);
 
     const scheduleFilterCommit = useCallback(
@@ -506,7 +499,7 @@ export function ProviderContracts() {
                 <div className="flex-1 min-w-0">
                     <TopNavBar>
                         <div className="flex items-center gap-3 px-2 py-2">
-                            <div className="hidden h-10 w-10 items-center justify-center rounded-2xl bg-violet-600 text-white shadow-soft-sm sm:flex">
+                            <div className="hidden h-10 w-10 items-center justify-center rounded-2xl bg-[#3B82F6] text-white shadow-soft-sm sm:flex">
                                 <FileText className="h-5 w-5" />
                             </div>
                             <div>
@@ -555,9 +548,9 @@ export function ProviderContracts() {
 
                             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
                                 {filtering ? (
-                                    <div className="inline-flex h-10 items-center gap-2 rounded-full border border-violet-100 bg-white px-3 text-xs font-bold text-violet-700 shadow-soft-xs">
-                                        <Loader2 className="h-4 w-4 animate-spin" />
-                                        Đang lọc
+                                    <div className="inline-flex h-10 items-center gap-2 rounded-full border border-blue-100 bg-white px-3 text-xs font-bold text-blue-700 shadow-soft-xs">
+                                        <Loader2 className="h-4 w-4 animate-spin text-[#3B82F6]" />
+                                        Đang tải
                                     </div>
                                 ) : null}
                                 <label className="relative block">
@@ -578,10 +571,10 @@ export function ProviderContracts() {
                         <div ref={resultsRegionRef} style={preservedHeightStyle}>
                         {loading ? (
                             <div className="flex min-h-[320px] flex-col items-center justify-center gap-4 rounded-[32px] border border-gray-200 bg-white shadow-soft-sm">
-                                <Loader2 className="h-10 w-10 animate-spin text-violet-600" />
+                                <Loader2 className="h-10 w-10 animate-spin text-[#3B82F6]" />
                                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">Đang đồng bộ hợp đồng...</p>
                             </div>
-                        ) : pagedContracts.length === 0 ? (
+                        ) : contracts.length === 0 ? (
                             <div className="rounded-[32px] border border-dashed border-gray-300 bg-white p-20 text-center shadow-soft-sm">
                                 <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-[24px] border border-gray-100 bg-violet-50">
                                     <FileText className="h-9 w-9 text-violet-500" />
@@ -590,7 +583,7 @@ export function ProviderContracts() {
                             </div>
                         ) : (
                             <ProviderDataTable
-                                items={pagedContracts}
+                                items={contracts}
                                 columns={contractColumns}
                                 getKey={(contract) => contract.contractId}
                                 onRowClick={(contract) => openDetail(contract.contractId)}
@@ -631,17 +624,17 @@ export function ProviderContracts() {
                                                 <div className="flex flex-wrap items-center gap-2">
                                                     <span className={STATUS_MAP[selected.status]?.badge || "nb-badge"}>{STATUS_MAP[selected.status]?.label || selected.status}</span>
                                                     {selected.schoolSignedAt ? (
-                                                        <span className="rounded-full border border-emerald-200 bg-white px-3 py-1 text-xs font-extrabold text-emerald-700 shadow-soft-sm">
+                                                        <span className="rounded-full border border-emerald-200 bg-white px-3 py-1 text-xs font-bold text-emerald-700 shadow-soft-sm">
                                                             Trường đã ký
                                                         </span>
                                                     ) : null}
                                                     {selected.providerSignedAt ? (
-                                                        <span className="rounded-full border border-indigo-200 bg-white px-3 py-1 text-xs font-extrabold text-indigo-700 shadow-soft-sm">
+                                                        <span className="rounded-full border border-indigo-200 bg-white px-3 py-1 text-xs font-bold text-indigo-700 shadow-soft-sm">
                                                             NCC đã ký
                                                         </span>
                                                     ) : null}
                                                 </div>
-                                                <h2 className="mt-4 text-[26px] font-extrabold leading-tight text-gray-900 lg:text-[32px]">
+                                                <h2 className="mt-4 text-[26px] font-bold leading-tight text-gray-900 lg:text-[32px]">
                                                     {selected.contractName}
                                                 </h2>
                                             </div>
@@ -657,7 +650,7 @@ export function ProviderContracts() {
                                     ) : null}
 
                                     <section className="rounded-[8px] border border-gray-200 bg-white p-5 shadow-soft-sm">
-                                        <h3 className="text-lg font-extrabold text-gray-900">Thông tin hợp đồng</h3>
+                                        <h3 className="text-lg font-bold text-gray-900">Thông tin hợp đồng</h3>
                                         <div className="mt-4 grid gap-x-8 gap-y-1 md:grid-cols-2">
                                             {[
                                                 {
@@ -686,7 +679,7 @@ export function ProviderContracts() {
                                                         {item.icon}
                                                     </div>
                                                     <div className="min-w-0">
-                                                        <p className="text-xs font-extrabold uppercase tracking-[0.12em] text-slate-500">{item.label}</p>
+                                                        <p className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">{item.label}</p>
                                                         <p className="mt-1 break-words text-sm font-bold leading-6 text-gray-900">{item.value}</p>
                                                     </div>
                                                 </div>
@@ -696,7 +689,7 @@ export function ProviderContracts() {
 
                                     <section className="rounded-[8px] border border-gray-200 bg-white shadow-soft-sm">
                                         <div className="border-b border-gray-200 px-6 py-5">
-                                            <h3 className="text-lg font-extrabold text-gray-900">Mẫu đồng phục đính kèm</h3>
+                                            <h3 className="text-lg font-bold text-gray-900">Mẫu đồng phục đính kèm</h3>
                                         </div>
                                         <div className="space-y-3 px-6 py-6">
                                             {selected.items.map((item) => (
@@ -712,7 +705,7 @@ export function ProviderContracts() {
                                                             )}
                                                         </div>
                                                         <div className="min-w-0">
-                                                            <p className="truncate text-sm font-extrabold text-gray-900">{item.outfitName}</p>
+                                                            <p className="truncate text-sm font-bold text-gray-900">{item.outfitName}</p>
                                                             <p className="mt-1 text-xs font-semibold text-gray-500">
                                                                 Giá và chất liệu quản lý tại Catalog cung ứng
                                                             </p>
@@ -736,7 +729,7 @@ export function ProviderContracts() {
                                                             />
                                                         </div>
                                                     ) : (
-                                                        <div className="whitespace-nowrap rounded-[8px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-extrabold text-gray-900">
+                                                        <div className="whitespace-nowrap rounded-[8px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-bold text-gray-900">
                                                             Giá chốt: {(item.pricePerUnit ?? 0).toLocaleString("vi-VN")} ₫
                                                         </div>
                                                     )}
@@ -752,7 +745,7 @@ export function ProviderContracts() {
                                                     <XCircle className="h-5 w-5" />
                                                 </div>
                                                 <div>
-                                                    <h3 className="text-lg font-extrabold text-gray-900">Lý do từ chối</h3>
+                                                    <h3 className="text-lg font-bold text-gray-900">Lý do từ chối</h3>
                                                     <p className="mt-1 text-sm font-medium leading-6 text-rose-700">{selected.rejectionReason}</p>
                                                 </div>
                                             </div>
@@ -767,7 +760,7 @@ export function ProviderContracts() {
                                                         <ShieldCheck className="h-5 w-5" />
                                                     </div>
                                                     <div>
-                                                        <h3 className="text-lg font-extrabold text-gray-900">Thao tác của nhà cung cấp</h3>
+                                                        <h3 className="text-lg font-bold text-gray-900">Thao tác của nhà cung cấp</h3>
                                                         <p className="mt-1 text-sm font-semibold text-amber-800">
                                                             Kiểm tra giá trước khi duyệt hoặc từ chối hợp đồng.
                                                         </p>
@@ -831,7 +824,7 @@ export function ProviderContracts() {
                                                 setShowDetail(false);
                                                 setSelected(null);
                                             }}
-                                            className="nb-btn nb-btn-purple text-sm"
+                                            className="nb-btn nb-btn-provider text-sm"
                                         >
                                             Xem & ký hợp đồng
                                         </button>
@@ -855,8 +848,8 @@ export function ProviderContracts() {
             {templateLoading ? (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50">
                     <div className="flex items-center gap-3 rounded-md border border-gray-200 bg-white px-8 py-5 shadow-soft-md">
-                        <div className="h-5 w-5 rounded-full border-4 border-violet-600 border-t-transparent animate-spin" />
-                        <span className="font-bold text-gray-900">Đang tải hợp đồng...</span>
+                        <div className="h-5 w-5 rounded-full border-4 border-[#3B82F6] border-t-transparent animate-spin" />
+                        <span className="font-bold text-blue-700">Đang tải hợp đồng...</span>
                     </div>
                 </div>
             ) : null}

@@ -17,7 +17,7 @@ export const TeacherAccount = (): JSX.Element => {
   return (
     <TeacherWorkspaceShell breadcrumbs={[{ label: "Teacher workspace", href: "/teacher/dashboard" }, { label: "Tài khoản" }]}>
       {error ? (
-        <section className="rounded-2xl border border-red-200 bg-white p-8 text-center shadow-soft-md">
+        <section className="rounded-[8px] border border-rose-200 bg-white p-8 text-center shadow-soft-sm">
           <p className="text-base font-bold text-red-600">{error}</p>
         </section>
       ) : (

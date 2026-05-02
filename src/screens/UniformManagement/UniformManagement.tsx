@@ -1,5 +1,5 @@
 import { useSidebarCollapsed } from "../../hooks/useSidebarCollapsed";
-import { useState, useEffect, useMemo, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
     Box,
@@ -190,7 +190,7 @@ function OutfitFormModal({
             <div className="relative max-h-[92vh] w-full max-w-[920px] overflow-hidden rounded-[8px] border border-gray-200 bg-white shadow-soft-lg">
                 <div className="sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-gray-200 bg-white px-6 py-5">
                     <div>
-                        <div className={`mb-2 inline-flex items-center gap-2 rounded-full border ${SCHOOL_THEME.primarySoftBorder} ${SCHOOL_THEME.primarySoftBg} px-3 py-1 text-[12px] font-black uppercase tracking-[0.12em] ${SCHOOL_THEME.primaryText}`}>
+                        <div className={`mb-2 inline-flex items-center gap-2 rounded-full border ${SCHOOL_THEME.primarySoftBorder} ${SCHOOL_THEME.primarySoftBg} px-3 py-1 text-[12px] font-bold uppercase tracking-[0.12em] ${SCHOOL_THEME.primaryText}`}>
                             {isEditing ? "Chỉnh sửa mẫu" : "Thêm mẫu mới"}
                         </div>
                         <h2 className="text-2xl font-bold leading-none text-gray-900">
@@ -209,7 +209,7 @@ function OutfitFormModal({
                 <form onSubmit={handleSubmit} className="max-h-[calc(92vh-154px)] overflow-y-auto px-6 py-6 md:px-8">
                     <div className="grid gap-6 lg:grid-cols-[360px_1fr]">
                     <section className="space-y-5">
-                        <label className="mb-2 block text-[14px] font-extrabold text-gray-900">Thiết kế đồng phục</label>
+                        <label className="mb-2 block text-[14px] font-bold text-gray-900">Thiết kế đồng phục</label>
                         <div className={`rounded-[8px] border ${SCHOOL_THEME.primarySoftBorder} ${SCHOOL_THEME.primarySoftBg} p-3 shadow-soft-sm`}>
                             <div
                                 className={`relative flex min-h-[340px] cursor-pointer items-center justify-center overflow-hidden rounded-[8px] border-2 border-dashed ${SCHOOL_THEME.primarySoftBorder} bg-slate-50 px-4 py-6 transition-colors hover:border-blue-300`}
@@ -237,7 +237,7 @@ function OutfitFormModal({
                                         <button
                                             type="button"
                                             onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }}
-                                            className={`absolute bottom-0 right-0 z-10 rounded-[8px] border ${SCHOOL_THEME.primarySoftBorder} bg-white px-3 py-2 text-xs font-extrabold ${SCHOOL_THEME.primaryText} shadow-soft-sm transition-colors hover:bg-blue-50`}
+                                            className={`absolute bottom-0 right-0 z-10 rounded-[8px] border ${SCHOOL_THEME.primarySoftBorder} bg-white px-3 py-2 text-xs font-bold ${SCHOOL_THEME.primaryText} shadow-soft-sm transition-colors hover:bg-blue-50`}
                                         >
                                             Đổi ảnh
                                         </button>
@@ -247,7 +247,7 @@ function OutfitFormModal({
                                         <div className={`flex h-12 w-12 items-center justify-center rounded-[8px] border ${SCHOOL_THEME.primarySoftBorder} bg-white ${SCHOOL_THEME.primaryText} shadow-soft-sm`}>
                                             <ImagePlus className="h-6 w-6" />
                                         </div>
-                                        <p className="text-[14px] font-extrabold text-gray-900">Kéo thả hoặc nhấn để chọn ảnh</p>
+                                        <p className="text-[14px] font-bold text-gray-900">Kéo thả hoặc nhấn để chọn ảnh</p>
                                         <p className="text-[13px] font-bold leading-5 text-gray-500">JPG, PNG hoặc WebP tối đa 5MB. Ảnh này sẽ hiển thị trong danh sách mẫu đồng phục của trường.</p>
                                     </div>
                                 )}
@@ -255,7 +255,7 @@ function OutfitFormModal({
                         </div>
                         {uploadError && <p className="mt-2 text-[13px] font-bold text-[#FF6B57]">{uploadError}</p>}
                         <div className="hidden">
-                            <label className="mb-2 block text-[14px] font-extrabold text-gray-900">Loại đồng phục</label>
+                            <label className="mb-2 block text-[14px] font-bold text-gray-900">Loại đồng phục</label>
                             <select
                                 value={form.categoryId}
                                 onChange={(e) => {
@@ -282,13 +282,13 @@ function OutfitFormModal({
                     <section className="space-y-4">
                         <div className="grid gap-4 xl:grid-cols-[minmax(0,1.35fr)_minmax(220px,0.65fr)]">
                         <div>
-                            <label className="mb-2 block text-[14px] font-extrabold text-gray-900">Tên mẫu <span className="ml-1 text-red-500">*</span></label>
+                            <label className="mb-2 block text-[14px] font-bold text-gray-900">Tên mẫu <span className="ml-1 text-red-500">*</span></label>
                             <input type="text" value={form.outfitName} onChange={(e) => setForm((f) => ({ ...f, outfitName: e.target.value }))} placeholder="VD: Áo sơ mi Nam" className={`${modernInputClass} ${isNameOver ? "!border-[#EF4444]" : ""}`} required maxLength={50} />
                             <div className={`mt-1 text-right text-xs font-semibold ${isNameOver ? "text-red-500" : nameLength > 40 ? "text-[#F59E0B]" : "text-gray-400"}`}>{nameLength}/50</div>
                         </div>
 
                         <div>
-                            <label className="mb-2 block text-[14px] font-extrabold text-gray-900">Loại đồng phục</label>
+                            <label className="mb-2 block text-[14px] font-bold text-gray-900">Loại đồng phục</label>
                             <select
                                 value={form.categoryId}
                                 onChange={(e) => {
@@ -314,8 +314,8 @@ function OutfitFormModal({
 
                         <div>
                             <div className="mb-2 flex items-center justify-between">
-                                <label className="block text-[14px] font-extrabold text-gray-900">Mô tả thiết kế</label>
-                                <button type="button" onClick={() => setShowPreview(!showPreview)} className={`flex items-center gap-1.5 rounded-[8px] border px-3 py-1.5 text-[12px] font-extrabold transition-colors ${showPreview ? "border-blue-500 bg-[#2563EB] text-white shadow-soft-sm" : "border-gray-200 bg-white text-gray-900 shadow-soft-sm hover:border-blue-200 hover:text-[#2563EB]"}`}>{showPreview ? "Chỉnh sửa" : "Xem trước"}</button>
+                                <label className="block text-[14px] font-bold text-gray-900">Mô tả thiết kế</label>
+                                <button type="button" onClick={() => setShowPreview(!showPreview)} className={`flex items-center gap-1.5 rounded-[8px] border px-3 py-1.5 text-[12px] font-bold transition-colors ${showPreview ? "border-blue-500 bg-[#2563EB] text-white shadow-soft-sm" : "border-gray-200 bg-white text-gray-900 shadow-soft-sm hover:border-blue-200 hover:text-[#2563EB]"}`}>{showPreview ? "Chỉnh sửa" : "Xem trước"}</button>
                             </div>
                             <div className={showPreview ? "hidden" : ""}>
                                 <RichTextEditor value={form.description} onChange={(html) => setForm((f) => ({ ...f, description: html }))} placeholder="VD: Mẫu áo sơ mi cổ Đức, tay dài, dùng cho học sinh nam khối THCS..." />
@@ -332,7 +332,7 @@ function OutfitFormModal({
                 </form>
 
                 <div className="flex flex-col-reverse gap-3 border-t border-gray-200 bg-white px-6 py-5 sm:flex-row sm:justify-end">
-                    <button type="button" onClick={onClose} className="rounded-[8px] border border-gray-200 bg-white px-5 py-3 text-[15px] font-extrabold text-gray-900 shadow-soft-sm transition-all hover:scale-[0.99]">Huỷ</button>
+                    <button type="button" onClick={onClose} className="rounded-[8px] border border-gray-200 bg-white px-5 py-3 text-[15px] font-bold text-gray-900 shadow-soft-sm transition-all hover:scale-[0.99]">Huỷ</button>
                     <button onClick={handleSubmit} disabled={isLoading || !form.outfitName.trim() || isNameOver || isDescOver} className={SCHOOL_THEME.primaryButton}>
                         {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
                         {isEditing ? "Lưu thay đổi" : "Tạo mẫu"}
@@ -356,14 +356,14 @@ function DeleteConfirmDialog({
                 <div className="border-b border-gray-200 bg-red-50 px-6 py-4">
                     <div className="flex items-center gap-3">
                         <div className="flex h-10 w-10 items-center justify-center rounded-[8px] border border-gray-200 bg-white text-lg shadow-soft-sm">🗑️</div>
-                        <h3 className="text-[18px] font-black text-gray-900">Xóa mẫu đồng phục?</h3>
+                        <h3 className="text-[18px] font-bold text-gray-900">Xóa mẫu đồng phục?</h3>
                     </div>
                 </div>
                 <div className="px-6 py-5">
                     <p className="mb-5 text-[15px] font-semibold text-gray-500">Bạn có chắc muốn xóa <strong>"{outfitName}"</strong>? Hành động này không thể hoàn tác.</p>
                     <div className="flex justify-end gap-3">
-                        <button onClick={onClose} className="rounded-[8px] border border-gray-200 bg-white px-5 py-3 text-[15px] font-extrabold text-gray-900 shadow-soft-sm transition-all">Huỷ</button>
-                        <button onClick={onConfirm} disabled={isLoading} className="flex items-center gap-2 rounded-[8px] bg-red-500 px-5 py-3 text-[15px] font-extrabold text-white shadow-soft-sm disabled:opacity-50">
+                        <button onClick={onClose} className="rounded-[8px] border border-gray-200 bg-white px-5 py-3 text-[15px] font-bold text-gray-900 shadow-soft-sm transition-all">Huỷ</button>
+                        <button onClick={onConfirm} disabled={isLoading} className="flex items-center gap-2 rounded-[8px] bg-red-500 px-5 py-3 text-[15px] font-bold text-white shadow-soft-sm disabled:opacity-50">
                             {isLoading && <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" strokeOpacity="0.25" /><path d="M4 12a8 8 0 018-8" strokeLinecap="round" /></svg>}
                             Xóa
                         </button>
@@ -387,14 +387,14 @@ function HideConfirmDialog({
                 <div className="border-b border-gray-200 bg-amber-50 px-6 py-4">
                     <div className="flex items-center gap-3">
                         <div className="flex h-10 w-10 items-center justify-center rounded-[8px] border border-gray-200 bg-white text-lg shadow-soft-sm">🙈</div>
-                        <h3 className="text-[18px] font-black text-gray-900">Ẩn mẫu đồng phục?</h3>
+                        <h3 className="text-[18px] font-bold text-gray-900">Ẩn mẫu đồng phục?</h3>
                     </div>
                 </div>
                 <div className="px-6 py-5">
                     <p className="mb-5 text-[15px] font-semibold text-gray-500">Mẫu <strong>"{outfitName}"</strong> đã từng thuộc chiến dịch đã hoàn tất nên không thể xóa. Bạn có muốn ẩn mẫu này khỏi trang công khai không?</p>
                     <div className="flex justify-end gap-3">
-                        <button onClick={onClose} className="rounded-[8px] border border-gray-200 bg-white px-5 py-3 text-[15px] font-extrabold text-gray-900 shadow-soft-sm transition-all">Huỷ</button>
-                        <button onClick={onConfirm} disabled={isLoading} className="flex items-center gap-2 rounded-[8px] bg-amber-600 px-5 py-3 text-[15px] font-extrabold text-white shadow-soft-sm disabled:opacity-50">
+                        <button onClick={onClose} className="rounded-[8px] border border-gray-200 bg-white px-5 py-3 text-[15px] font-bold text-gray-900 shadow-soft-sm transition-all">Huỷ</button>
+                        <button onClick={onConfirm} disabled={isLoading} className="flex items-center gap-2 rounded-[8px] bg-amber-600 px-5 py-3 text-[15px] font-bold text-white shadow-soft-sm disabled:opacity-50">
                             {isLoading && <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" strokeOpacity="0.25" /><path d="M4 12a8 8 0 018-8" strokeLinecap="round" /></svg>}
                             Ẩn
                         </button>
@@ -411,7 +411,7 @@ function EmptyState({ onCreate }: { onCreate: () => void }) {
             <div className={`mx-auto flex h-16 w-16 items-center justify-center rounded-full border ${SCHOOL_THEME.primarySoftBorder} ${SCHOOL_THEME.primarySoftBg} ${SCHOOL_THEME.primaryText} shadow-soft-sm`}>
                 <Box className="h-8 w-8" />
             </div>
-            <h2 className="mt-5 text-xl font-extrabold text-gray-900">Chưa có thiết kế đồng phục nào</h2>
+            <h2 className="mt-5 text-xl font-bold text-gray-900">Chưa có thiết kế đồng phục nào</h2>
             <button onClick={onCreate} className={`${SCHOOL_THEME.primaryButton} mt-5`}>
                 Tạo mẫu đầu tiên
             </button>
@@ -429,7 +429,7 @@ function SearchEmptyState({
             <div className={`mx-auto flex h-16 w-16 items-center justify-center rounded-full border ${SCHOOL_THEME.primarySoftBorder} ${SCHOOL_THEME.primarySoftBg} ${SCHOOL_THEME.primaryText} shadow-soft-sm`}>
                 <Search className="h-8 w-8" />
             </div>
-            <h2 className="mt-5 text-xl font-extrabold text-gray-900">Không tìm thấy mẫu phù hợp</h2>
+            <h2 className="mt-5 text-xl font-bold text-gray-900">Không tìm thấy mẫu phù hợp</h2>
             <button onClick={onClear} className="nb-btn nb-btn-outline mt-5 text-sm hover:border-blue-200 hover:text-[#2563EB]">
                 Xóa bộ lọc
             </button>
@@ -572,6 +572,8 @@ export const UniformManagement = (): JSX.Element => {
     const [filtering, setFiltering] = useState(false);
     const [page, setPage] = useState(1);
     const pageSize = 8;
+    const [totalPages, setTotalPages] = useState(1);
+    const [stats, setStats] = useState({ total: 0, available: 0, unavailable: 0 });
 
     const [showFormModal, setShowFormModal] = useState(false);
     const [editingOutfit, setEditingOutfit] = useState<OutfitDto | null>(null);
@@ -596,8 +598,30 @@ export const UniformManagement = (): JSX.Element => {
 
     const fetchOutfits = useCallback(() => {
         setLoading(true);
-        getSchoolOutfits().then((res) => setOutfits(res.items)).catch(() => setOutfits([])).finally(() => setLoading(false));
-    }, []);
+        const isAvailable = statusFilter === "available" ? true : statusFilter === "unavailable" ? false : undefined;
+        getSchoolOutfits({
+            page,
+            pageSize,
+            search,
+            categoryId: categoryFilter || undefined,
+            isAvailable,
+        }).then((res) => {
+            const nextTotalPages = Math.max(1, res.totalPages ?? Math.ceil((res.totalCount ?? res.total ?? res.items.length) / pageSize));
+            setOutfits(res.items);
+            setTotalPages(nextTotalPages);
+            setStats(res.summary ?? {
+                total: res.totalCount ?? res.total ?? res.items.length,
+                available: res.items.filter((item) => item.isAvailable).length,
+                unavailable: res.items.filter((item) => !item.isAvailable).length,
+            });
+            if (page > nextTotalPages) {
+                setPage(nextTotalPages);
+            }
+        }).catch(() => {
+            setOutfits([]);
+            setTotalPages(1);
+        }).finally(() => setLoading(false));
+    }, [categoryFilter, page, pageSize, search, statusFilter]);
 
     useEffect(() => { fetchOutfits(); }, [fetchOutfits]);
 
@@ -708,35 +732,8 @@ export const UniformManagement = (): JSX.Element => {
         }, MIN_FILTER_FEEDBACK_MS);
     }, [preserveResultsHeight]);
 
-    const filteredOutfits = useMemo(() => {
-        let items = outfits;
-        if (statusFilter === "available") items = items.filter((o) => o.isAvailable);
-        else if (statusFilter === "unavailable") items = items.filter((o) => !o.isAvailable);
-        if (categoryFilter) items = items.filter((o) => o.categoryId === categoryFilter);
-        if (search.trim()) {
-            const q = search.trim().toLowerCase();
-            items = items.filter((o) => {
-                const searchable = [
-                    o.outfitName,
-                    o.description ? stripHtml(o.description) : "",
-                    o.categoryName || "",
-                    OUTFIT_TYPE_LABELS[o.outfitType] || "",
-                ].join(" ").toLowerCase();
-                return searchable.includes(q);
-            });
-        }
-        return items;
-    }, [outfits, categoryFilter, search, statusFilter]);
-
-    const stats = useMemo(() => ({
-        total: outfits.length,
-        available: outfits.filter((item) => item.isAvailable).length,
-        unavailable: outfits.filter((item) => !item.isAvailable).length,
-    }), [outfits]);
-
-    const totalPages = Math.max(1, Math.ceil(filteredOutfits.length / pageSize));
-    const paginatedOutfits = filteredOutfits.slice((page - 1) * pageSize, page * pageSize);
-    const isSearchEmptyState = !loading && outfits.length > 0 && filteredOutfits.length === 0;
+    const hasActiveFilters = Boolean(search.trim() || categoryFilter || statusFilter !== "all");
+    const isSearchEmptyState = !loading && hasActiveFilters && outfits.length === 0;
 
     useEffect(() => {
         if (!isSearchEmptyState) {
@@ -832,7 +829,7 @@ export const UniformManagement = (): JSX.Element => {
                                     {filtering ? (
                                         <div className="inline-flex h-10 items-center gap-2 rounded-full border border-blue-100 bg-white px-3 text-xs font-bold text-[#2563EB] shadow-soft-sm">
                                             <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-blue-100 border-t-[#2563EB]" />
-                                            Đang lọc
+                                            Đang tải
                                         </div>
                                     ) : null}
                                 </div>
@@ -845,10 +842,10 @@ export const UniformManagement = (): JSX.Element => {
                             >
                                 {loading ? (
                                     <LoadingState />
-                                ) : filteredOutfits.length > 0 ? (
+                                ) : outfits.length > 0 ? (
                                     <>
                                         <UniformTable
-                                            items={paginatedOutfits}
+                                            items={outfits}
                                             onEdit={openEdit}
                                             onDelete={setDeletingOutfit}
                                             onHide={setHidingOutfit}
@@ -856,7 +853,7 @@ export const UniformManagement = (): JSX.Element => {
                                         />
                                         <Pagination page={page} totalPages={totalPages} setPage={setPage} />
                                     </>
-                                ) : outfits.length > 0 ? (
+                                ) : hasActiveFilters ? (
                                     <SearchEmptyState
                                         onClear={() => {
                                             setSearchInput("");

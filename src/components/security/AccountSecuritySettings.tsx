@@ -13,6 +13,58 @@ export const AccountSecuritySettings = ({
 }): JSX.Element => {
   const navigate = useNavigate();
   const getToken = () => localStorage.getItem("access_token") || sessionStorage.getItem("access_token") || "";
+  const rawUser = localStorage.getItem("user") || sessionStorage.getItem("user");
+  let role = "";
+  try {
+    role = rawUser ? JSON.parse(rawUser)?.role ?? "" : "";
+  } catch {
+    role = "";
+  }
+  const roleTheme = {
+    Admin: {
+      primary: "#BE123C",
+      hover: "#9F1239",
+      soft: "bg-rose-50",
+      text: "text-rose-700",
+      border: "border-rose-200",
+      focus: "focus-visible:ring-rose-300",
+    },
+    Provider: {
+      primary: "#3B82F6",
+      hover: "#2563EB",
+      soft: "bg-blue-50",
+      text: "text-blue-700",
+      border: "border-blue-200",
+      focus: "focus-visible:ring-blue-300",
+    },
+    School: {
+      primary: "#6938EF",
+      hover: "#5B21B6",
+      soft: "bg-violet-50",
+      text: "text-violet-700",
+      border: "border-violet-200",
+      focus: "focus-visible:ring-violet-300",
+    },
+    HomeroomTeacher: {
+      primary: "#059669",
+      hover: "#047857",
+      soft: "bg-emerald-50",
+      text: "text-emerald-700",
+      border: "border-emerald-200",
+      focus: "focus-visible:ring-emerald-300",
+    },
+  }[role as "Admin" | "Provider" | "School" | "HomeroomTeacher"];
+  const useRoleTheme = Boolean(roleTheme);
+  const panelClass = useRoleTheme
+    ? "rounded-[8px] border border-gray-200 bg-white p-5 shadow-soft-sm lg:p-6"
+    : "rounded-[24px] border border-gray-200 bg-white p-5 shadow-soft-sm lg:p-6";
+  const primaryButtonClass = roleTheme
+    ? `group relative inline-flex h-11 min-w-[120px] items-center justify-center gap-2 overflow-hidden whitespace-nowrap rounded-[8px] border px-5 text-sm font-extrabold text-white shadow-soft-sm transition-colors focus-visible:outline-none focus-visible:ring-2 ${roleTheme.focus} focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50`
+    : "group relative inline-flex h-11 min-w-[120px] items-center justify-center gap-2 overflow-hidden whitespace-nowrap rounded-[12px] border border-gray-200 bg-gradient-to-r from-[#7C63E6] via-[#8F79EB] to-[#6F56E0] px-5 text-sm font-extrabold text-white shadow-[0_8px_18px_rgba(124,99,230,0.25)] transition-all duration-200 hover:-translate-y-[1px] hover:brightness-110 hover:shadow-[0_12px_24px_rgba(124,99,230,0.32)] active:translate-y-0 active:shadow-[0_7px_14px_rgba(124,99,230,0.22)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0";
+  const primaryButtonStyle = roleTheme ? { backgroundColor: roleTheme.primary, borderColor: roleTheme.primary } : undefined;
+  const activeStepClass = roleTheme ? `${roleTheme.border} ${roleTheme.soft}` : "border-violet-200 bg-violet-50";
+  const roleAccentClass = roleTheme ? `${roleTheme.soft} ${roleTheme.text}` : "bg-violet-50 text-violet-700";
+  const compactRadiusClass = useRoleTheme ? "rounded-[8px]" : "rounded-[20px]";
 
   const [is2FAEnabled, setIs2FAEnabled] = useState<boolean | null>(localStorage.getItem("vtos_2fa_enabled") === "true");
   const [showDisable2FA, setShowDisable2FA] = useState(false);
@@ -142,11 +194,11 @@ export const AccountSecuritySettings = ({
 
   return (
     <div className="space-y-6">
-      <section className="rounded-[24px] border border-gray-200 bg-white p-5 shadow-soft-sm lg:p-6">
+      <section className={panelClass}>
         <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
           <div className="flex items-start gap-4">
             <div
-              className={`rounded-[20px] p-3 ${
+              className={`${compactRadiusClass} p-3 ${
                 is2FAEnabled === null
                   ? "bg-gray-100 text-gray-500"
                   : is2FAEnabled
@@ -164,14 +216,14 @@ export const AccountSecuritySettings = ({
             </div>
 
             <div className="max-w-3xl">
-              <p className="text-[11px] font-black uppercase tracking-[0.18em] text-gray-500">Bảo mật tài khoản</p>
+              <p className={`text-[11px] font-black uppercase tracking-[0.18em] ${roleTheme ? roleTheme.text : "text-gray-500"}`}>Bảo mật tài khoản</p>
               <h1 className="mt-2 text-2xl font-black text-gray-900">{protectionLabel}</h1>
               {!suppressHelperText && <p className="mt-2 text-sm font-medium leading-7 text-[#4c5769]">{protectionCopy}</p>}
             </div>
           </div>
 
           <div
-            className={`rounded-[20px] border px-4 py-3 text-sm font-extrabold ${
+            className={`${compactRadiusClass} border px-4 py-3 text-sm font-extrabold ${
               is2FAEnabled === null
                 ? "border-gray-200 bg-gray-50 text-gray-600"
                 : is2FAEnabled
@@ -185,17 +237,17 @@ export const AccountSecuritySettings = ({
 
         <div className="mt-6 space-y-4 border-t border-gray-100 pt-5">
           <div className="flex items-start gap-3">
-            <div className={`rounded-2xl p-3 ${is2FAEnabled ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"}`}>
+            <div className={`rounded-[8px] p-3 ${is2FAEnabled ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"}`}>
               {is2FAEnabled ? <ShieldCheck className="h-5 w-5" /> : <ShieldAlert className="h-5 w-5" />}
             </div>
             <div>
-              <p className="text-[11px] font-black uppercase tracking-[0.16em] text-gray-400">Xác thực 2 bước</p>
+              <p className={`text-[11px] font-black uppercase tracking-[0.16em] ${roleTheme ? roleTheme.text : "text-gray-400"}`}>Xác thực 2 bước</p>
               <h2 className="mt-2 text-2xl font-black text-gray-900">Quản lý 2FA</h2>
             </div>
           </div>
 
           <div
-            className={`rounded-[22px] border p-5 ${
+            className={`rounded-[8px] border p-5 ${
               is2FAEnabled ? "border-emerald-200 bg-emerald-50" : "border-amber-200 bg-amber-50"
             }`}
           >
@@ -268,7 +320,14 @@ export const AccountSecuritySettings = ({
             <div className="flex flex-wrap items-center gap-3 border-t border-gray-100 pt-4">
               <button
                 onClick={() => navigate("/2fa-setup")}
-                className="group relative inline-flex h-11 min-w-[120px] items-center justify-center gap-2 overflow-hidden whitespace-nowrap rounded-[12px] border border-gray-200 bg-gradient-to-r from-[#7C63E6] via-[#8F79EB] to-[#6F56E0] px-5 text-sm font-extrabold text-white shadow-[0_8px_18px_rgba(124,99,230,0.25)] transition-all duration-200 hover:-translate-y-[1px] hover:brightness-110 hover:shadow-[0_12px_24px_rgba(124,99,230,0.32)] active:translate-y-0 active:shadow-[0_7px_14px_rgba(124,99,230,0.22)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300 focus-visible:ring-offset-2"
+                className={primaryButtonClass}
+                style={primaryButtonStyle}
+                onMouseEnter={(event) => {
+                  if (roleTheme) event.currentTarget.style.backgroundColor = roleTheme.hover;
+                }}
+                onMouseLeave={(event) => {
+                  if (roleTheme) event.currentTarget.style.backgroundColor = roleTheme.primary;
+                }}
               >
                 <span className="pointer-events-none absolute -left-10 top-0 h-full w-14 -skew-x-12 bg-white/25 blur-[1px] transition-all duration-300 group-hover:left-[110%]" />
                 Bật 2FA
@@ -278,13 +337,13 @@ export const AccountSecuritySettings = ({
         </div>
       </section>
 
-      <section className="rounded-[24px] border border-gray-200 bg-white p-5 shadow-soft-sm lg:p-6">
+      <section className={panelClass}>
         <div className="flex items-start gap-3">
-          <div className="rounded-2xl bg-violet-50 p-3 text-violet-700">
+          <div className={`rounded-[8px] p-3 ${roleAccentClass}`}>
             <KeyRound className="h-5 w-5" />
           </div>
           <div>
-            <p className="text-[11px] font-black uppercase tracking-[0.16em] text-gray-400">Đổi mật khẩu</p>
+            <p className={`text-[11px] font-black uppercase tracking-[0.16em] ${roleTheme ? roleTheme.text : "text-gray-400"}`}>Đổi mật khẩu</p>
             <h2 className="mt-2 text-2xl font-black text-gray-900">Cập nhật mật khẩu đăng nhập</h2>
           </div>
         </div>
@@ -294,12 +353,14 @@ export const AccountSecuritySettings = ({
             title="1. Gửi mã OTP"
             description="Nhận mã qua email."
             active={!otpSent}
+            activeClass={activeStepClass}
             suppressHelperText={suppressHelperText}
           />
           <SimpleStep
             title="2. Xác nhận mật khẩu mới"
             description="Nhập OTP và mật khẩu mới."
             active={otpSent}
+            activeClass={activeStepClass}
             suppressHelperText={suppressHelperText}
           />
         </div>
@@ -309,7 +370,7 @@ export const AccountSecuritySettings = ({
             <div className="rounded-[16px] border border-slate-200 bg-slate-50 p-4">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div className="inline-flex items-center gap-3">
-                  <div className="rounded-2xl bg-white p-2.5 text-sky-700 shadow-soft-sm">
+                  <div className={`rounded-[8px] bg-white p-2.5 shadow-soft-sm ${roleTheme ? roleTheme.text : "text-sky-700"}`}>
                     <Mail className="h-4.5 w-4.5" />
                   </div>
                   <div>
@@ -320,7 +381,14 @@ export const AccountSecuritySettings = ({
                 <button
                   onClick={handleRequestOtp}
                   disabled={requestingOtp}
-                  className="group relative inline-flex h-11 w-full items-center justify-center gap-2 overflow-hidden rounded-[12px] border border-gray-200 bg-gradient-to-r from-[#7C63E6] via-[#8F79EB] to-[#6F56E0] px-5 text-sm font-extrabold text-white shadow-[0_8px_18px_rgba(124,99,230,0.25)] transition-all duration-200 hover:-translate-y-[1px] hover:brightness-110 hover:shadow-[0_12px_24px_rgba(124,99,230,0.32)] active:translate-y-0 active:shadow-[0_7px_14px_rgba(124,99,230,0.22)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 sm:w-auto"
+                  className={`${primaryButtonClass} w-full sm:w-auto`}
+                  style={primaryButtonStyle}
+                  onMouseEnter={(event) => {
+                    if (roleTheme) event.currentTarget.style.backgroundColor = roleTheme.hover;
+                  }}
+                  onMouseLeave={(event) => {
+                    if (roleTheme) event.currentTarget.style.backgroundColor = roleTheme.primary;
+                  }}
                 >
                   <span className="pointer-events-none absolute -left-10 top-0 h-full w-14 -skew-x-12 bg-white/25 blur-[1px] transition-all duration-300 group-hover:left-[110%]" />
                   {requestingOtp ? "Đang gửi..." : "Yêu cầu mã OTP"}
@@ -335,7 +403,7 @@ export const AccountSecuritySettings = ({
             </div>
           ) : (
             <div className="space-y-4">
-              <div className="rounded-[16px] bg-violet-50 px-4 py-3 text-sm font-bold text-violet-700">
+              <div className={`rounded-[8px] px-4 py-3 text-sm font-bold ${roleAccentClass}`}>
                 OTP đã được gửi.
               </div>
 
@@ -397,7 +465,14 @@ export const AccountSecuritySettings = ({
                 <button
                   onClick={handleChangePassword}
                   disabled={changingPassword || !otp || !newPassword || !confirmPassword}
-                  className="group relative inline-flex h-11 w-full items-center justify-center gap-2 overflow-hidden rounded-[12px] border border-gray-200 bg-gradient-to-r from-[#7C63E6] via-[#8F79EB] to-[#6F56E0] px-5 text-sm font-extrabold text-white shadow-[0_8px_18px_rgba(124,99,230,0.25)] transition-all duration-200 hover:-translate-y-[1px] hover:brightness-110 hover:shadow-[0_12px_24px_rgba(124,99,230,0.32)] active:translate-y-0 active:shadow-[0_7px_14px_rgba(124,99,230,0.22)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
+                  className={`${primaryButtonClass} w-full`}
+                  style={primaryButtonStyle}
+                  onMouseEnter={(event) => {
+                    if (roleTheme) event.currentTarget.style.backgroundColor = roleTheme.hover;
+                  }}
+                  onMouseLeave={(event) => {
+                    if (roleTheme) event.currentTarget.style.backgroundColor = roleTheme.primary;
+                  }}
                 >
                   <span className="pointer-events-none absolute -left-10 top-0 h-full w-14 -skew-x-12 bg-white/25 blur-[1px] transition-all duration-300 group-hover:left-[110%]" />
                   {changingPassword ? "Đang xử lý..." : "Đổi mật khẩu"}
@@ -442,14 +517,16 @@ const SimpleStep = ({
   title,
   description,
   active,
+  activeClass,
   suppressHelperText = false,
 }: {
   title: string;
   description: string;
   active: boolean;
+  activeClass?: string;
   suppressHelperText?: boolean;
 }) => (
-  <div className={`rounded-[16px] border px-4 py-3 ${active ? "border-violet-200 bg-violet-50" : "border-gray-200 bg-slate-50"}`}>
+  <div className={`rounded-[8px] border px-4 py-3 ${active ? activeClass ?? "border-violet-200 bg-violet-50" : "border-gray-200 bg-slate-50"}`}>
     <p className="text-sm font-extrabold text-gray-900">{title}</p>
     {!suppressHelperText && <p className="mt-1 text-sm font-medium text-[#5b6475]">{description}</p>}
   </div>

@@ -40,6 +40,9 @@ export type ProviderWithdrawalRequestDto = {
     withdrawalRequestId: string;
     walletId: string;
     amount: number;
+    feeRate: number;
+    feeAmount: number;
+    netAmount: number;
     status: string;
     bankCode?: string | null;
     bankName?: string | null;

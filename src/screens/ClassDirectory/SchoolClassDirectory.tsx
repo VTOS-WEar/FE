@@ -171,7 +171,7 @@ export const SchoolClassDirectory = (): JSX.Element => {
                                     {filtering ? (
                                         <div className="inline-flex h-10 items-center gap-2 rounded-full border border-blue-100 bg-white px-3 text-xs font-bold text-[#2563EB] shadow-soft-sm">
                                             <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-blue-100 border-t-[#2563EB]" />
-                                            Đang lọc
+                                            Đang tải
                                         </div>
                                     ) : null}
                                 </div>
@@ -194,7 +194,7 @@ export const SchoolClassDirectory = (): JSX.Element => {
                         {!loading && !error && overview && overview.grades.length === 0 && (
                             <section className="rounded-[8px] border border-gray-200 bg-white p-10 text-center shadow-soft-sm">
                                  <GraduationCap className={`mx-auto h-10 w-10 ${SCHOOL_THEME.primaryText}`} />
-                                 <h2 className="mt-4 text-xl font-extrabold text-gray-900">Chưa có lớp học nào</h2>
+                                 <h2 className="mt-4 text-xl font-bold text-gray-900">Chưa có lớp học nào</h2>
                              </section>
                          )}
 
@@ -204,8 +204,8 @@ export const SchoolClassDirectory = (): JSX.Element => {
                                     <div key={grade.grade} className="rounded-[8px] border border-gray-200 bg-white p-5 shadow-soft-sm">
                                         <div className="flex flex-col gap-2">
                                             <div>
-                                                <p className={`text-xs font-extrabold uppercase tracking-[0.18em] ${SCHOOL_THEME.primaryText}`}>Khối {grade.grade}</p>
-                                                <h2 className="mt-1 text-2xl font-extrabold text-gray-900">{grade.classCount} lớp, {grade.studentCount} học sinh</h2>
+                                                <p className={`text-xs font-bold uppercase tracking-[0.18em] ${SCHOOL_THEME.primaryText}`}>Khối {grade.grade}</p>
+                                                <h2 className="mt-1 text-2xl font-bold text-gray-900">{grade.classCount} lớp, {grade.studentCount} học sinh</h2>
                                             </div>
                                         </div>
 
@@ -220,7 +220,7 @@ export const SchoolClassDirectory = (): JSX.Element => {
                                                     <div className="flex items-start justify-between gap-3">
                                                         <div>
                                                             <p className={`text-xs font-bold uppercase tracking-[0.18em] ${SCHOOL_THEME.primaryText}`}>Lớp {classGroup.className}</p>
-                                                            <h3 className="mt-2 text-xl font-extrabold text-gray-900">{classGroup.studentCount} học sinh</h3>
+                                                            <h3 className="mt-2 text-xl font-bold text-gray-900">{classGroup.studentCount} học sinh</h3>
                                                         </div>
                                                         <div className={`rounded-full ${SCHOOL_THEME.primarySoftBg} p-2 ${SCHOOL_THEME.primaryText}`}>
                                                             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />

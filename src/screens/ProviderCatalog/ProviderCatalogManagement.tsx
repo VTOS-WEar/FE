@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CheckCircle2, ChevronDown, Loader2, PackageCheck, Save, Search, Shirt, SlidersHorizontal } from "lucide-react";
 import { DashboardSidebar } from "../../components/layout";
@@ -86,19 +86,6 @@ function StatusBadge({ status }: { status: string }) {
     );
 }
 
-function isLowPriorityPublication(publication: ProviderCatalogPublicationDto) {
-    return publication.providerStatus === "Suspended" || publication.publicationStatus === "Draft";
-}
-
-function matchesFilter(publication: ProviderCatalogPublicationDto, filter: string) {
-    if (filter === "all") return true;
-    if (filter === "active") return publication.providerStatus === "Active" && publication.publicationStatus !== "Draft";
-    if (filter === "draft") return publication.publicationStatus === "Draft";
-    if (filter === "suspended") return publication.providerStatus === "Suspended";
-    if (filter === "needsSetup") return publication.items.some((item) => !item.catalogItemId || item.status === "Draft");
-    return true;
-}
-
 export function ProviderCatalogManagement() {
     const navigate = useNavigate();
     const sidebarConfig = useProviderSidebarConfig();
@@ -115,14 +102,30 @@ export function ProviderCatalogManagement() {
     const [statusInput, setStatusInput] = useState("all");
     const [filtering, setFiltering] = useState(false);
     const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [summary, setSummary] = useState({ publications: 0, items: 0, published: 0, needsSetup: 0 });
     const filterTimerRef = useRef<ReturnType<typeof window.setTimeout> | null>(null);
 
     const loadData = useCallback(async () => {
         setLoading(true);
         try {
-            const [profile, catalog] = await Promise.all([getProviderProfile(), getProviderCatalog()]);
+            const [profile, catalog] = await Promise.all([
+                getProviderProfile(),
+                getProviderCatalog({
+                    page,
+                    pageSize: PAGE_SIZE,
+                    status: statusFilter,
+                    search: appliedSearch,
+                }),
+            ]);
+            const nextTotalPages = Math.max(1, catalog.totalPages);
             setProviderName(profile.providerName || "");
             setPublications(catalog.publications || []);
+            setTotalPages(nextTotalPages);
+            setSummary(catalog.summary);
+            if (page > nextTotalPages) {
+                setPage(nextTotalPages);
+            }
             setDrafts(
                 Object.fromEntries(
                     (catalog.publications || []).flatMap((publication) =>
@@ -142,7 +145,7 @@ export function ProviderCatalogManagement() {
         } finally {
             setLoading(false);
         }
-    }, [showToast]);
+    }, [appliedSearch, page, showToast, statusFilter]);
 
     useEffect(() => {
         loadData();
@@ -164,58 +167,10 @@ export function ProviderCatalogManagement() {
         navigate("/signin", { replace: true });
     };
 
-    const filteredPublications = useMemo(() => {
-        const q = appliedSearch.trim().toLowerCase();
-
-        return publications
-            .filter((publication) => matchesFilter(publication, statusFilter))
-            .map((publication) => {
-                if (!q) return publication;
-
-                return {
-                    ...publication,
-                    items: publication.items.filter((item) =>
-                        [
-                            publication.schoolName,
-                            publication.semester,
-                            publication.academicYear,
-                            publication.contractNumber || "",
-                            item.outfitName,
-                            item.displayName,
-                            item.schoolMaterialType || "",
-                            item.materialDetails || "",
-                        ]
-                            .join(" ")
-                            .toLowerCase()
-                            .includes(q),
-                    ),
-                };
-            })
-            .filter((publication) => !q || publication.items.length > 0)
-            .sort((a, b) => {
-                const priorityA = isLowPriorityPublication(a) ? 1 : 0;
-                const priorityB = isLowPriorityPublication(b) ? 1 : 0;
-                if (priorityA !== priorityB) return priorityA - priorityB;
-                return new Date(b.startDate).getTime() - new Date(a.startDate).getTime();
-            });
-    }, [appliedSearch, publications, statusFilter]);
-
-    const totalPages = Math.max(1, Math.ceil(filteredPublications.length / PAGE_SIZE));
-    const pagedPublications = filteredPublications.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
     const isInitialLoading = loading && publications.length === 0;
     const showListOverlay = loading && publications.length > 0;
-    const isFilteredEmptyState = !loading && publications.length > 0 && filteredPublications.length === 0;
+    const isFilteredEmptyState = !loading && (statusFilter !== "all" || !!appliedSearch.trim()) && publications.length === 0;
     const { preserveResultsHeight, preservedHeightStyle, resultsRegionRef } = usePreservedResultsHeight(isFilteredEmptyState);
-
-    const summary = useMemo(() => {
-        const allItems = publications.flatMap((publication) => publication.items);
-        return {
-            publications: publications.length,
-            items: allItems.length,
-            published: allItems.filter((item) => item.status === "Published").length,
-            needsSetup: allItems.filter((item) => !item.catalogItemId).length,
-        };
-    }, [publications]);
 
     const updateDraft = (key: string, patch: Partial<CatalogDraft>) => {
         setDrafts((current) => ({
@@ -302,6 +257,7 @@ export function ProviderCatalogManagement() {
                 message: `${saved.outfitName} đã cập nhật giá và chất liệu.`,
                 variant: "success",
             });
+            await loadData();
         } catch (error) {
             showToast({
                 title: "Không thể lưu catalog",
@@ -330,7 +286,7 @@ export function ProviderCatalogManagement() {
                         )}
                     </div>
                     <div className="min-w-0">
-                        <p className="truncate text-sm font-extrabold text-slate-950">{item.outfitName}</p>
+                        <p className="truncate text-sm font-bold text-slate-950">{item.outfitName}</p>
                         <p className="mt-1 text-xs font-semibold text-slate-500">HĐ: {formatCurrency(item.contractPricePerUnit)}</p>
                         <p className="mt-0.5 truncate text-xs font-semibold text-slate-500">
                             Trường: {item.schoolMaterialType || "Chưa cập nhật"}
@@ -446,7 +402,7 @@ export function ProviderCatalogManagement() {
                         disabled={isSaving}
                         aria-label="Lưu catalog item"
                         title="Lưu"
-                        className="nb-btn nb-btn-primary h-9 w-9 justify-center p-0"
+                        className="nb-btn nb-btn-provider h-9 w-9 justify-center p-0"
                     >
                         {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                     </button>
@@ -494,7 +450,7 @@ export function ProviderCatalogManagement() {
                                             </div>
                                             <div>
                                                 <p className="text-xs font-bold uppercase tracking-[0.12em] text-slate-400">{card.label}</p>
-                                                <p className="mt-1 text-2xl font-extrabold text-slate-950">{card.value}</p>
+                                                <p className="mt-1 text-2xl font-bold text-slate-950">{card.value}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -519,7 +475,7 @@ export function ProviderCatalogManagement() {
                                         className="h-10 w-full rounded-full border border-slate-200 bg-white pl-11 pr-4 text-sm font-medium text-slate-800 outline-none shadow-soft-xs transition-colors placeholder:text-slate-500 focus:border-violet-200 focus:ring-4 focus:ring-violet-50"
                                     />
                                 </label>
-                                <button type="submit" className="nb-btn nb-btn-primary h-10 justify-center px-4">
+                                <button type="submit" className="nb-btn nb-btn-provider h-10 justify-center px-4">
                                     <Search className="h-4 w-4" />
                                     Tìm
                                 </button>
@@ -527,9 +483,9 @@ export function ProviderCatalogManagement() {
 
                             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
                                 {filtering ? (
-                                    <div className="inline-flex h-10 items-center gap-2 rounded-full border border-violet-100 bg-white px-3 text-xs font-bold text-violet-700 shadow-soft-xs">
-                                        <Loader2 className="h-4 w-4 animate-spin" />
-                                        Đang lọc
+                                    <div className="inline-flex h-10 items-center gap-2 rounded-full border border-blue-100 bg-white px-3 text-xs font-bold text-blue-700 shadow-soft-xs">
+                                        <Loader2 className="h-4 w-4 animate-spin text-[#3B82F6]" />
+                                        Đang tải
                                     </div>
                                 ) : null}
                                 <label className="relative block">
@@ -555,14 +511,14 @@ export function ProviderCatalogManagement() {
 
                         {isInitialLoading ? (
                             <div className="flex min-h-[320px] items-center justify-center rounded-[8px] border border-gray-200 bg-white">
-                                <Loader2 className="h-6 w-6 animate-spin text-violet-700" />
+                                <Loader2 className="h-6 w-6 animate-spin text-[#3B82F6]" />
                             </div>
                         ) : (
                             <div ref={resultsRegionRef} style={preservedHeightStyle}>
-                            {filteredPublications.length === 0 ? (
+                            {publications.length === 0 ? (
                             <div className="rounded-[8px] border border-gray-200 bg-white p-8 text-center shadow-soft-sm">
                                 <PackageCheck className="mx-auto h-10 w-10 text-slate-300" />
-                                <h3 className="mt-4 text-lg font-extrabold text-slate-950">Chưa có catalog cần quản lý</h3>
+                                <h3 className="mt-4 text-lg font-bold text-slate-950">Chưa có catalog cần quản lý</h3>
                                 <p className="mt-2 text-sm font-semibold text-slate-500">
                                     Khi trường duyệt nhà cung cấp cho một đợt công bố học kỳ, các mẫu sẽ xuất hiện tại đây.
                                 </p>
@@ -571,18 +527,18 @@ export function ProviderCatalogManagement() {
                             <section className="relative space-y-5">
                                 {showListOverlay ? (
                                     <div className="absolute inset-0 z-10 flex items-start justify-center rounded-[8px] bg-white/70 pt-10 backdrop-blur-[1px]">
-                                        <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-600 shadow-soft-sm">
-                                            <Loader2 className="h-4 w-4 animate-spin text-violet-700" />
+                                        <div className="inline-flex items-center gap-2 rounded-full border border-blue-100 bg-white px-4 py-2 text-sm font-bold text-blue-700 shadow-soft-sm">
+                                            <Loader2 className="h-4 w-4 animate-spin text-[#3B82F6]" />
                                             Đang tải
                                         </div>
                                     </div>
                                 ) : null}
 
-                                {pagedPublications.map((publication) => (
+                                {publications.map((publication) => (
                                     <div key={publication.semesterPublicationProviderId} className="rounded-[8px] border border-gray-200 bg-white shadow-soft-sm">
                                         <div className="flex flex-col gap-3 border-b border-gray-100 px-5 py-4 lg:flex-row lg:items-center lg:justify-between">
                                             <div>
-                                                <h3 className="text-lg font-extrabold text-slate-950">
+                                                <h3 className="text-lg font-bold text-slate-950">
                                                     {publication.schoolName} · {publication.semester} {publication.academicYear}
                                                 </h3>
                                                 <p className="mt-1 text-sm font-semibold text-slate-500">

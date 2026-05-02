@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
     ArrowRight,
@@ -31,6 +31,7 @@ import {
     requestSchoolSignOTP,
     signSchoolContract,
     type ContractDto,
+    type ContractListSummary,
     type CreateContractItemRequest,
     type CreateContractRequest,
 } from "../../lib/api/contracts";
@@ -302,6 +303,19 @@ export function SchoolContracts() {
     const [filtering, setFiltering] = useState(false);
     const [page, setPage] = useState(1);
     const pageSize = 9;
+    const [totalCount, setTotalCount] = useState(0);
+    const [totalPages, setTotalPages] = useState(1);
+    const [summary, setSummary] = useState<ContractListSummary>({
+        total: 0,
+        pending: 0,
+        waitingSchool: 0,
+        waitingProvider: 0,
+        active: 0,
+        fulfilled: 0,
+        rejected: 0,
+        issue: 0,
+        expiringSoon: 0,
+    });
     const filterTimerRef = useRef<number | null>(null);
 
     const [showCreate, setShowCreate] = useState(false);
@@ -352,15 +366,27 @@ export function SchoolContracts() {
     const fetchContracts = useCallback(async () => {
         setLoading(true);
         try {
-            const data = await getSchoolContracts();
-            setContracts(data);
+            const data = await getSchoolContracts({
+                page,
+                pageSize,
+                status: statusFilter || undefined,
+                search: search || undefined,
+            });
+            const nextTotalPages = Math.max(1, data.totalPages);
+            setContracts(data.items);
+            setTotalCount(data.totalCount);
+            setTotalPages(nextTotalPages);
+            setSummary(data.summary);
+            if (page > nextTotalPages) {
+                setPage(nextTotalPages);
+            }
         } catch (e) {
             console.error(e);
             showFeedback("Không thể tải danh sách hợp đồng.", "error");
         } finally {
             setLoading(false);
         }
-    }, [showFeedback]);
+    }, [page, pageSize, search, showFeedback, statusFilter]);
 
     useEffect(() => {
         fetchContracts();
@@ -378,7 +404,7 @@ export function SchoolContracts() {
                 const { api } = await import("../../lib/api/clients");
                 const [prov, outfRes] = await Promise.all([
                     api<any[]>("/api/schools/me/providers", { method: "GET", auth: true }),
-                    api<any>("/api/schools/me/outfits", { method: "GET", auth: true }),
+                    api<any>("/api/schools/me/outfits?page=1&pageSize=50", { method: "GET", auth: true }),
                 ]);
 
                 setProviders(prov.map((provider: any) => ({ id: provider.providerId ?? provider.id, name: provider.providerName ?? provider.name })));
@@ -520,23 +546,7 @@ export function SchoolContracts() {
         }
     };
 
-    const filteredContracts = useMemo(() => {
-        const query = search.trim().toLowerCase();
-        return contracts.filter((contract) => {
-            if (statusFilter && contract.status !== statusFilter) {
-                return false;
-            }
-
-            if (!query) return true;
-            return `${contract.contractName} ${contract.providerName || ""} ${contract.contractNumber || ""}`
-                .toLowerCase()
-                .includes(query);
-        });
-    }, [contracts, search, statusFilter]);
-
-    const totalPages = Math.max(1, Math.ceil(filteredContracts.length / pageSize));
-    const pagedContracts = filteredContracts.slice((page - 1) * pageSize, page * pageSize);
-    const isSearchEmptyState = !loading && contracts.length > 0 && filteredContracts.length === 0;
+    const isSearchEmptyState = !loading && Boolean(search.trim() || statusFilter) && contracts.length === 0;
     const {
         resultsRegionRef,
         preserveResultsHeight,
@@ -558,6 +568,7 @@ export function SchoolContracts() {
         filterTimerRef.current = window.setTimeout(() => {
             setSearch(next.search);
             setStatusFilter(next.status);
+            setPage(1);
             setFiltering(false);
             filterTimerRef.current = null;
         }, MIN_FILTER_FEEDBACK_MS);
@@ -573,33 +584,16 @@ export function SchoolContracts() {
         setSearch("");
         setStatusInput("");
         setStatusFilter("");
+        setPage(1);
         setFiltering(false);
         clearPreservedHeight();
     };
-
-    useEffect(() => {
-        setPage(1);
-    }, [search, statusFilter]);
-
-    const summary = useMemo(() => {
-        const total = contracts.length;
-        const waitingSchool = contracts.filter((contract) => contract.status === "Pending" || contract.status === "PendingSchoolSign").length;
-        const waitingProvider = contracts.filter((contract) => contract.status === "PendingProviderSign").length;
-        const active = contracts.filter((contract) => contract.status === "Active" || contract.status === "InUse").length;
-        const rejected = contracts.filter((contract) => contract.status === "Rejected").length;
-        const expiringSoon = contracts.filter((contract) => {
-            const days = getDaysRemaining(contract.expiresAt);
-            return (contract.status === "Active" || contract.status === "InUse") && days >= 0 && days <= 14;
-        }).length;
-
-        return { total, waitingSchool, waitingProvider, active, rejected, expiringSoon };
-    }, [contracts]);
 
     return (
         <div className="nb-page flex flex-col">
             {feedback && (
                 <div
-                    className={`fixed right-6 top-6 z-[99999] flex items-center gap-3 rounded-[12px] border px-5 py-3 text-sm font-extrabold shadow-soft-md ${
+                    className={`fixed right-6 top-6 z-[99999] flex items-center gap-3 rounded-[12px] border px-5 py-3 text-sm font-bold shadow-soft-md ${
                         feedback.type === "success"
                             ? "border-emerald-200 bg-emerald-50 text-emerald-700"
                             : "border-rose-200 bg-rose-50 text-rose-700"
@@ -688,13 +682,13 @@ export function SchoolContracts() {
 
                                 <div className="inline-flex h-10 items-center gap-2 rounded-full border border-gray-200 bg-gray-50 px-3 text-xs font-bold text-[#5b6475]">
                                     <CalendarRange className={`h-4 w-4 ${SCHOOL_THEME.primaryText}`} />
-                                    {filteredContracts.length} hợp đồng
+                                    {totalCount} hợp đồng
                                 </div>
 
                                 {filtering ? (
                                     <div className="inline-flex h-10 items-center gap-2 rounded-full border border-blue-100 bg-white px-3 text-xs font-bold text-[#2563EB] shadow-soft-sm">
                                         <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-blue-100 border-t-[#2563EB]" />
-                                        Đang lọc
+                                        Đang tải
                                     </div>
                                 ) : null}
                             </div>
@@ -703,10 +697,10 @@ export function SchoolContracts() {
                         {loading && <ContractTableSkeleton />}
 
                         <div ref={resultsRegionRef} style={preservedHeightStyle} className="relative">
-                        {!loading && filteredContracts.length > 0 && (
+                        {!loading && contracts.length > 0 && (
                             <>
                                 <ContractTable
-                                    items={pagedContracts}
+                                    items={contracts}
                                     onOpen={(contract) => openDetail(contract.contractId)}
                                     onViewDocument={(contract) => openContractTemplate(contract.contractId)}
                                     onOpenChat={openContractChat}
@@ -738,16 +732,16 @@ export function SchoolContracts() {
                             </>
                         )}
 
-                        {!loading && filteredContracts.length === 0 && (
+                        {!loading && contracts.length === 0 && (
                             <section className="rounded-[8px] border border-gray-200 bg-white p-12 text-center shadow-soft-sm">
                                 <div className={`mx-auto flex h-16 w-16 items-center justify-center rounded-full border ${SCHOOL_THEME.primarySoftBorder} ${SCHOOL_THEME.primarySoftBg} ${SCHOOL_THEME.primaryText} shadow-soft-sm`}>
                                     <FilePenLine className="h-8 w-8" />
                                 </div>
-                                <h2 className="mt-5 text-xl font-extrabold text-gray-900">
-                                    {contracts.length === 0 ? "Chưa có hợp đồng nào" : "Không tìm thấy hợp đồng phù hợp"}
+                                <h2 className="mt-5 text-xl font-bold text-gray-900">
+                                    {!isSearchEmptyState ? "Chưa có hợp đồng nào" : "Không tìm thấy hợp đồng phù hợp"}
                                 </h2>
                                 <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
-                                    {contracts.length === 0 ? (
+                                    {!isSearchEmptyState ? (
                                         <button onClick={() => setShowCreate(true)} className={SCHOOL_THEME.primaryButton}>
                                             Tạo hợp đồng mới
                                         </button>
@@ -785,17 +779,17 @@ export function SchoolContracts() {
                                                     {STATUS_LABELS[selected.status] || selected.status}
                                                 </span>
                                                 {selected.schoolSignedAt && (
-                                                    <span className="rounded-full border border-emerald-200 bg-white px-3 py-1 text-xs font-extrabold text-emerald-700 shadow-soft-sm">
+                                                    <span className="rounded-full border border-emerald-200 bg-white px-3 py-1 text-xs font-bold text-emerald-700 shadow-soft-sm">
                                                         Trường đã ký
                                                     </span>
                                                 )}
                                                 {selected.providerSignedAt && (
-                                                    <span className="rounded-full border border-indigo-200 bg-white px-3 py-1 text-xs font-extrabold text-indigo-700 shadow-soft-sm">
+                                                    <span className="rounded-full border border-indigo-200 bg-white px-3 py-1 text-xs font-bold text-indigo-700 shadow-soft-sm">
                                                         NCC đã ký
                                                     </span>
                                                 )}
                                             </div>
-                                            <h2 className="mt-4 text-[26px] font-extrabold leading-tight text-gray-900 lg:text-[32px]">
+                                            <h2 className="mt-4 text-[26px] font-bold leading-tight text-gray-900 lg:text-[32px]">
                                                 {selected.contractName}
                                             </h2>
                                         </div>
@@ -804,7 +798,7 @@ export function SchoolContracts() {
 
                                 <div className="space-y-6 px-6 py-6 lg:px-8">
                                     <section className="rounded-[8px] border border-gray-200 bg-white p-5 shadow-soft-sm">
-                                        <h3 className="text-lg font-extrabold text-gray-900">Thông tin hợp đồng</h3>
+                                        <h3 className="text-lg font-bold text-gray-900">Thông tin hợp đồng</h3>
                                         <div className="mt-4 grid gap-x-8 gap-y-1 md:grid-cols-2">
                                             {[
                                                 {
@@ -833,7 +827,7 @@ export function SchoolContracts() {
                                                         {item.icon}
                                                     </div>
                                                     <div className="min-w-0">
-                                                        <p className="text-xs font-extrabold uppercase tracking-[0.12em] text-slate-500">{item.label}</p>
+                                                        <p className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">{item.label}</p>
                                                         <p className="mt-1 break-words text-sm font-bold leading-6 text-gray-900">{item.value}</p>
                                                     </div>
                                                 </div>
@@ -848,7 +842,7 @@ export function SchoolContracts() {
                                                     <ShieldCheck className="h-5 w-5" />
                                                 </div>
                                                 <div>
-                                                    <h3 className="text-lg font-extrabold text-gray-900">Thao tác của nhà trường</h3>
+                                                    <h3 className="text-lg font-bold text-gray-900">Thao tác của nhà trường</h3>
                                                 </div>
                                             </div>
                                         </section>
@@ -861,7 +855,7 @@ export function SchoolContracts() {
                                                     <XCircle className="h-5 w-5" />
                                                 </div>
                                                 <div>
-                                                    <h3 className="text-lg font-extrabold text-gray-900">Lý do từ chối</h3>
+                                                    <h3 className="text-lg font-bold text-gray-900">Lý do từ chối</h3>
                                                     <p className="mt-1 text-sm font-medium leading-6 text-rose-700">{selected.rejectionReason}</p>
                                                 </div>
                                             </div>
@@ -870,7 +864,7 @@ export function SchoolContracts() {
 
                                     <section className="rounded-[8px] border border-gray-200 bg-white shadow-soft-sm">
                                         <div className="border-b border-gray-200 px-6 py-5">
-                                            <h3 className="text-lg font-extrabold text-gray-900">Mẫu đồng phục đính kèm</h3>
+                                            <h3 className="text-lg font-bold text-gray-900">Mẫu đồng phục đính kèm</h3>
                                         </div>
                                         <div className="space-y-3 px-6 py-6">
                                             {selected.items.map((item) => (
@@ -885,7 +879,7 @@ export function SchoolContracts() {
                                                         )}
                                                     </div>
                                                     <div className="min-w-0">
-                                                        <p className="truncate text-sm font-extrabold text-gray-900">{item.outfitName}</p>
+                                                        <p className="truncate text-sm font-bold text-gray-900">{item.outfitName}</p>
                                                     </div>
                                                 </div>
                                             ))}
@@ -934,11 +928,11 @@ export function SchoolContracts() {
                         <div className="border-b border-gray-200 bg-[linear-gradient(135deg,#f8f4ff_0%,#eef6ff_55%,#ffffff_100%)] px-6 py-6 lg:px-8">
                             <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
                                 <div className="max-w-3xl">
-                                    <div className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-white/80 px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.16em] text-[#2563EB]">
+                                    <div className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-white/80 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.16em] text-[#2563EB]">
                                         <Plus className="h-4 w-4" />
                                         Contract Setup
                                     </div>
-                                    <h2 className="mt-4 text-[26px] font-extrabold leading-tight text-gray-900 lg:text-[32px]">
+                                    <h2 className="mt-4 text-[26px] font-bold leading-tight text-gray-900 lg:text-[32px]">
                                         Tạo hợp đồng cung ứng mới
                                     </h2>
                                 </div>
@@ -960,7 +954,7 @@ export function SchoolContracts() {
                                 <section className="space-y-6">
                                     <div className="nb-card-static p-0">
                                         <div className="border-b border-gray-200 px-6 py-5">
-                                            <h3 className="text-lg font-extrabold text-gray-900">Nhận diện hợp đồng</h3>
+                                            <h3 className="text-lg font-bold text-gray-900">Nhận diện hợp đồng</h3>
                                         </div>
                                         <div className="space-y-5 px-6 py-6">
                                             <div>
@@ -1005,7 +999,7 @@ export function SchoolContracts() {
                                         <div className="border-b border-gray-200 px-6 py-5">
                                             <div className="flex items-center justify-between gap-3">
                                                 <div>
-                                                    <h3 className="text-lg font-extrabold text-gray-900">Mẫu đính kèm</h3>
+                                                    <h3 className="text-lg font-bold text-gray-900">Mẫu đính kèm</h3>
                                                 </div>
                                                 <button onClick={addItem} className="nb-btn nb-btn-outline nb-btn-sm text-xs">
                                                     Thêm mẫu
@@ -1047,7 +1041,7 @@ export function SchoolContracts() {
                                 <aside className="space-y-6">
                                     <div className="nb-card-static p-0">
                                         <div className="border-b border-gray-200 px-6 py-5">
-                                            <h3 className="text-lg font-extrabold text-gray-900">Checklist trước khi tạo</h3>
+                                            <h3 className="text-lg font-bold text-gray-900">Checklist trước khi tạo</h3>
                                         </div>
                                         <div className="space-y-3 px-6 py-6">
                                             {[
@@ -1064,12 +1058,12 @@ export function SchoolContracts() {
                                                 >
                                                     <span className="text-sm font-semibold text-gray-800">{item.label}</span>
                                                     {item.done ? (
-                                                        <span className="inline-flex items-center gap-1 text-xs font-extrabold text-emerald-700">
+                                                        <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-700">
                                                             <CheckCircle2 className="h-4 w-4" />
                                                             Sẵn sàng
                                                         </span>
                                                     ) : (
-                                                        <span className="text-xs font-extrabold text-amber-700">Cần bổ sung</span>
+                                                        <span className="text-xs font-bold text-amber-700">Cần bổ sung</span>
                                                     )}
                                                 </div>
                                             ))}

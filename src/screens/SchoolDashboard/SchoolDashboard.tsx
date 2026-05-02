@@ -120,7 +120,7 @@ function SectionHeader({
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 px-4 py-3">
             <div>
                 <p className={`text-xs font-bold uppercase tracking-[0.14em] ${SCHOOL_THEME.primaryText}`}>{label}</p>
-                <h2 className="mt-1 text-lg font-extrabold text-slate-950">{title}</h2>
+                <h2 className="mt-1 text-lg font-bold text-slate-950">{title}</h2>
             </div>
             {action}
         </div>
@@ -144,7 +144,7 @@ function PublicationRow({
             className="grid w-full gap-3 border-b border-gray-100 px-4 py-3 text-left transition-colors last:border-b-0 hover:bg-blue-50/70 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center"
         >
             <div className="min-w-0">
-                <p className="truncate text-base font-extrabold text-slate-950">
+                <p className="truncate text-base font-bold text-slate-950">
                     {publication.semester} / {publication.academicYear}
                 </p>
                 <p className="mt-1 line-clamp-1 text-sm font-semibold text-[#4c5769]">
@@ -201,7 +201,7 @@ function WorkItem({
                 {icon}
             </div>
             <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-extrabold text-slate-950">{title}</p>
+                <p className="truncate text-sm font-bold text-slate-950">{title}</p>
                 <p className="mt-0.5 line-clamp-1 text-xs font-semibold text-[#4c5769]">{description}</p>
             </div>
             <span className="rounded-full border border-blue-100 bg-white px-3 py-1 text-xs font-bold text-[#2563EB]">
@@ -256,7 +256,7 @@ export const SchoolDashboard = (): JSX.Element => {
                 getSchoolProfile().catch(() => null),
                 getSemesterPublications(1, 50).catch(() => null),
                 getSchoolOutfits().catch(() => null),
-                getSchoolContracts().catch(() => []),
+                getSchoolContracts({ page: 1, pageSize: 50 }).catch(() => null),
                 getSchoolTeacherReports().catch(() => null),
                 getSchoolClassesOverview().catch(() => null),
             ]);
@@ -279,7 +279,7 @@ export const SchoolDashboard = (): JSX.Element => {
             setOutfitCount(publicationItems.reduce((sum, item) => sum + (item.outfitCount || 0), 0));
 
             setSchoolOutfitCount(outfits?.total || outfits?.items.length || 0);
-            setContracts(contractList);
+            setContracts(contractList?.items || []);
             setTeacherReports(reportResponse?.items || []);
             setClassOverview(classes);
         } finally {
@@ -493,7 +493,7 @@ export const SchoolDashboard = (): JSX.Element => {
                                             </div>
                                             <div>
                                                 <p className="text-sm font-semibold text-[#4c5769]">Mẫu đồng phục của trường</p>
-                                                <p className="text-xl font-extrabold text-slate-950">{formatNumber(schoolOutfitCount)}</p>
+                                                <p className="text-xl font-bold text-slate-950">{formatNumber(schoolOutfitCount)}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -504,7 +504,7 @@ export const SchoolDashboard = (): JSX.Element => {
                                             </div>
                                             <div>
                                                 <p className="text-sm font-semibold text-[#4c5769]">NCC trong công bố</p>
-                                                <p className="text-xl font-extrabold text-slate-950">{formatNumber(providerCount)}</p>
+                                                <p className="text-xl font-bold text-slate-950">{formatNumber(providerCount)}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -515,7 +515,7 @@ export const SchoolDashboard = (): JSX.Element => {
                                             </div>
                                             <div>
                                                 <p className="text-sm font-semibold text-[#4c5769]">Đồng phục đã công bố</p>
-                                                <p className="text-xl font-extrabold text-slate-950">{formatNumber(outfitCount)}</p>
+                                                <p className="text-xl font-bold text-slate-950">{formatNumber(outfitCount)}</p>
                                             </div>
                                         </div>
                                     </div>

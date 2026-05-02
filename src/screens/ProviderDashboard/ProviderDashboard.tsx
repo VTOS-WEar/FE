@@ -2,7 +2,6 @@ import { type ReactNode, useCallback, useEffect, useMemo, useState } from "react
 import { useNavigate } from "react-router-dom";
 import {
     AlertTriangle,
-    ArrowRight,
     Banknote,
     CheckCircle2,
     ClipboardList,
@@ -100,7 +99,7 @@ function SectionHeader({
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 px-4 py-3">
             <div>
                 <p className={`text-xs font-bold uppercase tracking-[0.14em] ${PROVIDER_THEME.primaryText}`}>{label}</p>
-                <h2 className="mt-1 text-lg font-extrabold text-slate-950">{title}</h2>
+                <h2 className="mt-1 text-lg font-bold text-slate-950">{title}</h2>
             </div>
             {action}
         </div>
@@ -141,7 +140,7 @@ function WorkItem({
                 {icon}
             </div>
             <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-extrabold text-slate-950">{title}</p>
+                <p className="truncate text-sm font-bold text-slate-950">{title}</p>
                 <p className="mt-0.5 line-clamp-1 text-xs font-semibold text-[#4c5769]">{description}</p>
             </div>
             <span className="rounded-full border border-violet-100 bg-white px-3 py-1 text-xs font-bold text-violet-700">
@@ -214,17 +213,12 @@ export const ProviderDashboard = (): JSX.Element => {
                 getProviderProfile(),
                 getProviderDirectOrderStats(),
                 getProviderRevenue(),
-                getProviderContracts(),
+                getProviderContracts({ page: 1, pageSize: 1 }),
                 getProviderComplaints(1, 50),
             ]);
 
-            const contractsWaitingOnProvider = contracts.filter(
-                (contract) => contract.status === "Pending" || contract.status === "PendingProviderSign",
-            ).length;
-
-            const activeContracts = contracts.filter(
-                (contract) => contract.status === "Active" || contract.status === "InUse",
-            ).length;
+            const contractsWaitingOnProvider = (contracts.summary.pending ?? 0) + contracts.summary.waitingProvider;
+            const activeContracts = contracts.summary.active;
 
             const openComplaints = complaints.items.filter((complaint) => complaint.status === "Open").length;
             const inProgressComplaints = complaints.items.filter((complaint) => complaint.status === "InProgress").length;
@@ -308,23 +302,23 @@ export const ProviderDashboard = (): JSX.Element => {
     const priorityItems = [
         {
             title: "Đơn chờ tiếp nhận",
-            description: "Xác nhận đơn đã thanh toán để bắt đầu sản xuất",
+            description: "Đơn đã thanh toán, cần xác nhận để bắt đầu sản xuất",
             count: data.stats?.paidOrders ?? 0,
             tone: "amber" as const,
             icon: <ClipboardList className="h-5 w-5" />,
             onClick: () => navigate("/provider/orders"),
         },
         {
-            title: "Hợp đồng cần xử lý",
-            description: "Theo dõi hợp đồng đang chờ nhà cung cấp ký",
+            title: "Hợp đồng chờ ký",
+            description: "Hợp đồng đang chờ chữ ký của bạn",
             count: data.contractsWaitingOnProvider,
             tone: "violet" as const,
             icon: <FileText className="h-5 w-5" />,
             onClick: () => navigate("/provider/contracts"),
         },
         {
-            title: "Khiếu nại đang mở",
-            description: "Ticket phụ huynh hoặc trường cần phản hồi",
+            title: "Khiếu nại chưa phản hồi",
+            description: "Phụ huynh hoặc trường đang chờ phản hồi từ bạn",
             count: openIssueCount,
             tone: "rose" as const,
             icon: <AlertTriangle className="h-5 w-5" />,
@@ -332,7 +326,7 @@ export const ProviderDashboard = (): JSX.Element => {
         },
         {
             title: "Doanh thu đối soát",
-            description: "Kiểm tra ví và dòng tiền theo đơn hàng",
+            description: "Xem lịch sử thanh toán và số dư ví",
             count: formatCurrency(data.revenue?.totalRevenue ?? 0),
             tone: "emerald" as const,
             icon: <Wallet className="h-5 w-5" />,
@@ -341,11 +335,11 @@ export const ProviderDashboard = (): JSX.Element => {
     ];
 
     const readinessItems = [
-        { label: "Hồ sơ nhà cung cấp", ready: profileApproved, route: "/provider/profile" },
-        { label: "Hợp đồng hiệu lực", ready: data.activeContracts > 0, route: "/provider/contracts" },
-        { label: "Luồng đơn hàng", ready: (data.stats?.totalOrders ?? 0) > 0, route: "/provider/orders" },
-        { label: "Dòng tiền đối soát", ready: (data.revenue?.totalRevenue ?? 0) > 0, route: "/provider/revenue" },
-        { label: "Không có khiếu nại mở", ready: openIssueCount === 0, route: "/provider/complaints" },
+        { label: "Hồ sơ đã được duyệt", ready: profileApproved, route: "/provider/profile" },
+        { label: "Có hợp đồng hiệu lực", ready: data.activeContracts > 0, route: "/provider/contracts" },
+        { label: "Đã có đơn hàng", ready: (data.stats?.totalOrders ?? 0) > 0, route: "/provider/orders" },
+        { label: "Có doanh thu ghi nhận", ready: (data.revenue?.totalRevenue ?? 0) > 0, route: "/provider/revenue" },
+        { label: "Không có khiếu nại tồn đọng", ready: openIssueCount === 0, route: "/provider/complaints" },
     ];
     const readyCount = readinessItems.filter((item) => item.ready).length;
 
@@ -390,8 +384,8 @@ export const ProviderDashboard = (): JSX.Element => {
 
                         {loading ? (
                             <section className="rounded-[8px] border border-gray-200 bg-white p-10 text-center shadow-soft-sm">
-                                <Loader2 className={`mx-auto mb-3 h-8 w-8 animate-spin ${PROVIDER_THEME.primaryText}`} />
-                                <p className="text-sm font-semibold text-[#4c5769]">Đang tải tổng quan nhà cung cấp...</p>
+                                <Loader2 className="mx-auto mb-3 h-8 w-8 animate-spin text-[#3B82F6]" />
+                                <p className="text-sm font-semibold text-blue-700">Đang tải tổng quan nhà cung cấp...</p>
                             </section>
                         ) : (
                             <>
@@ -404,8 +398,8 @@ export const ProviderDashboard = (): JSX.Element => {
                                 <section className="grid items-start gap-4 lg:grid-cols-12">
                                     <div className="rounded-[8px] border border-gray-200 bg-white shadow-soft-sm lg:col-span-5">
                                         <SectionHeader
-                                            label="Điều phối đơn hàng"
-                                            title="Việc ưu tiên"
+                                            label="Cần xử lý ngay"
+                                            title="Việc đang chờ bạn"
                                             action={
                                                 <button type="button" onClick={() => navigate("/provider/orders")} className="nb-btn nb-btn-outline text-sm hover:border-violet-200 hover:text-violet-700">
                                                     Xem tất cả
@@ -422,45 +416,39 @@ export const ProviderDashboard = (): JSX.Element => {
                                     <div className="grid gap-4 md:grid-cols-2 lg:col-span-7">
                                         <div className="rounded-[8px] border border-gray-200 bg-white shadow-soft-sm">
                                             <SectionHeader
-                                                label="Tín hiệu vận hành"
-                                                title={`${openIssueCount} khiếu nại mở`}
-                                                action={
-                                                    <button type="button" onClick={() => navigate("/provider/complaints")} className="inline-flex items-center gap-2 text-sm font-bold text-violet-700">
-                                                        Mở
-                                                        <ArrowRight className="h-4 w-4" />
-                                                    </button>
-                                                }
+                                                label="Đang diễn ra"
+                                                title="Tình trạng hiện tại"
                                             />
                                             <div className="space-y-2.5 p-4">
                                                 <WorkItem
+                                                    icon={<Package className="h-5 w-5" />}
+                                                    title="Đơn đang sản xuất"
+                                                    description="Đơn đã tiếp nhận, đang trong quá trình xử lý"
+                                                    count={data.stats?.inProgressOrders ?? 0}
+                                                    tone="orange"
+                                                    onClick={() => navigate("/provider/orders")}
+                                                />
+                                                <WorkItem
                                                     icon={<FileText className="h-5 w-5" />}
-                                                    title="Hợp đồng cần xử lý"
-                                                    description="Đang chờ phản hồi hoặc chữ ký nhà cung cấp"
-                                                    count={data.contractsWaitingOnProvider}
+                                                    title="Hợp đồng đang hiệu lực"
+                                                    description="Hợp đồng đang hoạt động với các trường"
+                                                    count={data.activeContracts}
                                                     tone="violet"
                                                     onClick={() => navigate("/provider/contracts")}
                                                 />
                                                 <WorkItem
-                                                    icon={<AlertTriangle className="h-5 w-5" />}
-                                                    title="Khiếu nại đang mở"
-                                                    description="Cần kiểm tra phản hồi với phụ huynh hoặc trường"
-                                                    count={openIssueCount}
-                                                    tone="rose"
-                                                    onClick={() => navigate("/provider/complaints")}
-                                                />
-                                                <WorkItem
-                                                    icon={<Package className="h-5 w-5" />}
-                                                    title="Đơn đang xử lý"
-                                                    description="Đơn đã nhận, đang sản xuất hoặc chờ giao"
-                                                    count={data.stats?.inProgressOrders ?? 0}
-                                                    tone="orange"
-                                                    onClick={() => navigate("/provider/orders")}
+                                                    icon={<Wallet className="h-5 w-5" />}
+                                                    title="Doanh thu chờ nhận"
+                                                    description="Số tiền chưa được chuyển vào ví của bạn"
+                                                    count={formatCurrency(data.revenue?.pendingAmount ?? 0)}
+                                                    tone="emerald"
+                                                    onClick={() => navigate("/provider/wallet")}
                                                 />
                                             </div>
                                         </div>
 
                                         <div className="rounded-[8px] border border-gray-200 bg-white shadow-soft-sm">
-                                            <SectionHeader label="Hoàn thiện thông tin" title={`${readyCount}/${readinessItems.length} mục hoàn tất`} />
+                                            <SectionHeader label="Kiểm tra sẵn sàng" title={`${readyCount}/${readinessItems.length} điều kiện đáp ứng`} />
                                             <div className="grid gap-2 p-4">
                                                 {readinessItems.map((item) => (
                                                     <button
@@ -478,8 +466,8 @@ export const ProviderDashboard = (): JSX.Element => {
                                                     </button>
                                                 ))}
                                                 <div className="rounded-[8px] border border-slate-100 bg-slate-50 px-3 py-2.5">
-                                                    <p className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Trạng thái hồ sơ</p>
-                                                    <p className="mt-1 text-sm font-extrabold text-slate-950">{formatStatus(data.profile?.status)}</p>
+                                                    <p className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Trạng thái tài khoản</p>
+                                                    <p className="mt-1 text-sm font-bold text-slate-950">{formatStatus(data.profile?.status)}</p>
                                                 </div>
                                             </div>
                                         </div>
