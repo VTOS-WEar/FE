@@ -1,12 +1,13 @@
-import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
-
 /**
  * Captures a DOM element and returns it as a base64-encoded PDF string.
  * Returns null if generation fails (non-critical — sign still proceeds).
  */
 export async function generateContractPdf(elementId: string): Promise<string | null> {
     try {
+        const [{ default: html2canvas }, { default: jsPDF }] = await Promise.all([
+            import("html2canvas"),
+            import("jspdf"),
+        ]);
         const element = document.getElementById(elementId);
         if (!element) return null;
 

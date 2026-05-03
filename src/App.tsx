@@ -1,100 +1,112 @@
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import { AnimatePresence, motion } from "framer-motion";
+import { lazy, Suspense, type ComponentType, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { RouterProvider, createBrowserRouter, Navigate, Outlet, useLocation } from "react-router-dom";
 import { ErrorBoundary } from "./components/ErrorBoundary";
+import { RoleGuard } from "./components/guards/RoleGuard";
 import { ToastProvider } from "./contexts/ToastContext";
 import { CartProvider } from "./contexts/CartContext";
-import { AccountSecurity } from "./screens/AccountSecurity";
-import { AccountSetting } from "./screens/AccountSetting";
-import { FillInformation } from "./screens/FillInformation";
-import { Homepage } from "./screens/Homepage";
-import { MyProfile } from "./screens/MyProfile";
-import { SignIn } from "./screens/SignIn";
-import { TwoFactorSetup } from "./screens/TwoFactorSetup/TwoFactorSetup";
-import { SignUp, RoleSelect } from "./screens/SignUp";
-import { TryOnHistory } from "./screens/TryOnHistory";
-import { SchoolList } from "./screens/SchoolList";
-import { ProductList } from "./screens/ProductList";
-import { ProductDetail } from "./screens/ProductDetail";
-import { SchoolDetail } from "./screens/SchoolDetail/SchoolDetail";
-import { OutfitDetail } from "./screens/OutfitDetail/OutfitDetail";
-import { Cart } from "./screens/Cart/Cart";
-import { PaymentSuccess } from "./screens/Payment/PaymentSuccess";
-import { PaymentCancel } from "./screens/Payment/PaymentCancel";
-import { VerifyOTP } from "./screens/OtpField";
-import { ForgotPassword } from "./screens/ForgotPassword/ForgotPassword";
-import { ForgotPasswordSent } from "./screens/ForgotPasswordSent/ForgotPasswordSent";
-import { ResetPassword } from "./screens/ResetPassword/ResetPassword";
-import { ImportData } from "./screens/ImportData";
-import { ConfirmSave } from "./screens/ConfirmSave";
-import { ConfirmReimport } from "./screens/ConfirmReimport";
-import { CheckAndPreview } from "./screens/CheckAndPreview";
-import {
-  SchoolClassDetail,
-  SchoolClassDirectory,
-  TeacherClassDetail,
-  TeacherClasses,
-} from "./screens/ClassDirectory";
-import { SchoolProfile } from "./screens/SchoolProfile";
-import { UniformManagement } from "./screens/UniformManagement/UniformManagement";
-import {
-  SemesterPublicationDetail,
-  SemesterPublicationList,
-  SemesterPublicationWorkspace,
-} from "./screens/SemesterPublications";
-import { SchoolDashboard } from "./screens/SchoolDashboard/SchoolDashboard";
-import { RoleGuard } from "./components/guards/RoleGuard";
-import { ProviderDashboard } from "./screens/ProviderDashboard/ProviderDashboard";
-import { SchoolContracts } from "./screens/SchoolContracts/SchoolContracts";
-import { ProviderContracts } from "./screens/ProviderContracts/ProviderContracts";
-import { ProviderCatalogManagement } from "./screens/ProviderCatalog/ProviderCatalogManagement";
-import { ContractPreview } from "./screens/ContractPreview/ContractPreview";
-import { ProviderComplaints } from "./screens/ProviderComplaints/ProviderComplaints";
-import { ParentProfile } from "./screens/ParentProfile/ParentProfile";
-import { AccountTab } from "./screens/ParentProfile/tabs/AccountTab";
-import { AddressBookTab } from "./screens/ParentProfile/tabs/AddressBookTab";
-import { StudentsTab } from "./screens/ParentProfile/tabs/StudentsTab";
-import { OrdersTab } from "./screens/ParentProfile/tabs/OrdersTab";
-import { WalletTab } from "./screens/ParentProfile/tabs/WalletTab";
-import { HistoryTab } from "./screens/ParentProfile/tabs/HistoryTab";
-import { ReviewsTab } from "./screens/ParentProfile/tabs/ReviewsTab";
-import { SettingsTab } from "./screens/ParentProfile/tabs/SettingsTab";
-import { BodygramHistoryTab } from "./screens/ParentProfile/tabs/BodygramHistoryTab";
-import { FeedbackPage } from "./screens/ParentProfile/pages/FeedbackPage";
-import { OrderDetailPage } from "./screens/ParentProfile/pages/OrderDetailPage";
-import { BodygramScanComparePage } from "./screens/ParentProfile/pages/BodygramScanComparePage";
-import ProviderRevenue from "./screens/ProviderRevenue/ProviderRevenue";
-import ProviderWallet from "./screens/ProviderWallet/ProviderWallet";
-import { AdminDashboard } from "./screens/AdminDashboard/AdminDashboard";
-import { AdminUsers } from "./screens/AdminUsers/AdminUsers";
-import { AdminWithdrawals } from "./screens/AdminWithdrawals/AdminWithdrawals";
-import { ContactPartnership } from "./screens/ContactPartnership";
-import { CookiesPolicy } from "./screens/CookiesPolicy";
-import { AdminAccountRequests } from "./screens/AdminAccountRequests";
-import AdminTransactions from "./screens/AdminTransactions/AdminTransactions";
-import AdminComplaints from "./screens/AdminComplaints/AdminComplaints";
-import { AdminSemesterMonitor } from "./screens/AdminSemesterMonitor";
-import { AdminCategories } from "./screens/AdminCategories";
-import { AdminAccountSettings } from "./screens/AdminProfile/AdminAccountSettings";
-import { ProviderProfile } from "./screens/ProviderProfile/ProviderProfile";
-import { ProviderAccountSettings } from "./screens/ProviderProfile/ProviderAccountSettings";
-import { SchoolAccountSettings } from "./screens/SchoolProfile/SchoolAccountSettings";
-import { HowItWorks } from "./screens/HowItWorks/HowItWorks";
-import { SearchPage } from "./screens/Search/SearchPage";
-import { LegalNotice } from "./screens/LegalNotice";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
 import vtosLogoUrl from "../public/imgs/vtoslogo.png";
-import { BodygramScannerPage } from "./screens/BodygramScanner/BodygramScannerPage";
-import { BodygramScanDetailPage } from "./screens/ParentProfile/pages/BodygramScanDetailPage";
-import { SemesterCatalog } from "./screens/SemesterCatalog/SemesterCatalog";
-import { MyOrders } from "./screens/DirectOrders/MyOrders";
-import { MyOrderDetail } from "./screens/DirectOrders/MyOrderDetail";
-import { ProviderOrders } from "./screens/ProviderOrders/ProviderOrders";
-import { ProviderOrderDetail } from "./screens/ProviderOrders/ProviderOrderDetail";
-import { ProviderRatings } from "./screens/ProviderRatings/ProviderRatings";
-import { SchoolTeacherReports } from "./screens/SchoolTeacherReports";
-import { SubmitTeacherReportPage, TeacherAccount, TeacherDashboard, TeacherMessages, TeacherReminders, TeacherReports } from "./screens/TeacherWorkspace";
-import { SupportTicketsPage } from "./screens/SupportTickets";
-import { ParentClassGroupChatPage } from "./screens/ClassGroupChat";
+
+function lazyDefault<T extends ComponentType<any> = ComponentType<any>>(loader: () => Promise<{ default: T }>) {
+  return lazy(loader);
+}
+
+function lazyNamed<T extends ComponentType<any> = ComponentType<any>>(loader: () => Promise<any>, exportName: string) {
+  return lazy(async () => ({ default: (await loader())[exportName] as T }));
+}
+
+const AccountSecurity = lazyNamed(() => import("./screens/AccountSecurity"), "AccountSecurity");
+const AccountSetting = lazyNamed(() => import("./screens/AccountSetting"), "AccountSetting");
+const FillInformation = lazyNamed(() => import("./screens/FillInformation"), "FillInformation");
+const Homepage = lazyNamed(() => import("./screens/Homepage"), "Homepage");
+const MyProfile = lazyNamed(() => import("./screens/MyProfile"), "MyProfile");
+const SignIn = lazyNamed(() => import("./screens/SignIn"), "SignIn");
+const TwoFactorSetup = lazyNamed(() => import("./screens/TwoFactorSetup/TwoFactorSetup"), "TwoFactorSetup");
+const SignUp = lazyNamed(() => import("./screens/SignUp"), "SignUp");
+const RoleSelect = lazyNamed(() => import("./screens/SignUp"), "RoleSelect");
+const TryOnHistory = lazyNamed(() => import("./screens/TryOnHistory"), "TryOnHistory");
+const SchoolList = lazyNamed(() => import("./screens/SchoolList"), "SchoolList");
+const ProductList = lazyNamed(() => import("./screens/ProductList"), "ProductList");
+const ProductDetail = lazyNamed(() => import("./screens/ProductDetail"), "ProductDetail");
+const SchoolDetail = lazyNamed(() => import("./screens/SchoolDetail/SchoolDetail"), "SchoolDetail");
+const OutfitDetail = lazyNamed(() => import("./screens/OutfitDetail/OutfitDetail"), "OutfitDetail");
+const Cart = lazyNamed(() => import("./screens/Cart/Cart"), "Cart");
+const PaymentSuccess = lazyNamed(() => import("./screens/Payment/PaymentSuccess"), "PaymentSuccess");
+const PaymentCancel = lazyNamed(() => import("./screens/Payment/PaymentCancel"), "PaymentCancel");
+const VerifyOTP = lazyNamed(() => import("./screens/OtpField"), "VerifyOTP");
+const ForgotPassword = lazyNamed(() => import("./screens/ForgotPassword/ForgotPassword"), "ForgotPassword");
+const ForgotPasswordSent = lazyNamed(() => import("./screens/ForgotPasswordSent/ForgotPasswordSent"), "ForgotPasswordSent");
+const ResetPassword = lazyNamed(() => import("./screens/ResetPassword/ResetPassword"), "ResetPassword");
+const ImportData = lazyNamed(() => import("./screens/ImportData"), "ImportData");
+const ConfirmSave = lazyNamed(() => import("./screens/ConfirmSave"), "ConfirmSave");
+const ConfirmReimport = lazyNamed(() => import("./screens/ConfirmReimport"), "ConfirmReimport");
+const CheckAndPreview = lazyNamed(() => import("./screens/CheckAndPreview"), "CheckAndPreview");
+const SchoolClassDetail = lazyNamed(() => import("./screens/ClassDirectory"), "SchoolClassDetail");
+const SchoolClassDirectory = lazyNamed(() => import("./screens/ClassDirectory"), "SchoolClassDirectory");
+const TeacherClassDetail = lazyNamed(() => import("./screens/ClassDirectory"), "TeacherClassDetail");
+const TeacherClasses = lazyNamed(() => import("./screens/ClassDirectory"), "TeacherClasses");
+const SchoolProfile = lazyNamed(() => import("./screens/SchoolProfile"), "SchoolProfile");
+const UniformManagement = lazyNamed(() => import("./screens/UniformManagement/UniformManagement"), "UniformManagement");
+const SemesterPublicationDetail = lazyNamed(() => import("./screens/SemesterPublications"), "SemesterPublicationDetail");
+const SemesterPublicationList = lazyNamed(() => import("./screens/SemesterPublications"), "SemesterPublicationList");
+const SemesterPublicationWorkspace = lazyNamed(() => import("./screens/SemesterPublications"), "SemesterPublicationWorkspace");
+const SchoolDashboard = lazyNamed(() => import("./screens/SchoolDashboard/SchoolDashboard"), "SchoolDashboard");
+const ProviderDashboard = lazyNamed(() => import("./screens/ProviderDashboard/ProviderDashboard"), "ProviderDashboard");
+const SchoolContracts = lazyNamed(() => import("./screens/SchoolContracts/SchoolContracts"), "SchoolContracts");
+const ProviderContracts = lazyNamed(() => import("./screens/ProviderContracts/ProviderContracts"), "ProviderContracts");
+const ProviderCatalogManagement = lazyNamed(() => import("./screens/ProviderCatalog/ProviderCatalogManagement"), "ProviderCatalogManagement");
+const ContractPreview = lazyNamed(() => import("./screens/ContractPreview/ContractPreview"), "ContractPreview");
+const ProviderComplaints = lazyNamed(() => import("./screens/ProviderComplaints/ProviderComplaints"), "ProviderComplaints");
+const ParentProfile = lazyNamed(() => import("./screens/ParentProfile/ParentProfile"), "ParentProfile");
+const AccountTab = lazyNamed(() => import("./screens/ParentProfile/tabs/AccountTab"), "AccountTab");
+const AddressBookTab = lazyNamed(() => import("./screens/ParentProfile/tabs/AddressBookTab"), "AddressBookTab");
+const StudentsTab = lazyNamed(() => import("./screens/ParentProfile/tabs/StudentsTab"), "StudentsTab");
+const OrdersTab = lazyNamed(() => import("./screens/ParentProfile/tabs/OrdersTab"), "OrdersTab");
+const WalletTab = lazyNamed(() => import("./screens/ParentProfile/tabs/WalletTab"), "WalletTab");
+const HistoryTab = lazyNamed(() => import("./screens/ParentProfile/tabs/HistoryTab"), "HistoryTab");
+const ReviewsTab = lazyNamed(() => import("./screens/ParentProfile/tabs/ReviewsTab"), "ReviewsTab");
+const SettingsTab = lazyNamed(() => import("./screens/ParentProfile/tabs/SettingsTab"), "SettingsTab");
+const BodygramHistoryTab = lazyNamed(() => import("./screens/ParentProfile/tabs/BodygramHistoryTab"), "BodygramHistoryTab");
+const FeedbackPage = lazyNamed(() => import("./screens/ParentProfile/pages/FeedbackPage"), "FeedbackPage");
+const OrderDetailPage = lazyNamed(() => import("./screens/ParentProfile/pages/OrderDetailPage"), "OrderDetailPage");
+const BodygramScanComparePage = lazyNamed(() => import("./screens/ParentProfile/pages/BodygramScanComparePage"), "BodygramScanComparePage");
+const ProviderRevenue = lazyDefault(() => import("./screens/ProviderRevenue/ProviderRevenue"));
+const ProviderWallet = lazyDefault(() => import("./screens/ProviderWallet/ProviderWallet"));
+const AdminDashboard = lazyNamed(() => import("./screens/AdminDashboard/AdminDashboard"), "AdminDashboard");
+const AdminUsers = lazyNamed(() => import("./screens/AdminUsers/AdminUsers"), "AdminUsers");
+const AdminWithdrawals = lazyNamed(() => import("./screens/AdminWithdrawals/AdminWithdrawals"), "AdminWithdrawals");
+const ContactPartnership = lazyNamed(() => import("./screens/ContactPartnership"), "ContactPartnership");
+const CookiesPolicy = lazyNamed(() => import("./screens/CookiesPolicy"), "CookiesPolicy");
+const AdminAccountRequests = lazyNamed(() => import("./screens/AdminAccountRequests"), "AdminAccountRequests");
+const AdminTransactions = lazyDefault(() => import("./screens/AdminTransactions/AdminTransactions"));
+const AdminComplaints = lazyDefault(() => import("./screens/AdminComplaints/AdminComplaints"));
+const AdminSemesterMonitor = lazyNamed(() => import("./screens/AdminSemesterMonitor"), "AdminSemesterMonitor");
+const AdminCategories = lazyNamed(() => import("./screens/AdminCategories"), "AdminCategories");
+const AdminAccountSettings = lazyNamed(() => import("./screens/AdminProfile/AdminAccountSettings"), "AdminAccountSettings");
+const ProviderProfile = lazyNamed(() => import("./screens/ProviderProfile/ProviderProfile"), "ProviderProfile");
+const ProviderAccountSettings = lazyNamed(() => import("./screens/ProviderProfile/ProviderAccountSettings"), "ProviderAccountSettings");
+const SchoolAccountSettings = lazyNamed(() => import("./screens/SchoolProfile/SchoolAccountSettings"), "SchoolAccountSettings");
+const HowItWorks = lazyNamed(() => import("./screens/HowItWorks/HowItWorks"), "HowItWorks");
+const SearchPage = lazyNamed(() => import("./screens/Search/SearchPage"), "SearchPage");
+const LegalNotice = lazyNamed(() => import("./screens/LegalNotice"), "LegalNotice");
+const BodygramScannerPage = lazyNamed(() => import("./screens/BodygramScanner/BodygramScannerPage"), "BodygramScannerPage");
+const BodygramScanDetailPage = lazyNamed(() => import("./screens/ParentProfile/pages/BodygramScanDetailPage"), "BodygramScanDetailPage");
+const SemesterCatalog = lazyNamed(() => import("./screens/SemesterCatalog/SemesterCatalog"), "SemesterCatalog");
+const MyOrders = lazyNamed(() => import("./screens/DirectOrders/MyOrders"), "MyOrders");
+const MyOrderDetail = lazyNamed(() => import("./screens/DirectOrders/MyOrderDetail"), "MyOrderDetail");
+const ProviderOrders = lazyNamed(() => import("./screens/ProviderOrders/ProviderOrders"), "ProviderOrders");
+const ProviderOrderDetail = lazyNamed(() => import("./screens/ProviderOrders/ProviderOrderDetail"), "ProviderOrderDetail");
+const ProviderRatings = lazyNamed(() => import("./screens/ProviderRatings/ProviderRatings"), "ProviderRatings");
+const SchoolTeacherReports = lazyNamed(() => import("./screens/SchoolTeacherReports"), "SchoolTeacherReports");
+const SubmitTeacherReportPage = lazyNamed(() => import("./screens/TeacherWorkspace"), "SubmitTeacherReportPage");
+const TeacherAccount = lazyNamed(() => import("./screens/TeacherWorkspace"), "TeacherAccount");
+const TeacherDashboard = lazyNamed(() => import("./screens/TeacherWorkspace"), "TeacherDashboard");
+const TeacherMessages = lazyNamed(() => import("./screens/TeacherWorkspace"), "TeacherMessages");
+const TeacherReminders = lazyNamed(() => import("./screens/TeacherWorkspace"), "TeacherReminders");
+const TeacherReports = lazyNamed(() => import("./screens/TeacherWorkspace"), "TeacherReports");
+const SupportTicketsPage = lazyNamed(() => import("./screens/SupportTickets"), "SupportTicketsPage");
+const ParentClassGroupChatPage = lazyNamed(() => import("./screens/ClassGroupChat"), "ParentClassGroupChatPage");
 
 /** Smart root redirect: School→dashboard, others→homepage */
 function RootRedirect() {
@@ -109,6 +121,22 @@ function RootRedirect() {
     } catch { /* ignore */ }
   }
   return <Navigate to="/homepage" replace />;
+}
+
+function RouteSuspenseFallback() {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-white">
+      <div className="flex flex-col items-center gap-3">
+        <div className="relative flex h-14 w-14 items-center justify-center">
+          <div className="absolute inset-0 animate-spin rounded-full border-[3px] border-violet-100 border-t-violet-600 border-r-amber-300" />
+          <div className="relative flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white shadow-soft-sm">
+            <img src={vtosLogoUrl} alt="VTOS" className="h-6 w-6 object-contain" />
+          </div>
+        </div>
+        <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">loading</p>
+      </div>
+    </div>
+  );
 }
 
 function RouteTransitionLayout() {
@@ -141,7 +169,9 @@ function RouteTransitionLayout() {
 
   return (
     <div className={`relative min-h-screen ${roleWorkspaceClass}`}>
-      <Outlet />
+      <Suspense fallback={<RouteSuspenseFallback />}>
+        <Outlet />
+      </Suspense>
 
       <AnimatePresence>
         {showLoader ? (
@@ -490,7 +520,6 @@ const router = createBrowserRouter([{
   { path: "*", element: <RootRedirect /> },
   ],
 }]);
-import { GoogleOAuthProvider } from "@react-oauth/google";
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "";
 
