@@ -3,7 +3,6 @@ import { flushSync } from "react-dom";
 import type { ContractDto } from "../../lib/api/contracts";
 import { SignaturePad } from "./SignaturePad";
 import { OTPVerification } from "./OTPVerification";
-import { generateContractPdf } from "./pdfUtils";
 
 // ── Extended contract data (extra fields not yet in BE — optional for now) ──
 export interface ContractTemplateData extends ContractDto {
@@ -58,6 +57,11 @@ export interface ContractTemplateProps {
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
 const NA = "..."; // placeholder for missing data
+
+async function generateContractPdf(elementId: string) {
+    const pdfUtils = await import("./pdfUtils");
+    return pdfUtils.generateContractPdf(elementId);
+}
 
 function fmtDate(dateStr?: string | null): string {
     if (!dateStr) return NA;

@@ -1,4 +1,4 @@
-import { EyeIcon, EyeOffIcon, Shield } from "lucide-react";
+import { EyeIcon, EyeOffIcon, Lock, LogIn, Mail, Shield } from "lucide-react";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
 import { useEffect, useState, useRef } from "react";
@@ -11,6 +11,10 @@ import { Notify } from "../../components/ui/notify";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { GuestLayout } from "../../components/layout/GuestLayout";
 import { useToast } from "../../contexts/ToastContext";
+import { TurnstileWidget, type TurnstileWidgetHandle } from "../../components/security/TurnstileWidget";
+import vtosLogoUrl from "../../../public/imgs/vtoslogo.png";
+
+const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY ?? "";
 
 function getSignInErrorMessage(error: unknown): string {
   if (error instanceof ApiError && typeof error.details === "object" && error.details !== null) {
@@ -18,6 +22,7 @@ function getSignInErrorMessage(error: unknown): string {
     if (code === "INVALID_CREDENTIALS") return "Email hoặc mật khẩu không đúng.";
     if (code === "EMAIL_NOT_VERIFIED") return "Email chưa được xác minh. Vui lòng kiểm tra email để xác minh tài khoản.";
     if (code === "ACCOUNT_DISABLED") return "Tài khoản đã bị vô hiệu hóa.";
+    if (code === "CAPTCHA_REQUIRED" || code === "CAPTCHA_INVALID") return "Captcha không hợp lệ. Vui lòng thử lại.";
   }
 
   return error instanceof Error ? error.message : "Có lỗi xảy ra.";
@@ -30,11 +35,13 @@ export const SignIn = (): JSX.Element => {
   const { showToast } = useToast();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [turnstileToken, setTurnstileToken] = useState("");
 
 
   const [isLoading, setIsLoading] = useState(false);
   const [notify, setNotify] = useState<{ title: string; message: string; variant: "error" | "success" | "info" } | null>(null);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const turnstileRef = useRef<TurnstileWidgetHandle | null>(null);
 
   // 2FA state
   const [show2FA, setShow2FA] = useState(false);
@@ -44,6 +51,11 @@ export const SignIn = (): JSX.Element => {
   const [useRecoveryCode, setUseRecoveryCode] = useState(false);
   const [recoveryCode, setRecoveryCode] = useState("");
   const digitRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  const resetTurnstile = () => {
+    setTurnstileToken("");
+    turnstileRef.current?.reset();
+  };
 
   // ── Auto-redirect if already logged in ──
   useEffect(() => {
@@ -99,12 +111,22 @@ export const SignIn = (): JSX.Element => {
       return;
     }
 
+    if (!turnstileToken) {
+      setNotify({
+        title: "Đăng nhập thất bại",
+        message: "Vui lòng hoàn tất xác thực captcha.",
+        variant: "error",
+      });
+      return;
+    }
+
     try {
       setIsLoading(true);
-      const data = await login({ email, password });
+      const data = await login({ email, password, turnstileToken });
 
       // 2FA required → show TOTP input (2FA is already enabled, so clear the setup flag)
       if (data.requiresTwoFactor && data.twoFactorToken) {
+        resetTurnstile();
         localStorage.removeItem("vtos_should_setup_2fa");
         setTwoFactorToken(data.twoFactorToken);
         setShow2FA(true);
@@ -120,6 +142,7 @@ export const SignIn = (): JSX.Element => {
       // Normal login → store + redirect
       completeLogin(data);
     } catch (e: unknown) {
+      resetTurnstile();
       setNotify({ title: "Đăng nhập thất bại", message: getSignInErrorMessage(e), variant: "error" });
     } finally {
       setIsLoading(false);
@@ -224,17 +247,22 @@ export const SignIn = (): JSX.Element => {
             <div className="flex flex-col lg:flex-row">
               {/* LEFT — Form */}
               <div className="lg:w-[52%] flex items-center justify-center p-6 lg:p-12 bg-white">
-                <div className="w-full max-w-[26rem]">
-                  <h1 className="font-extrabold text-gray-900 text-3xl lg:text-4xl text-center mb-6 lg:mb-8 tracking-tight">
-                    <span>Đăng nhập</span>{" "}
-                    <span className="inline-block text-[#7C3AED]">✦</span>
+                <div className="w-full max-w-[23.5rem]">
+                  <h1 className="mb-6 inline-flex w-full items-center justify-center gap-2 whitespace-nowrap text-center text-3xl font-extrabold tracking-tight text-gray-900 lg:mb-8 lg:text-4xl">
+                    <span>Đăng nhập</span>
+                    <img
+                      className="h-8 w-8 flex-shrink-0 object-contain lg:h-9 lg:w-9"
+                      alt=""
+                      aria-hidden="true"
+                      src={vtosLogoUrl}
+                    />
                   </h1>
 
                   <button
                     type="button"
                     onClick={() => handleGoogleLogin()}
                     disabled={isGoogleLoading}
-                    className="group w-full inline-flex items-center justify-center gap-2 rounded-lg border border-gray-200 bg-gradient-to-r from-white via-[#FAF9FF] to-[#F1EDFF] px-4 py-3 lg:py-4 text-sm lg:text-base font-bold text-gray-900 shadow-soft-md transition-all hover:-translate-y-px hover:border-purple-500 hover:shadow-soft-md hover:bg-violet-50 active:translate-y-px active:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-300/55 focus-visible:ring-offset-0 disabled:opacity-60 disabled:cursor-not-allowed"
+                    className="group w-full inline-flex items-center justify-center gap-2 rounded-lg border border-gray-200 bg-gradient-to-r from-white via-[#FAF9FF] to-[#F1EDFF] px-4 py-2.5 lg:py-3 text-sm lg:text-base font-bold text-gray-900 shadow-soft-md transition-all hover:-translate-y-px hover:border-purple-500 hover:shadow-soft-md hover:bg-violet-50 active:translate-y-px active:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-300/55 focus-visible:ring-offset-0 disabled:opacity-60 disabled:cursor-not-allowed"
                   >
                     <img
                       className="w-6 lg:w-7 h-6 lg:h-7 nb-icon-wiggle"
@@ -259,13 +287,16 @@ export const SignIn = (): JSX.Element => {
                       <Label className="font-bold text-gray-900 text-sm">
                         Email
                       </Label>
-                      <Input
-                        type="email"
-                        placeholder="Nhập email của bạn"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className="nb-input w-full h-11 lg:h-12 border border-gray-200 bg-white shadow-soft-sm transition-all hover:-translate-y-px hover:border-purple-500 hover:shadow-soft-md hover:bg-violet-50 active:translate-y-px active:shadow-sm focus:border-purple-500 focus:bg-violet-50 focus:shadow-sm focus:ring-2 focus:ring-purple-300/55 focus:ring-offset-0"
-                      />
+                      <div className="group relative">
+                        <Mail className="pointer-events-none absolute left-4 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-gray-500 transition-all duration-200 ease-out group-hover:scale-105 group-hover:text-gray-700 group-focus-within:scale-110 group-focus-within:text-[#7C3AED]" aria-hidden="true" />
+                        <Input
+                          type="email"
+                          placeholder="Nhập email của bạn"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          className="nb-input relative z-0 w-full h-11 lg:h-12 pl-11 border border-gray-200 bg-white shadow-soft-sm transition-all hover:-translate-y-px hover:border-purple-500 hover:shadow-soft-md hover:bg-violet-50 active:translate-y-px active:shadow-sm focus:border-purple-500 focus:bg-violet-50 focus:shadow-sm focus:ring-2 focus:ring-purple-300/55 focus:ring-offset-0"
+                        />
+                      </div>
                     </div>
 
                     <div className="space-y-2">
@@ -273,12 +304,13 @@ export const SignIn = (): JSX.Element => {
                         Mật khẩu
                       </Label>
                       <div className="group relative">
+                        <Lock className="pointer-events-none absolute left-4 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-gray-500 transition-all duration-200 ease-out group-hover:scale-105 group-hover:text-gray-700 group-focus-within:scale-110 group-focus-within:text-[#7C3AED]" aria-hidden="true" />
                         <Input
                           type={showPassword ? "text" : "password"}
                           placeholder="Nhập mật khẩu của bạn"
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
-                          className="nb-input w-full h-11 lg:h-12 pr-12 border border-gray-200 bg-white shadow-soft-sm transition-all hover:-translate-y-px hover:border-purple-500 hover:shadow-soft-md hover:bg-violet-50 active:translate-y-px active:shadow-sm focus:border-purple-500 focus:bg-violet-50 focus:shadow-sm focus:ring-2 focus:ring-purple-300/55 focus:ring-offset-0"
+                          className="nb-input relative z-0 w-full h-11 lg:h-12 pl-11 pr-12 border border-gray-200 bg-white shadow-soft-sm transition-all hover:-translate-y-px hover:border-purple-500 hover:shadow-soft-md hover:bg-violet-50 active:translate-y-px active:shadow-sm focus:border-purple-500 focus:bg-violet-50 focus:shadow-sm focus:ring-2 focus:ring-purple-300/55 focus:ring-offset-0"
                           onKeyDown={(e) => {
                             if (e.key === "Enter") handleSignIn();
                           }}
@@ -308,15 +340,34 @@ export const SignIn = (): JSX.Element => {
                       </Link>
                     </div>
 
+                    <TurnstileWidget
+                      ref={turnstileRef}
+                      siteKey={TURNSTILE_SITE_KEY}
+                      action="login"
+                      language="vi"
+                      className="flex w-full min-h-[70px] items-center justify-center rounded-lg bg-white px-2 py-1"
+                      onVerify={setTurnstileToken}
+                      onExpire={() => setTurnstileToken("")}
+                      onError={() => {
+                        setTurnstileToken("");
+                        setNotify({
+                          title: "Captcha thất bại",
+                          message: "Không thể xác thực captcha. Vui lòng thử lại.",
+                          variant: "error",
+                        });
+                      }}
+                    />
+
                   <button
                       type="button"
                       onClick={handleSignIn}
                       disabled={isLoading}
-                      className="group relative w-full h-14 lg:h-16 mt-3 lg:mt-5 inline-flex items-center justify-center rounded-lg border border-gray-200 bg-gradient-to-r from-[#A78BFA] via-[#C4B5FD] to-[#7C3AED] text-lg lg:text-xl font-extrabold text-gray-900 shadow-soft-md transition-all hover:-translate-y-[2px] hover:shadow-soft-md hover:brightness-110 active:translate-y-px active:shadow-soft-sm disabled:opacity-50 disabled:cursor-not-allowed nb-pulse-ring"
+                      className="group relative w-full h-12 lg:h-14 mt-1 lg:mt-2 inline-flex items-center justify-center gap-2 rounded-lg border border-gray-200 bg-gradient-to-r from-[#A78BFA] via-[#C4B5FD] to-[#7C3AED] text-base lg:text-lg font-extrabold text-gray-900 shadow-soft-md transition-all hover:-translate-y-[2px] hover:shadow-soft-md hover:brightness-110 active:translate-y-px active:shadow-soft-sm disabled:opacity-50 disabled:cursor-not-allowed nb-pulse-ring"
                     >
                     <span className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_18%,rgba(255,255,255,0.7),transparent_45%)] opacity-80 transition-opacity duration-200 group-hover:opacity-100" />
                     <span className="pointer-events-none absolute inset-0 bg-[linear-gradient(110deg,transparent_30%,rgba(255,255,255,0.58)_50%,transparent_70%)] bg-[length:220%_100%] animate-[nb-shimmer_2.6s_linear_infinite]" />
-                      <span className="relative z-[1]">{isLoading ? "Đang đăng nhập..." : "Đăng nhập ✦"}</span>
+                      <LogIn className="relative z-[1] h-5 w-5" aria-hidden="true" />
+                      <span className="relative z-[1]">{isLoading ? "Đang đăng nhập..." : "Đăng nhập"}</span>
                     </button>
 
                     <p className="text-center font-medium text-sm lg:text-base">

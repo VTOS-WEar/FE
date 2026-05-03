@@ -23,6 +23,7 @@ import { SCHOOL_THEME } from "../../constants/schoolTheme";
 import { usePreservedResultsHeight } from "../../hooks/usePreservedResultsHeight";
 import { useSidebarConfig } from "../../hooks/useSidebarConfig";
 import { ChatWidget, type ChatContextInfo } from "../../components/ChatWidget/ChatWidget";
+import { getProviders, getSchoolOutfits } from "../../lib/api/schools";
 import {
     createContract,
     cancelSchoolContract,
@@ -401,15 +402,14 @@ export function SchoolContracts() {
     useEffect(() => {
         const fetchOptions = async () => {
             try {
-                const { api } = await import("../../lib/api/clients");
                 const [prov, outfRes] = await Promise.all([
-                    api<any[]>("/api/schools/me/providers", { method: "GET", auth: true }),
-                    api<any>("/api/schools/me/outfits?page=1&pageSize=50", { method: "GET", auth: true }),
+                    getProviders(),
+                    getSchoolOutfits({ page: 1, pageSize: 50 }),
                 ]);
 
                 setProviders(prov.map((provider: any) => ({ id: provider.providerId ?? provider.id, name: provider.providerName ?? provider.name })));
 
-                const outfitArray = Array.isArray(outfRes) ? outfRes : outfRes?.items ?? [];
+                const outfitArray = outfRes.items ?? [];
                 setOutfits(outfitArray.map((outfit: any) => ({ id: outfit.outfitId ?? outfit.id, name: outfit.outfitName ?? outfit.name })));
             } catch (e) {
                 console.error(e);

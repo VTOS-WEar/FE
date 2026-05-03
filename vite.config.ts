@@ -28,4 +28,17 @@ export default defineConfig(({ mode }) => ({
       },
     },
   },
+  build: {
+    chunkSizeWarningLimit: 700,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes("node_modules/three/examples")) return "vendor-three-examples";
+          if (id.includes("node_modules/three")) return "vendor-three";
+          if (id.includes("node_modules/@react-three/fiber")) return "vendor-react-three-fiber";
+          if (id.includes("node_modules/@react-three/drei")) return "vendor-react-three-drei";
+        },
+      },
+    },
+  },
 }));

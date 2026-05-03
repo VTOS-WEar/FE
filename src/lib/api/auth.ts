@@ -48,6 +48,7 @@ export async function register(payload: RegisterRequest) {
 export type LoginRequest = {
     email: string;
     password: string;
+    turnstileToken: string;
 };
 
 export type UserInfo = {
