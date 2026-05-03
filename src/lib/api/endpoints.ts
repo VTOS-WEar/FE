@@ -34,6 +34,7 @@ export const endpoints = {
     tryOn: {
         request: "/api/tryOn/request",
         history: "/api/tryon/history",
+        resultLink: "/api/tryon",
     },
     chat: {
         proposal: "/api/chat/messages/proposal",

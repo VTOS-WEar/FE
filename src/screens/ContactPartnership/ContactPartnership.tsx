@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { AlertTriangle, Building2, CheckCircle2, Home, RefreshCcw, School, Send } from "lucide-react";
 import { GuestLayout } from "../../components/layout/GuestLayout";
 import { submitAccountRequest } from "../../lib/api/accountRequests";
+import { Checkbox } from "../../components/ui/checkbox";
+import { TermsOfUseModal, VTOS_TERMS_VERSION } from "../../components/legal/TermsOfUseModal";
 
 const initialContactForm = {
     organizationName: "",
@@ -36,11 +38,14 @@ export const ContactPartnership = (): JSX.Element => {
     const [loading, setLoading] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const [error, setError] = useState("");
+    const [acceptedTerms, setAcceptedTerms] = useState(false);
+    const [isTermsOpen, setIsTermsOpen] = useState(false);
     const successTheme = successThemes[form.type];
 
     const resetSubmission = () => {
         setForm(initialContactForm);
         setError("");
+        setAcceptedTerms(false);
         setSubmitted(false);
     };
 
@@ -53,6 +58,8 @@ export const ContactPartnership = (): JSX.Element => {
         if (!form.contactEmail.trim()) return setError("Vui lòng nhập email liên hệ");
         if (!form.contactPhone.trim()) return setError("Vui lòng nhập số điện thoại");
 
+        if (!acceptedTerms) return setError("Vui lòng đọc và đồng ý với Điều khoản sử dụng trước khi gửi yêu cầu.");
+
         setLoading(true);
         try {
             await submitAccountRequest({
@@ -63,6 +70,8 @@ export const ContactPartnership = (): JSX.Element => {
                 contactPhone: form.contactPhone.trim(),
                 description: form.description.trim() || undefined,
                 address: form.address.trim() || undefined,
+                acceptedTerms,
+                termsVersion: VTOS_TERMS_VERSION,
             });
             setSubmitted(true);
         } catch (err: any) {
@@ -261,6 +270,28 @@ export const ContactPartnership = (): JSX.Element => {
                             </div>
                         )}
 
+                        <div className="rounded-[8px] border border-gray-200 bg-gray-50 px-3 py-3">
+                            <div className="flex items-start gap-3">
+                                <Checkbox
+                                    id="partnership-terms"
+                                    checked={acceptedTerms}
+                                    onCheckedChange={(checked) => setAcceptedTerms(checked === true)}
+                                    className="mt-0.5 h-5 w-5 rounded-[5px] border-[1.5px] border-gray-300 bg-white data-[state=checked]:border-purple-700 data-[state=checked]:bg-purple-700"
+                                />
+                                <label htmlFor="partnership-terms" className="text-sm font-semibold leading-6 text-gray-700">
+                                    Tôi đã đọc và đồng ý với{" "}
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsTermsOpen(true)}
+                                        className="font-extrabold text-purple-700 underline decoration-purple-300 underline-offset-2 transition-colors hover:text-purple-900"
+                                    >
+                                        Điều khoản sử dụng
+                                    </button>
+                                    .
+                                </label>
+                            </div>
+                        </div>
+
                         <button
                             type="submit"
                             disabled={loading}
@@ -282,6 +313,7 @@ export const ContactPartnership = (): JSX.Element => {
                     </p>
                 </div>
             </main>
+            <TermsOfUseModal open={isTermsOpen} onClose={() => setIsTermsOpen(false)} />
         </GuestLayout>
     );
 };

@@ -29,6 +29,8 @@ export type RegisterRequest = {
     password: string;
     fullName: string;
     roleName?: string;
+    acceptedTerms: boolean;
+    termsVersion: string;
 };
 export type RegisterResponse = {
     userId: string;
