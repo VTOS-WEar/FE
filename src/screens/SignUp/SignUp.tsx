@@ -8,6 +8,8 @@ import { useNavigate, Link } from "react-router-dom";
 import { GuestLayout } from "../../components/layout/GuestLayout";
 import { useToast } from "../../contexts/ToastContext";
 import vtosLogoUrl from "../../../public/imgs/vtoslogo.png";
+import { Checkbox } from "../../components/ui/checkbox";
+import { TermsOfUseModal, VTOS_TERMS_VERSION } from "../../components/legal/TermsOfUseModal";
 
 interface SignUpProps {
   roleName: "Parent" | "School" | "Provider";
@@ -41,6 +43,8 @@ export const SignUp = ({ roleName }: SignUpProps): JSX.Element => {
   const [email, setEmail] = useState("");
   const [fullName, setFullName] = useState("");
   const [password, setPassword] = useState("");
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [isTermsOpen, setIsTermsOpen] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
   const [notify, setNotify] = useState<{
@@ -61,10 +65,26 @@ export const SignUp = ({ roleName }: SignUpProps): JSX.Element => {
       return;
     }
 
+    if (!acceptedTerms) {
+      setNotify({
+        title: "Chưa đồng ý điều khoản",
+        message: "Vui lòng đọc và đồng ý với Điều khoản sử dụng trước khi tạo tài khoản.",
+        variant: "info",
+      });
+      return;
+    }
+
     try {
       setIsLoading(true);
 
-      const data = await register({ email, password, fullName, roleName });
+      const data = await register({
+        email,
+        password,
+        fullName,
+        roleName,
+        acceptedTerms,
+        termsVersion: VTOS_TERMS_VERSION,
+      });
 
       showToast({
         title: "Tạo tài khoản thành công",
@@ -167,7 +187,7 @@ export const SignUp = ({ roleName }: SignUpProps): JSX.Element => {
                     <div className="flex-1 h-[2px] bg-gray-900/10" />
                   </div>
 
-                  <div className="space-y-4 lg:space-y-5">
+                    <div className="space-y-4 lg:space-y-5">
                     <div className="space-y-2">
                       <Label className="font-bold text-gray-900 text-sm">
                         Email
@@ -230,6 +250,28 @@ export const SignUp = ({ roleName }: SignUpProps): JSX.Element => {
                       </div>
                     </div>
 
+                    <div className="rounded-[8px] border border-gray-200 bg-gray-50 px-3 py-3">
+                      <div className="flex items-start gap-3">
+                        <Checkbox
+                          id="signup-terms"
+                          checked={acceptedTerms}
+                          onCheckedChange={(checked) => setAcceptedTerms(checked === true)}
+                          className="mt-0.5 h-5 w-5 rounded-[5px] border-[1.5px] border-gray-300 bg-white data-[state=checked]:border-purple-700 data-[state=checked]:bg-purple-700"
+                        />
+                        <label htmlFor="signup-terms" className="text-sm font-semibold leading-6 text-gray-700">
+                          Tôi đã đọc và đồng ý với{" "}
+                          <button
+                            type="button"
+                            onClick={() => setIsTermsOpen(true)}
+                            className="font-extrabold text-purple-700 underline decoration-purple-300 underline-offset-2 transition-colors hover:text-purple-900"
+                          >
+                            Điều khoản sử dụng
+                          </button>
+                          , bao gồm việc sử dụng ảnh cá nhân/ảnh học sinh để thử đồ AI trong phạm vi dịch vụ.
+                        </label>
+                      </div>
+                    </div>
+
                     <button
                       type="button"
                       disabled={isLoading}
@@ -267,6 +309,7 @@ export const SignUp = ({ roleName }: SignUpProps): JSX.Element => {
         durationMs={3500}
         onClose={() => setNotify(null)}
       />
+      <TermsOfUseModal open={isTermsOpen} onClose={() => setIsTermsOpen(false)} />
     </GuestLayout>
   );
 };

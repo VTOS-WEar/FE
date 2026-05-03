@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { History, Camera, X, Download, Share2 } from "lucide-react";
-import { getTryOnHistory, type TryOnHistoryDto } from "../../../lib/api/tryOn";
+import { getTryOnHistory, refreshTryOnResultLink, type TryOnHistoryDto } from "../../../lib/api/tryOn";
 
 export const HistoryTab = (): JSX.Element => {
   const [items, setItems] = useState<TryOnHistoryDto[]>([]);
@@ -32,6 +32,29 @@ export const HistoryTab = (): JSX.Element => {
 
   const totalPages = Math.ceil(total / pageSize);
 
+  const replaceItemResultUrl = useCallback((id: string, resultPhotoUrl: string) => {
+    setItems((current) => current.map((item) => (
+      item.id === id ? { ...item, resultPhotoUrl } : item
+    )));
+    setLightbox((current) => (
+      current?.id === id ? { ...current, resultPhotoUrl } : current
+    ));
+  }, []);
+
+  const refreshItemResultUrl = useCallback(async (item: TryOnHistoryDto) => {
+    if (!item.resultPhotoUrl) return item.resultPhotoUrl;
+    const refreshed = await refreshTryOnResultLink(item.id);
+    replaceItemResultUrl(item.id, refreshed.resultPhotoUrl);
+    return refreshed.resultPhotoUrl;
+  }, [replaceItemResultUrl]);
+
+  const openLightbox = useCallback((item: TryOnHistoryDto) => {
+    setLightbox(item);
+    if (item.resultPhotoUrl) {
+      void refreshItemResultUrl(item).catch(() => undefined);
+    }
+  }, [refreshItemResultUrl]);
+
   const timeAgo = (iso: string) => {
     const diff = Date.now() - new Date(iso).getTime();
     const mins = Math.floor(diff / 60000);
@@ -46,7 +69,14 @@ export const HistoryTab = (): JSX.Element => {
 
   const handleDownload = async (url: string, name: string) => {
     try {
-      const response = await fetch(url);
+      let response = await fetch(url);
+      if (lightbox && [401, 403, 410].includes(response.status)) {
+        const refreshedUrl = await refreshItemResultUrl(lightbox);
+        if (refreshedUrl) {
+          response = await fetch(refreshedUrl);
+        }
+      }
+      if (!response.ok) throw new Error("Download failed");
       const blob = await response.blob();
       const blobUrl = URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -108,13 +138,18 @@ export const HistoryTab = (): JSX.Element => {
             {items.map((item) => (
               <div
                 key={item.id}
-                onClick={() => setLightbox(item)}
+                onClick={() => openLightbox(item)}
                 className="nb-card p-0 overflow-hidden cursor-pointer group"
               >
                 <div className="relative aspect-[3/4] bg-[#F6F1E8]">
                   <img
                     src={item.resultPhotoUrl || item.outfitImage || "https://placehold.co/300x400?text=No+Image"}
                     alt={item.outfitName}
+                    onError={() => {
+                      if (item.resultPhotoUrl) {
+                        void refreshItemResultUrl(item).catch(() => undefined);
+                      }
+                    }}
                     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                   />
                   <span className="absolute top-2 right-2 px-2 py-0.5 bg-black/60 rounded-md text-[10px] font-bold text-white">
@@ -186,6 +221,11 @@ export const HistoryTab = (): JSX.Element => {
                 <img
                   src={lightbox.resultPhotoUrl || lightbox.outfitImage || ""}
                   alt="Try-on result"
+                  onError={() => {
+                    if (lightbox.resultPhotoUrl) {
+                      void refreshItemResultUrl(lightbox).catch(() => undefined);
+                    }
+                  }}
                   className="w-full aspect-[3/4] object-cover"
                 />
               </div>
@@ -217,9 +257,9 @@ export const HistoryTab = (): JSX.Element => {
                     onClick={async () => {
                       try {
                         if (navigator.share) {
-                          await navigator.share({ title: lightbox.outfitName, url: lightbox.resultPhotoUrl! });
+                          await navigator.share({ title: lightbox.outfitName, url: `${window.location.origin}/parentprofile/history` });
                         } else {
-                          await navigator.clipboard.writeText(lightbox.resultPhotoUrl!);
+                          await navigator.clipboard.writeText(`${window.location.origin}/parentprofile/history`);
                           alert("Đã sao chép link ảnh!");
                         }
                       } catch {

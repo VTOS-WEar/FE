@@ -22,6 +22,8 @@ export type AccountRequestDetail = AccountRequestListItem & {
     processedByUserId?: string;
     processedByName?: string;
     createdUserId?: string;
+    termsAcceptedAt?: string;
+    termsVersion?: string;
 };
 
 export type AccountRequestListResponse = {
@@ -41,6 +43,8 @@ export async function submitAccountRequest(data: {
     type: number; // 1=School, 2=Provider
     description?: string;
     address?: string;
+    acceptedTerms: boolean;
+    termsVersion: string;
 }): Promise<AccountRequestDetail> {
     return api<AccountRequestDetail>("/api/public/account-requests", {
         method: "POST",

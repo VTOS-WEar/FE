@@ -28,7 +28,7 @@ import {
   type OutfitDetailDto,
   type OutfitVariantDto,
 } from "../../lib/api/schools";
-import { guestTryOn, type GuestTryOnResponse } from "../../lib/api/tryOn";
+import { guestTryOn, refreshTryOnResultLink, type GuestTryOnResponse } from "../../lib/api/tryOn";
 import { getMyChildren, type ChildProfileDto } from "../../lib/api/users";
 import { getChildBodygramScans, getBodygramScanDetail, type BodygramScanDetail } from "../../lib/api/bodygram";
 import {
@@ -118,6 +118,7 @@ function TryOnModal({
   const [result, setResult] = useState<GuestTryOnResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [dragOver, setDragOver] = useState(false);
+  const [refreshingResultUrl, setRefreshingResultUrl] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const [sessionId, setSessionId] = useState<string>(() => {
     const stored = sessionStorage.getItem("tryon_session_id");
@@ -171,10 +172,29 @@ function TryOnModal({
     setError(null);
   };
 
+  const refreshResultUrl = async () => {
+    if (!result?.tryOnId || refreshingResultUrl) return result?.resultPhotoUrl || "";
+
+    setRefreshingResultUrl(true);
+    try {
+      const refreshed = await refreshTryOnResultLink(result.tryOnId, sessionId || undefined);
+      setResult((current) => current ? { ...current, resultPhotoUrl: refreshed.resultPhotoUrl } : current);
+      return refreshed.resultPhotoUrl;
+    } finally {
+      setRefreshingResultUrl(false);
+    }
+  };
+
   const handleDownload = async () => {
     if (!result?.resultPhotoUrl) return;
     try {
-      const response = await fetch(result.resultPhotoUrl);
+      let resultUrl = result.resultPhotoUrl;
+      let response = await fetch(resultUrl);
+      if ([401, 403, 410].includes(response.status)) {
+        resultUrl = await refreshResultUrl();
+        response = await fetch(resultUrl);
+      }
+      if (!response.ok) throw new Error("Download failed");
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -326,6 +346,7 @@ function TryOnModal({
                 <img
                   src={result.resultPhotoUrl}
                   alt="Try-on result"
+                  onError={() => { void refreshResultUrl().catch(() => undefined); }}
                   className="w-full aspect-[3/4] object-cover"
                 />
               </div>
